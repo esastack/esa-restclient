@@ -1,5 +1,6 @@
 # ESA HttpClient
 
+![Build](https://github.com/esastack/esa-httpclient/workflows/Build/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/esastack/esa-httpclient/branch/main/graph/badge.svg?token=D85SMNQNK0)](https://codecov.io/gh/esastack/esa-httpclient)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.esastack/httpclient/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.esastack/httpclient/)
 [![GitHub license](https://img.shields.io/github/license/esastack/esa-httpclient)](https://github.com/esastack/esa-httpclient/blob/main/LICENSE)

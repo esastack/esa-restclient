@@ -2,7 +2,7 @@
 
 ![Build](https://github.com/esastack/esa-httpclient/workflows/Build/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/esastack/esa-httpclient/branch/main/graph/badge.svg?token=D85SMNQNK0)](https://codecov.io/gh/esastack/esa-httpclient)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.esastack/httpclient/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.esastack/httpclient/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.esastack/httpclient/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.esastack/httpclient/)
 [![GitHub license](https://img.shields.io/github/license/esastack/esa-httpclient)](https://github.com/esastack/esa-httpclient/blob/main/LICENSE)
 
 ESA HttpClient is an asynchronous event-driven http client based on netty.
@@ -25,7 +25,7 @@ ESA HttpClient is an asynchronous event-driven http client based on netty.
 
 ```xml
 <dependency>
-    <groupId>com.github.esastack</groupId>
+    <groupId>io.esastack</groupId>
     <artifactId>httpclient</artifactId>
     <version>${esa-httpclient.version}</version>
 </dependency>

@@ -25,15 +25,18 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.exec.RequestExecutor;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -67,32 +70,45 @@ class ChunkRequestImplTest {
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
                 new ContextImpl(), true);
 
-        for (int i = 0; i < 10; i++) {
-            request.write((COMMON_DATA + i).getBytes());
-        }
+        final byte[] dataToWrite = new byte[1024 * 1025 + 512];
+        ThreadLocalRandom.current().nextBytes(dataToWrite);
 
-        request.end(END.getBytes());
-        final List<byte[]> data = new LinkedList<>();
+        for (int i = 0; i < 1025; i++) {
+            byte[] temp = new byte[1024];
+            System.arraycopy(dataToWrite, i * 1024, temp, 0, temp.length);
+            request.write(temp);
+        }
+        request.write(dataToWrite, 1024 * 1025, 512);
+        request.end();
+
+        final ByteBuf out = Unpooled.buffer();
         final ChunkWriter writer = mock(ChunkWriter.class);
 
         when(writer.channel()).thenReturn(channel);
         when(writer.write(any(), anyInt(), anyInt()))
                 .thenAnswer(answer -> {
-                    if (answer.getArgument(0) instanceof byte[]) {
-                        data.add(answer.getArgument(0));
-                    }
+                    final Object obj = answer.getArgument(0);
+                    if (obj instanceof byte[]) {
+                        final byte[] data = (byte[]) obj;
+                        final int offset = answer.getArgument(1);
+                        final int length = answer.getArgument(2);
+                        out.writeBytes(data, offset, length);
+                    } // Ignore empty end content.
+
                     return channel.newSucceededFuture();
                 });
         when(writer.end()).thenAnswer(answer -> channel.newSucceededFuture());
 
         writerPromise.complete(writer);
-        then(data.size()).isEqualTo(11);
+        then(out.readableBytes()).isEqualTo(1024 * 1025 + 512);
 
-        for (int i = 0; i < data.size() - 1; i++) {
-            then(new String(data.get(i))).isEqualTo((COMMON_DATA + i));
-        }
-        then(new String(data.get(10))).isEqualTo(END);
+        final byte[] outArray = new byte[1024 * 1025 + 512];
+        out.readBytes(outArray);
+        then(Arrays.equals(dataToWrite, outArray)).isTrue();
+
         then(response.isDone()).isFalse();
+
+
     }
 
     @Test

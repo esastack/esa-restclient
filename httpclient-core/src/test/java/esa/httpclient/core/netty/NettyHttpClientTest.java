@@ -16,6 +16,7 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderNames;
+import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
@@ -108,6 +109,10 @@ class NettyHttpClientTest {
         // default aggregate, compute by handle or handler
         final HttpRequestBuilder.ClassicChunk builder = client.prepare("http://127.0.0.1:8080/abc")
                 .handle(h -> h.onError(th -> { }));
+
+        then(builder.build().method()).isSameAs(HttpMethod.POST);
+        builder.method(HttpMethod.GET);
+        then(builder.build().method()).isSameAs(HttpMethod.GET);
 
         then(builder.build().aggregate()).isFalse();
 

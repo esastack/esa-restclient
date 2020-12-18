@@ -37,6 +37,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Writes the chunked data to channel.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data  chunked data
      * @return result, which may be null or exception caught through writing.
      */
@@ -46,6 +50,10 @@ public interface ChunkRequest extends HttpRequest {
 
     /**
      * Writes the chunk data to channel.
+     *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
      *
      * @param data      data
      * @param offset    offset
@@ -58,6 +66,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Writes the chunk data to channel.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data      data
      * @param offset    offset
      * @param length    length
@@ -67,6 +79,10 @@ public interface ChunkRequest extends HttpRequest {
 
     /**
      * Writes the chunk data to channel.
+     *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
      *
      * @param data      data
      * @return result, which may be null or exception caught through writing.
@@ -112,6 +128,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Ends current request with given chunk data and obtains the response asynchronously.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data      chunked data
      * @return          result, which may be response or exception caught through ending.
      */
@@ -121,6 +141,10 @@ public interface ChunkRequest extends HttpRequest {
 
     /**
      * Ends current request with given chunk data and obtains the response asynchronously.
+     *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
      *
      * @param data      chunked data
      * @param handle which can be used to handle the result of end, if succeed, throwable will be null.
@@ -133,6 +157,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Ends current request with given chunk data and obtains the response asynchronously.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data      data
      * @param offset    offset
      * @return          result, which may be response or exception caught through ending.
@@ -143,6 +171,10 @@ public interface ChunkRequest extends HttpRequest {
 
     /**
      * Ends current request with given chunk data and obtains the response asynchronously.
+     *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
      *
      * @param data      data
      * @param offset    offset
@@ -156,6 +188,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Ends current request with given chunk data and obtain the response asynchronously.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data      data
      * @param offset    offset
      * @param length    length
@@ -168,6 +204,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Ends current request with given chunk data and obtain the response asynchronously.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data data
      * @param offset    offset
      * @param length    length
@@ -179,6 +219,10 @@ public interface ChunkRequest extends HttpRequest {
     /**
      * Ends current request with given chunk data and obtains the response asynchronously.
      *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
+     *
      * @param data chunked data
      * @return response
      */
@@ -188,6 +232,10 @@ public interface ChunkRequest extends HttpRequest {
 
     /**
      * Ends current request with given chunk data and obtains the response asynchronously.
+     *
+     * <strong>Please make sure the {@code data} won't be modified until
+     * the {@code future} has completed, otherwise maybe the modified data will
+     * be wrote to channel</strong>.
      *
      * @param data chunked data
      * @param handle which can be used to handle the result of end, if succeed, throwable will be null.

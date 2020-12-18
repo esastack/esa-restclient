@@ -15,10 +15,8 @@
  */
 package esa.httpclient.core;
 
-import esa.commons.logging.Logger;
 import esa.commons.spi.SpiLoader;
 import esa.httpclient.core.filter.FilterContext;
-import esa.httpclient.core.util.LoggerUtils;
 
 import java.net.SocketAddress;
 import java.util.Collections;
@@ -28,8 +26,6 @@ import java.util.List;
  * The wrapper of {@link Listener} which holds many internal {@link #listeners} for execution.
  */
 public class ListenerProxy implements Listener {
-
-    private static final Logger logger = LoggerUtils.logger();
 
     public static final Listener DEFAULT;
 
@@ -64,12 +60,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onInterceptorsStart(request, ctx);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onInterceptorsStart(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onInterceptorsStart(request, ctx);
         }
     }
 
@@ -80,12 +71,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onInterceptorsEnd(request, ctx);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onInterceptorsEnd(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onInterceptorsEnd(request, ctx);
         }
     }
 
@@ -96,12 +82,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onFiltersStart(request, ctx);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onFiltersStart(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onFiltersStart(request, ctx);
         }
     }
 
@@ -112,12 +93,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onFiltersEnd(request, ctx);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onFiltersEnd(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onFiltersEnd(request, ctx);
         }
     }
 
@@ -128,12 +104,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onConnectionPoolAttempt(request, ctx, address);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onConnectionPoolAttempt(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onConnectionPoolAttempt(request, ctx, address);
         }
     }
 
@@ -144,12 +115,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onConnectionPoolAcquired(request, ctx, address);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onConnectionPoolAcquired(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onConnectionPoolAcquired(request, ctx, address);
         }
     }
 
@@ -161,12 +127,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onAcquireConnectionPoolFailed(request, ctx, address, cause);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onAcquireConnectionPoolFailed(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onAcquireConnectionPoolFailed(request, ctx, address, cause);
         }
     }
 
@@ -177,12 +138,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onConnectionAttempt(request, ctx, address);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onConnectionAttempt(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onConnectionAttempt(request, ctx, address);
         }
     }
 
@@ -193,12 +149,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onConnectionAcquired(request, ctx, address);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onConnectionAcquired(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onConnectionAcquired(request, ctx, address);
         }
     }
 
@@ -209,12 +160,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onAcquireConnectionFailed(request, ctx, address, cause);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onAcquireConnectionFailed(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onAcquireConnectionFailed(request, ctx, address, cause);
         }
     }
 
@@ -225,12 +171,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onWriteAttempt(request, ctx, readTimeout);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onWriteAttempt(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onWriteAttempt(request, ctx, readTimeout);
         }
     }
 
@@ -241,12 +182,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onWriteDone(request, ctx, readTimeout);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onWriteDone(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onWriteDone(request, ctx, readTimeout);
         }
     }
 
@@ -254,12 +190,7 @@ public class ListenerProxy implements Listener {
     public void onWriteFailed(HttpRequest request, Context ctx, Throwable cause) {
         if (!listenersAbsent) {
             for (Listener listener : listeners) {
-                try {
-                    listener.onWriteFailed(request, ctx, cause);
-                } catch (Throwable th) {
-                    logger.error("Failed to execute listener's onWriteFailed(), uri: {}",
-                            request.uri(), th);
-                }
+                listener.onWriteFailed(request, ctx, cause);
             }
         }
     }
@@ -271,12 +202,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onMessageReceived(request, ctx, message);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onMessageReceived(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onMessageReceived(request, ctx, message);
         }
     }
 
@@ -287,12 +213,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onCompleted(request, ctx, response);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onCompleted(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onCompleted(request, ctx, response);
         }
     }
 
@@ -303,12 +224,7 @@ public class ListenerProxy implements Listener {
         }
 
         for (Listener listener : listeners) {
-            try {
-                listener.onError(request, ctx, cause);
-            } catch (Throwable th) {
-                logger.error("Failed to execute listener's onError(), uri: {}",
-                        request.uri(), th);
-            }
+            listener.onError(request, ctx, cause);
         }
     }
 }

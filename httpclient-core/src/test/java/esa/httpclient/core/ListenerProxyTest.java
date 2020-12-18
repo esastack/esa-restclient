@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,67 +63,67 @@ class ListenerProxyTest {
         final Exception ex = new RuntimeException("Listener error");
 
         doThrow(ex).when(abnormal).onInterceptorsStart(request, ctx);
-        proxy.onInterceptorsStart(request, ctx);
-        verify(normal).onInterceptorsStart(request, ctx);
+        assertThrows(Exception.class, () -> proxy.onInterceptorsStart(request, ctx));
+        verify(normal, never()).onInterceptorsStart(request, ctx);
 
         doThrow(ex).when(abnormal).onInterceptorsEnd(request, ctx);
-        proxy.onInterceptorsEnd(request, ctx);
-        verify(normal).onInterceptorsEnd(request, ctx);
+        assertThrows(Exception.class, () -> proxy.onInterceptorsEnd(request, ctx));
+        verify(normal, never()).onInterceptorsEnd(request, ctx);
 
         doThrow(ex).when(abnormal).onFiltersStart(request, fCtx);
-        proxy.onFiltersStart(request, fCtx);
-        verify(normal).onFiltersStart(request, fCtx);
+        assertThrows(Exception.class, () -> proxy.onFiltersStart(request, fCtx));
+        verify(normal, never()).onFiltersStart(request, fCtx);
 
         doThrow(ex).when(abnormal).onFiltersEnd(request, ctx);
-        proxy.onFiltersEnd(request, ctx);
-        verify(normal).onFiltersEnd(request, ctx);
+        assertThrows(Exception.class, () -> proxy.onFiltersEnd(request, ctx));
+        verify(normal, never()).onFiltersEnd(request, ctx);
 
         doThrow(ex).when(abnormal).onConnectionPoolAttempt(request, ctx, address);
-        proxy.onConnectionPoolAttempt(request, ctx, address);
-        verify(normal).onConnectionPoolAttempt(request, ctx, address);
+        assertThrows(Exception.class, () -> proxy.onConnectionPoolAttempt(request, ctx, address));
+        verify(normal, never()).onConnectionPoolAttempt(request, ctx, address);
 
         doThrow(ex).when(abnormal).onConnectionPoolAcquired(request, ctx, address);
-        proxy.onConnectionPoolAcquired(request, ctx, address);
-        verify(normal).onConnectionPoolAcquired(request, ctx, address);
+        assertThrows(Exception.class, () -> proxy.onConnectionPoolAcquired(request, ctx, address));
+        verify(normal, never()).onConnectionPoolAcquired(request, ctx, address);
 
         doThrow(ex).when(abnormal).onAcquireConnectionPoolFailed(request, ctx, address, cause);
-        proxy.onAcquireConnectionPoolFailed(request, ctx, address, cause);
-        verify(normal).onAcquireConnectionPoolFailed(request, ctx, address, cause);
+        assertThrows(Exception.class, () -> proxy.onAcquireConnectionPoolFailed(request, ctx, address, cause));
+        verify(normal, never()).onAcquireConnectionPoolFailed(request, ctx, address, cause);
 
         doThrow(ex).when(abnormal).onConnectionAttempt(request, ctx, address);
-        proxy.onConnectionAttempt(request, ctx, address);
-        verify(normal).onConnectionAttempt(request, ctx, address);
+        assertThrows(Exception.class, () -> proxy.onConnectionAttempt(request, ctx, address));
+        verify(normal, never()).onConnectionAttempt(request, ctx, address);
 
         doThrow(ex).when(abnormal).onConnectionAcquired(request, ctx, address);
-        proxy.onConnectionAcquired(request, ctx, address);
-        verify(normal).onConnectionAcquired(request, ctx, address);
+        assertThrows(Exception.class, () -> proxy.onConnectionAcquired(request, ctx, address));
+        verify(normal, never()).onConnectionAcquired(request, ctx, address);
 
         doThrow(ex).when(abnormal).onAcquireConnectionFailed(request, ctx, address, cause);
-        proxy.onAcquireConnectionFailed(request, ctx, address, cause);
-        verify(normal).onAcquireConnectionFailed(request, ctx, address, cause);
+        assertThrows(Exception.class, () -> proxy.onAcquireConnectionFailed(request, ctx, address, cause));
+        verify(normal, never()).onAcquireConnectionFailed(request, ctx, address, cause);
 
         doThrow(ex).when(abnormal).onWriteAttempt(request, ctx, -1L);
-        proxy.onWriteAttempt(request, ctx, -1L);
-        verify(normal).onWriteAttempt(request, ctx, -1L);
+        assertThrows(Exception.class, () -> proxy.onWriteAttempt(request, ctx, -1L));
+        verify(normal, never()).onWriteAttempt(request, ctx, -1L);
 
         doThrow(ex).when(abnormal).onWriteDone(request, ctx, -1L);
-        proxy.onWriteDone(request, ctx, -1L);
-        verify(normal).onWriteDone(request, ctx, -1L);
+        assertThrows(Exception.class, () -> proxy.onWriteDone(request, ctx, -1L));
+        verify(normal, never()).onWriteDone(request, ctx, -1L);
 
         doThrow(ex).when(abnormal).onWriteFailed(request, ctx, cause);
-        proxy.onWriteFailed(request, ctx, cause);
-        verify(normal).onWriteFailed(request, ctx, cause);
+        assertThrows(Exception.class, () -> proxy.onWriteFailed(request, ctx, cause));
+        verify(normal, never()).onWriteFailed(request, ctx, cause);
 
         doThrow(ex).when(abnormal).onMessageReceived(request, ctx, message);
-        proxy.onMessageReceived(request, ctx, message);
-        verify(normal).onMessageReceived(request, ctx, message);
+        assertThrows(Exception.class, () -> proxy.onMessageReceived(request, ctx, message));
+        verify(normal, never()).onMessageReceived(request, ctx, message);
 
         doThrow(ex).when(abnormal).onCompleted(request, ctx, response);
-        proxy.onCompleted(request, ctx, response);
-        verify(normal).onCompleted(request, ctx, response);
+        assertThrows(Exception.class, () -> proxy.onCompleted(request, ctx, response));
+        verify(normal, never()).onCompleted(request, ctx, response);
 
         doThrow(ex).when(abnormal).onError(request, ctx, cause);
-        proxy.onError(request, ctx, cause);
-        verify(normal).onError(request, ctx, cause);
+        assertThrows(Exception.class, () -> proxy.onError(request, ctx, cause));
+        verify(normal, never()).onError(request, ctx, cause);
     }
 }

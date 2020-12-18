@@ -34,7 +34,11 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class H1TransceiverHandleTest {
 
@@ -68,19 +72,21 @@ class H1TransceiverHandleTest {
 
         // Case 2: release on Error
         proxy.onError(request, ctx, mock(Throwable.class));
-        verify(channelPool, times(2)).release(any(Channel.class));
+        verify(channelPool, times(1)).release(any(Channel.class));
         verify(delegate).onError(any(), any(), any());
 
         // Case 3: release for http1.0
         clearInvocations(delegate);
+        clearInvocations(channel);
+        clearInvocations(channelPool);
 
         final ListenerProxy proxy10 = handle.buildTimeoutHandle(channel, channelPool,
                 delegate, HttpVersion.HTTP_1_0);
         headers.clear();
 
         proxy10.onCompleted(request, ctx, response);
-        verify(channel, times(2)).close();
-        verify(channelPool, times(3)).release(any(Channel.class));
+        verify(channel, times(1)).close();
+        verify(channelPool, times(1)).release(any(Channel.class));
         verify(delegate).onCompleted(any(), any(), any());
     }
 

@@ -279,6 +279,7 @@ public abstract class HttpRequestBuilder<Builder extends HttpRequestBuilder<Buil
 
         public ClassicChunk(String uri) {
             super(uri);
+            this.method = HttpMethod.POST;
         }
     }
 

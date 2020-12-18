@@ -62,7 +62,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         channel.flush();
 
         HttpRequest req = channel.readOutbound();
-        then(req.method()).isSameAs(HttpMethod.GET);
+        then(req.method()).isSameAs(HttpMethod.POST);
         then(req.headers().get(HttpHeaderNames.TRANSFER_ENCODING)).isEqualTo(HttpHeaderValues.CHUNKED.toString());
         then(req.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1");
         then(req.protocolVersion()).isSameAs(HttpVersion.HTTP_1_1);
@@ -155,7 +155,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         Helper.HeaderFrame header = channel.readOutbound();
         then(header).isNotNull();
         then(header.streamId).isEqualTo(STREAM_ID);
-        then(header.headers.method()).isEqualTo(HttpMethod.GET.asciiName());
+        then(header.headers.method()).isEqualTo(HttpMethod.POST.asciiName());
         then(header.headers.get(HttpHeaderNames.TRANSFER_ENCODING)).isNull();
         then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
         then(end.isDone()).isFalse();

@@ -24,7 +24,19 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpVersion;
 import esa.commons.reflect.BeanUtils;
 import esa.commons.spi.SpiLoader;
-import esa.httpclient.core.*;
+import esa.httpclient.core.ChunkRequest;
+import esa.httpclient.core.Context;
+import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
+import esa.httpclient.core.HttpClientBuilder;
+import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.HttpRequestBuilder;
+import esa.httpclient.core.HttpResponse;
+import esa.httpclient.core.IdentityFactory;
+import esa.httpclient.core.Listener;
+import esa.httpclient.core.ListenerProxy;
+import esa.httpclient.core.ModifiableClient;
+import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.config.CallbackThreadPoolOptions;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.Decompression;
@@ -60,6 +72,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -516,9 +529,9 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                             headers,
                             handle,
                             handler),
-                            ctx,
-                            getValue(aggregate, handle == null
-                                && handler == null));
+                    ctx,
+                    getValue(aggregate, handle == null
+                            && handler == null));
             addAcceptEncodingIfAbsent(request);
 
             return request;
@@ -585,6 +598,23 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         public String executorId() {
             return id;
         }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ",
+                    CallbackExecutorMetricImpl.class.getSimpleName() + "[", "]")
+                    .add("id='" + id + "'")
+                    .add("coreSize=" + coreSize())
+                    .add("maxSize=" + maxSize())
+                    .add("keepAliveSeconds=" + keepAliveSeconds())
+                    .add("activeCount=" + activeCount())
+                    .add("poolSize=" + poolSize())
+                    .add("largestPoolSize=" + largestPoolSize())
+                    .add("taskCount=" + taskCount())
+                    .add("queueSize=" + queueSize())
+                    .add("completedTaskCount=" + completedTaskCount())
+                    .toString();
+        }
     }
 
     static class IoThreadGroupMetricImpl implements IoThreadGroupMetric {
@@ -626,6 +656,17 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         public String groupId() {
             return id;
         }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", IoThreadGroupMetricImpl.class.getSimpleName()
+                    + "[", "]")
+                    .add("id='" + id + "'")
+                    .add("shutdown=" + isShutdown())
+                    .add("terminated=" + isTerminated())
+                    .add("childExecutors=" + childExecutors())
+                    .toString();
+        }
     }
 
     private static class IoThreadMetricImpl implements IoThreadMetric {
@@ -664,6 +705,18 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         @Override
         public String state() {
             return eventExecutor.threadProperties().state().name();
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", IoThreadMetricImpl.class.getSimpleName() + "[", "]")
+                    .add("name='" + name() + "'")
+                    .add("pendingTasks=" + pendingTasks())
+                    .add("maxPendingTasks=" + maxPendingTasks())
+                    .add("ioRatio=" + ioRatio())
+                    .add("priority=" + priority())
+                    .add("state='" + state() + "'")
+                    .toString();
         }
     }
 

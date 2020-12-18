@@ -38,6 +38,7 @@ import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -218,6 +219,17 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
         @Override
         public ChannelPoolOptions options() {
             return options;
+        }
+
+        @Override
+        public String toString() {
+            return new StringJoiner(", ", ChannelPoolMetricImpl.class.getSimpleName() + "[", "]")
+                    .add("options=" + options)
+                    .add("maxSize=" + maxSize())
+                    .add("maxPendingAcquires=" + maxPendingAcquires())
+                    .add("active=" + active())
+                    .add("pendingAcquireCount=" + pendingAcquireCount())
+                    .toString();
         }
     }
 

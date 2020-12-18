@@ -79,7 +79,7 @@ class NettyHttpClientTest {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
 
-        when(EXECUTOR.async(any(HttpRequest.class),
+        when(EXECUTOR.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> response);
@@ -113,41 +113,6 @@ class NettyHttpClientTest {
         then(builder.build().method()).isSameAs(HttpMethod.POST);
         builder.method(HttpMethod.GET);
         then(builder.build().method()).isSameAs(HttpMethod.GET);
-
-        then(builder.build().aggregate()).isFalse();
-
-        builder.handle(null).handler(null);
-        then(builder.build().aggregate()).isTrue();
-
-        builder.aggregate(false);
-        then(builder.build().aggregate()).isFalse();
-    }
-
-    @Test
-    void testAsync() {
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
-
-        assertThrows(NullPointerException.class, () -> client.async(null));
-
-        when(EXECUTOR.async(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class)))
-                .thenAnswer(answer -> response);
-
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:8080").build();
-
-        // Case 1: Accept-Encoding has set
-        request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, Decompression.GZIP.format());
-        CompletableFuture<HttpResponse> rsp = client.execute(request);
-        then(rsp).isSameAs(response);
-        then(request.headers().get(HttpHeaderNames.ACCEPT_ENCODING)).isEqualTo(Decompression.GZIP.format());
-
-        // Case 2: Accept-Encoding is null
-        request.headers().remove(HttpHeaderNames.ACCEPT_ENCODING);
-        rsp = client.async(request);
-        then(rsp).isSameAs(response);
-        then(request.headers().get(HttpHeaderNames.ACCEPT_ENCODING)).isEqualTo(Decompression.GZIP_DEFLATE.format());
     }
 
     @Test

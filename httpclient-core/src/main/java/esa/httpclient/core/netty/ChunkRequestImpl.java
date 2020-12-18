@@ -47,7 +47,6 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
     private final RequestExecutor executor;
     private final Context ctx;
-    private final boolean aggregate;
 
     private volatile CompletableFuture<HttpResponse> response;
     private volatile CompletableFuture<ChunkWriter> chunkWriter;
@@ -57,13 +56,11 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
     ChunkRequestImpl(RequestExecutor executor,
                      RequestOptions options,
-                     Context ctx,
-                     boolean aggregate) {
+                     Context ctx) {
         super(options);
         Checks.checkNotNull(executor, "RequestExecutor must not be null");
         this.executor = executor;
         this.ctx = ctx;
-        this.aggregate = aggregate;
     }
 
     @Override
@@ -144,11 +141,6 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
             return channel.isWritable();
         }
         return false;
-    }
-
-    @Override
-    public boolean aggregate() {
-        return aggregate;
     }
 
     private static void checkIndex(byte[] bytes, int off, int len) {
@@ -276,7 +268,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
             }
 
             final Context ctx0 = ctx != null ? ctx : new ContextImpl();
-            response = executor.async(this, ctx0, ListenerProxy.DEFAULT);
+            response = executor.execute(this, ctx0, ListenerProxy.DEFAULT);
             chunkWriter = ctx0.getUncheckedAttr(NettyTransceiver.CHUNK_WRITER);
         }
     }

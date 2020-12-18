@@ -251,13 +251,6 @@ public interface ChunkRequest extends HttpRequest {
     boolean isWritable();
 
     /**
-     * Whether current response is handled by customize {@link Handle} or {@link Handler}.
-     *
-     * @return      true or false.
-     */
-    boolean aggregate();
-
-    /**
      * Obtains the {@link RequestType} of current request.
      *
      * @return type

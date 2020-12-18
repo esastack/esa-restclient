@@ -22,10 +22,6 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The facade class for preparing a {@link ChunkRequest} or executing a common {@link HttpRequest}.
- * Be aware that, if you want to use your customize {@link Handle} or {@link Handler} to handle
- * the inbound data, you must use the {@link #execute(HttpRequest)} to send the request, otherwise
- * the customize {@link Handle} and {@link Handler} will be ignored and the inbound data will be
- * aggregated to {@link HttpResponse} automatically.
  */
 public interface HttpClient extends Closeable, Identifiable, MetricPoint {
 
@@ -39,31 +35,12 @@ public interface HttpClient extends Closeable, Identifiable, MetricPoint {
      */
     HttpRequestBuilder.ClassicChunk prepare(String uri);
 
-    ////////*********************** METHODS USING AUTO AGGREGATION ********************************////////
-
     /**
-     * Sends the {@link HttpRequest} and receive the aggregated {@link HttpResponse} asynchronous.
+     * Sends the {@link HttpRequest} and receives the {@link HttpResponse} asynchronously.
      *
-     * Note that, your customize {@link Handle} and {@link Handler} will be ignored and
-     * the aggregated {@link HttpResponse} will be returned. If you want to use your
-     * customize {@link Handle} or {@link Handler} to handle the inbound data, you should
-     * use {@link #execute(HttpRequest)}.
-     *
-     * @param request request, which must not be null.
-     * @return response
-     */
-    CompletableFuture<HttpResponse> async(HttpRequest request);
-
-    ////////*********************** METHODS USING CUSTOM HANDLE ********************************////////
-
-    /**
-     * <strong>Notation: You'd better use this method when you have known the difference between
-     * {@link #async(HttpRequest)} and this and the function of this is needed, otherwise {@link #async(HttpRequest)}
-     * is recommended.</strong>
-     *
-     * Send the {@link HttpRequest} and then use customize {@link Handler} or {@link Handle} to handle inbound message.
-     * Note that, if you want to aggregate the inbound data to {@link HttpResponse} automatically,
-     * you should use {@link #async(HttpRequest)}.
+     * <strong>Notation: If a custom {@link Handle} or {@link Handler} has been set when building the
+     * {@code request}, it will be used to handle the inbound message, otherwise the default handler which
+     * aggregates all inbound message into a {@link HttpResponse} will be used.</strong>
      *
      * @param request       request, which must not be null.
      * @return              response

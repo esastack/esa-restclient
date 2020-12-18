@@ -16,10 +16,7 @@
 package esa.httpclient.core.exec;
 
 import esa.commons.Checks;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.Handle;
-import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
@@ -27,12 +24,15 @@ import esa.httpclient.core.Listener;
 import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.netty.NettyHandle;
 import esa.httpclient.core.netty.NettyTransceiver;
+import esa.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
-import static esa.httpclient.core.ContextNames.*;
+import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
+import static esa.httpclient.core.ContextNames.IGNORE_INTERCEPTORS;
+import static esa.httpclient.core.ContextNames.MAX_REDIRECTS;
+import static esa.httpclient.core.ContextNames.MAX_RETRIES;
 import static java.lang.Boolean.parseBoolean;
 
 public class RequestExecutorImpl implements RequestExecutor {
@@ -64,11 +64,11 @@ public class RequestExecutorImpl implements RequestExecutor {
     }
 
     @Override
-    public CompletableFuture<HttpResponse> async(HttpRequest request,
-                                                 Context ctx,
-                                                 Listener listener) {
+    public CompletableFuture<HttpResponse> execute(HttpRequest request,
+                                                   Context ctx,
+                                                   Listener listener) {
         ExecChain chain = build(request,
-                (l, r) -> decideHandle(request, ctx, l, r),
+                (l, r) -> decideCustomHandle(request, ctx, l, r),
                 ctx,
                 listener,
                 decideReadTimeout(request.config().readTimeout()));
@@ -111,45 +111,27 @@ public class RequestExecutorImpl implements RequestExecutor {
                 ? new Interceptor[0] : interceptors, transceiver, handle, ctx, listener, readTimeout);
     }
 
-    private NettyHandle decideHandle(HttpRequest request,
-                                    Context ctx,
-                                    Listener listener,
-                                    CompletableFuture<HttpResponse> response) {
+    private NettyHandle decideCustomHandle(HttpRequest request,
+                                           Context ctx,
+                                           Listener listener,
+                                           CompletableFuture<HttpResponse> response) {
         final RequestOptions options = request.config();
-        NettyHandle handle = decideHandle0(options.handle(), options.handler(), request, ctx, listener, response);
-        if (handle != null) {
-            return handle;
+        if (options.handler() != null && options.handle() != null) {
+            LoggerUtils.logger().warn("Both handler and consumer<handle> are found to handle the" +
+                    "inbound message, the handler will be used, uri: {}", request.uri());
+        }
+        if (options.handler() != null) {
+            return new NettyHandle(options.handler(), request, ctx, listener, response);
+        } else if (options.handle() != null) {
+            return new NettyHandle(options.handle(), request, ctx, listener, response);
         }
 
-        final boolean aggregate;
-        if (request instanceof ChunkRequest) {
-            aggregate = ((ChunkRequest) request).aggregate();
-        } else {
-            aggregate = ctx.getUncheckedAttr(AGGREGATE);
-        }
-
-        if (!aggregate) {
-            throw new IllegalStateException("handler and consumer<Handle> are both null, you should use async()" +
-                    " if you want a aggregated response, otherwise you must specify a handler to handle" +
-                    " the inbound message");
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("The default handle will be used to aggregate the inbound message to" +
+                    "response");
         }
 
         return null;
-    }
-
-    private NettyHandle decideHandle0(Consumer<Handle> handle,
-                                      Handler handler,
-                                      HttpRequest request,
-                                      Context ctx,
-                                      Listener listener,
-                                      CompletableFuture<HttpResponse> response) {
-        if (handle != null) {
-            return new NettyHandle(handle, request, ctx, listener, response);
-        } else if (handler != null) {
-            return new NettyHandle(handler, request, ctx, listener, response);
-        } else {
-            return null;
-        }
     }
 
     private int decideReadTimeout(int readTimeout) {

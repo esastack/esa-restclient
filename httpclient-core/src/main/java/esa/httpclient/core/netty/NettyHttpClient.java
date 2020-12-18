@@ -84,9 +84,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static esa.httpclient.core.ContextNames.AGGREGATE;
 import static esa.httpclient.core.netty.ChannelPoolFactory.PREFER_NATIVE;
-import static esa.httpclient.core.netty.Utils.getValue;
 
 @Internal
 public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpClient> {
@@ -166,18 +164,30 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
     @Override
     public CompletableFuture<HttpResponse> execute(HttpRequest request) {
-        return async(request, new ContextImpl(), false);
+        Checks.checkNotNull(request, "HttpRequest must not be null");
+        final Listener listener = ListenerProxy.DEFAULT;
+
+        addAcceptEncodingIfAbsent(request);
+
+        if (callbackExecutor.origin() == null) {
+            return executor.execute(request,
+                    new ContextImpl(),
+                    listener);
+        } else {
+            // Note that: only if callback executor exists and the response
+            // of original execution completes normally, we switch the original
+            // response to continue execute in callback executor.
+            return executor.execute(request,
+                    new ContextImpl(),
+                    listener)
+                    .thenComposeAsync(Futures::completed, callbackExecutor.origin());
+        }
     }
 
     @Override
     public HttpRequestBuilder.ClassicChunk prepare(String uri) {
         Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
         return new ChunkRequestBuilder(uri, new ContextImpl());
-    }
-
-    @Override
-    public CompletableFuture<HttpResponse> async(HttpRequest request) {
-        return async(request, new ContextImpl(), true);
     }
 
     @Override
@@ -200,32 +210,6 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
             return null;
         }
         return new CallbackExecutorMetricImpl(callbackExecutor.origin(), callbackExecutor.identity());
-    }
-
-    private CompletableFuture<HttpResponse> async(HttpRequest request,
-                                                  Context ctx,
-                                                  boolean aggregate) {
-        Checks.checkNotNull(request, "HttpRequest must not be null");
-        Checks.checkNotNull(ctx, "Context must not be null");
-        final Listener listener = ListenerProxy.DEFAULT;
-
-        addAcceptEncodingIfAbsent(request);
-
-        ctx.setAttr(AGGREGATE, aggregate);
-
-        if (callbackExecutor.origin() == null) {
-            return executor.async(request,
-                    ctx,
-                    listener);
-        } else {
-            // Note that: only if callback executor exists and the response
-            // of original execution completes normally, we switch the original
-            // response to continue execute in callback executor.
-            return executor.async(request,
-                    ctx,
-                    listener)
-                    .thenComposeAsync(Futures::completed, callbackExecutor.origin());
-        }
     }
 
     @Override
@@ -375,7 +359,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     /**
-     * Build a {@link RequestExecutor} to async given {@link HttpRequest} with given {@link Listener}.
+     * Build a {@link RequestExecutor} to execute given {@link HttpRequest} with given {@link Listener}.
      *
      * @param ioThreads            ioThreads
      * @param channelPools         channel pool map
@@ -529,9 +513,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                             headers,
                             handle,
                             handler),
-                    ctx,
-                    getValue(aggregate, handle == null
-                            && handler == null));
+                    ctx);
             addAcceptEncodingIfAbsent(request);
 
             return request;

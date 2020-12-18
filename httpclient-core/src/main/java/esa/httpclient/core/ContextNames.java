@@ -20,7 +20,6 @@ public final class ContextNames {
     public static final String IGNORE_REQUEST_FILTERS = "$ignore.request.filters";
     public static final String IGNORE_RESPONSE_FILTERS = "$ignore.response.filters";
     public static final String IGNORE_INTERCEPTORS = "$ignore.interceptors";
-    public static final String AGGREGATE = "$aggregate";
     public static final String EXPECT_CONTINUE_ENABLED = "$expect.continue.enabled";
     public static final String MAX_RETRIES = "$maxRetries";
     public static final String MAX_REDIRECTS = "$maxRedirects";

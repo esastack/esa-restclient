@@ -15,6 +15,8 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.commons.StringUtils;
+import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
@@ -101,7 +103,10 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
                 request.uri().relative(uriEncodeEnabled),
                 ((Http1HeadersImpl) request.headers()));
 
-        HttpUtil.setTransferEncodingChunked(request0, true);
+        if (StringUtils.isEmpty(request0.headers().get(HttpHeaderNames.CONTENT_LENGTH))
+                && StringUtils.isEmpty(request0.headers().get(HttpHeaderNames.TRANSFER_ENCODING))) {
+            HttpUtil.setTransferEncodingChunked(request0, true);
+        }
         channel.write(request0);
         http2 = false;
         return endPromise;
@@ -114,7 +119,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
             if (data instanceof Buffer) {
                 buf = ((Buffer) data).getByteBuf();
             } else if (data instanceof byte[]) {
-                buf = channel.alloc().buffer(((byte[]) data).length);
+                buf = channel.alloc().buffer(length);
                 buf.writeBytes((byte[]) data, offset, length);
             } else {
                 return channel.newFailedFuture(new IllegalArgumentException("Unexpected writable data format: "
@@ -124,16 +129,13 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
             ChannelFuture future;
             if (http2) {
                 future = h2Handler.writeData(streamId,
-                        data,
+                        buf,
                         false,
                         channel.newPromise());
                 channel.flush();
             } else {
-                future = channel.writeAndFlush(new DefaultHttpContent(buf), channel.newPromise());
+                future = channel.writeAndFlush(new DefaultHttpContent(buf));
             }
-
-            final ByteBuf toRelease = buf;
-            future.addListener(future1 -> Utils.tryRelease(toRelease));
             return future;
         } catch (Throwable ex) {
             Utils.tryRelease(buf);

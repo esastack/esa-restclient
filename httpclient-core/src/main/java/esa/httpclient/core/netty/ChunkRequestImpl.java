@@ -193,9 +193,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
-        /*
-         * Do write in a fixed single thread, so we need't to consider concurrency conflicts.
-         */
+        // Do write in a fixed single thread, so we need't to consider concurrency conflicts.
         if (channel.eventLoop().inEventLoop()) {
             if (ended) {
                 future.completeExceptionally(REQUEST_HAS_ENDED);

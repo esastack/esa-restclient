@@ -57,7 +57,7 @@ final class ChannelPoolFactory {
                        HttpClientBuilder builder,
                        ChannelPoolOptions options,
                        ThrowingSupplier<SslHandler> sslHandler) {
-        Bootstrap bootstrap = buildBootstrap(address,
+        final Bootstrap bootstrap = buildBootstrap(address,
                 ioThreads,
                 builder.netOptions(),
                 options.connectTimeout(),

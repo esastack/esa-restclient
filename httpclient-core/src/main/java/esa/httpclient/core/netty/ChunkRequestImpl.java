@@ -67,7 +67,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
     }
 
     @Override
-    public CompletableFuture<ChunkRequest> write(byte[] data, int offset, int length) {
+    public CompletableFuture<Void> write(byte[] data, int offset, int length) {
         if (data == null) {
             data = EMPTY_BYTES;
         }
@@ -79,7 +79,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
     }
 
     @Override
-    public CompletableFuture<ChunkRequest> write(Buffer data) {
+    public CompletableFuture<Void> write(Buffer data) {
         checkStarted();
 
         return checkAndWrite(data, -1, -1);
@@ -157,19 +157,19 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
         }
     }
 
-    private <T> CompletableFuture<ChunkRequest> checkAndWrite(T data, int offset, int length) {
+    private <T> CompletableFuture<Void> checkAndWrite(T data, int offset, int length) {
         try {
             if (chunkWriter.isDone() && chunkWriter.isCompletedExceptionally()) {
                 return Futures.completed(new IOException("Failed to acquire channel",
                         Futures.getCause(chunkWriter)));
             } else {
-                final CompletableFuture<ChunkRequest> result = new CompletableFuture<>();
+                final CompletableFuture<Void> result = new CompletableFuture<>();
                 final BiConsumer<ChunkWriter, Throwable> consumer = (wr, th) ->
                         doWrite(wr, data, offset, length).whenComplete((v, th0) -> {
                             if (th0 != null) {
                                 result.completeExceptionally(th0);
                             } else {
-                                result.complete(this);
+                                result.complete(null);
                             }
                         });
 

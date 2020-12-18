@@ -38,9 +38,9 @@ public interface ChunkRequest extends HttpRequest {
      * Writes the chunked data to channel.
      *
      * @param data  chunked data
-     * @return      result, which may be current request or exception caught through writing.
+     * @return result, which may be null or exception caught through writing.
      */
-    default CompletableFuture<ChunkRequest> write(byte[] data) {
+    default CompletableFuture<Void> write(byte[] data) {
         return write(data, 0);
     }
 
@@ -49,9 +49,9 @@ public interface ChunkRequest extends HttpRequest {
      *
      * @param data      data
      * @param offset    offset
-     * @return          result, which may be current request or exception caught through writing.
+     * @return result, which may be null or exception caught through writing.
      */
-    default CompletableFuture<ChunkRequest> write(byte[] data, int offset) {
+    default CompletableFuture<Void> write(byte[] data, int offset) {
         return write(data, offset, data == null ? 0 : data.length - offset);
     }
 
@@ -61,17 +61,17 @@ public interface ChunkRequest extends HttpRequest {
      * @param data      data
      * @param offset    offset
      * @param length    length
-     * @return          result, which may be current request or exception caught through writing.
+     * @return result, which may be null or exception caught through writing.
      */
-    CompletableFuture<ChunkRequest> write(byte[] data, int offset, int length);
+    CompletableFuture<Void> write(byte[] data, int offset, int length);
 
     /**
      * Writes the chunk data to channel.
      *
      * @param data      data
-     * @return          result, which may be current request or exception caught through writing.
+     * @return result, which may be null or exception caught through writing.
      */
-    CompletableFuture<ChunkRequest> write(Buffer data);
+    CompletableFuture<Void> write(Buffer data);
 
     /**
      * Just end the current request and obtain the response asynchronously.

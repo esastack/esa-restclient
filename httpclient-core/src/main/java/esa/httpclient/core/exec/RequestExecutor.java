@@ -34,7 +34,7 @@ public interface RequestExecutor {
      * @param listener      listener
      * @return response
      */
-    CompletableFuture<HttpResponse> async(HttpRequest request,
-                                          Context ctx,
-                                          Listener listener);
+    CompletableFuture<HttpResponse> execute(HttpRequest request,
+                                            Context ctx,
+                                            Listener listener);
 }

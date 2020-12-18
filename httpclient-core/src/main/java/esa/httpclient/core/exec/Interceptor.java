@@ -26,16 +26,16 @@ import esa.httpclient.core.util.Ordered;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * {@link Interceptor} is designed for handling retry, cache, redirect and so on..
+ * {@link Interceptor} is designed for handling retry, cache, redirect and so on.
  * Different from {@link RequestFilter} and {@link ResponseFilter}, you can replace {@link HttpRequest}
  * and {@link HttpResponse} when {@link #proceed(HttpRequest, ExecChain)}ing. The context among
  * {@link Interceptor} can be obtained by {@link ExecChain#ctx()}. More importantly, the most important difference
  * between {@link Interceptor} and {@link DuplexFilter} is that the former will only be executed once in every
- * {@link HttpClient#async(HttpRequest)} or {@link HttpClient#execute(HttpRequest)}, but the latter may be
- * executed more than one times due to retrying, redirecting and so on. And you can also think that the interceptors
- * are strongly related to the original invocation, such as {@link HttpClient#async(HttpRequest)}, and the filters
- * are strongly related to network transmission. The order of multiple {@link Interceptor}s can be specified by
- * {@link #getOrder()} and the lowest value has the highest order.
+ * {@link HttpClient#execute(HttpRequest)}, but the latter may be executed more than one times due to retrying,
+ * redirecting and so on. And you can also think that the interceptors are strongly related to the original
+ * invocation, such as {@link HttpClient#execute(HttpRequest)}, and the filters are strongly related to network
+ * transmission. The order of multiple {@link Interceptor}s can be specified by {@link #getOrder()} and the
+ * lowest value has the highest order.
  */
 public interface Interceptor extends Ordered {
 

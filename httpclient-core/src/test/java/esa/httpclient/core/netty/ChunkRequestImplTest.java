@@ -58,7 +58,7 @@ class ChunkRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        when(executor.async(any(HttpRequest.class),
+        when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
@@ -68,7 +68,7 @@ class ChunkRequestImplTest {
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl(), true);
+                new ContextImpl());
 
         final byte[] dataToWrite = new byte[1024 * 1025 + 512];
         ThreadLocalRandom.current().nextBytes(dataToWrite);
@@ -118,7 +118,7 @@ class ChunkRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        when(executor.async(any(HttpRequest.class),
+        when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
@@ -128,7 +128,7 @@ class ChunkRequestImplTest {
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl(), true);
+                new ContextImpl());
 
         for (int i = 0; i < 10; i++) {
             request.write(new BufferImpl(Unpooled.buffer().writeBytes((COMMON_DATA + i).getBytes())));
@@ -167,7 +167,7 @@ class ChunkRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        when(executor.async(any(HttpRequest.class),
+        when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
@@ -177,7 +177,7 @@ class ChunkRequestImplTest {
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl(), true);
+                new ContextImpl());
 
         for (int i = 0; i < 10; i++) {
             request.write((COMMON_DATA + i).getBytes());
@@ -214,7 +214,7 @@ class ChunkRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        when(executor.async(any(HttpRequest.class),
+        when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
@@ -224,7 +224,7 @@ class ChunkRequestImplTest {
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl(), true);
+                new ContextImpl());
 
         final List<byte[]> data = new LinkedList<>();
         final ChunkWriter writer = mock(ChunkWriter.class);
@@ -266,7 +266,7 @@ class ChunkRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        when(executor.async(any(HttpRequest.class),
+        when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
@@ -276,7 +276,7 @@ class ChunkRequestImplTest {
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl(), true);
+                new ContextImpl());
 
         final List<byte[]> data = new LinkedList<>();
         final ChunkWriter writer = mock(ChunkWriter.class);
@@ -323,7 +323,7 @@ class ChunkRequestImplTest {
         final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
-        when(executor.async(any(HttpRequest.class),
+        when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
@@ -333,7 +333,7 @@ class ChunkRequestImplTest {
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl(), true);
+                new ContextImpl());
         request.write(COMMON_DATA.getBytes());
 
         final Channel channel = mock(Channel.class);
@@ -342,7 +342,6 @@ class ChunkRequestImplTest {
         when(writer.channel()).thenReturn(channel);
         when(channel.isWritable()).thenReturn(false);
         then(request.isWritable()).isFalse();
-        then(request.aggregate()).isTrue();
         when(channel.isWritable()).thenReturn(true);
         then(request.isWritable()).isTrue();
     }

@@ -40,7 +40,7 @@ final HttpClient client = HttpClient.create()
         .build();
 
 // Example 1: automatic aggregation
-final HttpResponse response = client.async(HttpRequest.get("http://127.0.0.1:8081/").build()).get();
+final HttpResponse response = client.execute(HttpRequest.get("http://127.0.0.1:8081/").build()).get();
 logger.info(response.body().string(StandardCharsets.UTF_8));
 
 // Example 2: chunk read

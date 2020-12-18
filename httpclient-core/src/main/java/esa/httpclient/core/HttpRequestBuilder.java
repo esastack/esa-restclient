@@ -270,13 +270,6 @@ public abstract class HttpRequestBuilder<Builder extends HttpRequestBuilder<Buil
      */
     public abstract static class ClassicChunk extends HttpRequestBuilder<ClassicChunk, ChunkRequest> {
 
-        protected Boolean aggregate;
-
-        public ClassicChunk aggregate(Boolean aggregate) {
-            this.aggregate = aggregate;
-            return self();
-        }
-
         public ClassicChunk(String uri) {
             super(uri);
             this.method = HttpMethod.POST;

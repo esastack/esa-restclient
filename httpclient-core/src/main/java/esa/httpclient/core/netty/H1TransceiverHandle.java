@@ -25,6 +25,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class H1TransceiverHandle implements TransceiverHandle {
 
@@ -54,13 +55,8 @@ class H1TransceiverHandle implements TransceiverHandle {
     }
 
     private static class H1Listener extends TimeoutHandle {
+        private final AtomicBoolean released = new AtomicBoolean();
         private final ChannelPool channelPool;
-
-        // Note: the channel has no chance to be released twice, because that the
-        // onCompleted() and the onError() are mutually exclusive. The unexpected
-        // exception thrown while executing onCompleted() will only be logged and
-        // the onError() will not be executed again.
-
         private final Channel channel;
         private final HttpVersion version;
 
@@ -79,14 +75,18 @@ class H1TransceiverHandle implements TransceiverHandle {
             if (closeNow(response, version)) {
                 channel.close();
             }
-            channelPool.release(channel);
+            if (released.compareAndSet(false, true)) {
+                channelPool.release(channel);
+            }
 
             super.onCompleted(request, ctx, response);
         }
 
         @Override
         public void onError(HttpRequest request, Context ctx, Throwable cause) {
-            channelPool.release(channel);
+            if (released.compareAndSet(false, true)) {
+                channelPool.release(channel);
+            }
 
             super.onError(request, ctx, cause);
         }

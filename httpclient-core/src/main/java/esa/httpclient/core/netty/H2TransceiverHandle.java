@@ -25,6 +25,7 @@ import io.netty.channel.pool.ChannelPool;
 import io.netty.handler.codec.http2.HttpConversionUtil;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class H2TransceiverHandle implements TransceiverHandle {
 
@@ -38,12 +39,12 @@ class H2TransceiverHandle implements TransceiverHandle {
 
     @Override
     public int addRspHandle(HttpRequest request,
-                             Context ctx,
-                             Channel channel,
-                             Listener listener,
-                             NettyHandle handle,
-                             HandleRegistry registry,
-                             CompletableFuture<HttpResponse> response) {
+                            Context ctx,
+                            Channel channel,
+                            Listener listener,
+                            NettyHandle handle,
+                            HandleRegistry registry,
+                            CompletableFuture<HttpResponse> response) {
         if (handle == null) {
             handle = new DefaultHandle(request, ctx, listener, response, channel.alloc());
         }
@@ -55,13 +56,9 @@ class H2TransceiverHandle implements TransceiverHandle {
     }
 
     private static class H2Listener extends TimeoutHandle {
+
+        private final AtomicBoolean released = new AtomicBoolean();
         private final ChannelPool channelPool;
-
-        // Note: the channel has no chance to be released twice, because that the
-        // onWriteDone() and the onError() are mutually exclusive. The unexpected
-        // exception thrown while executing onWriteDone() will only be logged and
-        // the onError() will not be executed again.
-
         private final Channel channel;
 
         private H2Listener(Listener delegate,
@@ -74,14 +71,18 @@ class H2TransceiverHandle implements TransceiverHandle {
 
         @Override
         public void onWriteDone(HttpRequest request, Context ctx, long readTimeout) {
-            channelPool.release(channel);
+            if (released.compareAndSet(false, true)) {
+                channelPool.release(channel);
+            }
 
             super.onWriteDone(request, ctx, readTimeout);
         }
 
         @Override
         public void onError(HttpRequest request, Context ctx, Throwable cause) {
-            channelPool.release(channel);
+            if (released.compareAndSet(false, true)) {
+                channelPool.release(channel);
+            }
 
             super.onError(request, ctx, cause);
         }

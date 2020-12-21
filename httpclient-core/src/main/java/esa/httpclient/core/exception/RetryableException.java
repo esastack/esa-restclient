@@ -15,12 +15,24 @@
  */
 package esa.httpclient.core.exception;
 
-public class StreamIdExhaustedException extends RetryableException {
+/**
+ * Exception which can be allowed to retry.
+ */
+public class RetryableException extends Exception {
 
-    private static final long serialVersionUID = 6638917105569802492L;
-
-    public StreamIdExhaustedException(String msg) {
-        super(msg);
+    public RetryableException() {
+        super();
     }
 
+    public RetryableException(String message) {
+        super(message);
+    }
+
+    public RetryableException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public RetryableException(Throwable cause) {
+        super(cause);
+    }
 }

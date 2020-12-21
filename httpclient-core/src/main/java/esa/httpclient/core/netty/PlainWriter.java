@@ -37,6 +37,7 @@ import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 
 class PlainWriter extends RequestWriterImpl<PlainRequest> {
 
+    private static final byte[] EMPTY_DATA = new byte[0];
     private static final PlainWriter INSTANCE = new PlainWriter();
 
     private PlainWriter() {
@@ -106,29 +107,28 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  boolean uriEncodeEnabled) {
-        final boolean endOfStream = request.body() == null || request.body().length == 0;
-
         final ChannelFuture future = checkAndWriteH2Headers(channel,
                 handler,
                 HttpHeadersUtils.toHttp2Headers(request, (Http1HeadersImpl) request.headers(), uriEncodeEnabled),
                 streamId,
-                endOfStream,
+                false,
                 channel.newPromise());
-        if ((future.isDone() && !future.isSuccess()) | endOfStream) {
+        if ((future.isDone() && !future.isSuccess())) {
             return future;
         }
 
+        final byte[] data = request.body() == null ? EMPTY_DATA : request.body();
         final ChannelPromise endPromise = channel.newPromise();
         if (writeContentNow(context)) {
             doWriteContent2(channel,
-                    request.body(),
+                    data,
                     handler,
                     streamId,
                     endPromise);
         } else {
             channel.flush();
             context.setAttr(EXPECT_CONTINUE_CALLBACK, (Runnable) () ->
-                    doWriteContent2(channel, request.body(), handler, streamId, endPromise));
+                    doWriteContent2(channel, data, handler, streamId, endPromise));
         }
 
         return endPromise;

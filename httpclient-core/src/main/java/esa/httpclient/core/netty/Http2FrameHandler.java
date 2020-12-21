@@ -20,9 +20,11 @@ import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http2HeadersAdaptor;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.exception.ContentOverSizedException;
+import esa.httpclient.core.exception.StreamIdExhaustedException;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -38,6 +40,7 @@ import io.netty.handler.codec.http2.HttpConversionUtil;
 
 import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
 import static io.netty.handler.codec.http2.Http2Error.PROTOCOL_ERROR;
 import static io.netty.handler.codec.http2.Http2Exception.connectionError;
 import static io.netty.handler.codec.http2.HttpConversionUtil.ExtensionHeaderNames.STREAM_ID;
@@ -155,6 +158,36 @@ class Http2FrameHandler extends Http2EventAdapter {
             onError(Http2Exception.streamError(streamId, Http2Error.valueOf(errorCode),
                     "HTTP2FrameHandler caught stream reset"), stream, streamId, true);
         }
+    }
+
+    @Override
+    public void onGoAwayRead(ChannelHandlerContext ctx, int lastStreamId,
+                             long errorCode, ByteBuf debugData) throws Http2Exception {
+        super.onGoAwayRead(ctx, lastStreamId, errorCode, debugData);
+        final String errMsg = new String(ByteBufUtil.getBytes(debugData));
+        connection.forEachActiveStream(stream -> {
+            final Throwable ex;
+            final boolean enableLog;
+            if (NO_ERROR.code() == errorCode) {
+                ex = new StreamIdExhaustedException("No more streams can be created on connection: "
+                        + ctx.channel() + "(remote), and current connection will close gracefully");
+                enableLog = false;
+            } else {
+                ex = Http2Exception.streamError(stream.id(), Http2Error.valueOf(errorCode),
+                        "HTTP2FrameHandler received goAway stream, msg: " + errMsg);
+                enableLog = true;
+            }
+            onError(ex, stream, stream.id(), enableLog);
+            return true;
+        });
+        ctx.close().addListener(future -> {
+            if (future.isSuccess()) {
+                LoggerUtils.logger().info("Closed connection: {} successfully after reading goAway", ctx.channel());
+            } else {
+                LoggerUtils.logger().error("Failed to close connection: {} after reading goAway",
+                        ctx.channel(), future.cause());
+            }
+        });
     }
 
     @Override

@@ -152,7 +152,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
     private <T> CompletableFuture<Void> checkAndWrite(T data, int offset, int length) {
         try {
             if (chunkWriter.isDone() && chunkWriter.isCompletedExceptionally()) {
-                return Futures.completed(new IOException("Failed to acquire channel",
+                return Futures.completed(new IOException("Failed to acquire connection",
                         Futures.getCause(chunkWriter)));
             } else {
                 final CompletableFuture<Void> result = new CompletableFuture<>();
@@ -185,7 +185,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
-        // Do write in a fixed single thread, so we need't to consider concurrency conflicts.
+        // Note: Do write in a fixed single thread, so we need't to consider concurrency conflicts.
         if (channel.eventLoop().inEventLoop()) {
             if (ended) {
                 future.completeExceptionally(REQUEST_HAS_ENDED);
@@ -208,7 +208,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
     private CompletableFuture<Void> safelyDoEnd(HttpHeaders headers) {
         try {
             if (chunkWriter.isDone() && chunkWriter.isCompletedExceptionally()) {
-                return Futures.completed(new IOException("Failed to acquire channel",
+                return Futures.completed(new IOException("Failed to acquire connection",
                         Futures.getCause(chunkWriter)));
             } else {
                 final CompletableFuture<Void> result = new CompletableFuture<>();

@@ -48,12 +48,17 @@ public class RetryInterceptor implements Interceptor {
         // Pass directly if not configured
         final int maxRetries = next.ctx().getUncheckedAttr(MAX_RETRIES, 0);
         if (maxRetries < 1) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),
+                        maxRetries);
+            }
             return next.proceed(request);
         }
         if (RequestType.CHUNK == request.type()) {
             next.ctx().removeAttr(MAX_RETRIES);
             if (logger.isDebugEnabled()) {
-                logger.debug("Retry is ignored, request: {}, maxRetries: {}", request, maxRetries);
+                logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),
+                        maxRetries);
             }
             return next.proceed(request);
         }

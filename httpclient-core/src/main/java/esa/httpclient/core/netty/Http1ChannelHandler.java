@@ -72,7 +72,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         try {
             super.channelInactive(ctx);
         } finally {
-            onError(new ConnectionInactiveException("Channel: " + ctx.channel() + " inactive"), false);
+            onError(new ConnectionInactiveException("Connection: " + ctx.channel() + " inactive"), false);
         }
     }
 
@@ -81,7 +81,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         try {
             super.handlerRemoved(ctx);
         } finally {
-            onError(new ConnectionInactiveException("Channel: " + ctx.channel() + " removed"), false);
+            onError(new ConnectionInactiveException("Connection: " + ctx.channel() + " removed"), false);
         }
     }
 
@@ -100,7 +100,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         if (handle == null) {
             int size = (msg instanceof HttpResponse) ? 0 : ((HttpContent) msg).content().readableBytes();
             LoggerUtils.logger().debug("There is no handler to handle inbound object, size: {}" +
-                    " channel: {}", size, ctx.channel());
+                    " connection: {}", size, ctx.channel());
             return;
         }
 
@@ -190,7 +190,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private void handleDecodeError(Throwable cause) {
-        final String errMsg = "Failed to decode response, channel: " + ctx.channel();
+        final String errMsg = "Failed to decode response, connection: " + ctx.channel();
         onError(new ProtocolException(errMsg, cause), true);
     }
 

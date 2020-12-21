@@ -53,8 +53,8 @@ class ThreadFactoryImpl implements ThreadFactory {
             // Doesn't matter even if failed to set.
         }
         t.setUncaughtExceptionHandler((thread, error) ->
-                LoggerUtils.logger().error("Got uncaught exception from thread '"
-                        + thread.getName() + "'", error)
+                LoggerUtils.logger().error("Caught unexpected exception from thread: "
+                        + thread.getName(), error)
         );
         return t;
     }

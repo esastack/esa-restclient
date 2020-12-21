@@ -19,7 +19,8 @@ import java.io.IOException;
 
 public class ConnectionInactiveException extends IOException {
 
-    public static final ConnectionInactiveException INSTANCE = new ConnectionInactiveException("Channel is inactive");
+    public static final ConnectionInactiveException INSTANCE = new ConnectionInactiveException(
+            "Connection is inactive");
 
     private static final long serialVersionUID = -7491330351921922628L;
 

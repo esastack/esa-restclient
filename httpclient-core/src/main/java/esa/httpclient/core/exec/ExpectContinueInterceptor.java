@@ -23,6 +23,7 @@ import esa.httpclient.core.MultipartRequest;
 import esa.httpclient.core.PlainRequest;
 import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.RequestType;
+import esa.httpclient.core.util.LoggerUtils;
 import io.netty.handler.codec.http.HttpHeaderValues;
 
 import java.util.concurrent.CompletableFuture;
@@ -40,17 +41,29 @@ public class ExpectContinueInterceptor implements Interceptor {
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
         // Pass directly if not configured
         if (!Boolean.TRUE.equals(next.ctx().getAttr(EXPECT_CONTINUE_ENABLED))) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
+                        request.uri().toString());
+            }
             return next.proceed(request);
         }
 
         // Chunk request is not allowed to handle Expect: 100-Continue
         if (RequestType.CHUNK.equals(request.type())) {
             next.ctx().removeAttr(EXPECT_CONTINUE_ENABLED);
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
+                        request.uri().toString());
+            }
             return next.proceed(request);
         }
 
         if (emptyBody(request)) {
             next.ctx().removeAttr(EXPECT_CONTINUE_ENABLED);
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly due to empty body, uri: {}",
+                        request.uri().toString());
+            }
             return next.proceed(request);
         }
 

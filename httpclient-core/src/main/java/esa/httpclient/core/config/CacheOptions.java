@@ -85,7 +85,7 @@ public class CacheOptions implements Reusable<CacheOptions>, Serializable {
     public static class CacheOptionsBuilder {
 
         private static final int DEFAULT_INITIAL_CAPACITY = SystemPropertyUtil.getInt(INITIAL_CAPACITY_KEY, 16);
-        private static final long DEFAULT_MAXIMUM_SIZE = SystemPropertyUtil.getLong(MAXIMUM_SIZE_KEY, 500L);
+        private static final long DEFAULT_MAXIMUM_SIZE = SystemPropertyUtil.getLong(MAXIMUM_SIZE_KEY, 512L);
         private static final long DEFAULT_EXPIRE_SECONDS = SystemPropertyUtil.getLong(EXPIRE_SECONDS_KEY, 600L);
 
         private int initialCapacity = DEFAULT_INITIAL_CAPACITY;

@@ -55,8 +55,8 @@ public class RedirectInterceptor implements Interceptor {
             next.ctx().removeAttr(MAX_REDIRECTS);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Redirection is ignored, request: {}, maxRedirects: {}",
-                        request, maxRedirects);
+                logger.debug("Pass redirection directly, uri: {}, maxRedirects: {}",
+                        request.uri().toString(), maxRedirects);
             }
             return next.proceed(request);
         }
@@ -114,7 +114,7 @@ public class RedirectInterceptor implements Interceptor {
                             .format("Failed to proceed request after maxRedirects: %d", maxRedirects)));
                 }
             } catch (Throwable ex) {
-                response.completeExceptionally(new RedirectException("Unexpected error while redirecting", ex));
+                response.completeExceptionally(new RedirectException("Unexpected error caught when redirecting", ex));
             }
         });
     }

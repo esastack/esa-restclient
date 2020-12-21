@@ -97,7 +97,7 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
             try {
                 close(entry.getKey(), entry.getValue(), false);
             } catch (Throwable th) {
-                LoggerUtils.logger().error("Error while closing channel pool: {}", entry.getKey(), th);
+                LoggerUtils.logger().error("Error while closing connection pool: {}", entry.getKey(), th);
             }
         }
     }
@@ -129,7 +129,7 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
 
     private void checkClosed() {
         if (closed.get()) {
-            throw new IllegalStateException("ChannelPool has closed");
+            throw new IllegalStateException("ConnectionPools has closed");
         }
     }
 
@@ -150,10 +150,10 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
         if (!async) {
             try {
                 underlying.close();
-                LoggerUtils.logger().info("Closed channel pool [{}] successfully, time elapsed: {}ms",
+                LoggerUtils.logger().info("Closed connection pool {} successfully, time elapsed: {}ms",
                         address, (System.nanoTime() - startTime) / 1000_000);
             } catch (Throwable ex) {
-                LoggerUtils.logger().error("Failed to close channel pool [{}], time elapsed: {}ms",
+                LoggerUtils.logger().error("Failed to close connection pool {}, time elapsed: {}ms",
                         address, (System.nanoTime() - startTime) / 1000_000);
             }
         } else {
@@ -170,10 +170,10 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
     private static void closingLog(SocketAddress address, Future<Void> closeFuture, long startTime) {
         long endTime = System.nanoTime();
         if (closeFuture.isSuccess()) {
-            LoggerUtils.logger().info("Closed channel pool [{}] successfully, time elapsed: {}ms",
+            LoggerUtils.logger().info("Closed connection pool {} successfully, time elapsed: {}ms",
                     address, (endTime - startTime) / 1000_000);
         } else {
-            LoggerUtils.logger().error("Failed to close channel pool [{}], time elapsed: {}ms",
+            LoggerUtils.logger().error("Failed to close connection pool {}, time elapsed: {}ms",
                     address, (endTime - startTime) / 1000_000);
         }
     }

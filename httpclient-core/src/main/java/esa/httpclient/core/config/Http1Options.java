@@ -37,7 +37,7 @@ public class Http1Options implements Reusable<Http1Options>, Serializable {
         Checks.checkArg(maxHeaderSize > 0, "maxHeaderSize is " + maxHeaderSize +
                 " (expected > 0)");
         Checks.checkArg(maxChunkSize > 0, "maxChunkSize is " + maxChunkSize +
-                " (expected > 0L)");
+                " (expected > 0)");
         this.maxInitialLineLength = maxInitialLineLength;
         this.maxHeaderSize = maxHeaderSize;
         this.maxChunkSize = maxChunkSize;

@@ -28,7 +28,7 @@ import java.util.function.BiFunction;
 
 /**
  * The core transceiver which can transform and write the given {@code request} to network and
- * then aggregates the inbound messages to a {@code response} or handle those messages by customizing
+ * then aggregate the inbound messages to a {@code response} or handle those messages by customizing
  * {@link Handle} or {@link Handler}.
  */
 public interface HttpTransceiver {

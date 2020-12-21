@@ -128,7 +128,7 @@ public class RequestExecutorImpl implements RequestExecutor {
 
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger().debug("The default handle will be used to aggregate the inbound message to" +
-                    "response");
+                    " response");
         }
 
         return null;

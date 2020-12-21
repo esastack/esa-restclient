@@ -23,6 +23,7 @@ import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.util.HttpHeadersUtils;
+import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -105,6 +106,10 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
 
         if (StringUtils.isEmpty(request0.headers().get(HttpHeaderNames.CONTENT_LENGTH))
                 && StringUtils.isEmpty(request0.headers().get(HttpHeaderNames.TRANSFER_ENCODING))) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("content-length and transfer-encoding are both absent, try to set" +
+                        " default transfer-encoding: chunked, uri: {}", request.uri().toString());
+            }
             HttpUtil.setTransferEncodingChunked(request0, true);
         }
         channel.write(request0);
@@ -136,10 +141,11 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
             } else {
                 future = channel.writeAndFlush(new DefaultHttpContent(buf));
             }
+
             return future;
         } catch (Throwable ex) {
             Utils.tryRelease(buf);
-            return channel.newFailedFuture(new IOException("Failed to write data to channel", ex));
+            return channel.newFailedFuture(new IOException("Failed to write data to connection", ex));
         }
     }
 
@@ -177,7 +183,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
             if (endPromise.isDone()) {
                 ex0 = new IllegalStateException("Failed to end request, maybe has already ended");
             } else {
-                ex0 = new IOException("Failed to end request, and the channel will be released automatically");
+                ex0 = new IOException("Failed to end request, and the connection will be released automatically");
                 try {
                     endPromise.setFailure(ex0);
                 } catch (Throwable th) {
@@ -202,7 +208,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
         if (channel != null) {
             return channel;
         }
-        throw new IllegalStateException("Channel is null");
+        throw new IllegalStateException("Connection is null");
     }
 
 }

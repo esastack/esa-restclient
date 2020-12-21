@@ -22,6 +22,7 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.exception.StreamIdExhaustedException;
+import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -99,7 +100,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
                                                ChannelPromise promise) {
         if (streamId < 0) {
             promise.setFailure(new StreamIdExhaustedException("No more streams can be created on connection: "
-                    + channel + ", and current connection will close gracefully"));
+                    + channel + "(local), and current connection will close gracefully"));
 
             // Simulate a GOAWAY being received due to stream exhaustion on this connection. We use the maximum
             // valid stream ID for the current peer.
@@ -158,7 +159,12 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
             return;
         }
 
-        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, contentLength.applyAsLong(request));
+        final long contentLengthVal = contentLength.applyAsLong(request);
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("content-length is absent, try to set default value: {}, uri: {}",
+                    contentLengthVal, request.uri().toString());
+        }
+        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, contentLengthVal);
     }
 
     /**
@@ -172,7 +178,12 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
             return;
         }
 
-        request.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType.get());
+        final CharSequence contentTypeVal = contentType.get();
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("content-type is absent, try to set default value: {}, uri: {}",
+                    contentTypeVal, request.uri().toString());
+        }
+        request.headers().set(HttpHeaderNames.CONTENT_TYPE, contentTypeVal);
     }
 
     static boolean writeContentNow(Context context) {
@@ -201,6 +212,12 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
     private static void addHostIfAbsent(HttpRequest request, Supplier<String> host) {
         if (!HOST_ABSENT.test(request)) {
             return;
+        }
+
+        final String hostVal = host.get();
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("host is absent, try to set default value: {}, uri: {}",
+                    hostVal, request.uri().toString());
         }
 
         request.headers().set(HttpHeaderNames.HOST, host.get());

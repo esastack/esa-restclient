@@ -50,7 +50,7 @@ final class Utils {
         }
 
         if (enableLog) {
-            LoggerUtils.logger().warn("Unexpected error was caught, and request will end with it", cause);
+            LoggerUtils.logger().warn("Unexpected error was caught, and request will end with error", cause);
         }
         handle.onError(cause);
     }

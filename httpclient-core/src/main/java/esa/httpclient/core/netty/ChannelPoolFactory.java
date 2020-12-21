@@ -65,7 +65,7 @@ final class ChannelPoolFactory {
 
         NETTY_CONFIGURE.onBootstrapCreated(address, bootstrap);
 
-        LoggerUtils.logger().info("Begin to create a new channel pool, address: {}, options: {}",
+        LoggerUtils.logger().info("Begin to create a new connection pool, address: {}, options: {}",
                 address, options);
 
         return new ChannelPool(new FixedChannelPool(bootstrap,

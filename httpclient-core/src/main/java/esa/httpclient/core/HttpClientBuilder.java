@@ -103,7 +103,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     private int connectionPoolSize = 512;
 
     /**
-     * Max connection pool wait queue of a connection poll.
+     * Max connection pool wait queue of a connection pool.
      */
     private int connectionPoolWaitingQueueLength = 256;
 
@@ -119,7 +119,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     private boolean uriEncodeEnabled = false;
 
     /**
-     * This map is helpful for configure {@link ChannelPoolOptions}s for every {@link SocketAddress}.
+     * This map is helpful for configuring {@link ChannelPoolOptions}s for every {@link SocketAddress}.
      */
     private ChannelPoolOptionsProvider channelPoolOptionsProvider = NULL_CHANNEL_OPTIONS;
 

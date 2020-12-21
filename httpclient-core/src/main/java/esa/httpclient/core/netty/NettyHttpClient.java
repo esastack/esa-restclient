@@ -102,19 +102,20 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     private static final IdentityFactory.Identified<EventLoopGroup> SHARED_IO_THREADS = IdentityFactoryProvider
             .ioThreadsIdentityFactory().generate(sharedIoThreads());
 
-    private static final ScheduledExecutorService CLOSE_CHANNEL_POOL_SCHEDULER =
+    private static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
             new ScheduledThreadPoolExecutor(1,
-                    new ThreadFactoryImpl("HttpClient-CloseChannelPool-Scheduler", true),
+                    new ThreadFactoryImpl("HttpClient-CloseConnectionPool-Scheduler", true),
                     (r, executor) -> LoggerUtils.logger().error(
-                            "HttpClient-CloseChannelPool-Scheduler-Pool has full, a task has been rejected"));
+                            "HttpClient-CloseConnectionPool-Scheduler-Pool has full, a task has been rejected"));
 
     private static final String IOTHREADS_KYE = "esa.httpclient.ioThreads";
     private static final int IOTHREADS = SystemPropertyUtil.getInt(IOTHREADS_KYE,
             Math.min(Platforms.cpuNum() << 1, 16));
 
-    private static final String CLOSE_CHANNEL_POOL_DELAY_SECONDS_KEY = "esa.httpclient.closeChannelPoolDelaySeconds";
+    private static final String CLOSE_CONNECTION_POOL_DELAY_SECONDS_KEY =
+            "esa.httpclient.closeConnectionPoolDelaySeconds";
     private static final long CLOSE_CHANNEL_POOL_DELAY_SECONDS = SystemPropertyUtil
-            .getLong(CLOSE_CHANNEL_POOL_DELAY_SECONDS_KEY, 120L);
+            .getLong(CLOSE_CONNECTION_POOL_DELAY_SECONDS_KEY, 120L);
 
     private static final String IOTHREADS_GRACEFULLY_SHUTDOWN_QUIET_PERIOD_KEY =
             "esa.httpclient.ioThreadsGracefullyShutdownQuietPeriod";
@@ -231,10 +232,10 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     private static void closeGlobalGracefully() {
         // Shutdown Closing-ChannelPool-Scheduler
         try {
-            CLOSE_CHANNEL_POOL_SCHEDULER.shutdown();
-            CLOSE_CHANNEL_POOL_SCHEDULER.awaitTermination(5L, TimeUnit.SECONDS);
-            List<Runnable> unfinishedTasks = CLOSE_CHANNEL_POOL_SCHEDULER.shutdownNow();
-            String msg = "Closed [HttpClient-CloseChannelPool-Scheduler]-ThreadPool" +
+            CLOSE_CONNECTION_POOL_SCHEDULER.shutdown();
+            CLOSE_CONNECTION_POOL_SCHEDULER.awaitTermination(5L, TimeUnit.SECONDS);
+            List<Runnable> unfinishedTasks = CLOSE_CONNECTION_POOL_SCHEDULER.shutdownNow();
+            String msg = "Closed NettyHttpClient-CloseConnectionPool-Scheduler-ThreadPool" +
                     " successfully, unfinished tasks: " + unfinishedTasks.size();
 
             if (unfinishedTasks.isEmpty()) {
@@ -243,8 +244,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                 LoggerUtils.logger().error(msg);
             }
         } catch (Throwable ex) {
-            LoggerUtils.logger().error("Error while closing [HttpClient-CloseChannelPool-Scheduler]-ThreadPool",
-                    ex);
+            LoggerUtils.logger().error("Error while closing NettyHttpClient-CloseConnectionPool-" +
+                    "Scheduler-ThreadPool", ex);
         }
 
         // Shutdown IO-Threads
@@ -269,7 +270,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                             TimeUnit.SECONDS);
                 }
                 List<Runnable> unfinishedTasks = SHARED_CALLBACK_EXECUTOR.origin().shutdownNow();
-                String msg = "Closed [Callback-Executor]-ThreadPool successfully, unfinished tasks: " +
+                String msg = "Closed Callback-Executor-ThreadPool successfully, unfinished tasks: " +
                         unfinishedTasks.size();
                 if (unfinishedTasks.isEmpty()) {
                     LoggerUtils.logger().info(msg);
@@ -277,7 +278,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                     LoggerUtils.logger().error(msg);
                 }
             } catch (Throwable ex) {
-                LoggerUtils.logger().error("Error while closing [Callback-Executor]-ThreadPool", ex);
+                LoggerUtils.logger().error("Error while closing Callback-Executor-ThreadPool", ex);
             }
         }
 
@@ -353,7 +354,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                         builder,
                         options,
                         old.sslHandler));
-        CLOSE_CHANNEL_POOL_SCHEDULER.schedule(() -> ChannelPools.close(address, old, true),
+        CLOSE_CONNECTION_POOL_SCHEDULER.schedule(() -> ChannelPools.close(address, old, true),
                 CLOSE_CHANNEL_POOL_DELAY_SECONDS,
                 TimeUnit.SECONDS);
     }

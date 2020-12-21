@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * {@link Interceptor} is designed for handling retry, cache, redirect and so on.
- * Different from {@link RequestFilter} and {@link ResponseFilter}, you can replace {@link HttpRequest}
+ * Be different from {@link RequestFilter} and {@link ResponseFilter} is that you can replace {@link HttpRequest}
  * and {@link HttpResponse} when {@link #proceed(HttpRequest, ExecChain)}ing. The context among
  * {@link Interceptor} can be obtained by {@link ExecChain#ctx()}. More importantly, the most important difference
  * between {@link Interceptor} and {@link DuplexFilter} is that the former will only be executed once in every

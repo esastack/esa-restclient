@@ -31,8 +31,32 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.pool.AbstractChannelPoolHandler;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http2.*;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpClientUpgradeHandler;
+import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpMessage;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http2.DefaultHttp2Connection;
+import io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder;
+import io.netty.handler.codec.http2.DefaultHttp2ConnectionEncoder;
+import io.netty.handler.codec.http2.DefaultHttp2FrameReader;
+import io.netty.handler.codec.http2.DefaultHttp2FrameWriter;
+import io.netty.handler.codec.http2.DelegatingDecompressorFrameListener;
+import io.netty.handler.codec.http2.Http2ClientUpgradeCodec;
+import io.netty.handler.codec.http2.Http2Connection;
+import io.netty.handler.codec.http2.Http2ConnectionDecoder;
+import io.netty.handler.codec.http2.Http2ConnectionEncoder;
+import io.netty.handler.codec.http2.Http2Exception;
+import io.netty.handler.codec.http2.Http2FrameLogger;
+import io.netty.handler.codec.http2.Http2FrameReader;
+import io.netty.handler.codec.http2.Http2FrameWriter;
+import io.netty.handler.codec.http2.Http2InboundFrameLogger;
+import io.netty.handler.codec.http2.Http2OutboundFrameLogger;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.ApplicationProtocolNames;
@@ -150,12 +174,12 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
                 protected void configurePipeline(ChannelHandlerContext ctx, String protocol) {
                     if (esa.commons.http.HttpVersion.HTTP_2 == version
                             && ApplicationProtocolNames.HTTP_2.equals(protocol)) {
-                        LoggerUtils.logger().info("Negotiated to use http2 successfully, channel: {}", channel);
+                        LoggerUtils.logger().info("Negotiated to use http2 successfully, connection: {}", channel);
                         addH2Handlers(ctx.pipeline(), http2Options, decompression);
                         handshake.setSuccess();
                     } else if (esa.commons.http.HttpVersion.HTTP_2 != (version) &&
                             ApplicationProtocolNames.HTTP_1_1.equals(protocol)) {
-                        LoggerUtils.logger().info("Negotiated to use http1.1 successfully, channel: {}", channel);
+                        LoggerUtils.logger().info("Negotiated to use http1.1 successfully, connection: {}", channel);
                         addH1Handlers(ctx.pipeline(), http1Options, decompression);
                         handshake.setSuccess();
                     } else {
@@ -317,9 +341,9 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
 
     private static DefaultHttpRequest buildH2cRequest() {
         return new DefaultFullHttpRequest(io.netty.handler.codec.http.HttpVersion.HTTP_1_1,
-                        HttpMethod.GET,
-                        "/",
-                        Unpooled.EMPTY_BUFFER);
+                HttpMethod.GET,
+                "/",
+                Unpooled.EMPTY_BUFFER);
     }
 
     private static final class UpgradeCodecImpl extends Http2ClientUpgradeCodec implements
@@ -329,8 +353,8 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
         private final ChannelPromise handshake;
 
         private UpgradeCodecImpl(io.netty.handler.codec.http2.Http2ConnectionHandler connectionHandler,
-                                Http2ConnectionHandler h2Handler,
-                                ChannelPromise handshake) {
+                                 Http2ConnectionHandler h2Handler,
+                                 ChannelPromise handshake) {
             super(connectionHandler);
             this.h2Handler = h2Handler;
             this.handshake = handshake;

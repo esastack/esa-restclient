@@ -85,7 +85,8 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
         try {
             super.exceptionCaught(ctx, cause);
         } finally {
-            LoggerUtils.logger().error("Unexpected exception was caught, and channel: {} will close", ctx.channel());
+            LoggerUtils.logger().error("Unexpected exception was caught, and connection: {} will close",
+                    ctx.channel());
             ctx.close();
         }
     }
@@ -98,10 +99,8 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             return writeData0(streamId, data, endStream, promise);
         } else {
             final ChannelPromise promise0 = ctx.newPromise();
-            final Runnable runnable = () -> writeData0(streamId,
-                    data,
-                    endStream,
-                    promise).addListener(future -> {
+            final Runnable runnable = () -> writeData0(streamId, data, endStream, promise)
+                    .addListener(future -> {
                         if (future.isSuccess()) {
                             promise0.setSuccess();
                         } else {
@@ -115,9 +114,9 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
     }
 
     private ChannelFuture writeData0(int streamId,
-                            Object data,
-                            boolean endStream,
-                            ChannelPromise promise) {
+                                     Object data,
+                                     boolean endStream,
+                                     ChannelPromise promise) {
         ByteBuf buf = null;
         try {
             if (data != null) {
@@ -152,7 +151,8 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             final Runnable runnable = () -> writeHeaders0(streamId,
                     headers,
                     endStream,
-                    promise).addListener(future -> {
+                    promise)
+                    .addListener(future -> {
                         if (future.isSuccess()) {
                             promise0.setSuccess();
                         } else {
@@ -172,7 +172,8 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                 NO_ERROR.code(),
                 writeAscii(ctx.alloc(),
                         "Stream IDs exhausted on local stream creation"),
-                promise).addListener(future -> {
+                promise)
+                .addListener(future -> {
                     if (future.isSuccess()) {
                         promise0.setSuccess();
                     } else {
@@ -228,7 +229,8 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
         } else if (data instanceof Buffer) {
             return ((Buffer) data).getByteBuf();
         } else {
-            throw new IllegalArgumentException("Unsupported writable data format: " + data.getClass());
+            throw new IllegalArgumentException("Unsupported writable data format: " + data.getClass()
+                    + "(expected ByteBuf, Buffer, byte[])");
         }
     }
 

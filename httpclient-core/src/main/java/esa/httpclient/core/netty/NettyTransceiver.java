@@ -171,12 +171,16 @@ public class NettyTransceiver implements HttpTransceiver {
     }
 
     static void closeTimer() {
-        Set<Timeout> tasks = READ_TIMEOUT_TIMER.stop();
+        final long start = System.nanoTime();
+        final Set<Timeout> tasks = READ_TIMEOUT_TIMER.stop();
+        LoggerUtils.logger().info("Begin to close readTimeout-Timer, unfinished tasks size: {}", tasks.size());
         for (Timeout item : tasks) {
             if (item.task() instanceof ReadTimeoutTask) {
                 ((ReadTimeoutTask) item.task()).cancel();
             }
         }
+        LoggerUtils.logger().info("Closed readTimeout-Timer successfully and all" +
+                " unfinished tasks has been canceled, time elapsed: {}", (System.nanoTime() - start) / 1_000_000);
     }
 
     private static SocketAddress selectServer(HttpRequest request, Context ctx) {
@@ -321,7 +325,7 @@ public class NettyTransceiver implements HttpTransceiver {
 
         // Maybe caused by too many acquires or channel has closed.
         if (cause instanceof IllegalStateException) {
-            cause = new IOException("Error while acquiring channel", cause);
+            cause = new IOException("Error while acquiring connection", cause);
         } else if (cause instanceof TimeoutException) {
             // Connection timeout
             cause = new ConnectException(cause.getMessage());
@@ -521,15 +525,15 @@ public class NettyTransceiver implements HttpTransceiver {
             handle.onWriteDone(request, ctx, readTimeout);
 
             Timeout timeout = READ_TIMEOUT_TIMER.newTimeout(new ReadTimeoutTask(requestId,
-                    request.uri().toString(),
-                    result.channel(),
-                    registry),
+                            request.uri().toString(),
+                            result.channel(),
+                            registry),
                     TimeUnit.MILLISECONDS.toNanos(readTimeout), TimeUnit.NANOSECONDS);
             handle.addCancelTask(timeout);
             return;
         }
 
-        final Throwable cause = new IOException("Failed to write request: " + request + " to channel: "
+        final Throwable cause = new IOException("Failed to write request: " + request + " to connection: "
                 + result.channel(), result.cause());
 
         LoggerUtils.logger().error(cause.getMessage(), cause.getCause());

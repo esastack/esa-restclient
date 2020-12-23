@@ -22,15 +22,16 @@ import esa.httpclient.core.config.Http1Options;
 import esa.httpclient.core.config.Http2Options;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.WriteBufferWaterMark;
-import io.netty.channel.pool.AbstractChannelPoolHandler;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -41,6 +42,7 @@ import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http2.DefaultHttp2Connection;
 import io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder;
 import io.netty.handler.codec.http2.DefaultHttp2ConnectionEncoder;
@@ -63,16 +65,17 @@ import io.netty.handler.ssl.ApplicationProtocolNames;
 import io.netty.handler.ssl.ApplicationProtocolNegotiationHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.util.AttributeKey;
 import io.netty.util.internal.SystemPropertyUtil;
 
 import java.net.ConnectException;
 
 import static esa.httpclient.core.netty.ChannelPoolFactory.NETTY_CONFIGURE;
 
-final class ChannelPoolHandler extends AbstractChannelPoolHandler {
-
-    static final AttributeKey<ChannelFuture> HANDSHAKE_FUTURE = AttributeKey.valueOf("$handshake");
+/**
+ * Initializes the {@link Channel} as soon as {@link Bootstrap#connect()} completed, And we can negotiate
+ * the {@link HttpVersion} with remote peer and then add {@link ChannelHandler}s.
+ */
+final class ChannelInitializer {
 
     private static final String INTERNAL_DEBUG_ENABLED_KEY = "esa.httpclient.internalDebugEnabled";
 
@@ -83,7 +86,7 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
     private final ThrowingSupplier<SslHandler> sslHandler;
     private final boolean ssl;
 
-    ChannelPoolHandler(HttpClientBuilder builder,
+    ChannelInitializer(HttpClientBuilder builder,
                        ThrowingSupplier<SslHandler> sslHandler,
                        boolean ssl) {
         this.builder = builder;
@@ -91,21 +94,38 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
         this.ssl = ssl;
     }
 
-    @Override
-    public void channelReleased(Channel ch) {
-        ch.flush();
+    ChannelFuture onConnected(ChannelFuture connectFuture) {
+        if (connectFuture.isDone() && !connectFuture.isSuccess()) {
+            return connectFuture;
+        }
+
+        final Channel channel = connectFuture.channel();
+        final ChannelPromise initializeFuture = channel.newPromise();
+        if (connectFuture.isDone()) {
+            if (connectFuture.isSuccess()) {
+                doInitialize(channel, initializeFuture);
+                return initializeFuture;
+            } else {
+                return connectFuture;
+            }
+        } else {
+            connectFuture.addListener(future -> {
+                if (future.isSuccess()) {
+                    doInitialize(channel, initializeFuture);
+                } else {
+                    initializeFuture.setFailure(future.cause());
+                }
+            });
+
+            return initializeFuture;
+        }
     }
 
-    @Override
-    public void channelCreated(Channel channel) {
+    private void doInitialize(Channel channel, ChannelPromise initializeFuture) {
         // Apply options
         applyOptions(channel);
 
         NETTY_CONFIGURE.onChannelCreated(channel);
-
-        // TODO: try handshaking after channel has connected, see SimpleChannelPool.connectChannel()
-        final ChannelPromise handshake = channel.newPromise();
-        channel.attr(HANDSHAKE_FUTURE).set(handshake);
 
         // Apply handlers
         addHandlers(channel,
@@ -115,12 +135,12 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
                 ssl,
                 builder.ish2ClearTextUpgrade(),
                 builder.isUseDecompress(),
-                handshake);
+                initializeFuture);
 
         if (LoggerUtils.logger().isDebugEnabled()) {
-            LoggerUtils.logger().debug(channel + " has connected successfully");
+            LoggerUtils.logger().debug("Connection: " + channel + " has connected successfully");
             channel.closeFuture().addListener(f ->
-                    LoggerUtils.logger().debug(channel + " has disconnected"));
+                    LoggerUtils.logger().debug("Connection: " + channel + " has disconnected"));
         }
     }
 
@@ -147,7 +167,7 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
                              boolean ssl,
                              boolean h2ClearTextUpgrade,
                              boolean decompression,
-                             ChannelPromise handshake) {
+                             ChannelPromise initializeFuture) {
         final ChannelPipeline pipeline = channel.pipeline();
 
         if (INTERNAL_DEBUG_ENABLED) {
@@ -167,25 +187,27 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
             }
             pipeline.addLast(sslHandler);
 
-            // We must wait for the handshake to finish and the protocol to be negotiated before configuring
+            // We must wait for the initialization to finish and the protocol to be negotiated before configuring
             // the HTTP/2 components of the pipeline.
             pipeline.addLast(new ApplicationProtocolNegotiationHandler(ApplicationProtocolNames.HTTP_1_1) {
                 @Override
                 protected void configurePipeline(ChannelHandlerContext ctx, String protocol) {
                     if (esa.commons.http.HttpVersion.HTTP_2 == version
                             && ApplicationProtocolNames.HTTP_2.equals(protocol)) {
-                        LoggerUtils.logger().info("Negotiated to use http2 successfully, connection: {}", channel);
+                        LoggerUtils.logger().info("Negotiated to use http2 successfully, connection: {}",
+                                channel);
                         addH2Handlers(ctx.pipeline(), http2Options, decompression);
-                        handshake.setSuccess();
+                        initializeFuture.setSuccess();
                     } else if (esa.commons.http.HttpVersion.HTTP_2 != (version) &&
                             ApplicationProtocolNames.HTTP_1_1.equals(protocol)) {
-                        LoggerUtils.logger().info("Negotiated to use http1.1 successfully, connection: {}", channel);
+                        LoggerUtils.logger().info("Negotiated to use http1.1 successfully, connection: {}",
+                                channel);
                         addH1Handlers(ctx.pipeline(), http1Options, decompression);
-                        handshake.setSuccess();
+                        initializeFuture.setSuccess();
                     } else {
                         IllegalStateException ex = new IllegalStateException("Unexpected negotiated protocol: "
                                 + protocol + ", configured: " + version);
-                        handshake.setFailure(ex);
+                        initializeFuture.setFailure(ex);
                         ctx.close();
                         throw ex;
                     }
@@ -193,7 +215,7 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
 
                 @Override
                 protected void handshakeFailure(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                    handshake.setFailure(new ConnectException("Failed to handshake"));
+                    initializeFuture.setFailure(new ConnectException("Failed to handshake"));
                     super.handshakeFailure(ctx, cause);
                 }
             });
@@ -204,14 +226,14 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
                             http1Options,
                             http2Options,
                             decompression,
-                            handshake);
+                            initializeFuture);
                 } else {
                     addH2Handlers(pipeline, http2Options, decompression);
-                    handshake.setSuccess();
+                    initializeFuture.setSuccess();
                 }
             } else {
                 addH1Handlers(pipeline, http1Options, decompression);
-                handshake.setSuccess();
+                initializeFuture.setSuccess();
             }
         }
     }
@@ -253,14 +275,14 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
                                 Http1Options http1Options,
                                 Http2Options http2Options,
                                 boolean decompression,
-                                ChannelPromise handshake) {
+                                ChannelPromise initializeFuture) {
         HandleRegistry registry = new HandleRegistry(2, 1);
 
         Http2ConnectionHandler h2Handler = buildH2Handler(registry, http2Options, decompression);
 
         HttpClientCodec codec = new HttpClientCodec();
         HttpClientUpgradeHandler upgrade = new HttpClientUpgradeHandler(codec,
-                new UpgradeCodecImpl(h2Handler, h2Handler, handshake),
+                new UpgradeCodecImpl(h2Handler, h2Handler, initializeFuture),
                 65536);
 
         // Note: the codec handler must be removed before adding http1 handlers.
@@ -293,7 +315,7 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
                     ctx.pipeline().remove("codec");
                     ctx.pipeline().remove(this);
                     addH1Handlers(ctx.pipeline(), http1Options, decompression);
-                    handshake.setSuccess();
+                    initializeFuture.setSuccess();
                 }
             }
         });
@@ -350,14 +372,14 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
             HttpClientUpgradeHandler.UpgradeCodec {
 
         private final Http2ConnectionHandler h2Handler;
-        private final ChannelPromise handshake;
+        private final ChannelPromise initializeFuture;
 
         private UpgradeCodecImpl(io.netty.handler.codec.http2.Http2ConnectionHandler connectionHandler,
                                  Http2ConnectionHandler h2Handler,
-                                 ChannelPromise handshake) {
+                                 ChannelPromise initializeFuture) {
             super(connectionHandler);
             this.h2Handler = h2Handler;
-            this.handshake = handshake;
+            this.initializeFuture = initializeFuture;
         }
 
         @Override
@@ -370,7 +392,7 @@ final class ChannelPoolHandler extends AbstractChannelPoolHandler {
 
                 // Reserve local stream 1 for the response.
                 h2Handler.onHttpClientUpgrade();
-                handshake.setSuccess();
+                initializeFuture.setSuccess();
             } catch (Http2Exception e) {
                 ctx.fireExceptionCaught(e);
                 ctx.close();

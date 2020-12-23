@@ -15,6 +15,7 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.commons.Checks;
 import esa.commons.function.ThrowingSupplier;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.config.ChannelPoolOptions;
@@ -24,10 +25,13 @@ import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
+import io.netty.channel.pool.AbstractChannelPoolHandler;
 import io.netty.channel.pool.ChannelHealthChecker;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -68,8 +72,19 @@ final class ChannelPoolFactory {
         LoggerUtils.logger().info("Begin to create a new connection pool, address: {}, options: {}",
                 address, options);
 
-        return new ChannelPool(new FixedChannelPool(bootstrap,
-                new ChannelPoolHandler(builder, sslHandler, ssl),
+        return new ChannelPool(new ChannelPoolImpl(bootstrap,
+                new AbstractChannelPoolHandler() {
+                    @Override
+                    public void channelReleased(Channel ch) {
+                        ch.flush();
+                    }
+
+                    @Override
+                    public void channelCreated(Channel ch) {
+
+                    }
+                },
+                new ChannelInitializer(builder, sslHandler, ssl),
                 ChannelHealthChecker.ACTIVE,
                 FixedChannelPool.AcquireTimeoutAction.FAIL,
                 options.connectTimeout(),
@@ -178,6 +193,30 @@ final class ChannelPoolFactory {
         }
         if (options.soLinger() > 0) {
             bootstrap.option(ChannelOption.SO_LINGER, options.soLinger());
+        }
+    }
+
+    private static final class ChannelPoolImpl extends FixedChannelPool {
+
+        private final ChannelInitializer initializer;
+
+        private ChannelPoolImpl(Bootstrap bootstrap,
+                                io.netty.channel.pool.ChannelPoolHandler handler,
+                                ChannelInitializer initializer,
+                                ChannelHealthChecker healthCheck,
+                                AcquireTimeoutAction action,
+                                final long acquireTimeoutMillis,
+                                int maxConnections,
+                                int maxPendingAcquires) {
+            super(bootstrap, handler, healthCheck, action,
+                    acquireTimeoutMillis, maxConnections, maxPendingAcquires);
+            Checks.checkNotNull(initializer, "ChannelInitializer must not be null");
+            this.initializer = initializer;
+        }
+
+        @Override
+        protected ChannelFuture connectChannel(Bootstrap bs) {
+            return initializer.onConnected(super.connectChannel(bs));
         }
     }
 

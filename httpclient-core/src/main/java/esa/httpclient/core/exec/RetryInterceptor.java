@@ -117,9 +117,14 @@ public class RetryInterceptor implements Interceptor {
 
                     doRetry(response, request, next, maxRetries);
                 } else {
-                    response.completeExceptionally(new RetryException(String
+                    final String msg = String
                             .format("Failed to proceed request: " + request.uri().netURI().toString() +
-                                    " after maxRetries: %d", maxRetries)));
+                                    " after maxRetries: %d", maxRetries);
+                    if (th == null) {
+                        response.completeExceptionally(new RetryException(msg));
+                    } else {
+                        response.completeExceptionally(new RetryException(msg, th));
+                    }
                 }
             } catch (Throwable ex) {
                 response.completeExceptionally(new RetryException("Unexpected error while retrying", ex));

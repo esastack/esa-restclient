@@ -34,6 +34,8 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
 
+import java.io.IOException;
+
 import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 
 class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
@@ -98,13 +100,14 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         // Handle == null means the request has ended(timeout, exceeds maxContentLength, or others),
         // and the current msg should be ignored.
         if (handle == null) {
-            int size = (msg instanceof HttpResponse) ? 0 : ((HttpContent) msg).content().readableBytes();
-            LoggerUtils.logger().debug("There is no handler to handle inbound object, size: {}" +
-                    " connection: {}", size, ctx.channel());
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                int size = (msg instanceof HttpResponse) ? 0 : ((HttpContent) msg).content().readableBytes();
+                LoggerUtils.logger().debug("There is no handler to handle inbound object, size: {}" +
+                        " connection: {}", size, ctx.channel());
+            }
             return;
         }
 
-        // Validate decoder result firstly.
         if (!msg.decoderResult().isSuccess()) {
             handleDecodeError(msg.decoderResult().cause());
             return;
@@ -173,8 +176,31 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private void onError(Throwable cause, boolean enableLog) {
-        NettyHandle handle = registry.remove(reusableRequestId);
-        Utils.handleException(handle, cause, enableLog);
+        final NettyHandle handle = registry.remove(reusableRequestId);
+
+        if (handle == null) {
+            return;
+        }
+        boolean hasLogged = false;
+        if (cause instanceof ConnectionInactiveException) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("ConnectionInactiveException occurred in connection: {}",
+                        ctx.channel(), cause);
+            } else {
+                LoggerUtils.logger().warn(cause.getMessage());
+            }
+            hasLogged = true;
+        } else if (cause instanceof IOException) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("IOException occurred in connection: {}", ctx.channel(), cause);
+            } else {
+                LoggerUtils.logger().warn("Exception occurred in connection: {}," +
+                        " maybe server has closed connection", ctx.channel());
+            }
+            hasLogged = true;
+        }
+
+        Utils.handleException(handle, cause, !hasLogged && enableLog);
     }
 
     void updateRequestId(int requestId) {

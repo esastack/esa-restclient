@@ -30,7 +30,20 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.DecoderException;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpClientUpgradeHandler;
+import io.netty.handler.codec.http.HttpContentDecompressor;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpRequestEncoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.codec.http2.DecoratingHttp2ConnectionDecoder;
 import io.netty.handler.codec.http2.DefaultHttp2ConnectionEncoder;
 import io.netty.handler.codec.http2.DelegatingDecompressorFrameListener;
@@ -49,7 +62,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static esa.httpclient.core.netty.ChannelPoolHandler.HANDSHAKE_FUTURE;
 import static io.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static io.netty.handler.codec.http2.Http2CodecUtil.HTTP_UPGRADE_PROTOCOL_NAME;
@@ -58,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ChannelPoolHandlerTest {
+class ChannelInitializerTest {
 
     @Test
     void testApplyOptions() {
@@ -71,10 +83,10 @@ class ChannelPoolHandlerTest {
                         .options()
                         .writeBufferHighWaterMark(writeBufferHighWaterMark)
                         .writeBufferLowWaterMark(writeBufferLowWaterMark).build());
-        final ChannelPoolHandler handler1 = new ChannelPoolHandler(builder1, null, false);
+        final ChannelInitializer initializer1 = new ChannelInitializer(builder1, null, false);
 
         final Channel channel1 = new EmbeddedChannel();
-        handler1.channelCreated(channel1);
+        initializer1.onConnected(channel1.newSucceededFuture());
         then(channel1.config().getWriteBufferHighWaterMark()).isEqualTo(writeBufferHighWaterMark);
         then(channel1.config().getWriteBufferLowWaterMark()).isEqualTo(writeBufferLowWaterMark);
 
@@ -83,9 +95,9 @@ class ChannelPoolHandlerTest {
                 .netOptions(NetOptions
                         .options()
                         .writeBufferHighWaterMark(WriteBufferWaterMark.DEFAULT.low() + 1).build());
-        final ChannelPoolHandler handler2 = new ChannelPoolHandler(builder2, null, false);
+        final ChannelInitializer initializer2 = new ChannelInitializer(builder2, null, false);
         final Channel channel2 = new EmbeddedChannel();
-        handler2.channelCreated(channel2);
+        initializer2.onConnected(channel2.newSucceededFuture());
         then(channel2.config().getWriteBufferHighWaterMark()).isEqualTo(WriteBufferWaterMark.DEFAULT.low() + 1);
 
         // Case 3: writeBufferLowWaterMark only
@@ -93,10 +105,10 @@ class ChannelPoolHandlerTest {
                 .netOptions(NetOptions
                         .options()
                         .writeBufferLowWaterMark(WriteBufferWaterMark.DEFAULT.high() - 1).build());
-        final ChannelPoolHandler handler3 = new ChannelPoolHandler(builder3, null, false);
-        final Channel channel3 = new EmbeddedChannel();
-        handler3.channelCreated(channel3);
-        then(channel3.config().getWriteBufferLowWaterMark()).isEqualTo(WriteBufferWaterMark.DEFAULT.high() - 1);
+        final ChannelInitializer handler3 = new ChannelInitializer(builder3, null, false);
+        final Channel initializer3 = new EmbeddedChannel();
+        handler3.onConnected(initializer3.newSucceededFuture());
+        then(initializer3.config().getWriteBufferLowWaterMark()).isEqualTo(WriteBufferWaterMark.DEFAULT.high() - 1);
 
         // Case 4: illegal arguments
         final HttpClientBuilder builder4 = HttpClient.create()
@@ -104,9 +116,9 @@ class ChannelPoolHandlerTest {
                         .options()
                         .writeBufferHighWaterMark(writeBufferLowWaterMark)
                         .writeBufferLowWaterMark(writeBufferHighWaterMark).build());
-        final ChannelPoolHandler handler4 = new ChannelPoolHandler(builder4, null, false);
+        final ChannelInitializer initializer4 = new ChannelInitializer(builder4, null, false);
         final Channel channel4 = new EmbeddedChannel();
-        assertThrows(IllegalArgumentException.class, () -> handler4.channelCreated(channel4));
+        assertThrows(IllegalArgumentException.class, () -> initializer4.onConnected(channel4.newSucceededFuture()));
     }
 
     @Test
@@ -118,14 +130,14 @@ class ChannelPoolHandlerTest {
     void testHttp11Directly() {
         // Case 1: decompressor is present
         final HttpClientBuilder builder1 = HttpClient.create().useDecompress(true);
-        final ChannelPoolHandler handler1 = new ChannelPoolHandler(builder1, null, false);
+        final ChannelInitializer initializer1 = new ChannelInitializer(builder1, null, false);
         final Channel channel1 = new EmbeddedChannel();
-        handler1.channelCreated(channel1);
-        then(channel1.attr(HANDSHAKE_FUTURE).get().isDone()).isTrue();
-        then(channel1.attr(HANDSHAKE_FUTURE).get().isSuccess()).isTrue();
+        final ChannelFuture connectFuture1 = initializer1.onConnected(channel1.newSucceededFuture());
+        then(connectFuture1.isDone()).isTrue();
+        then(connectFuture1.isSuccess()).isTrue();
 
         final ChannelPipeline pipeline1 = channel1.pipeline();
-        then(pipeline1.get(ChannelPoolHandler.DelegatingHttpResponseDecoder.class)).isNotNull();
+        then(pipeline1.get(ChannelInitializer.DelegatingHttpResponseDecoder.class)).isNotNull();
         then(pipeline1.get(HttpRequestEncoder.class)).isNotNull();
         then(pipeline1.get(HttpContentDecompressor.class)).isNotNull();
         then(pipeline1.get(ChunkedWriteHandler.class)).isNotNull();
@@ -134,14 +146,14 @@ class ChannelPoolHandlerTest {
 
         // Case 2: decompress is absent
         final HttpClientBuilder builder2 = HttpClient.create().useDecompress(true);
-        final ChannelPoolHandler handler2 = new ChannelPoolHandler(builder2, null, false);
+        final ChannelInitializer initializer2 = new ChannelInitializer(builder2, null, false);
         final Channel channel2 = new EmbeddedChannel();
-        handler2.channelCreated(channel2);
-        then(channel2.attr(HANDSHAKE_FUTURE).get().isDone()).isTrue();
-        then(channel2.attr(HANDSHAKE_FUTURE).get().isSuccess()).isTrue();
+        final ChannelFuture connectFuture2 = initializer2.onConnected(channel2.newSucceededFuture());
+        then(connectFuture2.isDone()).isTrue();
+        then(connectFuture2.isSuccess()).isTrue();
 
         final ChannelPipeline pipeline2 = channel2.pipeline();
-        then(pipeline2.get(ChannelPoolHandler.DelegatingHttpResponseDecoder.class)).isNotNull();
+        then(pipeline2.get(ChannelInitializer.DelegatingHttpResponseDecoder.class)).isNotNull();
         then(pipeline2.get(HttpRequestEncoder.class)).isNotNull();
         then(pipeline2.get(ChunkedWriteHandler.class)).isNotNull();
         then(pipeline2.last()).isInstanceOf(Http1ChannelHandler.class);
@@ -160,12 +172,11 @@ class ChannelPoolHandlerTest {
                         .gracefulShutdownTimeoutMillis(gracefulShutdownTimeoutMillis)
                         .build());
 
-        final ChannelPoolHandler handler = new ChannelPoolHandler(builder, null, false);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, null, false);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        handler.channelCreated(channel);
+        final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture.isDone()).isTrue();
 
-        final ChannelFuture handshake = channel.attr(HANDSHAKE_FUTURE).get();
-        then(handshake.isDone()).isTrue();
         final ChannelPipeline pipeline = channel.pipeline();
         then(pipeline.get(SslHandler.class)).isNull();
         then(pipeline.get(Http2ConnectionHandler.class)).isNotNull();
@@ -189,12 +200,10 @@ class ChannelPoolHandlerTest {
                         .gracefulShutdownTimeoutMillis(gracefulShutdownTimeoutMillis)
                         .build());
 
-        final ChannelPoolHandler handler = new ChannelPoolHandler(builder, () -> null, false);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> null, false);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        handler.channelCreated(channel);
-
-        final ChannelFuture handshake = channel.attr(HANDSHAKE_FUTURE).get();
-        then(handshake.isDone()).isFalse();
+        final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture.isDone()).isFalse();
         final ChannelPipeline pipeline = channel.pipeline();
         then(pipeline.get(SslHandler.class)).isNull();
 
@@ -203,7 +212,7 @@ class ChannelPoolHandlerTest {
         then(pipeline.get(HttpClientCodec.class)).isNotNull();
         then(pipeline.get(HttpClientUpgradeHandler.class)).isNotNull();
         then(pipeline.get(ApplicationProtocolNegotiationHandler.class)).isNull();
-        then(handshake.isDone()).isFalse();
+        then(connectFuture.isDone()).isFalse();
 
         pipeline.fireChannelActive();
         // Validate upgrade request has wrote
@@ -219,8 +228,8 @@ class ChannelPoolHandlerTest {
         then(messages.size()).isEqualTo(1);
 
         channel.writeInbound(messages.get(0));
-        then(handshake.isDone()).isTrue();
-        then(handshake.isSuccess()).isTrue();
+        then(connectFuture.isDone()).isTrue();
+        then(connectFuture.isSuccess()).isTrue();
 
         validateHttp2Handler(channel.pipeline().get(Http2ConnectionHandler.class),
                 decompression, gracefulShutdownTimeoutMillis);
@@ -239,12 +248,10 @@ class ChannelPoolHandlerTest {
                 .h2ClearTextUpgrade(true)
                 .useDecompress(decompression);
 
-        final ChannelPoolHandler handler = new ChannelPoolHandler(builder, () -> null, false);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> null, false);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        handler.channelCreated(channel);
-
-        final ChannelFuture handshake = channel.attr(HANDSHAKE_FUTURE).get();
-        then(handshake.isDone()).isFalse();
+        final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture.isDone()).isFalse();
         final ChannelPipeline pipeline = channel.pipeline();
         then(pipeline.get(SslHandler.class)).isNull();
 
@@ -253,7 +260,7 @@ class ChannelPoolHandlerTest {
         then(pipeline.get(HttpClientCodec.class)).isNotNull();
         then(pipeline.get(HttpClientUpgradeHandler.class)).isNotNull();
         then(pipeline.get(ApplicationProtocolNegotiationHandler.class)).isNull();
-        then(handshake.isDone()).isFalse();
+        then(connectFuture.isDone()).isFalse();
 
         pipeline.fireChannelActive();
         // Validate upgrade request has wrote
@@ -269,8 +276,8 @@ class ChannelPoolHandlerTest {
         then(messages.size()).isEqualTo(1);
 
         channel.writeInbound(messages.get(0));
-        then(handshake.isDone()).isTrue();
-        then(handshake.isSuccess()).isTrue();
+        then(connectFuture.isDone()).isTrue();
+        then(connectFuture.isSuccess()).isTrue();
 
         validateHttp1Handlers(channel.pipeline(), decompression);
         then(pipeline.get("fallbackToH1")).isNull();
@@ -289,12 +296,10 @@ class ChannelPoolHandlerTest {
                 .useDecompress(decompression);
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelPoolHandler handler = new ChannelPoolHandler(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        handler.channelCreated(channel);
-
-        final ChannelFuture handshake = channel.attr(HANDSHAKE_FUTURE).get();
-        then(handshake.isDone()).isFalse();
+        final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture.isDone()).isFalse();
         final ChannelPipeline pipeline = channel.pipeline();
         then(pipeline.get(SslHandler.class)).isNotNull();
         final ApplicationProtocolNegotiationHandler negotiation = pipeline
@@ -308,7 +313,7 @@ class ChannelPoolHandlerTest {
         then(pipeline.get(Http2ConnectionHandler.class)).isNull();
         then(pipeline.get(Http1ChannelHandler.class)).isNotNull();
         then(pipeline.get(ApplicationProtocolNegotiationHandler.class)).isNull();
-        then(handshake.isSuccess()).isTrue();
+        then(connectFuture.isSuccess()).isTrue();
 
         validateHttp1Handlers(channel.pipeline(), decompression);
 
@@ -328,12 +333,10 @@ class ChannelPoolHandlerTest {
                         .build());
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelPoolHandler handler = new ChannelPoolHandler(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        handler.channelCreated(channel);
-
-        final ChannelFuture handshake = channel.attr(HANDSHAKE_FUTURE).get();
-        then(handshake.isDone()).isFalse();
+        final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture.isDone()).isFalse();
         final ChannelPipeline pipeline = channel.pipeline();
         then(pipeline.get(SslHandler.class)).isNotNull();
         final ApplicationProtocolNegotiationHandler negotiation = pipeline
@@ -347,7 +350,7 @@ class ChannelPoolHandlerTest {
         then(pipeline.get(Http2ConnectionHandler.class)).isNotNull();
         then(pipeline.get(Http1ChannelHandler.class)).isNull();
         then(pipeline.get(ApplicationProtocolNegotiationHandler.class)).isNull();
-        then(handshake.isSuccess()).isTrue();
+        then(connectFuture.isSuccess()).isTrue();
 
         validateHttp2Handler(pipeline.get(Http2ConnectionHandler.class),
                 decompression, gracefulShutdownTimeoutMillis);
@@ -356,25 +359,32 @@ class ChannelPoolHandlerTest {
     }
 
     @Test
-    void testHandshakeFails() throws Exception {
+    void testNegotiateFails() throws Exception {
         final HttpClientBuilder builder = HttpClient.create();
 
         // Illegal Argument
         assertThrows(IllegalStateException.class, () ->
-                new ChannelPoolHandler(builder, null, true)
-                        .channelCreated(new EmbeddedChannel()));
+                new ChannelInitializer(builder, null, true)
+                        .onConnected(new EmbeddedChannel().newSucceededFuture()));
 
         assertThrows(IllegalStateException.class, () ->
-                new ChannelPoolHandler(builder, () -> null, true)
-                        .channelCreated(new EmbeddedChannel()));
+                new ChannelInitializer(builder, () -> null, true)
+                        .onConnected(new EmbeddedChannel().newSucceededFuture()));
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelPoolHandler handler = new ChannelPoolHandler(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
         final EmbeddedChannel channel = new EmbeddedChannel();
-        handler.channelCreated(channel);
 
-        final ChannelFuture handshake = channel.attr(HANDSHAKE_FUTURE).get();
-        then(handshake.isDone()).isFalse();
+        // Case 1: failed to connect
+        final ChannelFuture connectFuture1 = initializer
+                .onConnected(channel.newFailedFuture(new ConnectException()));
+        then(connectFuture1.isDone()).isTrue();
+        then(connectFuture1.isSuccess()).isFalse();
+        then(connectFuture1.cause()).isInstanceOf(ConnectException.class);
+
+        // Case 2: handshake fails. and channel will close
+        final ChannelFuture connectFuture2 = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture2.isDone()).isFalse();
         final ChannelPipeline pipeline = channel.pipeline();
 
         then(pipeline.get(SslHandler.class)).isNotNull();
@@ -382,17 +392,16 @@ class ChannelPoolHandlerTest {
                 .get(ApplicationProtocolNegotiationHandler.class);
         then(negotiation).isNotNull();
 
-        // Case 1: handshake fails. and channel will close
         final ChannelHandlerContext context = pipeline.context(ApplicationProtocolNegotiationHandler.class);
         negotiation.exceptionCaught(context, new DecoderException(new SSLException("")));
-        then(handshake.isDone()).isTrue();
-        then(handshake.cause()).isInstanceOf(ConnectException.class);
+        then(connectFuture2.isDone()).isTrue();
+        then(connectFuture2.cause()).isInstanceOf(ConnectException.class);
 
         channel.finishAndReleaseAll();
     }
 
     private void validateHttp1Handlers(ChannelPipeline pipeline, boolean decompression) {
-        then(pipeline.get(ChannelPoolHandler.DelegatingHttpResponseDecoder.class)).isNotNull();
+        then(pipeline.get(ChannelInitializer.DelegatingHttpResponseDecoder.class)).isNotNull();
         then(pipeline.get(HttpRequestEncoder.class)).isNotNull();
         then(pipeline.get(ChunkedWriteHandler.class)).isNotNull();
         then(pipeline.get(Http1ChannelHandler.class)).isNotNull();

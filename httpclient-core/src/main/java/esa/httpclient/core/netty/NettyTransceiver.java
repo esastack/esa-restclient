@@ -211,40 +211,16 @@ public class NettyTransceiver implements HttpTransceiver {
 
         Channel channel0 = channel.getNow();
         try {
-            ChannelFuture handshake = channel0.attr(ChannelPoolHandler.HANDSHAKE_FUTURE).get();
-            if (handshake.isDone()) {
-                this.doWrite(request,
-                        ctx,
-                        channelPool,
-                        channel0,
-                        handshake,
-                        handle,
-                        listener,
-                        readTimeout,
-                        response,
-                        writer,
-                        chunkWriterPromise);
-            } else {
-                // Make sure the unexpected error will be handled when execute listeners.
-                handshake.addListener(future -> {
-                    try {
-                        this.doWrite(request,
-                                ctx,
-                                channelPool,
-                                channel0,
-                                handshake,
-                                handle,
-                                listener,
-                                readTimeout,
-                                response,
-                                writer,
-                                chunkWriterPromise);
-                    } catch (Throwable th) {
-                        channelPool.release(channel0);
-                        endWithError(request, ctx, listener, response, chunkWriterPromise, th);
-                    }
-                });
-            }
+            this.doWrite(request,
+                    ctx,
+                    channelPool,
+                    channel0,
+                    handle,
+                    listener,
+                    readTimeout,
+                    response,
+                    writer,
+                    chunkWriterPromise);
         } catch (Throwable th) {
             channelPool.release(channel0);
             endWithError(request, ctx, listener, response, chunkWriterPromise, th);
@@ -255,7 +231,6 @@ public class NettyTransceiver implements HttpTransceiver {
                  Context ctx,
                  ChannelPool channelPool,
                  Channel channel,
-                 ChannelFuture handshake,
                  BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
                  Listener listener,
                  int readTimeout,
@@ -263,12 +238,6 @@ public class NettyTransceiver implements HttpTransceiver {
                  RequestWriter writer,
                  CompletableFuture<RequestWriter> chunkWriterPromise) {
         listener.onConnectionAcquired(request, ctx, channel.remoteAddress());
-
-        if (!handshake.isSuccess()) {
-            channelPool.release(channel);
-            endWithError(request, ctx, listener, response, chunkWriterPromise, handshake.cause());
-            return;
-        }
 
         final boolean http2 = isHttp2(channel);
         final esa.commons.http.HttpVersion version;

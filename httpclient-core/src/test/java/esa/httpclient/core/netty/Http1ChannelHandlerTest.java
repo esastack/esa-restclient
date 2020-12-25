@@ -22,7 +22,7 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
-import esa.httpclient.core.exception.ConnectionInactiveException;
+import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.exception.ProtocolException;
 import esa.httpclient.core.util.Futures;
@@ -30,7 +30,16 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.DecoderResult;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -552,7 +561,7 @@ class Http1ChannelHandlerTest {
         handler.updateRequestId(requestId);
         channel.pipeline().fireChannelInactive();
 
-        testChannelInactive0(response, registry, requestId, channel, ConnectionInactiveException.class, false);
+        testChannelInactive0(response, registry, requestId, channel, ConnectionException.class, false);
 
         channel.finishAndReleaseAll();
     }
@@ -574,7 +583,7 @@ class Http1ChannelHandlerTest {
         handler.updateRequestId(requestId);
         channel.pipeline().remove(handler);
 
-        testChannelInactive0(response, registry, requestId, channel, ConnectionInactiveException.class, false);
+        testChannelInactive0(response, registry, requestId, channel, ConnectionException.class, false);
 
         channel.finishAndReleaseAll();
     }

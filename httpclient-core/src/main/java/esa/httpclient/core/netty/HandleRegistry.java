@@ -19,6 +19,8 @@ import esa.httpclient.core.HttpRequest;
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
 
+import java.util.function.Consumer;
+
 /**
  * This class holds a {@link #handlers} which saves the mapper from {@link HttpRequest} to corresponding
  * {@link NettyHandle} by request's {@code requestId}.
@@ -47,5 +49,10 @@ class HandleRegistry {
 
     public synchronized NettyHandle get(int requestId) {
         return handlers.get(requestId);
+    }
+
+    synchronized void handleAndClearAll(Consumer<NettyHandle> handle) {
+        handlers.forEach((id, h) -> handle.accept(h));
+        handlers.clear();
     }
 }

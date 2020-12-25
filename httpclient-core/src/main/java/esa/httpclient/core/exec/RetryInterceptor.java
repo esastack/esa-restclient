@@ -127,7 +127,7 @@ public class RetryInterceptor implements Interceptor {
                     }
                 }
             } catch (Throwable ex) {
-                response.completeExceptionally(new RetryException("Unexpected error while retrying", ex));
+                response.completeExceptionally(new RetryException("Unexpected exception occurred when retrying", ex));
             }
         });
     }

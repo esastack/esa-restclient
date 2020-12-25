@@ -28,7 +28,7 @@ import esa.httpclient.core.RequestType;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.SslOptions;
-import esa.httpclient.core.exception.ConnectionInactiveException;
+import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.spi.SslEngineFactory;
 import esa.httpclient.core.util.Futures;
@@ -221,9 +221,9 @@ class NettyTransceiverTest {
                 listener, readTimeout, response1, writer, chunkWriterPromise1);
         verify(channel).close();
         then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response1)).isSameAs(ConnectionInactiveException.INSTANCE);
+        then(Futures.getCause(response1)).isSameAs(ConnectionException.INSTANCE);
         then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise1)).isSameAs(ConnectionInactiveException.INSTANCE);
+        then(Futures.getCause(chunkWriterPromise1)).isSameAs(ConnectionException.INSTANCE);
         verify(listener).onError(any(), any(), any());
 
         // Case 2: channel is not writable

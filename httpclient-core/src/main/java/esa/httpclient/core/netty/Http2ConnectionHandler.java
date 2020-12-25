@@ -16,9 +16,11 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.Buffer;
+import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -30,7 +32,10 @@ import io.netty.handler.codec.http2.Http2Settings;
 import io.netty.handler.codec.http2.HttpConversionUtil;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
+import java.io.IOException;
+
 import static io.netty.buffer.ByteBufUtil.writeAscii;
+import static io.netty.handler.codec.http2.Http2CodecUtil.getEmbeddedHttp2Exception;
 import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
 
 class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2ConnectionHandler {
@@ -82,12 +87,35 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        try {
+        if (getEmbeddedHttp2Exception(cause) != null) {
             super.exceptionCaught(ctx, cause);
-        } finally {
-            LoggerUtils.logger().error("Unexpected exception was caught, and connection: {} will close",
-                    ctx.channel());
-            ctx.close();
+        } else {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("Unexpected exception occurred in connection: {}", ctx.channel(),
+                        cause);
+            } else {
+                // Ignores the cause that remote endpoint closed the connection.
+                if (cause instanceof IOException) {
+                    LoggerUtils.logger().warn("IOException occurred in connection: {}," +
+                            " maybe server has closed connection", ctx.channel());
+                } else {
+                    LoggerUtils.logger().warn("Unexpected exception occurred in connection: {}", ctx.channel(),
+                            cause);
+                }
+            }
+
+            // Builds a ConnectionException and ends all running requests with it after
+            // closing the connection.
+            final ConnectionException connectionException =
+                    new ConnectionException("Unexpected exception occurred in connection: "
+                            + ctx.channel(), cause);
+            ctx.close().addListener(future -> registry.handleAndClearAll((h) -> {
+                try {
+                    Utils.handleException(h, connectionException, false);
+                } catch (Throwable ex) {
+                    // Ignore
+                }
+            }));
         }
     }
 
@@ -99,8 +127,10 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             return writeData0(streamId, data, endStream, promise);
         } else {
             final ChannelPromise promise0 = ctx.newPromise();
-            final Runnable runnable = () -> writeData0(streamId, data, endStream, promise)
-                    .addListener(future -> {
+            final Runnable runnable = () -> writeData0(streamId,
+                    data,
+                    endStream,
+                    promise).addListener(future -> {
                         if (future.isSuccess()) {
                             promise0.setSuccess();
                         } else {
@@ -128,12 +158,16 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                 return promise.setSuccess();
             }
 
-            return encoder().writeData(ctx,
-                    streamId,
-                    buf,
-                    0,
-                    endStream,
-                    promise);
+            try {
+                return encoder().writeData(ctx,
+                        streamId,
+                        buf,
+                        0,
+                        endStream,
+                        promise);
+            } catch (Throwable ex) {
+                throw tryWrapStreamNotExistsException(promise.channel(), ex);
+            }
         } catch (Throwable ex) {
             Utils.tryRelease(buf);
             return promise.setFailure(ex);
@@ -151,8 +185,7 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             final Runnable runnable = () -> writeHeaders0(streamId,
                     headers,
                     endStream,
-                    promise)
-                    .addListener(future -> {
+                    promise).addListener(future -> {
                         if (future.isSuccess()) {
                             promise0.setSuccess();
                         } else {
@@ -172,8 +205,7 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                 NO_ERROR.code(),
                 writeAscii(ctx.alloc(),
                         "Stream IDs exhausted on local stream creation"),
-                promise)
-                .addListener(future -> {
+                promise).addListener(future -> {
                     if (future.isSuccess()) {
                         promise0.setSuccess();
                     } else {
@@ -200,15 +232,19 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                 HttpConversionUtil.ExtensionHeaderNames.STREAM_WEIGHT.text(),
                 Http2CodecUtil.DEFAULT_PRIORITY_WEIGHT);
 
-        return encoder().writeHeaders(ctx,
-                streamId,
-                headers,
-                dependencyId,
-                weight,
-                false,
-                0,
-                endStream,
-                promise);
+        try {
+            return encoder().writeHeaders(ctx,
+                    streamId,
+                    headers,
+                    dependencyId,
+                    weight,
+                    false,
+                    0,
+                    endStream,
+                    promise);
+        } catch (Throwable ex) {
+            return promise.setFailure(tryWrapStreamNotExistsException(promise.channel(), ex));
+        }
     }
 
     HandleRegistry getRegistry() {
@@ -231,6 +267,18 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
         } else {
             throw new IllegalArgumentException("Unsupported writable data format: " + data.getClass()
                     + "(expected ByteBuf, Buffer, byte[])");
+        }
+    }
+
+    private Throwable tryWrapStreamNotExistsException(Channel channel, Throwable cause) {
+        // The IllegalArgumentException such as 'Stream does not exist' maybe caused
+        // by the connection has received a goAway stream or the connection has been
+        // closed after an unexpected exception occurred, so we wrap the cause to a
+        // ConnectionException.
+        if (cause instanceof IllegalArgumentException) {
+            return new ConnectionException("Connection: " + channel + " maybe has been closed");
+        } else {
+            return cause;
         }
     }
 

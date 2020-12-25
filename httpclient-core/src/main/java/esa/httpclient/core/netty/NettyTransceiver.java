@@ -28,7 +28,7 @@ import esa.httpclient.core.Listener;
 import esa.httpclient.core.RequestType;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.SslOptions;
-import esa.httpclient.core.exception.ConnectionInactiveException;
+import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.exec.HttpTransceiver;
 import esa.httpclient.core.spi.SslEngineFactory;
@@ -252,7 +252,7 @@ public class NettyTransceiver implements HttpTransceiver {
             channel.close();
             channelPool.release(channel);
             endWithError(request, ctx, listener, response, chunkWriterPromise,
-                    ConnectionInactiveException.INSTANCE);
+                    ConnectionException.INSTANCE);
             return;
         }
 
@@ -505,7 +505,6 @@ public class NettyTransceiver implements HttpTransceiver {
         final Throwable cause = new IOException("Failed to write request: " + request + " to connection: "
                 + result.channel(), result.cause());
 
-        LoggerUtils.logger().error(cause.getMessage(), cause.getCause());
         handle.onWriteFailed(request, ctx, result.cause());
         endWithError(request, ctx, handle, response, chunkWriterPromise, cause);
     }

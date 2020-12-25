@@ -114,7 +114,8 @@ public class RedirectInterceptor implements Interceptor {
                             .format("Failed to proceed request after maxRedirects: %d", maxRedirects)));
                 }
             } catch (Throwable ex) {
-                response.completeExceptionally(new RedirectException("Unexpected error caught when redirecting", ex));
+                response.completeExceptionally(new RedirectException("Unexpected exception occurred" +
+                        " when redirecting", ex));
             }
         });
     }

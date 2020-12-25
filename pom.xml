@@ -234,8 +234,6 @@
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
                     </includes>
-                    <forkCount>4</forkCount>
-                    <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
             <plugin>

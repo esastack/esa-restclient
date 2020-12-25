@@ -24,6 +24,7 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
+import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
@@ -33,7 +34,20 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http2.*;
+import io.netty.handler.codec.http2.DefaultHttp2Connection;
+import io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder;
+import io.netty.handler.codec.http2.DefaultHttp2ConnectionEncoder;
+import io.netty.handler.codec.http2.DefaultHttp2FrameReader;
+import io.netty.handler.codec.http2.DefaultHttp2Headers;
+import io.netty.handler.codec.http2.Http2Connection;
+import io.netty.handler.codec.http2.Http2ConnectionDecoder;
+import io.netty.handler.codec.http2.Http2ConnectionEncoder;
+import io.netty.handler.codec.http2.Http2Error;
+import io.netty.handler.codec.http2.Http2Exception;
+import io.netty.handler.codec.http2.Http2FrameReader;
+import io.netty.handler.codec.http2.Http2FrameWriter;
+import io.netty.handler.codec.http2.Http2Headers;
+import io.netty.handler.codec.http2.Http2Settings;
 import org.junit.jupiter.api.Test;
 
 import java.nio.channels.ClosedChannelException;
@@ -42,6 +56,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
+import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -609,6 +624,37 @@ class Http2FrameHandlerTest {
         then(response.isDone() && response.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response)).isInstanceOf(Http2Exception.class);
         channel.flush();
+
+        then(registry.get(requestId)).isNull();
+        channel.finishAndReleaseAll();
+    }
+
+    @Test
+    void testOnGoAwayRead() {
+        final HandleRegistry registry = new HandleRegistry(2, 0);
+        final long maxContentLength = -1L;
+
+        setUp(registry, maxContentLength);
+
+        final HttpRequest request = HttpRequest.get("/abc").build();
+        final Context ctx = new ContextImpl();
+        final Listener listener = new NoopListener();
+        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
+
+        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final int requestId = registry.put(handle);
+
+        final Http2Headers headers = new DefaultHttp2Headers();
+        headers.add("a", "b");
+        headers.add("x", "y");
+        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
+
+        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, false);
+        frameInboundWriter.writeInboundGoAway(requestId - 2, NO_ERROR.code(), Unpooled.EMPTY_BUFFER);
+        channel.flushInbound();
+
+        then(response.isDone() && response.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(response)).isInstanceOf(ConnectionException.class);
 
         then(registry.get(requestId)).isNull();
         channel.finishAndReleaseAll();

@@ -18,7 +18,7 @@ package esa.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http1HeadersAdaptor;
-import esa.httpclient.core.exception.ConnectionInactiveException;
+import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.exception.ProtocolException;
 import esa.httpclient.core.util.LoggerUtils;
@@ -74,7 +74,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         try {
             super.channelInactive(ctx);
         } finally {
-            onError(new ConnectionInactiveException("Connection: " + ctx.channel() + " inactive"), false);
+            onError(new ConnectionException("Connection: " + ctx.channel() + " inactive"), false);
         }
     }
 
@@ -83,7 +83,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         try {
             super.handlerRemoved(ctx);
         } finally {
-            onError(new ConnectionInactiveException("Connection: " + ctx.channel() + " removed"), false);
+            onError(new ConnectionException("Connection: " + ctx.channel() + " removed"), false);
         }
     }
 
@@ -182,9 +182,9 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
             return;
         }
         boolean hasLogged = false;
-        if (cause instanceof ConnectionInactiveException) {
+        if (cause instanceof ConnectionException) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("ConnectionInactiveException occurred in connection: {}",
+                LoggerUtils.logger().debug("ConnectionException occurred in connection: {}",
                         ctx.channel(), cause);
             } else {
                 LoggerUtils.logger().warn(cause.getMessage());

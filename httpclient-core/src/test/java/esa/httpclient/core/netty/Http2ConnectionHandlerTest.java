@@ -16,6 +16,15 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.BufferImpl;
+import esa.httpclient.core.Context;
+import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.HttpResponse;
+import esa.httpclient.core.Listener;
+import esa.httpclient.core.NoopListener;
+import esa.httpclient.core.exception.ConnectionException;
+import esa.httpclient.core.util.Futures;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
@@ -30,10 +39,17 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
 
@@ -49,7 +65,32 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     void testExceptionCaught() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
         setUp(registry);
+
+        final HttpRequest request1 = HttpRequest.get("/abc").build();
+        final Context ctx1 = new ContextImpl();
+        final Listener listener1 = new NoopListener();
+        final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
+
+        final NettyHandle handle1 = new DefaultHandle(request1, ctx1, listener1, response1, ByteBufAllocator.DEFAULT);
+        final int requestId1 = registry.put(handle1);
+
+        final HttpRequest request2 = HttpRequest.get("/abc").build();
+        final Context ctx2 = new ContextImpl();
+        final Listener listener2 = new NoopListener();
+        final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
+
+        final NettyHandle handle2 = new DefaultHandle(request2, ctx2, listener2, response2, ByteBufAllocator.DEFAULT);
+        final int requestId2 = registry.put(handle2);
+
         channel.pipeline().fireExceptionCaught(new IOException());
+        then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(response1)).isInstanceOf(ConnectionException.class);
+
+        then(response2.isDone() && response2.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(response2)).isInstanceOf(ConnectionException.class);
+        then(registry.get(requestId1)).isNull();
+        then(registry.get(requestId2)).isNull();
+
         then(channel.isActive()).isFalse();
         then(channel.closeFuture().isDone()).isTrue();
     }
@@ -63,7 +104,6 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
         file.deleteOnExit();
 
         try {
-
             final byte[] data = new byte[1024 * 1024];
             try (FileOutputStream out = new FileOutputStream(file)) {
                 ThreadLocalRandom.current().nextBytes(data);

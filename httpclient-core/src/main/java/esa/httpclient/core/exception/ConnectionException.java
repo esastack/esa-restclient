@@ -17,14 +17,18 @@ package esa.httpclient.core.exception;
 
 import java.io.IOException;
 
-public class ConnectionInactiveException extends IOException {
+public class ConnectionException extends IOException {
 
-    public static final ConnectionInactiveException INSTANCE = new ConnectionInactiveException(
+    public static final ConnectionException INSTANCE = new ConnectionException(
             "Connection is inactive");
 
     private static final long serialVersionUID = -7491330351921922628L;
 
-    public ConnectionInactiveException(String msg) {
+    public ConnectionException(String msg) {
         super(msg);
+    }
+
+    public ConnectionException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

@@ -97,7 +97,8 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
             try {
                 close(entry.getKey(), entry.getValue(), false);
             } catch (Throwable th) {
-                LoggerUtils.logger().error("Error while closing connection pool: {}", entry.getKey(), th);
+                LoggerUtils.logger().error("Exception occurred when closing connection pool: {}",
+                        entry.getKey(), th);
             }
         }
     }

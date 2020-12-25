@@ -17,6 +17,8 @@ package esa.httpclient.core.netty;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,6 +39,21 @@ class HandleRegistryTest {
 
         final NettyHandle handle2 = mock(NettyHandle.class);
         then(registry.put(handle2)).isEqualTo(2);
+    }
+
+    @Test
+    void testHandleAndClearAll() {
+        final HandleRegistry registry = new HandleRegistry(1, 0);
+        final NettyHandle handle1 = mock(NettyHandle.class);
+        registry.put(handle1);
+        final NettyHandle handle2 = mock(NettyHandle.class);
+        registry.put(handle2);
+
+        final Set<NettyHandle> handles = new HashSet<>(2);
+        registry.handleAndClearAll(handles::add);
+        then(handles.size()).isEqualTo(2);
+        then(handles.contains(handle1)).isTrue();
+        then(handles.contains(handle2)).isTrue();
     }
 
     @Test

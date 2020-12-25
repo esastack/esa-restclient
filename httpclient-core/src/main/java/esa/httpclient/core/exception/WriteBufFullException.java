@@ -20,7 +20,7 @@ import java.io.IOException;
 public class WriteBufFullException extends IOException {
 
     public static final WriteBufFullException INSTANCE =
-            new WriteBufFullException("Channel's write buffer has been full");
+            new WriteBufFullException("Connection's write buffer has been full");
 
     private static final long serialVersionUID = -2964248671411414742L;
 

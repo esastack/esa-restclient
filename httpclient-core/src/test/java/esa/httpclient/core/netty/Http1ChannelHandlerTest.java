@@ -47,7 +47,6 @@ import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -108,13 +107,12 @@ class Http1ChannelHandlerTest {
         channel.pipeline().addLast(handler);
 
         final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final NettyContext ctx = new NettyContext();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger count = new AtomicInteger();
 
-        ctx.setAttr(EXPECT_CONTINUE_CALLBACK, (Runnable) count::incrementAndGet);
-
+        ctx.set100ContinueCallback(count::incrementAndGet);
         final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
 
         final int requestId = registry.put(handle);
@@ -139,7 +137,7 @@ class Http1ChannelHandlerTest {
         then(response.isDone()).isFalse();
         then(registry.get(requestId)).isNotNull();
         then(count.get()).isEqualTo(1);
-        then(ctx.getAttr(EXPECT_CONTINUE_CALLBACK)).isNull();
+        then(ctx.remove100ContinueCallback()).isNull();
 
 
         // Begin real content

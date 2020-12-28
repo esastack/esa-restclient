@@ -25,8 +25,6 @@ import esa.httpclient.core.util.Futures;
 
 import java.util.concurrent.CompletableFuture;
 
-import static esa.httpclient.core.ContextNames.IGNORE_REQUEST_FILTERS;
-import static esa.httpclient.core.ContextNames.IGNORE_RESPONSE_FILTERS;
 import static esa.httpclient.core.exec.RequestExecutorImpl.LISTENER_KEY;
 
 /**
@@ -65,7 +63,7 @@ public class FilteringExec implements Interceptor {
     }
 
     private CompletableFuture<Void> applyRequestFilters(HttpRequest request, FilterContextImpl ctx) {
-        if (requestFiltersAbsent || Boolean.TRUE.equals(ctx.parent().getAttr(IGNORE_REQUEST_FILTERS))) {
+        if (requestFiltersAbsent) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -84,7 +82,7 @@ public class FilteringExec implements Interceptor {
 
     private CompletableFuture<HttpResponse> applyResponseFilters(HttpResponse response,
                                                                  FilterContextImpl ctx) {
-        if (responseFiltersAbsent || Boolean.TRUE.equals(ctx.parent().getAttr(IGNORE_RESPONSE_FILTERS))) {
+        if (responseFiltersAbsent) {
             return Futures.completed(response);
         }
 

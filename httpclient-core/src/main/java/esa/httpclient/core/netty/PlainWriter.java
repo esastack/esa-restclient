@@ -33,8 +33,6 @@ import io.netty.handler.codec.http.HttpVersion;
 
 import java.io.IOException;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
-
 class PlainWriter extends RequestWriterImpl<PlainRequest> {
 
     private static final byte[] EMPTY_DATA = new byte[0];
@@ -80,7 +78,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                 Utils.runInChannel(channel, () -> doWriteContent1(channel, request.body(), endPromise));
             } else {
                 channel.flush();
-                context.setAttr(EXPECT_CONTINUE_CALLBACK, (Runnable) () ->
+                ((NettyContext) context).set100ContinueCallback(() ->
                         Utils.runInChannel(channel, () -> doWriteContent1(channel, request.body(), endPromise)));
             }
 
@@ -127,7 +125,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                     endPromise);
         } else {
             channel.flush();
-            context.setAttr(EXPECT_CONTINUE_CALLBACK, (Runnable) () ->
+            ((NettyContext) context).set100ContinueCallback(() ->
                     doWriteContent2(channel, data, handler, streamId, endPromise));
         }
 

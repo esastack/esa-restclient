@@ -26,7 +26,6 @@ import esa.commons.reflect.BeanUtils;
 import esa.commons.spi.SpiLoader;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
@@ -172,14 +171,14 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
         if (callbackExecutor.origin() == null) {
             return executor.execute(request,
-                    new ContextImpl(),
+                    new NettyContext(),
                     listener);
         } else {
             // Note that: only if callback executor exists and the response
             // of original execution completes normally, we switch the original
             // response to continue execute in callback executor.
             return executor.execute(request,
-                    new ContextImpl(),
+                    new NettyContext(),
                     listener)
                     .thenComposeAsync(Futures::completed, callbackExecutor.origin());
         }
@@ -188,7 +187,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     @Override
     public HttpRequestBuilder.ClassicChunk prepare(String uri) {
         Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
-        return new ChunkRequestBuilder(uri, new ContextImpl());
+        return new ChunkRequestBuilder(uri, new NettyContext());
     }
 
     @Override

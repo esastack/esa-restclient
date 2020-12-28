@@ -36,7 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -109,7 +108,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             final esa.httpclient.core.FileRequest request =
                     (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
                             .file(file).build();
-            final Context ctx = new ContextImpl();
+            final NettyContext ctx = new NettyContext();
             ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -133,7 +132,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             then(fileRegion).isNull();
 
             // continue write
-            ((Runnable) ctx.removeUncheckedAttr(EXPECT_CONTINUE_CALLBACK)).run();
+            ctx.remove100ContinueCallback().run();
             fileRegion = channel.readOutbound();
             then(fileRegion).isNotNull();
 
@@ -264,7 +263,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             final esa.httpclient.core.FileRequest request =
                     (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
                             .file(file).build();
-            final Context ctx = new ContextImpl();
+            final NettyContext ctx = new NettyContext();
             ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
 
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
@@ -291,7 +290,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             then(obj).isNull();
 
             then(end.isDone()).isFalse();
-            ((Runnable) ctx.removeUncheckedAttr(EXPECT_CONTINUE_CALLBACK)).run();
+            ctx.remove100ContinueCallback().run();
 
             Helper.DataFrame content = null;
             for (int i = 0; i < data.length / 8192; i++) {

@@ -65,8 +65,6 @@ import static esa.httpclient.core.netty.Utils.getValue;
 @Internal
 public class NettyTransceiver implements HttpTransceiver {
 
-    static final String CHUNK_WRITER = "$chunkWriter";
-
     private static final String HASHEDWHEELTIMER_TICKDURATION_KEY = "esa.httpclient.hashedWheelTimer.tickDurationMs";
     private static final String HASHEDWHEELTIMER_SIZE_KEY = "esa.httpclient.hashedWheelTimer.size";
 
@@ -116,12 +114,11 @@ public class NettyTransceiver implements HttpTransceiver {
         ChannelPool channelPool;
         listener.onConnectionPoolAttempt(request, ctx, address);
 
-        // TODO: a better way to save chunk writer is wanted.
-        // Save chunk write for further using.
-        final CompletableFuture<RequestWriter> chunkWriterPromise;
+        // Saves chunk write for further using.
+        final CompletableFuture<ChunkWriter> chunkWriterPromise;
         if (RequestType.CHUNK == request.type()) {
             chunkWriterPromise = new CompletableFuture<>();
-            ctx.setAttr(CHUNK_WRITER, chunkWriterPromise);
+            ((NettyContext) ctx).setWriter(chunkWriterPromise);
         } else {
             chunkWriterPromise = null;
         }
@@ -197,7 +194,7 @@ public class NettyTransceiver implements HttpTransceiver {
                  int readTimeout,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
-                 CompletableFuture<RequestWriter> chunkWriterPromise) {
+                 CompletableFuture<ChunkWriter> chunkWriterPromise) {
         if (!channel.isSuccess()) {
             this.onAcquireConnectionFailed(request,
                     address,
@@ -236,7 +233,7 @@ public class NettyTransceiver implements HttpTransceiver {
                  int readTimeout,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
-                 CompletableFuture<RequestWriter> chunkWriterPromise) {
+                 CompletableFuture<ChunkWriter> chunkWriterPromise) {
         listener.onConnectionAcquired(request, ctx, channel.remoteAddress());
 
         final boolean http2 = isHttp2(channel);
@@ -289,7 +286,7 @@ public class NettyTransceiver implements HttpTransceiver {
                                            Future<Channel> channel,
                                            Listener listener,
                                            CompletableFuture<HttpResponse> response,
-                                           CompletableFuture<RequestWriter> chunkWriterPromise) {
+                                           CompletableFuture<ChunkWriter> chunkWriterPromise) {
         Throwable cause = channel.cause();
 
         // Maybe caused by too many acquires or channel has closed.
@@ -317,7 +314,7 @@ public class NettyTransceiver implements HttpTransceiver {
                   int readTimeout,
                   CompletableFuture<HttpResponse> response,
                   RequestWriter writer,
-                  CompletableFuture<RequestWriter> chunkWriterPromise) throws IOException {
+                  CompletableFuture<ChunkWriter> chunkWriterPromise) throws IOException {
         final HandleRegistry registry = detectRegistry(channel);
         setKeepAlive((Http1HeadersImpl) request.headers(), version);
 
@@ -343,7 +340,7 @@ public class NettyTransceiver implements HttpTransceiver {
                 http2);
 
         if (chunkWriterPromise != null) {
-            chunkWriterPromise.complete(writer);
+            chunkWriterPromise.complete((ChunkWriter) writer);
         }
 
         if (result.isDone()) {
@@ -488,7 +485,7 @@ public class NettyTransceiver implements HttpTransceiver {
                              TimeoutHandle handle,
                              HandleRegistry registry,
                              CompletableFuture<HttpResponse> response,
-                             CompletableFuture<RequestWriter> chunkWriterPromise,
+                             CompletableFuture<ChunkWriter> chunkWriterPromise,
                              int readTimeout) {
         if (result.isSuccess()) {
             handle.onWriteDone(request, ctx, readTimeout);
@@ -535,7 +532,7 @@ public class NettyTransceiver implements HttpTransceiver {
                                      Context ctx,
                                      Listener listener,
                                      CompletableFuture<HttpResponse> response,
-                                     CompletableFuture<RequestWriter> chunkWriterPromise,
+                                     CompletableFuture<ChunkWriter> chunkWriterPromise,
                                      Throwable cause) {
         response.completeExceptionally(cause);
         if (chunkWriterPromise != null) {
@@ -544,7 +541,7 @@ public class NettyTransceiver implements HttpTransceiver {
         listener.onError(request, ctx, cause);
     }
 
-    private static void endRequestWriter(CompletableFuture<RequestWriter> requestWriterPromise,
+    private static void endRequestWriter(CompletableFuture<ChunkWriter> requestWriterPromise,
                                          Throwable cause) {
         if (requestWriterPromise == null) {
             return;

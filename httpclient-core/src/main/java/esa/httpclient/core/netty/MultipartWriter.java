@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static esa.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 
 class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
@@ -137,8 +136,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                 writeContent.run();
             } else {
                 channel.flush();
-                ctx.setAttr(EXPECT_CONTINUE_CALLBACK,
-                        (Runnable) () -> Utils.runInChannel(channel, writeContent));
+                ((NettyContext) ctx).set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
             }
 
             // Now no more use of file representation (and list of HttpData)
@@ -224,8 +222,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
             // Considering 100-expect-continue, We must write request immediately.
             if (!writeContentNow(ctx)) {
                 channel.flush();
-                ctx.setAttr(EXPECT_CONTINUE_CALLBACK,
-                        (Runnable) () -> Utils.runInChannel(channel, writeContent));
+                ((NettyContext) ctx).set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
             } else {
                 writeContent.run();
             }

@@ -36,8 +36,6 @@ import io.netty.handler.codec.http.LastHttpContent;
 
 import java.io.IOException;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
-
 class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private final HandleRegistry registry;
@@ -227,7 +225,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         final int status = msg.status().code();
         if (status == HttpResponseStatus.CONTINUE.code()) {
             continue100Received = true;
-            final Runnable runnable = handle.ctx().removeUncheckedAttr(EXPECT_CONTINUE_CALLBACK);
+            final Runnable runnable = ((NettyContext) handle.ctx()).remove100ContinueCallback();
             if (runnable != null) {
                 runnable.run();
             }

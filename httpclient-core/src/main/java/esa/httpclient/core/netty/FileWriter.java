@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static esa.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 
 class FileWriter extends RequestWriterImpl<FileRequest> {
@@ -79,8 +78,8 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
             doWriteContent1(request, channel, endPromise);
         } else {
             channel.flush();
-            context.setAttr(EXPECT_CONTINUE_CALLBACK, (Runnable)
-                    () -> doWriteContent1(request, channel, endPromise));
+            ((NettyContext) context).set100ContinueCallback(()
+                    -> doWriteContent1(request, channel, endPromise));
         }
 
         return endPromise;
@@ -150,7 +149,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
             });
         } else {
             channel.flush();
-            context.setAttr(EXPECT_CONTINUE_CALLBACK, (Runnable) () -> Utils.runInChannel(channel, () -> {
+            ((NettyContext) context).set100ContinueCallback(() -> Utils.runInChannel(channel, () -> {
                 try {
                     doWriteContent2(request.file(),
                             channel,

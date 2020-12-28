@@ -26,8 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
 
-import static esa.httpclient.core.ContextNames.IGNORE_REQUEST_FILTERS;
-import static esa.httpclient.core.ContextNames.IGNORE_RESPONSE_FILTERS;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -103,22 +101,6 @@ class FilteringExecTest {
         then(response.headers().get("responseFilter2")).isEqualTo("2");
         response.headers().clear();
         request.headers().clear();
-
-        // Ignore duplex filters.
-        ctx.setAttr(IGNORE_REQUEST_FILTERS, true);
-        ctx.setAttr(IGNORE_RESPONSE_FILTERS, true);
-        final FilteringExec exec6 = new FilteringExec(new RequestFilter[]{requestFilter1, requestFilter2},
-                new ResponseFilter[]{responseFilter1, responseFilter2});
-        final CompletableFuture<HttpResponse> response55 = exec6.proceed(request, chain);
-        then(response55.isDone()).isTrue();
-        then(response55.getNow(null)).isSameAs(response);
-        then(request.headers().get("requestFilter1")).isNull();
-        then(request.headers().get("requestFilter2")).isNull();
-        then(response.headers().get("responseFilter1")).isNull();
-        then(response.headers().get("responseFilter2")).isNull();
-        response.headers().clear();
-        request.headers().clear();
-        ctx.clear();
 
         // Case 4: exceptions was thrown in request filters
         final FilteringExec exec7 = new FilteringExec(new RequestFilter[]{(request12, ctx13) ->

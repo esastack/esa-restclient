@@ -34,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -146,7 +145,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                             .file("file", file, null, true)
                             .attribute("key1", "value1")
                             .build();
-            final Context ctx = new ContextImpl();
+            final NettyContext ctx = new NettyContext();
             ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -168,7 +167,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             HttpPostRequestEncoder chunked = channel.readOutbound();
             then(chunked).isNull();
 
-            ((Runnable) ctx.removeUncheckedAttr(EXPECT_CONTINUE_CALLBACK)).run();
+            ctx.remove100ContinueCallback().run();
 
             chunked = channel.readOutbound();
             then(chunked.isChunked()).isTrue();
@@ -332,7 +331,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
                             .file("file", file, null, true)
                             .build();
-            final Context ctx = new ContextImpl();
+            final NettyContext ctx = new NettyContext();
 
             ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
@@ -358,7 +357,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             Object chunked = channel.readOutbound();
             then(chunked).isNull();
 
-            ((Runnable) ctx.removeUncheckedAttr(EXPECT_CONTINUE_CALLBACK)).run();
+            ctx.remove100ContinueCallback().run();
 
             int dataCount = 0;
             while ((channel.readOutbound()) != null) {

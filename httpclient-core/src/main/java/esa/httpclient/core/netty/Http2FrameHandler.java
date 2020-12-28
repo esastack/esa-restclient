@@ -39,7 +39,6 @@ import io.netty.handler.codec.http2.HttpConversionUtil;
 
 import java.nio.charset.StandardCharsets;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_CALLBACK;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
 import static io.netty.handler.codec.http2.Http2Error.PROTOCOL_ERROR;
@@ -284,7 +283,7 @@ class Http2FrameHandler extends Http2EventAdapter {
     }
 
     private void handle100Continue(Context ctx) {
-        final Runnable runnable = ctx.removeUncheckedAttr(EXPECT_CONTINUE_CALLBACK);
+        final Runnable runnable = ((NettyContext) ctx).remove100ContinueCallback();
         if (runnable != null) {
             runnable.run();
         }

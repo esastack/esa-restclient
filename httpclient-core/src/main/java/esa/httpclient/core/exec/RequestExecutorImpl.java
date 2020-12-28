@@ -30,10 +30,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
-import static esa.httpclient.core.ContextNames.IGNORE_INTERCEPTORS;
 import static esa.httpclient.core.ContextNames.MAX_REDIRECTS;
 import static esa.httpclient.core.ContextNames.MAX_RETRIES;
-import static java.lang.Boolean.parseBoolean;
 
 public class RequestExecutorImpl implements RequestExecutor {
 
@@ -107,8 +105,7 @@ public class RequestExecutorImpl implements RequestExecutor {
                 ? options.maxRedirects() : options.maxRedirects() == 0
                 ? 0 : defaultMaxRedirects);
 
-        return LinkedExecChain.from(parseBoolean(ctx.getUncheckedAttr(IGNORE_INTERCEPTORS))
-                ? new Interceptor[0] : interceptors, transceiver, handle, ctx, listener, readTimeout);
+        return LinkedExecChain.from(interceptors, transceiver, handle, ctx, listener, readTimeout);
     }
 
     private NettyHandle decideCustomHandle(HttpRequest request,

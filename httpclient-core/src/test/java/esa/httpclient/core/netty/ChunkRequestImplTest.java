@@ -19,7 +19,6 @@ import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
@@ -62,13 +61,13 @@ class ChunkRequestImplTest {
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
-                    final Context ctx = answer.getArgument(1);
-                    ctx.setAttr(NettyTransceiver.CHUNK_WRITER, writerPromise);
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
                     return response;
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl());
+                new NettyContext());
 
         final byte[] dataToWrite = new byte[1024 * 1025 + 512];
         ThreadLocalRandom.current().nextBytes(dataToWrite);
@@ -107,8 +106,6 @@ class ChunkRequestImplTest {
         then(Arrays.equals(dataToWrite, outArray)).isTrue();
 
         then(response.isDone()).isFalse();
-
-
     }
 
     @Test
@@ -122,13 +119,13 @@ class ChunkRequestImplTest {
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
-                    final Context ctx = answer.getArgument(1);
-                    ctx.setAttr(NettyTransceiver.CHUNK_WRITER, writerPromise);
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
                     return response;
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl());
+                new NettyContext());
 
         for (int i = 0; i < 10; i++) {
             request.write(new BufferImpl(Unpooled.buffer().writeBytes((COMMON_DATA + i).getBytes())));
@@ -171,13 +168,13 @@ class ChunkRequestImplTest {
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
-                    final Context ctx = answer.getArgument(1);
-                    ctx.setAttr(NettyTransceiver.CHUNK_WRITER, writerPromise);
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
                     return response;
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl());
+                new NettyContext());
 
         for (int i = 0; i < 10; i++) {
             request.write((COMMON_DATA + i).getBytes());
@@ -218,13 +215,13 @@ class ChunkRequestImplTest {
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
-                    final Context ctx = answer.getArgument(1);
-                    ctx.setAttr(NettyTransceiver.CHUNK_WRITER, writerPromise);
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
                     return response;
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl());
+                new NettyContext());
 
         final List<byte[]> data = new LinkedList<>();
         final ChunkWriter writer = mock(ChunkWriter.class);
@@ -270,13 +267,13 @@ class ChunkRequestImplTest {
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
-                    final Context ctx = answer.getArgument(1);
-                    ctx.setAttr(NettyTransceiver.CHUNK_WRITER, writerPromise);
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
                     return response;
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl());
+                new NettyContext());
 
         final List<byte[]> data = new LinkedList<>();
         final ChunkWriter writer = mock(ChunkWriter.class);
@@ -327,13 +324,13 @@ class ChunkRequestImplTest {
                 any(Context.class),
                 any(Listener.class)))
                 .thenAnswer(answer -> {
-                    final Context ctx = answer.getArgument(1);
-                    ctx.setAttr(NettyTransceiver.CHUNK_WRITER, writerPromise);
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
                     return response;
                 });
 
         final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new ContextImpl());
+                new NettyContext());
         request.write(COMMON_DATA.getBytes());
 
         final Channel channel = mock(Channel.class);

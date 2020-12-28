@@ -17,6 +17,7 @@ package esa.httpclient.core.netty;
 
 import esa.commons.function.ThrowingSupplier;
 import esa.commons.http.HttpVersion;
+import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpClient;
@@ -48,7 +49,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static esa.httpclient.core.netty.NettyTransceiver.CHUNK_WRITER;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -96,7 +96,7 @@ class NettyTransceiverTest {
                 sslEngineFactory);
 
         final HttpRequest request = HttpClient.ofDefault().prepare("http://127.0.0.1:8080/abc").build();
-        final ContextImpl ctx = new ContextImpl();
+        final NettyContext ctx = new NettyContext();
         final Listener listener = mock(Listener.class);
         final int readTimeout = 3000;
 
@@ -111,7 +111,7 @@ class NettyTransceiverTest {
         verify(listener).onConnectionPoolAttempt(any(), any(), any());
         verify(listener).onAcquireConnectionPoolFailed(any(), any(), any(), any());
 
-        final CompletableFuture<RequestWriter> chunkWriterPromise1 = ctx.getUncheckedAttr(CHUNK_WRITER);
+        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = ctx.getWriter().orElse(Futures.completed());
         then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(RuntimeException.class);
 
@@ -143,7 +143,7 @@ class NettyTransceiverTest {
         verify(listener2).onAcquireConnectionFailed(any(), any(), any(), any());
         verify(listener2).onError(any(), any(), any());
 
-        final CompletableFuture<RequestWriter> chunkWriterPromise2 = ctx.getUncheckedAttr(CHUNK_WRITER);
+        final CompletableFuture<ChunkWriter> chunkWriterPromise2 = ctx.getWriter().orElse(Futures.completed());
         then(chunkWriterPromise2.isDone() && chunkWriterPromise2.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(chunkWriterPromise2)).isInstanceOf(IOException.class);
     }
@@ -169,7 +169,7 @@ class NettyTransceiverTest {
         final Future<Channel> future = mock(Future.class);
         final RequestWriter writer = RequestWriter.getByType(RequestType.CHUNK);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
-        final CompletableFuture<RequestWriter> chunkWriterPromise1 = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
 
         // Case 1: unexpected error caught
@@ -205,7 +205,7 @@ class NettyTransceiverTest {
         final io.netty.channel.pool.ChannelPool channelPool = mock(io.netty.channel.pool.ChannelPool.class);
         final RequestWriter writer = RequestWriter.getByType(RequestType.CHUNK);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
-        final CompletableFuture<RequestWriter> chunkWriterPromise1 = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
         final Channel channel = mock(Channel.class);
         final ChannelPipeline pipeline = mock(ChannelPipeline.class);
@@ -234,7 +234,7 @@ class NettyTransceiverTest {
 
         final Listener listener2 = mock(Listener.class);
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
-        final CompletableFuture<RequestWriter> chunkWriterPromise2 = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> chunkWriterPromise2 = new CompletableFuture<>();
 
         transceiver.doWrite(request, ctx, channelPool, channel, null,
                 listener2, readTimeout, response2, writer, chunkWriterPromise2);
@@ -250,7 +250,7 @@ class NettyTransceiverTest {
         when(channel.isWritable()).thenReturn(true);
         final Listener listener3 = mock(Listener.class);
         final CompletableFuture<HttpResponse> response3 = new CompletableFuture<>();
-        final CompletableFuture<RequestWriter> chunkWriterPromise3 = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> chunkWriterPromise3 = new CompletableFuture<>();
 
         transceiver.doWrite(request, ctx, channelPool, channel, null,
                 listener3, readTimeout, response3, writer, chunkWriterPromise3);
@@ -262,7 +262,6 @@ class NettyTransceiverTest {
         verify(listener3).onError(any(), any(), any());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void testDoWrite0() throws Exception {
         final EventLoopGroup ioThreads = mock(EventLoopGroup.class);
@@ -280,14 +279,14 @@ class NettyTransceiverTest {
         final TimeoutHandle h = mock(TimeoutHandle.class);
         final int readTimeout = 3000;
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
-        final CompletableFuture<RequestWriter> chunkWriterPromise1 = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
         final Channel channel = new EmbeddedChannel();
         final HandleRegistry registry = new HandleRegistry(1, 0);
         channel.pipeline().addLast(new Http1ChannelHandler(registry, -1L));
 
         final ChannelFuture future = mock(ChannelFuture.class);
-        final RequestWriter writer = mock(RequestWriter.class);
-        when(writer.writeAndFlush(any(HttpRequest.class),
+        final ChunkWriter writer = mock(ChunkWriter.class);
+        when(writer.writeAndFlush(any(ChunkRequest.class),
                 any(Channel.class),
                 any(Context.class),
                 anyBoolean(),
@@ -311,7 +310,7 @@ class NettyTransceiverTest {
         when(future.cause()).thenReturn(new IllegalStateException());
 
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
-        final CompletableFuture<RequestWriter> chunkWriterPromise2 = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> chunkWriterPromise2 = new CompletableFuture<>();
 
         transceiver.doWrite0(request, ctx, channel, (l, rsp) -> null, h,
                 true, HttpVersion.HTTP_2, readTimeout, response2, writer, chunkWriterPromise2);

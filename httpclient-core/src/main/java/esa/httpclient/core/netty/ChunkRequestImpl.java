@@ -20,7 +20,6 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.ListenerProxy;
 import esa.httpclient.core.RequestOptions;
@@ -267,9 +266,9 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
                 return;
             }
 
-            final Context ctx0 = ctx != null ? ctx : new ContextImpl();
+            final Context ctx0 = ctx != null ? ctx : new NettyContext();
             response = executor.execute(this, ctx0, ListenerProxy.DEFAULT);
-            chunkWriter = ctx0.getUncheckedAttr(NettyTransceiver.CHUNK_WRITER);
+            chunkWriter = ((NettyContext) ctx0).getWriter().orElse(null);
         }
     }
 

@@ -49,8 +49,7 @@ final class ChannelPoolFactory {
             SystemPropertyUtil.getBoolean(PREFER_UNPOOLED_KEY, false);
 
     private static final String PREFER_NATIVE_KEY = "esa.httpclient.preferNative";
-    static final boolean PREFER_NATIVE = SystemPropertyUtil.getBoolean(PREFER_NATIVE_KEY,
-            Epoll.isAvailable());
+    static final boolean PREFER_NATIVE = SystemPropertyUtil.getBoolean(PREFER_NATIVE_KEY, true);
 
     ChannelPoolFactory() {
     }
@@ -151,7 +150,7 @@ final class ChannelPoolFactory {
                                     HostResolver resolver) {
         final Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(ioThreads);
-        if (PREFER_NATIVE) {
+        if (PREFER_NATIVE && Epoll.isAvailable()) {
             bootstrap.channel(EpollSocketChannel.class);
         } else {
             bootstrap.channel(NioSocketChannel.class);

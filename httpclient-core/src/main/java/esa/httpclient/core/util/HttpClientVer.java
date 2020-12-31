@@ -27,7 +27,7 @@ public final class HttpClientVer {
     private HttpClientVer() {
     }
 
-    private static String version = getVersion();
+    private static final String VERSION = getVersion();
 
     /**
      * Gets the code version of HttpClient.
@@ -35,7 +35,7 @@ public final class HttpClientVer {
      * @return version
      */
     public static String version() {
-        return version;
+        return VERSION;
     }
 
     private static String getVersion() {

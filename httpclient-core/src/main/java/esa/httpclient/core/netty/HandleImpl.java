@@ -24,7 +24,7 @@ import esa.httpclient.core.Handler;
 
 import java.util.function.Consumer;
 
-class HandleImpl implements Handle {
+public class HandleImpl implements Handle {
 
     final NettyResponse underlying;
 
@@ -35,12 +35,12 @@ class HandleImpl implements Handle {
 
     volatile Consumer<Void> start;
 
-    HandleImpl(NettyResponse underlying) {
+    public HandleImpl(NettyResponse underlying) {
         Checks.checkNotNull(underlying, "NettyResponse must not be null");
         this.underlying = underlying;
     }
 
-    HandleImpl(NettyResponse underlying, Handler handler) {
+    public HandleImpl(NettyResponse underlying, Handler handler) {
         Checks.checkNotNull(underlying, "NettyResponse must not be null");
         Checks.checkNotNull(handler, "Handler must not be null");
         this.underlying = underlying;
@@ -51,7 +51,7 @@ class HandleImpl implements Handle {
         this.error = handler::onError;
     }
 
-    HandleImpl(NettyResponse underlying, Consumer<Handle> handle0) {
+    public HandleImpl(NettyResponse underlying, Consumer<Handle> handle0) {
         Checks.checkNotNull(underlying, "NettyResponse must not be null");
         Checks.checkNotNull(handle0, "Handle must not be null");
         this.underlying = underlying;

@@ -19,7 +19,6 @@ import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.filter.RequestFilter;
-import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
@@ -41,12 +40,11 @@ class FilteringExecTest {
         when(chain.proceed(request)).thenReturn(Futures.completed(response));
         when(chain.ctx()).thenReturn(ctx);
 
-        // Case 1: duplex filters are absent
-        final FilteringExec exec1 = new FilteringExec(null, null);
+        // Case 1: request filters are absent
+        final FilteringExec exec1 = new FilteringExec(null);
         then(exec1.proceed(request, chain).getNow(null)).isSameAs(response);
-        final FilteringExec exec2 = new FilteringExec(new RequestFilter[0], new ResponseFilter[0]);
+        final FilteringExec exec2 = new FilteringExec(new RequestFilter[0]);
         then(exec2.proceed(request, chain).getNow(null)).isSameAs(response);
-
 
         final RequestFilter requestFilter1 = (request1, ctx1) -> {
             request1.setHeader("requestFilter1", "1");
@@ -58,31 +56,10 @@ class FilteringExecTest {
             return Futures.completed();
         };
 
-        final ResponseFilter responseFilter1 = (response1, ctx12) -> {
-            response1.headers().set("responseFilter1", "1");
-            return Futures.completed();
-        };
-
-        final ResponseFilter responseFilter2 = (response1, ctx12) -> {
-            response1.headers().set("responseFilter2", "2");
-            return Futures.completed();
-        };
-
         // Case 2: request filters are absent
-        final FilteringExec exec3 = new FilteringExec(new RequestFilter[0],
-                new ResponseFilter[]{responseFilter1, responseFilter2});
-        final CompletableFuture<HttpResponse> response22 = exec3.proceed(request, chain);
-        then(response22.isDone()).isTrue();
-        then(response22.getNow(null)).isSameAs(response);
-        then(response.headers().get("responseFilter1")).isEqualTo("1");
-        then(response.headers().get("responseFilter2")).isEqualTo("2");
-        response.headers().clear();
         request.headers().clear();
-
-        // Case 3: response filters are absent
-        final FilteringExec exec4 = new FilteringExec(new RequestFilter[]{requestFilter1, requestFilter2},
-                new ResponseFilter[0]);
-        final CompletableFuture<HttpResponse> response33 = exec4.proceed(request, chain);
+        final FilteringExec exec3 = new FilteringExec(new RequestFilter[]{requestFilter1, requestFilter2});
+        final CompletableFuture<HttpResponse> response33 = exec3.proceed(request, chain);
         then(response33.isDone()).isTrue();
         then(response33.getNow(null)).isSameAs(response);
         then(request.headers().get("requestFilter1")).isEqualTo("1");
@@ -90,34 +67,12 @@ class FilteringExecTest {
         response.headers().clear();
         request.headers().clear();
 
-        final FilteringExec exec5 = new FilteringExec(new RequestFilter[]{requestFilter1, requestFilter2},
-                new ResponseFilter[]{responseFilter1, responseFilter2});
-        final CompletableFuture<HttpResponse> response44 = exec5.proceed(request, chain);
+        // Case 3: exceptions was thrown in request filters
+        final FilteringExec exec4 = new FilteringExec(new RequestFilter[]{(request12, ctx13) ->
+                Futures.completed(new RuntimeException())});
+        final CompletableFuture<HttpResponse> response44 = exec4.proceed(request, chain);
         then(response44.isDone()).isTrue();
-        then(response44.getNow(null)).isSameAs(response);
-        then(request.headers().get("requestFilter1")).isEqualTo("1");
-        then(request.headers().get("requestFilter2")).isEqualTo("2");
-        then(response.headers().get("responseFilter1")).isEqualTo("1");
-        then(response.headers().get("responseFilter2")).isEqualTo("2");
-        response.headers().clear();
-        request.headers().clear();
-
-        // Case 4: exceptions was thrown in request filters
-        final FilteringExec exec7 = new FilteringExec(new RequestFilter[]{(request12, ctx13) ->
-                Futures.completed(new RuntimeException())}, new ResponseFilter[]{responseFilter1, responseFilter2});
-        final CompletableFuture<HttpResponse> response66 = exec7.proceed(request, chain);
-        then(response66.isDone()).isTrue();
-        then(response66.isCompletedExceptionally()).isTrue();
-        ctx.clear();
-
-        // Case 5: exception was thrown in response filters
-        final FilteringExec exec8 = new FilteringExec(new RequestFilter[]{requestFilter1, requestFilter2},
-                new ResponseFilter[]{(response12, ctx14) -> Futures.completed(new RuntimeException())});
-        final CompletableFuture<HttpResponse> response77 = exec8.proceed(request, chain);
-        then(response77.isDone()).isTrue();
-        then(response77.isCompletedExceptionally()).isTrue();
-        then(request.headers().get("requestFilter1")).isEqualTo("1");
-        then(request.headers().get("requestFilter2")).isEqualTo("2");
+        then(response44.isCompletedExceptionally()).isTrue();
         ctx.clear();
     }
 }

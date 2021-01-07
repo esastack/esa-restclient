@@ -53,6 +53,7 @@ import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.SingleThreadEventLoop;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.ApplicationProtocolConfig;
@@ -410,7 +411,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     private static EventLoopGroup sharedIoThreads() {
-        if (PREFER_NATIVE) {
+        if (PREFER_NATIVE && Epoll.isAvailable()) {
             return new EpollEventLoopGroup(IOTHREADS,
                     new ThreadFactoryImpl("NettyHttpClient-I/O", true));
         } else {

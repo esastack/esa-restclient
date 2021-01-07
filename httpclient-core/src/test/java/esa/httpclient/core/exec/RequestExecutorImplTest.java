@@ -21,8 +21,7 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.ListenerProxy;
-import esa.httpclient.core.netty.NettyHandle;
-import esa.httpclient.core.netty.NettyTransceiver;
+import esa.httpclient.core.netty.HandleImpl;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
@@ -42,12 +41,12 @@ class RequestExecutorImplTest {
     void testBuild() {
         final RequestExecutorImpl executor = new RequestExecutorImpl(HttpClient.create(),
                 new Interceptor[0],
-                mock(NettyTransceiver.class),
+                mock(HttpTransceiver.class),
                 10,
                 10,
                 false);
 
-        final BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle = mock(BiFunction.class);
+        final BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle = mock(BiFunction.class);
         final ContextImpl ctx = new ContextImpl();
         final Listener listener = ListenerProxy.DEFAULT;
 

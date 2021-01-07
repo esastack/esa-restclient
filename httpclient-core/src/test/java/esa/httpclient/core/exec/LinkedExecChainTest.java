@@ -21,7 +21,6 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.ListenerProxy;
 import esa.httpclient.core.mock.MockHttpResponse;
-import esa.httpclient.core.netty.NettyTransceiver;
 import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +34,7 @@ class LinkedExecChainTest {
 
     @Test
     void testFrom1() {
-        final NettyTransceiver transceiver = mock(NettyTransceiver.class);
+        final HttpTransceiver transceiver = mock(HttpTransceiver.class);
         final HttpRequest request = HttpRequest.get("http://127.0.0.1:8888/abc/def").build();
         final ContextImpl ctx = new ContextImpl();
         final HttpResponse response = new MockHttpResponse(200);
@@ -136,7 +135,7 @@ class LinkedExecChainTest {
 
     @Test
     void testFrom2() {
-        final NettyTransceiver transceiver = mock(NettyTransceiver.class);
+        final HttpTransceiver transceiver = mock(HttpTransceiver.class);
         final HttpRequest request = HttpRequest.get("http://127.0.0.1:8888/abc/def").build();
         final ContextImpl ctx = new ContextImpl();
         final HttpResponse response = new MockHttpResponse(200);

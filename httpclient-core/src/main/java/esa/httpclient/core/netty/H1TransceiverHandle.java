@@ -24,10 +24,9 @@ import esa.httpclient.core.Listener;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class H1TransceiverHandle implements TransceiverHandle {
+class H1TransceiverHandle extends TransceiverHandle {
 
     @Override
     public TimeoutHandle buildTimeoutHandle(Channel channel,
@@ -38,17 +37,11 @@ class H1TransceiverHandle implements TransceiverHandle {
     }
 
     @Override
-    public int addRspHandle(HttpRequest request,
-                            Context ctx,
-                            Channel channel,
-                            Listener listener,
-                            NettyHandle handle,
-                            HandleRegistry registry,
-                            CompletableFuture<HttpResponse> response) {
-        if (handle == null) {
-            handle = new DefaultHandle(request, ctx, listener, response, channel.alloc());
-        }
-
+    int addRspHandle0(HttpRequest request,
+                      Context ctx,
+                      Channel channel,
+                      NettyHandle handle,
+                      HandleRegistry registry) {
         int requestId = registry.put(handle);
         ((Http1ChannelHandler) channel.pipeline().last()).updateRequestId(requestId);
         return requestId;

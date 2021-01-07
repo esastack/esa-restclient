@@ -66,7 +66,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
         final HttpHeaders headers = new DefaultHttpHeaders();
@@ -113,7 +114,8 @@ class Http1ChannelHandlerTest {
         final AtomicInteger count = new AtomicInteger();
 
         ctx.set100ContinueCallback(count::incrementAndGet);
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
 
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
@@ -188,7 +190,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
         final HttpHeaders headers = new DefaultHttpHeaders();
@@ -236,7 +239,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
         // Current request is 1.
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
@@ -286,7 +290,8 @@ class Http1ChannelHandlerTest {
         final Listener listener1 = new NoopListener();
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
-        final NettyHandle handle1 = new DefaultHandle(request1, ctx1, listener1, response1, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle1 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request1, ctx1, listener1, response1);
         final int requestId1 = registry.put(handle1);
         handler1.updateRequestId(requestId1);
         final HttpHeaders headers1 = new DefaultHttpHeaders();
@@ -331,7 +336,8 @@ class Http1ChannelHandlerTest {
         final Listener listener2 = new NoopListener();
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
-        final NettyHandle handle2 = new DefaultHandle(request2, ctx2, listener2, response2, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle2 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request2, ctx2, listener2, response2);
         final int requestId2 = registry.put(handle2);
         handler2.updateRequestId(requestId2);
         final HttpHeaders headers2 = new DefaultHttpHeaders();
@@ -375,7 +381,8 @@ class Http1ChannelHandlerTest {
         final Listener listener3 = new NoopListener();
         final CompletableFuture<HttpResponse> response3 = new CompletableFuture<>();
 
-        final NettyHandle handle3 = new DefaultHandle(request3, ctx3, listener3, response3, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle3 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request3, ctx3, listener3, response3);
         final int requestId3 = registry.put(handle3);
         handler3.updateRequestId(requestId3);
         final HttpHeaders headers3 = new DefaultHttpHeaders();
@@ -410,7 +417,8 @@ class Http1ChannelHandlerTest {
         final Listener listener1 = new NoopListener();
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
-        final NettyHandle handle1 = new DefaultHandle(request1, ctx1, listener1, response1, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle1 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request1, ctx1, listener1, response1);
         final int requestId1 = registry.put(handle1);
         handler1.updateRequestId(requestId1);
         final HttpHeaders headers1 = new DefaultHttpHeaders();
@@ -454,7 +462,8 @@ class Http1ChannelHandlerTest {
         final Listener listener2 = new NoopListener();
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
-        final NettyHandle handle2 = new DefaultHandle(request2, ctx2, listener2, response2, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle2 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request2, ctx2, listener2, response2);
         final int requestId2 = registry.put(handle2);
         handler2.updateRequestId(requestId2);
         final HttpHeaders headers2 = new DefaultHttpHeaders();
@@ -497,7 +506,8 @@ class Http1ChannelHandlerTest {
         final Listener listener3 = new NoopListener();
         final CompletableFuture<HttpResponse> response3 = new CompletableFuture<>();
 
-        final NettyHandle handle3 = new DefaultHandle(request3, ctx3, listener3, response3, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle3 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request3, ctx3, listener3, response3);
         final int requestId3 = registry.put(handle3);
         handler3.updateRequestId(requestId3);
         final HttpHeaders headers3 = new DefaultHttpHeaders();
@@ -533,7 +543,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
         channel.pipeline().fireExceptionCaught(new IllegalStateException());
@@ -554,7 +565,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
         channel.pipeline().fireChannelInactive();
@@ -576,7 +588,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
         final int requestId = registry.put(handle);
         handler.updateRequestId(requestId);
         channel.pipeline().remove(handler);
@@ -598,7 +611,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT) {
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response) {
             @Override
             public void onMessage(esa.httpclient.core.HttpMessage message) {
                 throw new IllegalArgumentException();
@@ -637,7 +651,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT) {
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response) {
             @Override
             public void onData(Buffer content) {
                 throw new IllegalArgumentException();
@@ -675,8 +690,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT) {
-
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response) {
             @Override
             public void onTrailers(esa.commons.http.HttpHeaders trailers) {
                 throw new RuntimeException();
@@ -716,8 +731,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT) {
-
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response) {
             @Override
             public void onEnd() {
                 throw new IllegalStateException();
@@ -757,8 +772,8 @@ class Http1ChannelHandlerTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT) {
-
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response) {
             @Override
             public void onError(Throwable cause) {
                 throw new IllegalArgumentException();

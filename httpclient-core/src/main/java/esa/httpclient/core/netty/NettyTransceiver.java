@@ -16,7 +16,6 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.Checks;
-import esa.commons.annotation.Internal;
 import esa.commons.concurrent.ThreadFactories;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.netty.http.Http1HeadersImpl;
@@ -31,6 +30,7 @@ import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.exec.HttpTransceiver;
+import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.spi.SslEngineFactory;
 import esa.httpclient.core.util.Futures;
 import esa.httpclient.core.util.LoggerUtils;
@@ -62,8 +62,7 @@ import java.util.function.BiFunction;
 
 import static esa.httpclient.core.netty.Utils.getValue;
 
-@Internal
-public class NettyTransceiver implements HttpTransceiver {
+class NettyTransceiver implements HttpTransceiver {
 
     private static final String HASHEDWHEELTIMER_TICKDURATION_KEY = "esa.httpclient.hashedWheelTimer.tickDurationMs";
     private static final String HASHEDWHEELTIMER_SIZE_KEY = "esa.httpclient.hashedWheelTimer.size";
@@ -78,6 +77,7 @@ public class NettyTransceiver implements HttpTransceiver {
     private final ChannelPools channelPools;
     private final HttpClientBuilder builder;
     private final SslEngineFactory sslEngineFactory;
+    private final ResponseFilter[] rspFilters;
 
     static {
         READ_TIMEOUT_TIMER = new HashedWheelTimer(ThreadFactories
@@ -99,13 +99,14 @@ public class NettyTransceiver implements HttpTransceiver {
         this.channelPools = channelPools;
         this.builder = builder;
         this.sslEngineFactory = sslEngineFactory;
+        this.rspFilters = builder.buildUnmodifiableResponseFilters();
     }
 
     @Override
     public CompletableFuture<HttpResponse> handle(HttpRequest request,
                                                   Context ctx,
                                                   BiFunction<Listener, CompletableFuture<HttpResponse>,
-                                                          NettyHandle> handle,
+                                                          HandleImpl> handle,
                                                   final Listener listener,
                                                   int readTimeout) {
         listener.onFiltersEnd(request, ctx);
@@ -189,7 +190,7 @@ public class NettyTransceiver implements HttpTransceiver {
                  Context ctx,
                  ChannelPool channelPool,
                  Future<Channel> channel,
-                 BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+                 BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                  Listener listener,
                  int readTimeout,
                  CompletableFuture<HttpResponse> response,
@@ -228,7 +229,7 @@ public class NettyTransceiver implements HttpTransceiver {
                  Context ctx,
                  ChannelPool channelPool,
                  Channel channel,
-                 BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+                 BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                  Listener listener,
                  int readTimeout,
                  CompletableFuture<HttpResponse> response,
@@ -307,7 +308,7 @@ public class NettyTransceiver implements HttpTransceiver {
     void doWrite0(HttpRequest request,
                   Context ctx,
                   Channel channel,
-                  BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+                  BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                   final TimeoutHandle h,
                   boolean http2,
                   esa.commons.http.HttpVersion version,
@@ -437,7 +438,7 @@ public class NettyTransceiver implements HttpTransceiver {
                              Context ctx,
                              Channel channel,
                              Listener listener,
-                             NettyHandle handle,
+                             HandleImpl handle,
                              boolean http2,
                              HandleRegistry registry,
                              CompletableFuture<HttpResponse> response) {
@@ -448,6 +449,7 @@ public class NettyTransceiver implements HttpTransceiver {
                     channel,
                     listener,
                     handle,
+                    rspFilters,
                     registry,
                     response);
         } else {
@@ -457,6 +459,7 @@ public class NettyTransceiver implements HttpTransceiver {
                     channel,
                     listener,
                     handle,
+                    rspFilters,
                     registry,
                     response);
         }

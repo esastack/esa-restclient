@@ -53,7 +53,7 @@ class FilteringHandleTest {
         final Context ctx = mock(Context.class);
         final Listener listener = mock(Listener.class);
         final CompletableFuture<HttpResponse> response = mock(CompletableFuture.class);
-        final ResponseFilter[] filters = new ResponseFilter[]{(response1, ctx1) -> null};
+        final ResponseFilter[] filters = new ResponseFilter[]{(request1, response1, ctx1) -> null};
         final FilterContext fCtx = mock(FilterContext.class);
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
 
@@ -91,7 +91,7 @@ class FilteringHandleTest {
         final ResponseFilter[] filters = new ResponseFilter[2];
 
         final CountDownLatch latch = new CountDownLatch(1);
-        filters[0] = (response1, ctx1) -> {
+        filters[0] = (request1, response1, ctx1) -> {
             final CompletableFuture<Void> future = new CompletableFuture<>();
             new Thread(() -> {
                 try {
@@ -106,7 +106,7 @@ class FilteringHandleTest {
             return future;
         };
 
-        filters[1] = (response12, ctx12) -> {
+        filters[1] = (request1, response12, ctx12) -> {
             response12.headers().add("rspFilter2", "value2");
             return Futures.completed();
         };
@@ -164,7 +164,7 @@ class FilteringHandleTest {
         final CountDownLatch latch = new CountDownLatch(1);
 
         final RuntimeException ex = new RuntimeException();
-        filters[0] = (response1, ctx1) -> {
+        filters[0] = (request1, response1, ctx1) -> {
             final CompletableFuture<Void> future = new CompletableFuture<>();
             new Thread(() -> {
                 try {
@@ -178,7 +178,7 @@ class FilteringHandleTest {
             return future;
         };
 
-        filters[1] = (response12, ctx12) -> {
+        filters[1] = (request2, response12, ctx12) -> {
             response12.headers().add("rspFilter2", "value2");
             return Futures.completed();
         };
@@ -227,11 +227,11 @@ class FilteringHandleTest {
         final CountDownLatch latch = new CountDownLatch(1);
 
         final RuntimeException ex = new RuntimeException();
-        filters[0] = (response1, ctx1) -> {
+        filters[0] = (request1, response1, ctx1) -> {
             throw ex;
         };
 
-        filters[1] = (response12, ctx12) -> {
+        filters[1] = (request12, response12, ctx12) -> {
             response12.headers().add("rspFilter2", "value2");
             return Futures.completed();
         };
@@ -364,7 +364,7 @@ class FilteringHandleTest {
         final ResponseFilter[] filters = new ResponseFilter[2];
 
         final CountDownLatch latch = new CountDownLatch(1);
-        filters[0] = (response1, ctx1) -> {
+        filters[0] = (request1, response1, ctx1) -> {
             final CompletableFuture<Void> future = new CompletableFuture<>();
             new Thread(() -> {
                 try {
@@ -379,7 +379,7 @@ class FilteringHandleTest {
             return future;
         };
 
-        filters[1] = (response12, ctx12) -> {
+        filters[1] = (request12, response12, ctx12) -> {
             response12.headers().add("rspFilter2", "value2");
             return Futures.completed();
         };
@@ -415,3 +415,4 @@ class FilteringHandleTest {
     }
 
 }
+

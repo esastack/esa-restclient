@@ -193,10 +193,10 @@ class HttpClientBuilderTest {
         builder.addRequestFilters(Collections.singletonList((request, ctx) -> null));
         then(builder.unmodifiableInterceptors()[5]).isInstanceOf(FilteringExec.class);
         then(builder.unmodifiableInterceptors()[5]).isNotSameAs(filteringExec);
-        builder.addResponseFilter((response, ctx) -> null);
+        builder.addResponseFilter((request, response, ctx) -> null);
         then(builder.unmodifiableInterceptors()[5]).isInstanceOf(FilteringExec.class);
         then(builder.unmodifiableInterceptors()[5]).isNotSameAs(filteringExec);
-        builder.addResponseFilters(Collections.singletonList((response, ctx) -> null));
+        builder.addResponseFilters(Collections.singletonList((request, response, ctx) -> null));
         then(builder.unmodifiableInterceptors()[5]).isInstanceOf(FilteringExec.class);
         then(builder.unmodifiableInterceptors()[5]).isNotSameAs(filteringExec);
         builder.addFilter(new DuplexFilter() {
@@ -206,7 +206,9 @@ class HttpClientBuilderTest {
             }
 
             @Override
-            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+            public CompletableFuture<Void> doFilter(HttpRequest request,
+                                                    HttpResponse response,
+                                                    FilterContext ctx) {
                 return null;
             }
         });
@@ -219,7 +221,9 @@ class HttpClientBuilderTest {
             }
 
             @Override
-            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+            public CompletableFuture<Void> doFilter(HttpRequest request,
+                                                    HttpResponse response,
+                                                    FilterContext ctx) {
                 return null;
             }
         }));
@@ -268,7 +272,9 @@ class HttpClientBuilderTest {
 
         final ResponseFilter filter1 = new ResponseFilter() {
             @Override
-            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+            public CompletableFuture<Void> doFilter(HttpRequest request,
+                                                    HttpResponse response,
+                                                    FilterContext ctx) {
                 return Futures.completed();
             }
 
@@ -280,7 +286,9 @@ class HttpClientBuilderTest {
 
         final ResponseFilter filter2 = new ResponseFilter() {
             @Override
-            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+            public CompletableFuture<Void> doFilter(HttpRequest request,
+                                                    HttpResponse response,
+                                                    FilterContext ctx) {
                 return Futures.completed();
             }
 
@@ -313,7 +321,9 @@ class HttpClientBuilderTest {
             }
 
             @Override
-            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+            public CompletableFuture<Void> doFilter(HttpRequest request,
+                                                    HttpResponse response,
+                                                    FilterContext ctx) {
                 return Futures.completed();
             }
         });
@@ -328,7 +338,7 @@ class HttpClientBuilderTest {
         final List<ResponseFilter> filters1 = builder.responseFilters();
         then(filters1).isEmpty();
 
-        builder.addResponseFilter((request, ctx) -> Futures.completed());
+        builder.addResponseFilter((request, response, ctx) -> Futures.completed());
 
         builder.addFilter(new DuplexFilter() {
             @Override
@@ -337,7 +347,9 @@ class HttpClientBuilderTest {
             }
 
             @Override
-            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+            public CompletableFuture<Void> doFilter(HttpRequest request,
+                                                    HttpResponse response,
+                                                    FilterContext ctx) {
                 return Futures.completed();
             }
         });

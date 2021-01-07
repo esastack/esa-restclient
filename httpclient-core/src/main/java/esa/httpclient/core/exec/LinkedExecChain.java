@@ -62,10 +62,10 @@ public class LinkedExecChain implements ExecChain {
                           Listener listener,
                           int readTimeout) {
         if (interceptors.length == 0) {
-            return transceiver(transceiver, handle, ctx, listener, readTimeout);
+            return buildTransceiver(transceiver, handle, ctx, listener, readTimeout);
         }
 
-        ExecChain chain = transceiver(transceiver, handle, ctx, listener, readTimeout);
+        ExecChain chain = buildTransceiver(transceiver, handle, ctx, listener, readTimeout);
         for (int i = interceptors.length - 1; i >= 0; i--) {
             chain = new LinkedExecChain(interceptors[i], chain, ctx);
         }
@@ -73,11 +73,12 @@ public class LinkedExecChain implements ExecChain {
         return chain;
     }
 
-    private static ExecChain transceiver(HttpTransceiver transceiver,
-                                         BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                                         Context ctx,
-                                         Listener listener,
-                                         int readTimeout) {
+    private static ExecChain buildTransceiver(HttpTransceiver transceiver,
+                                              BiFunction<Listener,
+                                                      CompletableFuture<HttpResponse>, HandleImpl> handle,
+                                              Context ctx,
+                                              Listener listener,
+                                              int readTimeout) {
         return new ExecChain() {
             @Override
             public Context ctx() {

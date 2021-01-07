@@ -15,11 +15,17 @@
  */
 package esa.httpclient.core.filter;
 
+import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
+import esa.httpclient.core.exec.Interceptor;
 import esa.httpclient.core.util.Ordered;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The {@link ResponseFilter} which will be executed after every network transports. You can get more information
+ * about the difference between filter and interceptor from {@link Interceptor}.
+ */
 public interface ResponseFilter extends Ordered {
 
     /**
@@ -28,10 +34,13 @@ public interface ResponseFilter extends Ordered {
      * before response content arrived. You can end the returned {@link CompletableFuture}
      * exceptionally to terminate the request and subsequent response data will be discarded.
      *
+     * @param request  request
      * @param response response
      * @param ctx      ctx
      * @return completable future
      */
-    CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx);
+    CompletableFuture<Void> doFilter(HttpRequest request,
+                                     HttpResponse response,
+                                     FilterContext ctx);
 
 }

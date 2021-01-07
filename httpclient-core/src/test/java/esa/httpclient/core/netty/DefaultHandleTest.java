@@ -39,12 +39,7 @@ class DefaultHandleTest {
 
     @Test
     void testNoopOnXxx() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final DefaultHandle0 handle = new DefaultHandle0(request, ctx, listener, response);
+        final DefaultHandle0 handle = new DefaultHandle0();
 
         final Consumer<Void> start = (v) -> {};
         final Consumer<Buffer> data = (d) -> {};
@@ -72,30 +67,32 @@ class DefaultHandleTest {
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final DefaultHandle handle1 = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final HandleImpl handle1 = new DefaultHandle(ByteBufAllocator.DEFAULT);
+        final NettyHandle nHandle1 = new NettyHandle(handle1, request, ctx, listener, response);
         final HttpMessage message1 = new HttpMessageImpl(202, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
 
-        handle1.onMessage(message1);
-        handle1.onEnd();
+        nHandle1.onMessage(message1);
+        nHandle1.onEnd();
         then(handle1.body().readableBytes()).isEqualTo(0);
         then(handle1.headers().isEmpty()).isTrue();
         then(handle1.status()).isEqualTo(202);
 
-        final DefaultHandle handle2 = new DefaultHandle(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        final HandleImpl handle2 = new DefaultHandle(ByteBufAllocator.DEFAULT);
+        final NettyHandle nHandle2 = new NettyHandle(handle2, request, ctx, listener, response);
         final HttpMessage message2 = new HttpMessageImpl(302, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
         message2.headers().add("A", "B");
 
         final byte[] data = "Hello World!".getBytes();
-        handle2.onMessage(message2);
-        handle2.onData(Buffers.buffer().writeBytes(data));
-        handle2.onData(Buffers.buffer().writeBytes(data));
-        handle2.onData(Buffers.buffer().writeBytes(data));
+        nHandle2.onMessage(message2);
+        nHandle2.onData(Buffers.buffer().writeBytes(data));
+        nHandle2.onData(Buffers.buffer().writeBytes(data));
+        nHandle2.onData(Buffers.buffer().writeBytes(data));
 
         final HttpHeaders trailers = new Http1HeadersImpl();
         trailers.add("D", "E");
-        handle2.onTrailers(trailers);
+        nHandle2.onTrailers(trailers);
 
-        handle2.onEnd();
+        nHandle2.onEnd();
         then(handle2.body().readableBytes()).isEqualTo(data.length * 3);
         then(handle2.headers().get("A")).isEqualTo("B");
         then(handle2.headers().get("D")).isNull();
@@ -106,11 +103,8 @@ class DefaultHandleTest {
 
     private static final class DefaultHandle0 extends DefaultHandle {
 
-        private DefaultHandle0(HttpRequest request,
-                              Context ctx,
-                              Listener listener,
-                              CompletableFuture<HttpResponse> response) {
-            super(request, ctx, listener, response, ByteBufAllocator.DEFAULT);
+        private DefaultHandle0() {
+            super(ByteBufAllocator.DEFAULT);
         }
 
         private Consumer<Void> start() {

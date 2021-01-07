@@ -47,6 +47,7 @@ import io.netty.channel.pool.ChannelPool;
 
 import java.net.InetAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -417,15 +418,15 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     }
 
     public List<Interceptor> interceptors() {
-        return Collections.unmodifiableList(interceptors);
+        return Collections.unmodifiableList(new ArrayList<>(interceptors));
     }
 
     public List<RequestFilter> requestFilters() {
-        return Collections.unmodifiableList(requestFilters);
+        return Collections.unmodifiableList(new ArrayList<>(requestFilters));
     }
 
     public List<ResponseFilter> responseFilters() {
-        return Collections.unmodifiableList(responseFilters);
+        return Collections.unmodifiableList(new ArrayList<>(responseFilters));
     }
 
     public RetryOptions retryOptions() {
@@ -446,6 +447,15 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
             unmodifiableInterceptors = buildUnmodifiableInterceptors();
         }
         return unmodifiableInterceptors;
+    }
+
+    public ResponseFilter[] buildUnmodifiableResponseFilters() {
+        final List<ResponseFilter> filters0 = new LinkedList<>(responseFilters);
+        filters0.addAll(ResponseFilterFactory.DEFAULT.filters());
+        filters0.addAll(DuplexFilterFactory.DEFAULT.filters());
+
+        OrderedComparator.sort(filters0);
+        return Collections.unmodifiableList(filters0).toArray(new ResponseFilter[0]);
     }
 
     private Interceptor[] buildUnmodifiableInterceptors() {
@@ -469,7 +479,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
 
         // Add FilteringInterceptor only when absent
         if (absent(interceptors0, FilteringExec.class)) {
-            interceptors0.add(new FilteringExec(buildUnmodifiableRequestFilters(), buildUnmodifiableResponseFilters()));
+            interceptors0.add(new FilteringExec(buildUnmodifiableRequestFilters()));
         }
 
         OrderedComparator.sort(interceptors0);
@@ -483,15 +493,6 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
 
         OrderedComparator.sort(filters0);
         return Collections.unmodifiableList(filters0).toArray(new RequestFilter[0]);
-    }
-
-    private ResponseFilter[] buildUnmodifiableResponseFilters() {
-        final List<ResponseFilter> filters0 = new LinkedList<>(responseFilters);
-        filters0.addAll(ResponseFilterFactory.DEFAULT.filters());
-        filters0.addAll(DuplexFilterFactory.DEFAULT.filters());
-
-        OrderedComparator.sort(filters0);
-        return Collections.unmodifiableList(filters0).toArray(new ResponseFilter[0]);
     }
 
     private static boolean absent(List<Interceptor> interceptors, Class<? extends Interceptor> target) {

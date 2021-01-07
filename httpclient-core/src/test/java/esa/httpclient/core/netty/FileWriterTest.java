@@ -28,6 +28,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.codec.http2.HttpConversionUtil;
+import io.netty.util.ReferenceCountUtil;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -80,6 +81,7 @@ class FileWriterTest extends Http2ConnectionHelper {
 
             DefaultFileRegion fileRegion = channel.readOutbound();
             then(fileRegion).isNotNull();
+            ReferenceCountUtil.release(fileRegion);
 
             LastHttpContent last = channel.readOutbound();
             then(last).isSameAs(LastHttpContent.EMPTY_LAST_CONTENT);
@@ -135,6 +137,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             ctx.remove100ContinueCallback().run();
             fileRegion = channel.readOutbound();
             then(fileRegion).isNotNull();
+            ReferenceCountUtil.release(fileRegion);
 
             LastHttpContent last = channel.readOutbound();
             then(last).isSameAs(LastHttpContent.EMPTY_LAST_CONTENT);
@@ -237,6 +240,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             for (int i = 0; i < data.length / 8192; i++) {
                 content = channel.readOutbound();
                 then(content.data.readableBytes()).isEqualTo(8192);
+                ReferenceCountUtil.release(content.data);
             }
             then(content.endStream).isTrue();
             then(end.isDone()).isTrue();
@@ -296,6 +300,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             for (int i = 0; i < data.length / 8192; i++) {
                 content = channel.readOutbound();
                 then(content.data.readableBytes()).isEqualTo(8192);
+                ReferenceCountUtil.release(content.data);
             }
             then(content.endStream).isTrue();
             then(end.isDone()).isTrue();

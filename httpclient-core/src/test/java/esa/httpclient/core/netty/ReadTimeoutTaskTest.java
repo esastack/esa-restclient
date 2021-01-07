@@ -19,6 +19,7 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.AbstractChannel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelConfig;
@@ -85,11 +86,11 @@ class ReadTimeoutTaskTest {
         private final AtomicInteger error;
 
         private Handler0(HttpRequest request,
-                        Context ctx,
-                        Listener listener,
-                        CompletableFuture<HttpResponse> response,
-                        AtomicInteger error) {
-            super(request, ctx, listener, response);
+                         Context ctx,
+                         Listener listener,
+                         CompletableFuture<HttpResponse> response,
+                         AtomicInteger error) {
+            super(new DefaultHandle(ByteBufAllocator.DEFAULT), request, ctx, listener, response);
             this.error = error;
         }
 

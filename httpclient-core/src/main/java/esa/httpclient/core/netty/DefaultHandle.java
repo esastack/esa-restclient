@@ -19,32 +19,23 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.core.Buffers;
-import esa.httpclient.core.Context;
 import esa.httpclient.core.Handle;
-import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static esa.httpclient.core.netty.Utils.tryRelease;
 
-public class DefaultHandle extends NettyHandle {
+class DefaultHandle extends HandleImpl {
 
     private static final int MAX_COMPOSITE_BUFFER_COMPONENTS = 1024;
 
     private CompositeByteBuf body;
 
-    DefaultHandle(HttpRequest request,
-                  Context ctx,
-                  Listener listener,
-                  CompletableFuture<HttpResponse> response,
-                  ByteBufAllocator alloc) {
-        super(request, ctx, listener, response);
+    DefaultHandle(ByteBufAllocator alloc) {
+        super(new NettyResponse(true));
 
         this.data = (d) -> {
             if (d.isReadable()) {
@@ -61,24 +52,15 @@ public class DefaultHandle extends NettyHandle {
             } else {
                 super.underlying.body(new BufferImpl(Unpooled.copiedBuffer(body)));
             }
+
+            // Try to release the staged body.
+            tryRelease(body);
         };
 
         this.trailers = (trailers) -> trailers().add(trailers);
-    }
 
-    @Override
-    public void onEnd() {
-        super.onEnd();
-        tryRelease(body);
-    }
-
-    @Override
-    public void onError(Throwable cause) {
-        try {
-            super.onError(cause);
-        } finally {
-            tryRelease(body);
-        }
+        // Try to release the staged body.
+        this.error = (th) -> tryRelease(body);
     }
 
     @Override

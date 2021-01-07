@@ -15,9 +15,11 @@
  */
 package esa.httpclient.core.exec;
 
+import esa.httpclient.core.ContextNames;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
+import esa.httpclient.core.filter.FilterContext;
 import esa.httpclient.core.filter.FilterContextImpl;
 import esa.httpclient.core.filter.RequestFilter;
 import esa.httpclient.core.filter.ResponseFilter;
@@ -36,19 +38,15 @@ public class FilteringExec implements Interceptor {
     private final RequestFilter[] requestFilters;
     private final boolean requestFiltersAbsent;
 
-    private final ResponseFilter[] responseFilters;
-    private final boolean responseFiltersAbsent;
-
-    public FilteringExec(RequestFilter[] requestFilters, ResponseFilter[] responseFilters) {
+    public FilteringExec(RequestFilter[] requestFilters) {
         this.requestFilters = requestFilters;
         this.requestFiltersAbsent = requestFilters == null || requestFilters.length == 0;
-        this.responseFilters = responseFilters;
-        this.responseFiltersAbsent = responseFilters == null || responseFilters.length == 0;
     }
 
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
-        FilterContextImpl ctx0 = new FilterContextImpl(next.ctx());
+        final FilterContext ctx0 = new FilterContextImpl(next.ctx());
+        next.ctx().setAttr(ContextNames.FILTER_CONTEXT, ctx0);
 
         Listener listener = next.ctx().removeUncheckedAttr(LISTENER_KEY);
         if (listener != null) {
@@ -57,12 +55,10 @@ public class FilteringExec implements Interceptor {
         }
 
         return applyRequestFilters(request, ctx0)
-                .thenCompose(v -> next.proceed(request))
-                .thenCompose(rsp -> applyResponseFilters(rsp, ctx0))
-                .whenComplete((rsp, th) -> ctx0.clear());
+                .thenCompose(v -> next.proceed(request));
     }
 
-    private CompletableFuture<Void> applyRequestFilters(HttpRequest request, FilterContextImpl ctx) {
+    private CompletableFuture<Void> applyRequestFilters(HttpRequest request, FilterContext ctx) {
         if (requestFiltersAbsent) {
             return CompletableFuture.completedFuture(null);
         }
@@ -80,25 +76,5 @@ public class FilteringExec implements Interceptor {
         return future == null ? Futures.completed() : future;
     }
 
-    private CompletableFuture<HttpResponse> applyResponseFilters(HttpResponse response,
-                                                                 FilterContextImpl ctx) {
-        if (responseFiltersAbsent) {
-            return Futures.completed(response);
-        }
-
-        CompletableFuture<Void> future = null;
-
-        // Executes response interceptors in IO threads directly.
-        for (ResponseFilter filter : this.responseFilters) {
-            if (future == null) {
-                future = filter.doFilter(response, ctx);
-            } else {
-                future = future.thenCompose(v -> filter.doFilter(response, ctx));
-            }
-        }
-
-        return future == null ? Futures.completed(response) :
-                future.thenCompose(v -> Futures.completed(response));
-    }
-
 }
+

@@ -84,7 +84,8 @@ class H2TransceiverHandleTest {
         channel.pipeline().addLast(new Http1ChannelHandler(registry, -1L));
 
         then(registry.get(3)).isNull();
-        int requestId = handle.addRspHandle(request, ctx, channel, listener, null, registry, response);
+        int requestId = handle.addRspHandle(request, ctx, channel, listener,
+                null, null, registry, response);
         then(requestId).isEqualTo(3);
         then(registry.get(requestId)).isNotNull();
         then(request.headers().getInt(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text())).isEqualTo(requestId);

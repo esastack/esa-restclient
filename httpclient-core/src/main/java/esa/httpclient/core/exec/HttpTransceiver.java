@@ -21,7 +21,7 @@ import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.netty.NettyHandle;
+import esa.httpclient.core.netty.HandleImpl;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -45,7 +45,7 @@ public interface HttpTransceiver {
      */
     CompletableFuture<HttpResponse> handle(HttpRequest request,
                                            Context ctx,
-                                           BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+                                           BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                                            Listener listener,
                                            int readTimeout);
 

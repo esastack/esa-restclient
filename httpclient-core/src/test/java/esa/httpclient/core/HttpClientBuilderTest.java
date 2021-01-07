@@ -27,11 +27,15 @@ import esa.httpclient.core.exec.RedirectInterceptor;
 import esa.httpclient.core.exec.RetryInterceptor;
 import esa.httpclient.core.filter.DuplexFilter;
 import esa.httpclient.core.filter.FilterContext;
+import esa.httpclient.core.filter.RequestFilter;
+import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
+import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -244,7 +248,7 @@ class HttpClientBuilderTest {
         final RedirectInterceptor redirectInterceptor = new RedirectInterceptor();
         builder.addInterceptor(redirectInterceptor);
 
-        final FilteringExec filteringExec = new FilteringExec(null, null);
+        final FilteringExec filteringExec = new FilteringExec(null);
         builder.addInterceptor(filteringExec);
 
         final ExpectContinueInterceptor expectContinueInterceptor = new SubExpectContinueInterceptor();
@@ -255,6 +259,91 @@ class HttpClientBuilderTest {
         then(builder.interceptors().contains(redirectInterceptor)).isTrue();
         then(builder.interceptors().contains(filteringExec)).isTrue();
         then(builder.interceptors().contains(expectContinueInterceptor)).isTrue();
+    }
+
+    @Test
+    void testBuildUnmodifiableResponseFilters() {
+        final HttpClientBuilder builder = HttpClient.create();
+        then(builder.buildUnmodifiableResponseFilters().length).isEqualTo(0);
+
+        final ResponseFilter filter1 = new ResponseFilter() {
+            @Override
+            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+                return Futures.completed();
+            }
+
+            @Override
+            public int getOrder() {
+                return 100;
+            }
+        };
+
+        final ResponseFilter filter2 = new ResponseFilter() {
+            @Override
+            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+                return Futures.completed();
+            }
+
+            @Override
+            public int getOrder() {
+                return -100;
+            }
+        };
+
+        builder.addResponseFilter(filter1);
+        builder.addResponseFilter(filter2);
+        final ResponseFilter[] filters = builder.buildUnmodifiableResponseFilters();
+        then(filters.length).isEqualTo(2);
+        then(filters[0]).isSameAs(filter2);
+        then(filters[1]).isSameAs(filter1);
+    }
+
+    @Test
+    void testRequestFilters() {
+        final HttpClientBuilder builder = HttpClient.create();
+        final List<RequestFilter> filters1 = builder.requestFilters();
+        then(filters1).isEmpty();
+
+        builder.addRequestFilter((request, ctx) -> Futures.completed());
+
+        builder.addFilter(new DuplexFilter() {
+            @Override
+            public CompletableFuture<Void> doFilter(HttpRequest request, FilterContext ctx) {
+                return Futures.completed();
+            }
+
+            @Override
+            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+                return Futures.completed();
+            }
+        });
+
+        then(builder.requestFilters().size()).isEqualTo(2);
+        then(filters1).isEmpty();
+    }
+
+    @Test
+    void testResponseFilters() {
+        final HttpClientBuilder builder = HttpClient.create();
+        final List<ResponseFilter> filters1 = builder.responseFilters();
+        then(filters1).isEmpty();
+
+        builder.addResponseFilter((request, ctx) -> Futures.completed());
+
+        builder.addFilter(new DuplexFilter() {
+            @Override
+            public CompletableFuture<Void> doFilter(HttpRequest request, FilterContext ctx) {
+                return Futures.completed();
+            }
+
+            @Override
+            public CompletableFuture<Void> doFilter(HttpResponse response, FilterContext ctx) {
+                return Futures.completed();
+            }
+        });
+
+        then(builder.responseFilters().size()).isEqualTo(2);
+        then(filters1).isEmpty();
     }
 
     private static final class SubExpectContinueInterceptor extends ExpectContinueInterceptor {

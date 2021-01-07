@@ -71,7 +71,8 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
         final Listener listener1 = new NoopListener();
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
-        final NettyHandle handle1 = new DefaultHandle(request1, ctx1, listener1, response1, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle1 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request1, ctx1, listener1, response1);
         final int requestId1 = registry.put(handle1);
 
         final HttpRequest request2 = HttpRequest.get("/abc").build();
@@ -79,7 +80,8 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
         final Listener listener2 = new NoopListener();
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
-        final NettyHandle handle2 = new DefaultHandle(request2, ctx2, listener2, response2, ByteBufAllocator.DEFAULT);
+        final NettyHandle handle2 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request2, ctx2, listener2, response2);
         final int requestId2 = registry.put(handle2);
 
         channel.pipeline().fireExceptionCaught(new IOException());

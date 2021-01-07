@@ -20,8 +20,7 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.netty.NettyHandle;
-import esa.httpclient.core.netty.NettyTransceiver;
+import esa.httpclient.core.netty.HandleImpl;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -57,8 +56,8 @@ public class LinkedExecChain implements ExecChain {
     }
 
     static ExecChain from(Interceptor[] interceptors,
-                          NettyTransceiver transceiver,
-                          BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+                          HttpTransceiver transceiver,
+                          BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                           Context ctx,
                           Listener listener,
                           int readTimeout) {
@@ -74,8 +73,8 @@ public class LinkedExecChain implements ExecChain {
         return chain;
     }
 
-    private static ExecChain transceiver(NettyTransceiver transceiver,
-                                         BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+    private static ExecChain transceiver(HttpTransceiver transceiver,
+                                         BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                                          Context ctx,
                                          Listener listener,
                                          int readTimeout) {

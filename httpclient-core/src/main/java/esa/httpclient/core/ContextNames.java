@@ -20,8 +20,8 @@ public final class ContextNames {
     public static final String EXPECT_CONTINUE_ENABLED = "$expect.continue.enabled";
     public static final String MAX_RETRIES = "$maxRetries";
     public static final String MAX_REDIRECTS = "$maxRedirects";
+    public static final String FILTER_CONTEXT = "$filterContext";
 
     private ContextNames() {
     }
 }
-

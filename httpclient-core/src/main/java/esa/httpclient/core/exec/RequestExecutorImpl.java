@@ -22,8 +22,8 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.RequestOptions;
-import esa.httpclient.core.netty.NettyHandle;
-import esa.httpclient.core.netty.NettyTransceiver;
+import esa.httpclient.core.netty.HandleImpl;
+import esa.httpclient.core.netty.NettyResponse;
 import esa.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
@@ -39,14 +39,14 @@ public class RequestExecutorImpl implements RequestExecutor {
 
     private final HttpClientBuilder builder;
     private final Interceptor[] interceptors;
-    private final NettyTransceiver transceiver;
+    private final HttpTransceiver transceiver;
     private final int defaultMaxRedirects;
     private final int defaultMaxRetries;
     private final boolean defaultExpectContinueEnabled;
 
     public RequestExecutorImpl(HttpClientBuilder builder,
                                Interceptor[] interceptors,
-                               NettyTransceiver transceiver,
+                               HttpTransceiver transceiver,
                                int defaultMaxRedirects,
                                int defaultMaxRetries,
                                boolean defaultExpectContinueEnabled) {
@@ -66,7 +66,7 @@ public class RequestExecutorImpl implements RequestExecutor {
                                                    Context ctx,
                                                    Listener listener) {
         ExecChain chain = build(request,
-                (l, r) -> decideCustomHandle(request, ctx, l, r),
+                (l, r) -> decideCustomHandle(request),
                 ctx,
                 listener,
                 decideReadTimeout(request.config().readTimeout()));
@@ -87,7 +87,7 @@ public class RequestExecutorImpl implements RequestExecutor {
      * @return chain       execution chain
      */
     ExecChain build(HttpRequest request,
-                    BiFunction<Listener, CompletableFuture<HttpResponse>, NettyHandle> handle,
+                    BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                     Context ctx,
                     Listener listener,
                     int readTimeout) {
@@ -108,19 +108,16 @@ public class RequestExecutorImpl implements RequestExecutor {
         return LinkedExecChain.from(interceptors, transceiver, handle, ctx, listener, readTimeout);
     }
 
-    private NettyHandle decideCustomHandle(HttpRequest request,
-                                           Context ctx,
-                                           Listener listener,
-                                           CompletableFuture<HttpResponse> response) {
+    private HandleImpl decideCustomHandle(HttpRequest request) {
         final RequestOptions options = request.config();
         if (options.handler() != null && options.handle() != null) {
             LoggerUtils.logger().warn("Both handler and consumer<handle> are found to handle the" +
                     "inbound message, the handler will be used, uri: {}", request.uri());
         }
         if (options.handler() != null) {
-            return new NettyHandle(options.handler(), request, ctx, listener, response);
+            return new HandleImpl(new NettyResponse(false), options.handler());
         } else if (options.handle() != null) {
-            return new NettyHandle(options.handle(), request, ctx, listener, response);
+            return new HandleImpl(new NettyResponse(false), options.handle());
         }
 
         if (LoggerUtils.logger().isDebugEnabled()) {

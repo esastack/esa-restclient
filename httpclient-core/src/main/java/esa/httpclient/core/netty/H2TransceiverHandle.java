@@ -18,16 +18,14 @@ package esa.httpclient.core.netty;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
 import io.netty.handler.codec.http2.HttpConversionUtil;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class H2TransceiverHandle implements TransceiverHandle {
+class H2TransceiverHandle extends TransceiverHandle {
 
     @Override
     public TimeoutHandle buildTimeoutHandle(Channel channel,
@@ -38,17 +36,11 @@ class H2TransceiverHandle implements TransceiverHandle {
     }
 
     @Override
-    public int addRspHandle(HttpRequest request,
-                            Context ctx,
-                            Channel channel,
-                            Listener listener,
-                            NettyHandle handle,
-                            HandleRegistry registry,
-                            CompletableFuture<HttpResponse> response) {
-        if (handle == null) {
-            handle = new DefaultHandle(request, ctx, listener, response, channel.alloc());
-        }
-
+    int addRspHandle0(HttpRequest request,
+                      Context ctx,
+                      Channel channel,
+                      NettyHandle handle,
+                      HandleRegistry registry) {
         int requestId = registry.put(handle);
         request.headers().set(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(),
                 String.valueOf(requestId));

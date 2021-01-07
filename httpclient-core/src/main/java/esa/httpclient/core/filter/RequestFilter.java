@@ -29,6 +29,9 @@ public interface RequestFilter extends Ordered {
 
     /**
      * Proceeds the {@link HttpRequest} with corresponding {@link FilterContext}.
+     * This method will be executed before writing {@link HttpRequest}, and if
+     * the returned {@link CompletableFuture} completed exceptionally and then
+     * the current execution will be terminated.
      *
      * @param request request
      * @param ctx     ctx

@@ -102,7 +102,8 @@ class H1TransceiverHandleTest {
         final EmbeddedChannel channel = new EmbeddedChannel();
         channel.pipeline().addLast(new Http1ChannelHandler(registry, -1L));
 
-        int requestId = handle.addRspHandle(request, ctx, channel, listener, null, registry, response);
+        int requestId = handle.addRspHandle(request, ctx, channel, listener,
+                null, null, registry, response);
         then(requestId).isEqualTo(1);
         then(registry.get(requestId)).isNotNull();
     }

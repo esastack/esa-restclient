@@ -19,19 +19,18 @@ import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.Handle;
-import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpMessage;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
+import esa.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
-public class NettyHandle extends HandleImpl {
+class NettyHandle {
 
+    final HandleImpl handle;
     private final AtomicBoolean ended = new AtomicBoolean();
     private final HttpRequest request;
     private final Context ctx;
@@ -40,65 +39,17 @@ public class NettyHandle extends HandleImpl {
 
     long remaining = -1L;
 
-    public NettyHandle(HttpRequest request,
-                       Context ctx,
-                       Listener listener,
-                       CompletableFuture<HttpResponse> response) {
-        super(new NettyResponse(true));
+    NettyHandle(HandleImpl handle,
+                HttpRequest request,
+                Context ctx,
+                Listener listener,
+                CompletableFuture<HttpResponse> response) {
+        Checks.checkNotNull(handle, "HandleImpl must not be null");
         Checks.checkNotNull(request, "HttpRequest must not be null");
         Checks.checkNotNull(ctx, "Context must not be null");
         Checks.checkNotNull(listener, "Listener must not be null");
         Checks.checkNotNull(response, "HttpResponse must not be null");
-        this.request = request;
-        this.ctx = ctx;
-        this.listener = listener;
-        this.response = response;
-    }
-
-    /**
-     * Adapter for {@link Handler}.
-     *
-     * @param handler       handler
-     * @param request       request
-     * @param ctx           ctx
-     * @param listener      listener
-     * @param response      response
-     */
-    public NettyHandle(Handler handler,
-                       HttpRequest request,
-                       Context ctx,
-                       Listener listener,
-                       CompletableFuture<HttpResponse> response) {
-        super(handler.response(), handler);
-        Checks.checkNotNull(request, "HttpRequest must not be null");
-        Checks.checkNotNull(ctx, "Context must not be null");
-        Checks.checkNotNull(listener, "Listener must not be null");
-        Checks.checkNotNull(response, "HttpResponse must not be null");
-        this.request = request;
-        this.ctx = ctx;
-        this.listener = listener;
-        this.response = response;
-    }
-
-    /**
-     * Adapter for {@link Handle}.
-     *
-     * @param handle        handle
-     * @param request       request
-     * @param ctx           ctx
-     * @param listener      listener
-     * @param response      response
-     */
-    public NettyHandle(Consumer<Handle> handle,
-                       HttpRequest request,
-                       Context ctx,
-                       Listener listener,
-                       CompletableFuture<HttpResponse> response) {
-        super(new NettyResponse(false), handle);
-        Checks.checkNotNull(request, "HttpRequest must not be null");
-        Checks.checkNotNull(ctx, "Context must not be null");
-        Checks.checkNotNull(listener, "Listener must not be null");
-        Checks.checkNotNull(response, "HttpResponse must not be null");
+        this.handle = handle;
         this.request = request;
         this.ctx = ctx;
         this.listener = listener;
@@ -111,10 +62,10 @@ public class NettyHandle extends HandleImpl {
         }
 
         try {
-            super.underlying.message(message);
+            handle.underlying.message(message);
             listener.onMessageReceived(request, ctx, message);
-            if (super.start != null) {
-                super.start.accept(null);
+            if (handle.start != null) {
+                handle.start.accept(null);
             }
         } catch (Throwable ex) {
             onError(ex);
@@ -127,8 +78,8 @@ public class NettyHandle extends HandleImpl {
         }
 
         try {
-            if (super.data != null) {
-                super.data.accept(content);
+            if (handle.data != null) {
+                handle.data.accept(content);
             }
         } catch (Throwable ex) {
             onError(ex);
@@ -142,11 +93,11 @@ public class NettyHandle extends HandleImpl {
 
         try {
             if (ended.compareAndSet(false, true)) {
-                if (super.end != null) {
-                    super.end.accept(null);
+                if (handle.end != null) {
+                    handle.end.accept(null);
                 }
-                response.complete(this);
-                listener.onCompleted(request, ctx, this);
+                response.complete(handle.underlying);
+                listener.onCompleted(request, ctx, handle.underlying);
             }
         } catch (Throwable ex) {
             // Reset the ended flag so that onError can have chance to execute.
@@ -166,8 +117,8 @@ public class NettyHandle extends HandleImpl {
         }
 
         try {
-            if (super.trailers != null) {
-                super.trailers.accept(trailers);
+            if (handle.trailers != null) {
+                handle.trailers.accept(trailers);
             }
         } catch (Throwable ex) {
             onError(ex);
@@ -180,11 +131,15 @@ public class NettyHandle extends HandleImpl {
 
     private void onError0(Throwable cause) {
         response.completeExceptionally(cause);
-        if (super.error != null) {
-            super.error.accept(cause);
-        }
+        try {
+            if (handle.error != null) {
+                handle.error.accept(cause);
+            }
 
-        listener.onError(request, ctx, cause);
+            listener.onError(request, ctx, cause);
+        } catch (Throwable ex) {
+            LoggerUtils.logger().warn("Unexpected exception occurred on handle#onError0", cause);
+        }
     }
 
     @Override

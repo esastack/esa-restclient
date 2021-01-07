@@ -17,16 +17,18 @@ package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.Context;
+import esa.httpclient.core.ContextNames;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.ListenerProxy;
+import esa.httpclient.core.filter.ResponseFilter;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
 
 import java.util.concurrent.CompletableFuture;
 
-interface TransceiverHandle {
+abstract class TransceiverHandle {
 
     /**
      * Builds a {@link ListenerProxy} with supplied {@link Channel} and {@link Listener}.
@@ -37,10 +39,10 @@ interface TransceiverHandle {
      * @param version     version
      * @return            proxied listener
      */
-    TimeoutHandle buildTimeoutHandle(Channel channel,
-                                     ChannelPool channelPool,
-                                     Listener delegate,
-                                     HttpVersion version);
+    abstract TimeoutHandle buildTimeoutHandle(Channel channel,
+                                              ChannelPool channelPool,
+                                              Listener delegate,
+                                              HttpVersion version);
 
     /**
      * Builds a {@link NettyHandle} and adds it to {@link HandleRegistry}.
@@ -50,6 +52,7 @@ interface TransceiverHandle {
      * @param channel  channel
      * @param listener listener
      * @param handle   handle
+     * @param filters  filters
      * @param registry registry of handler adapter
      * @param response response
      * @return requestId
@@ -58,8 +61,37 @@ interface TransceiverHandle {
                      Context ctx,
                      Channel channel,
                      Listener listener,
-                     NettyHandle handle,
+                     HandleImpl handle,
+                     ResponseFilter[] filters,
                      HandleRegistry registry,
-                     CompletableFuture<HttpResponse> response);
+                     CompletableFuture<HttpResponse> response) {
+        final NettyHandle nHandle = buildNettyHandle(request, ctx, channel, listener,
+                handle, filters, response);
+        return addRspHandle0(request, ctx, channel, nHandle, registry);
+    }
 
+    abstract int addRspHandle0(HttpRequest request,
+                               Context ctx,
+                               Channel channel,
+                               NettyHandle handle,
+                               HandleRegistry registry);
+
+    private NettyHandle buildNettyHandle(HttpRequest request,
+                                         Context ctx,
+                                         Channel channel,
+                                         Listener listener,
+                                         HandleImpl handle,
+                                         ResponseFilter[] filters,
+                                         CompletableFuture<HttpResponse> response) {
+        if (handle == null) {
+            handle = new DefaultHandle(channel.alloc());
+        }
+
+        if (filters == null || filters.length == 0) {
+            return new NettyHandle(handle, request, ctx, listener, response);
+        } else {
+            return new FilteringHandle(handle, request, ctx, listener, response, filters,
+                    ctx.removeUncheckedAttr(ContextNames.FILTER_CONTEXT));
+        }
+    }
 }

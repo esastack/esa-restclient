@@ -31,8 +31,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 class NettyHandle {
 
     final HandleImpl handle;
+    final HttpRequest request;
+
     private final AtomicBoolean ended = new AtomicBoolean();
-    private final HttpRequest request;
     private final Context ctx;
     private final Listener listener;
     private final CompletableFuture<HttpResponse> response;

@@ -56,9 +56,9 @@ class FilteringHandle extends NettyHandle {
         try {
             for (ResponseFilter filter : filters) {
                 if (handleChain == null) {
-                    handleChain = filter.doFilter(handle.underlying, ctx);
+                    handleChain = filter.doFilter(request, handle.underlying, ctx);
                 } else {
-                    handleChain = handleChain.thenCompose(v -> filter.doFilter(handle.underlying, ctx));
+                    handleChain = handleChain.thenCompose(v -> filter.doFilter(request, handle.underlying, ctx));
                 }
             }
         } catch (Throwable ex) {

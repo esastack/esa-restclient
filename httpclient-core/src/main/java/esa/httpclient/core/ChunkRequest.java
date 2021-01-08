@@ -249,15 +249,4 @@ public interface ChunkRequest extends HttpRequest {
      * @return      true or false
      */
     boolean isWritable();
-
-    /**
-     * Obtains the {@link RequestType} of current request.
-     *
-     * @return type
-     */
-    @Override
-    default RequestType type() {
-        return RequestType.CHUNK;
-    }
-
 }

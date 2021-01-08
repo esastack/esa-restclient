@@ -25,14 +25,4 @@ public interface FileRequest extends HttpRequest {
      * @return file
      */
     File file();
-
-    /**
-     * {@link RequestType} of current request
-     *
-     * @return type of {@link RequestType#FILE}
-     */
-    @Override
-    default RequestType type() {
-        return RequestType.FILE;
-    }
 }

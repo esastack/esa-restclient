@@ -25,7 +25,6 @@ import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.RequestType;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.SslOptions;
@@ -42,6 +41,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -167,7 +167,7 @@ class NettyTransceiverTest {
         final int readTimeout = 3000;
         final io.netty.channel.pool.ChannelPool channelPool = mock(io.netty.channel.pool.ChannelPool.class);
         final Future<Channel> future = mock(Future.class);
-        final RequestWriter writer = RequestWriter.getByType(RequestType.CHUNK);
+        final RequestWriter writer = NettyTransceiver.getWriter(request);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
         final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
@@ -203,7 +203,7 @@ class NettyTransceiverTest {
         final Listener listener = mock(Listener.class);
         final int readTimeout = 3000;
         final io.netty.channel.pool.ChannelPool channelPool = mock(io.netty.channel.pool.ChannelPool.class);
-        final RequestWriter writer = RequestWriter.getByType(RequestType.CHUNK);
+        final RequestWriter writer = NettyTransceiver.getWriter(request);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
         final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
@@ -400,5 +400,23 @@ class NettyTransceiverTest {
 
         SslHandler sslHandler2 = (SslHandler) supplier.get().get();
         then(sslHandler2.getHandshakeTimeoutMillis()).isEqualTo(sslOptions.handshakeTimeoutMillis());
+    }
+
+    @Test
+    void testGetWriter() {
+        final HttpRequest request1 = HttpRequest.get("/abc").build();
+        then(NettyTransceiver.getWriter(request1)).isInstanceOf(PlainWriter.class);
+
+        final HttpRequest request2 = HttpRequest.post("/abc").body(new byte[0]).build();
+        then(NettyTransceiver.getWriter(request2)).isInstanceOf(PlainWriter.class);
+
+        final HttpRequest request3 = HttpRequest.patch("/abc").file(new File("")).build();
+        then(NettyTransceiver.getWriter(request3)).isInstanceOf(FileWriter.class);
+
+        final HttpRequest request4 = HttpRequest.multipart("/abc").attribute("", "").build();
+        then(NettyTransceiver.getWriter(request4)).isInstanceOf(MultipartWriter.class);
+
+        final HttpRequest request5 = HttpClient.ofDefault().prepare("/abc").build();
+        then(NettyTransceiver.getWriter(request5)).isInstanceOf(ChunkWriter.class);
     }
 }

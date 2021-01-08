@@ -16,13 +16,13 @@
 package esa.httpclient.core.exec;
 
 import esa.commons.http.HttpHeaderNames;
+import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.FileRequest;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.MultipartRequest;
 import esa.httpclient.core.PlainRequest;
 import esa.httpclient.core.RequestOptions;
-import esa.httpclient.core.RequestType;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.handler.codec.http.HttpHeaderValues;
 
@@ -49,7 +49,7 @@ public class ExpectContinueInterceptor implements Interceptor {
         }
 
         // Chunk request is not allowed to handle Expect: 100-Continue
-        if (RequestType.CHUNK.equals(request.type())) {
+        if (request instanceof ChunkRequest) {
             next.ctx().removeAttr(EXPECT_CONTINUE_ENABLED);
             if (LoggerUtils.logger().isDebugEnabled()) {
                 LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
@@ -80,12 +80,12 @@ public class ExpectContinueInterceptor implements Interceptor {
     }
 
     protected boolean emptyBody(HttpRequest request) {
-        if (RequestType.PLAIN.equals(request.type())) {
+        if (request instanceof PlainRequest) {
             return ((PlainRequest) request).body() == null || ((PlainRequest) request).body().length == 0;
-        } else if (RequestType.MULTIPART.equals(request.type())) {
+        } else if (request instanceof MultipartRequest) {
             return ((MultipartRequest) request).files().isEmpty()
                     && ((MultipartRequest) request).attributes().isEmpty();
-        } else if (RequestType.FILE.equals(request.type())) {
+        } else if (request instanceof FileRequest) {
             return ((FileRequest) request).file() == null;
         }
 

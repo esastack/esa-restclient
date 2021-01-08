@@ -20,11 +20,11 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.logging.Logger;
+import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.RequestOptions;
-import esa.httpclient.core.RequestType;
 import esa.httpclient.core.exception.RedirectException;
 import esa.httpclient.core.netty.NettyRequest;
 import esa.httpclient.core.util.LoggerUtils;
@@ -51,7 +51,7 @@ public class RedirectInterceptor implements Interceptor {
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
         // Pass directly when redirect is disabled
         final int maxRedirects = next.ctx().getUncheckedAttr(MAX_REDIRECTS, 0);
-        if (RequestType.CHUNK == request.type() || maxRedirects < 1) {
+        if (request instanceof ChunkRequest || maxRedirects < 1) {
             next.ctx().removeAttr(MAX_REDIRECTS);
 
             if (logger.isDebugEnabled()) {

@@ -17,7 +17,6 @@ package esa.httpclient.core.netty;
 
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.RequestType;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.http.HttpHeaders;
@@ -49,24 +48,4 @@ public interface RequestWriter<Request extends HttpRequest> {
                                 boolean uriEncodeEnabled,
                                 HttpVersion version,
                                 boolean http2) throws IOException;
-
-    /**
-     * Obtains a {@link RequestWriter} by specified {@link RequestType}
-     *
-     * @param type type
-     * @return writer to execute {@link HttpRequest}
-     */
-    static RequestWriter<? extends HttpRequest> getByType(RequestType type) {
-        switch (type) {
-            case FILE:
-                return FileWriter.singleton();
-            case MULTIPART:
-                return MultipartWriter.singleton();
-            case CHUNK:
-                return new ChunkWriter();
-            default:
-                return PlainWriter.singleton();
-        }
-    }
-
 }

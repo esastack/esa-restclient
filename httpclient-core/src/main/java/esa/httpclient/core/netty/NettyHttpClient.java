@@ -21,21 +21,23 @@ import esa.commons.Platforms;
 import esa.commons.annotation.Internal;
 import esa.commons.concurrent.ThreadPools;
 import esa.commons.http.HttpHeaderNames;
+import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
 import esa.commons.reflect.BeanUtils;
 import esa.commons.spi.SpiLoader;
-import esa.httpclient.core.ChunkRequest;
+import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.Context;
+import esa.httpclient.core.Handle;
+import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpRequestBuilder;
+import esa.httpclient.core.HttpRequestFacade;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.IdentityFactory;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.ListenerProxy;
 import esa.httpclient.core.ModifiableClient;
-import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.config.CallbackThreadPoolOptions;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.Decompression;
@@ -83,6 +85,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static esa.httpclient.core.netty.ChannelPoolFactory.PREFER_NATIVE;
 
@@ -159,36 +162,89 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         this.channelPools = channelPools;
         this.id = IDENTITY_PREFIX + IDENTITY.incrementAndGet();
         this.sslEngineFactory = loadSslEngineFactory(builder.sslOptions());
-        this.executor = build(ioThreads.origin(), channelPools, builder);
+        this.executor = build(ioThreads.origin(), channelPools);
         ACTIVE_CLIENTS.incrementAndGet();
     }
 
     @Override
-    public CompletableFuture<HttpResponse> execute(HttpRequest request) {
+    public HttpRequestFacade get(String uri) {
+        return newRequestFacade(HttpMethod.GET, uri);
+    }
+
+    @Override
+    public HttpRequestFacade head(String uri) {
+        return newRequestFacade(HttpMethod.HEAD, uri);
+    }
+
+    @Override
+    public HttpRequestFacade options(String uri) {
+        return newRequestFacade(HttpMethod.OPTIONS, uri);
+    }
+
+    @Override
+    public HttpRequestFacade trace(String uri) {
+        return newRequestFacade(HttpMethod.TRACE, uri);
+    }
+
+    @Override
+    public HttpRequestFacade connect(String uri) {
+        return newRequestFacade(HttpMethod.CONNECT, uri);
+    }
+
+    @Override
+    public HttpRequestFacade post(String uri) {
+        return newRequestFacade(HttpMethod.POST, uri);
+    }
+
+    @Override
+    public HttpRequestFacade delete(String uri) {
+        return newRequestFacade(HttpMethod.DELETE, uri);
+    }
+
+    @Override
+    public HttpRequestFacade put(String uri) {
+        return newRequestFacade(HttpMethod.PUT, uri);
+    }
+
+    @Override
+    public HttpRequestFacade patch(String uri) {
+        return newRequestFacade(HttpMethod.PATCH, uri);
+    }
+
+    /**
+     * Executes the given {@link HttpRequest} and obtains the {@link HttpResponse}. If both {@code handle}
+     * and {@code handler} are null, the default {@link DefaultHandle} will be used to aggregate the inbound
+     * message to a {@link HttpResponse}.
+     *
+     * @param request request
+     * @param ctx     ctx
+     * @param handle  handle, which may be null
+     * @param handler handler, which may be null
+     * @return response
+     */
+    public CompletableFuture<HttpResponse> execute(HttpRequest request,
+                                                   Context ctx,
+                                                   Consumer<Handle> handle,
+                                                   Handler handler) {
         Checks.checkNotNull(request, "HttpRequest must not be null");
+        Checks.checkNotNull(ctx, "Context must not be null");
         final Listener listener = ListenerProxy.DEFAULT;
 
         addAcceptEncodingIfAbsent(request);
 
         if (callbackExecutor.origin() == null) {
-            return executor.execute(request,
-                    new NettyContext(),
-                    listener);
+            return executor.execute(request, ctx, listener, handle, handler);
         } else {
             // Note that: only if callback executor exists and the response
             // of original execution completes normally, we switch the original
             // response to continue execute in callback executor.
             return executor.execute(request,
-                    new NettyContext(),
-                    listener)
+                    ctx,
+                    listener,
+                    handle,
+                    handler)
                     .thenComposeAsync(Futures::completed, callbackExecutor.origin());
         }
-    }
-
-    @Override
-    public HttpRequestBuilder.ClassicChunk prepare(String uri) {
-        Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
-        return new ChunkRequestBuilder(uri, new NettyContext());
     }
 
     @Override
@@ -227,6 +283,14 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                 closeGlobalGracefully();
             }
         }
+    }
+
+    private HttpRequestFacade newRequestFacade(HttpMethod method, String uri) {
+        Checks.checkNotNull("HttpMethod must not be null");
+        Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
+        return new CompositeRequest(builder, this,
+                () -> new ChunkRequestImpl(builder, executor, method, uri),
+                method, uri);
     }
 
     private static void closeGlobalGracefully() {
@@ -364,24 +428,16 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      *
      * @param ioThreads            ioThreads
      * @param channelPools         channel pool map
-     * @param builder              copy
      * @return executor
      */
     protected RequestExecutor build(EventLoopGroup ioThreads,
-                                    ChannelPools channelPools,
-                                    HttpClientBuilder builder) {
-        NettyTransceiver transceiver = new NettyTransceiver(ioThreads,
+                                    ChannelPools channelPools) {
+        final NettyTransceiver transceiver = new NettyTransceiver(ioThreads,
                 channelPools,
                 builder,
                 sslEngineFactory);
 
-        return new RequestExecutorImpl(builder,
-                builder.unmodifiableInterceptors(),
-                transceiver,
-                builder.maxRedirects(),
-                builder.retryOptions() != null
-                        ? builder.retryOptions().maxRetries() : 0,
-                builder.isExpectContinueEnabled());
+        return new RequestExecutorImpl(builder.unmodifiableInterceptors(), transceiver);
     }
 
     /**
@@ -490,36 +546,6 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         }
 
         return new SslEngineFactoryImpl(sslContext);
-    }
-
-    private class ChunkRequestBuilder extends HttpRequestBuilder.ClassicChunk {
-
-        private final Context ctx;
-
-        private ChunkRequestBuilder(String uri, Context ctx) {
-            super(uri);
-            Checks.checkNotNull(ctx, "Context must not be null");
-            this.ctx = ctx;
-        }
-
-        @Override
-        public ChunkRequest build() {
-            final ChunkRequest request = new ChunkRequestImpl(executor,
-                    new RequestOptions(method,
-                            uri,
-                            readTimeout,
-                            uriEncodeEnabled,
-                            maxRetries,
-                            maxRedirects,
-                            headers,
-                            handle,
-                            handler),
-                    ctx);
-            addAcceptEncodingIfAbsent(request);
-
-            return request;
-        }
-
     }
 
     static class CallbackExecutorMetricImpl implements CallbackExecutorMetric {

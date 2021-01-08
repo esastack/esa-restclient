@@ -21,12 +21,10 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.FileRequest;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.MultipartRequest;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.exception.ConnectionException;
@@ -109,8 +107,7 @@ class NettyTransceiver implements HttpTransceiver {
                                                   Context ctx,
                                                   BiFunction<Listener, CompletableFuture<HttpResponse>,
                                                           HandleImpl> handle,
-                                                  final Listener listener,
-                                                  int readTimeout) {
+                                                  final Listener listener) {
         listener.onFiltersEnd(request, ctx);
 
         final SocketAddress address = selectServer(request, ctx);
@@ -149,7 +146,6 @@ class NettyTransceiver implements HttpTransceiver {
                     channel,
                     handle,
                     listener,
-                    readTimeout,
                     response,
                     writer,
                     chunkWriterPromise);
@@ -161,7 +157,6 @@ class NettyTransceiver implements HttpTransceiver {
                     channel,
                     handle,
                     listener,
-                    readTimeout,
                     response,
                     writer,
                     chunkWriterPromise));
@@ -194,7 +189,6 @@ class NettyTransceiver implements HttpTransceiver {
                  Future<Channel> channel,
                  BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                  Listener listener,
-                 int readTimeout,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
                  CompletableFuture<ChunkWriter> chunkWriterPromise) {
@@ -217,7 +211,6 @@ class NettyTransceiver implements HttpTransceiver {
                     channel0,
                     handle,
                     listener,
-                    readTimeout,
                     response,
                     writer,
                     chunkWriterPromise);
@@ -233,7 +226,6 @@ class NettyTransceiver implements HttpTransceiver {
                  Channel channel,
                  BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                  Listener listener,
-                 int readTimeout,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
                  CompletableFuture<ChunkWriter> chunkWriterPromise) {
@@ -273,7 +265,6 @@ class NettyTransceiver implements HttpTransceiver {
                     h,
                     http2,
                     version,
-                    readTimeout,
                     response,
                     writer,
                     chunkWriterPromise);
@@ -314,14 +305,13 @@ class NettyTransceiver implements HttpTransceiver {
                   final TimeoutHandle h,
                   boolean http2,
                   esa.commons.http.HttpVersion version,
-                  int readTimeout,
                   CompletableFuture<HttpResponse> response,
                   RequestWriter writer,
                   CompletableFuture<ChunkWriter> chunkWriterPromise) throws IOException {
         final HandleRegistry registry = detectRegistry(channel);
         setKeepAlive((Http1HeadersImpl) request.headers(), version);
 
-        h.onWriteAttempt(request, ctx, readTimeout);
+        h.onWriteAttempt(request, ctx);
 
         // we should add response handle before writing because that the inbound
         // message may arrive before completing writing.
@@ -337,7 +327,7 @@ class NettyTransceiver implements HttpTransceiver {
         final ChannelFuture result = writer.writeAndFlush(request,
                 channel,
                 ctx,
-                getValue(request.config().uriEncodeEnabled(), builder.isUriEncodeEnabled()),
+                getValue(request.uriEncodeEnabled(), builder.isUriEncodeEnabled()),
                 esa.commons.http.HttpVersion.HTTP_1_1 == version
                         ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,
                 http2);
@@ -354,8 +344,7 @@ class NettyTransceiver implements HttpTransceiver {
                     h,
                     registry,
                     response,
-                    chunkWriterPromise,
-                    readTimeout);
+                    chunkWriterPromise);
         } else {
             result.addListener(f -> {
                 try {
@@ -366,8 +355,7 @@ class NettyTransceiver implements HttpTransceiver {
                             h,
                             registry,
                             response,
-                            chunkWriterPromise,
-                            readTimeout);
+                            chunkWriterPromise);
                 } catch (Throwable ex) {
                     endWithError(request, ctx, h, response, chunkWriterPromise, ex);
                 }
@@ -412,14 +400,14 @@ class NettyTransceiver implements HttpTransceiver {
     }
 
     static RequestWriter getWriter(HttpRequest request) {
-        if (request instanceof FileRequest) {
-            return FileWriter.singleton();
+        if (request.isSegmented()) {
+            return new ChunkWriter();
         }
-        if (request instanceof MultipartRequest) {
+        if (request.isMultipart()) {
             return MultipartWriter.singleton();
         }
-        if (request instanceof ChunkRequest) {
-            return new ChunkWriter();
+        if (request.file() != null) {
+            return FileWriter.singleton();
         }
         return PlainWriter.singleton();
     }
@@ -503,16 +491,16 @@ class NettyTransceiver implements HttpTransceiver {
                              TimeoutHandle handle,
                              HandleRegistry registry,
                              CompletableFuture<HttpResponse> response,
-                             CompletableFuture<ChunkWriter> chunkWriterPromise,
-                             int readTimeout) {
+                             CompletableFuture<ChunkWriter> chunkWriterPromise) {
         if (result.isSuccess()) {
-            handle.onWriteDone(request, ctx, readTimeout);
+            handle.onWriteDone(request, ctx);
 
             Timeout timeout = READ_TIMEOUT_TIMER.newTimeout(new ReadTimeoutTask(requestId,
                             request.uri().toString(),
                             result.channel(),
                             registry),
-                    TimeUnit.MILLISECONDS.toNanos(readTimeout), TimeUnit.NANOSECONDS);
+                    TimeUnit.MILLISECONDS.toNanos(request.readTimeout()),
+                    TimeUnit.NANOSECONDS);
             handle.addCancelTask(timeout);
             return;
         }

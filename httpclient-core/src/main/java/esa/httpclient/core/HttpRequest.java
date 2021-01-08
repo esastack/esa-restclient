@@ -15,15 +15,15 @@
  */
 package esa.httpclient.core;
 
+import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
-import esa.httpclient.core.HttpRequestBuilder.BodyForbiddenBuilder;
-import esa.httpclient.core.HttpRequestBuilder.BodyPermittedBuilder;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-public interface HttpRequest {
+public interface HttpRequest extends Reusable<HttpRequest> {
 
     /**
      * Obtains method name
@@ -131,110 +131,71 @@ public interface HttpRequest {
     HttpRequest removeHeader(CharSequence name);
 
     /**
-     * Obtains the original {@link RequestOptions}. You must be aware that the modification of
-     * the result config has impact of current {@link HttpRequest} instance.
+     * Whether allow uri encode or not
      *
-     * @return current options
+     * @return true or false
      */
-    RequestOptions config();
+    boolean uriEncodeEnabled();
 
     /**
-     * An easy way to build {@link HttpMethod#GET} request.
+     * The readTimeout of current request
      *
-     * @param uri       request uri
-     * @return builder
+     * @return readTimeout
      */
-    static BodyForbiddenBuilder get(String uri) {
-        return new BodyForbiddenBuilder(HttpMethod.GET, uri);
+    int readTimeout();
+
+    /**
+     * Whether chunk write or not.
+     *
+     * @return true if current request is chunk write, otherwise false.
+     */
+    default boolean isSegmented() {
+        return false;
     }
 
     /**
-     * An easy way to build {@link HttpMethod#GET} request.
+     * Whether multipart or not.
      *
-     * @param uri       request uri
-     * @return builder
+     * @return true is current request using multipart encode, otherwise false.
      */
-    static BodyForbiddenBuilder head(String uri) {
-        return new BodyForbiddenBuilder(HttpMethod.HEAD, uri);
+    default boolean isMultipart() {
+        return false;
     }
 
     /**
-     * An easy way to build {@link HttpMethod#OPTIONS} request.
+     * Obtains given {@code byte[]} which is regarded as request's body.
      *
-     * @param uri       request uri
-     * @return builder
+     * @return bytes, which may be null if you haven't set the {@code byte[]} before.
      */
-    static BodyForbiddenBuilder options(String uri) {
-        return new BodyForbiddenBuilder(HttpMethod.OPTIONS, uri);
+    default byte[] bytes() {
+        return null;
     }
 
     /**
-     * An easy way to build {@link HttpMethod#TRACE} request.
+     * Obtains given {@code file} which is regarded as request's body.
      *
-     * @param uri       request uri
-     * @return builder
+     * @return file, which may be null if you haven't set the {@code file} before.
      */
-    static BodyForbiddenBuilder trace(String uri) {
-        return new BodyForbiddenBuilder(HttpMethod.TRACE, uri);
+    default File file() {
+        return null;
     }
 
     /**
-     * An easy way to build {@link HttpMethod#CONNECT} request.
+     * Obtains the attributes which are used to multipart encoded.
      *
-     * @param uri       request uri
-     * @return builder
+     * @return attributes, must be null if {@link #isMultipart()} is false.
      */
-    static BodyForbiddenBuilder connect(String uri) {
-        return new BodyForbiddenBuilder(HttpMethod.CONNECT, uri);
+    default MultiValueMap<String, String> attributes() {
+        return null;
     }
 
     /**
-     * An easy way to build {@link HttpMethod#POST} request.
+     * Obtains the files which are used to multipart encoded.
      *
-     * @param uri       request uri
-     * @return builder
+     * @return files, must be null if {@link #isMultipart()} is false.
      */
-    static BodyPermittedBuilder post(String uri) {
-        return new BodyPermittedBuilder(HttpMethod.POST, uri);
+    default List<MultipartFileItem> files() {
+        return null;
     }
 
-    /**
-     * An easy way to build {@link HttpMethod#DELETE} request.
-     *
-     * @param uri       request uri
-     * @return builder
-     */
-    static BodyPermittedBuilder delete(String uri) {
-        return new BodyPermittedBuilder(HttpMethod.DELETE, uri);
-    }
-
-    /**
-     * An easy way to build {@link HttpMethod#PUT} request.
-     *
-     * @param uri       request uri
-     * @return builder
-     */
-    static BodyPermittedBuilder put(String uri) {
-        return new BodyPermittedBuilder(HttpMethod.PUT, uri);
-    }
-
-    /**
-     * An easy way to build {@link HttpMethod#PATCH} request.
-     *
-     * @param uri       request uri
-     * @return builder
-     */
-    static BodyPermittedBuilder patch(String uri) {
-        return new BodyPermittedBuilder(HttpMethod.PATCH, uri);
-    }
-
-    /**
-     * An easy way to build {@link MultipartRequest}.
-     *
-     * @param uri       request uri
-     * @return builder
-     */
-    static HttpRequestBuilder.Multipart multipart(String uri) {
-        return new HttpRequestBuilder.Multipart(HttpMethod.POST, uri);
-    }
 }

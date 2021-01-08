@@ -22,7 +22,6 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpRequestBuilder;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.config.CacheOptions;
@@ -49,6 +48,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -75,44 +75,52 @@ class NettyHttpClientTest {
     }
 
     @Test
+    void testMethods() {
+        final HttpClient client = HttpClient.ofDefault();
+        final String uri = "http://127.0.0.1:8080/abc";
+        checkUriAndMethods(HttpMethod.GET, uri, client.get(uri));
+        checkUriAndMethods(HttpMethod.HEAD, uri, client.head(uri));
+        checkUriAndMethods(HttpMethod.POST, uri, client.post(uri));
+        checkUriAndMethods(HttpMethod.OPTIONS, uri, client.options(uri));
+        checkUriAndMethods(HttpMethod.DELETE, uri, client.delete(uri));
+        checkUriAndMethods(HttpMethod.TRACE, uri, client.trace(uri));
+        checkUriAndMethods(HttpMethod.CONNECT, uri, client.connect(uri));
+        checkUriAndMethods(HttpMethod.PATCH, uri, client.patch(uri));
+        checkUriAndMethods(HttpMethod.PUT, uri, client.put(uri));
+    }
+
+    private void checkUriAndMethods(HttpMethod method, String uri, HttpRequest request) {
+        assertEquals(method, request.method());
+        assertEquals(uri, request.uri().toString());
+    }
+
+    @Test
     void testExecute() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
 
         when(EXECUTOR.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> response);
 
-        assertThrows(NullPointerException.class, () -> client.execute(null));
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:8080").build();
+        assertThrows(NullPointerException.class, () -> client.execute(null,
+                null, null, null));
+        final HttpRequest request = client.get("http://127.0.0.1:8080");
 
         // Case 1: Accept-Encoding has set
         request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, Decompression.GZIP.format());
-        CompletableFuture<HttpResponse> rsp = client.execute(request);
+        CompletableFuture<HttpResponse> rsp = client.execute(request, new Context(), null, null);
         then(rsp).isSameAs(response);
         then(request.headers().get(HttpHeaderNames.ACCEPT_ENCODING)).isEqualTo(Decompression.GZIP.format());
 
         // Case 2: Accept-Encoding is null
         request.headers().remove(HttpHeaderNames.ACCEPT_ENCODING);
-        rsp = client.execute(request);
+        rsp = client.execute(request, new Context(), null, null);
         then(rsp).isSameAs(response);
         then(request.headers().get(HttpHeaderNames.ACCEPT_ENCODING)).isEqualTo(Decompression.GZIP_DEFLATE.format());
-    }
-
-    @Test
-    void testPrepare() {
-        final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create());
-
-        assertThrows(IllegalArgumentException.class, () -> client.prepare(null));
-
-        // default aggregate, compute by handle or handler
-        final HttpRequestBuilder.ClassicChunk builder = client.prepare("http://127.0.0.1:8080/abc")
-                .handle(h -> h.onError(th -> { }));
-
-        then(builder.build().method()).isSameAs(HttpMethod.POST);
-        builder.method(HttpMethod.GET);
-        then(builder.build().method()).isSameAs(HttpMethod.GET);
     }
 
     @Test
@@ -288,8 +296,7 @@ class NettyHttpClientTest {
 
         @Override
         protected RequestExecutor build(EventLoopGroup ioThreads,
-                                        ChannelPools channelPools,
-                                        HttpClientBuilder builder) {
+                                        ChannelPools channelPools) {
             return EXECUTOR;
         }
 

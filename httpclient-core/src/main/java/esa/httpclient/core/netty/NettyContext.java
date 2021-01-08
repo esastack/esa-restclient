@@ -15,12 +15,12 @@
  */
 package esa.httpclient.core.netty;
 
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.Context;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-class NettyContext extends ContextImpl {
+public class NettyContext extends Context {
 
     private volatile Runnable continueCallback;
     protected volatile CompletableFuture<ChunkWriter> writer;
@@ -44,3 +44,4 @@ class NettyContext extends ContextImpl {
     }
 
 }
+

@@ -15,7 +15,8 @@
  */
 package esa.httpclient.core.exec;
 
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.Context;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.filter.RequestFilter;
@@ -31,10 +32,12 @@ import static org.mockito.Mockito.when;
 
 class FilteringExecTest {
 
+    private final HttpClient client = HttpClient.ofDefault();
+
     @Test
     void testProceed() {
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:9999/abc/def").build();
-        final ContextImpl ctx = new ContextImpl();
+        final HttpRequest request = client.get("http://127.0.0.1:9999/abc/def");
+        final Context ctx = new Context();
         final HttpResponse response = new MockHttpResponse(200);
         final ExecChain chain = mock(ExecChain.class);
         when(chain.proceed(request)).thenReturn(Futures.completed(response));
@@ -73,6 +76,5 @@ class FilteringExecTest {
         final CompletableFuture<HttpResponse> response44 = exec4.proceed(request, chain);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
-        ctx.clear();
     }
 }

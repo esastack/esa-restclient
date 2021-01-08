@@ -16,6 +16,7 @@
 package esa.httpclient.core.netty;
 
 import esa.httpclient.core.Context;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import org.junit.jupiter.api.Test;
 
@@ -28,19 +29,20 @@ class ServerSelectorTest {
 
     @Test
     void testDefault() {
-        ServerSelector selector = ServerSelector.DEFAULT;
+        final ServerSelector selector = ServerSelector.DEFAULT;
+        final HttpClient client = HttpClient.ofDefault();
 
         final Context context = mock(Context.class);
-        final HttpRequest request1 = HttpRequest.get("http://127.0.0.1").build();
+        final HttpRequest request1 = client.get("http://127.0.0.1");
 
         then(selector.select(request1, context))
                 .isEqualTo(InetSocketAddress.createUnresolved("127.0.0.1", 80));
 
-        final HttpRequest request2 = HttpRequest.get("https://127.0.0.1").build();
+        final HttpRequest request2 = client.get("https://127.0.0.1");
         then(selector.select(request2, context))
                 .isEqualTo(InetSocketAddress.createUnresolved("127.0.0.1", 443));
 
-        final HttpRequest request3 = HttpRequest.get("https://127.0.0.1:8989").build();
+        final HttpRequest request3 = client.get("https://127.0.0.1:8989");
         then(selector.select(request3, context))
                 .isEqualTo(InetSocketAddress.createUnresolved("127.0.0.1", 8989));
     }

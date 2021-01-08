@@ -15,11 +15,15 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.commons.StringUtils;
+import esa.httpclient.core.Scheme;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http2.Http2Headers;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.ReferenceCounted;
+
+import java.net.URI;
 
 final class Utils {
 
@@ -62,6 +66,19 @@ final class Utils {
         if (msg.refCnt() > 0) {
             ReferenceCountUtil.safeRelease(msg);
         }
+    }
+
+    static Scheme toScheme(URI uri) {
+        final String scheme = uri.getScheme();
+        if (StringUtils.isEmpty(scheme)) {
+            return Scheme.HTTP;
+        }
+
+        if (Scheme.HTTPS.name0().equalsIgnoreCase(scheme)) {
+            return Scheme.HTTPS;
+        }
+
+        return Scheme.HTTP;
     }
 
 }

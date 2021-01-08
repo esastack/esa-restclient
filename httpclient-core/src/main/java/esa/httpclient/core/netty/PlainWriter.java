@@ -48,7 +48,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                                        boolean uriEncodeEnabled,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
-        addContentLengthIfAbsent(request, v -> request.body() == null ? 0L : request.body().length);
+        addContentLengthIfAbsent(request, v -> request.bytes() == null ? 0L : request.bytes().length);
 
         return super.writeAndFlush(request, channel, ctx, uriEncodeEnabled, version, http2);
     }
@@ -59,7 +59,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                                  Context context,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
-        if (request.body() == null || request.body().length == 0) {
+        if (request.bytes() == null || request.bytes().length == 0) {
             return channel.writeAndFlush(new DefaultFullHttpRequest(version,
                     HttpMethod.valueOf(request.method().name()),
                     request.uri().relative(uriEncodeEnabled),
@@ -75,11 +75,11 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
 
             final ChannelPromise endPromise = channel.newPromise();
             if (writeContentNow(context)) {
-                Utils.runInChannel(channel, () -> doWriteContent1(channel, request.body(), endPromise));
+                Utils.runInChannel(channel, () -> doWriteContent1(channel, request.bytes(), endPromise));
             } else {
                 channel.flush();
                 ((NettyContext) context).set100ContinueCallback(() ->
-                        Utils.runInChannel(channel, () -> doWriteContent1(channel, request.body(), endPromise)));
+                        Utils.runInChannel(channel, () -> doWriteContent1(channel, request.bytes(), endPromise)));
             }
 
             return endPromise;
@@ -115,7 +115,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
             return future;
         }
 
-        final byte[] data = request.body() == null ? EMPTY_DATA : request.body();
+        final byte[] data = request.bytes() == null ? EMPTY_DATA : request.bytes();
         final ChannelPromise endPromise = channel.newPromise();
         if (writeContentNow(context)) {
             doWriteContent2(channel,

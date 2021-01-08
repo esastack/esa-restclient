@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.httpclient.core.filter;
+package esa.httpclient.core;
 
-import esa.httpclient.core.Context;
+import esa.httpclient.core.mock.MockContext;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
-class FilterContextImplTest {
-
-    @Test
-    void testConstructor() {
-        assertThrows(NullPointerException.class,
-                () -> new FilterContextImpl(null));
-        new FilterContextImpl(mock(Context.class));
-    }
+class AttributesMapTest {
 
     @Test
     void testIllegalArgument() {
-        final FilterContext ctx = new FilterContextImpl(mock(Context.class));
+        final Context ctx = new Context();
         assertThrows(NullPointerException.class, () -> ctx.setAttr(null, "a"));
         assertThrows(NullPointerException.class, () -> ctx.setAttr("a", null));
         assertThrows(NullPointerException.class, () -> ctx.removeAttr(null));
@@ -42,8 +34,7 @@ class FilterContextImplTest {
 
     @Test
     void testAttrOperation() {
-        final Context ctx0 = mock(Context.class);
-        final FilterContext ctx = new FilterContextImpl(ctx0);
+        final MockContext ctx = new MockContext();
 
         final Object value1 = new Object();
         ctx.setAttr("A", value1);
@@ -74,8 +65,5 @@ class FilterContextImplTest {
 
         then(ctx.attrNames().size()).isEqualTo(1);
         then(ctx.attrNames().contains("A")).isTrue();
-
-        ctx.clear();
-        then(ctx.parent()).isSameAs(ctx0);
     }
 }

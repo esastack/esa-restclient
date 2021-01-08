@@ -17,7 +17,7 @@ package esa.httpclient.core.netty;
 
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.RequestOptions;
+import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.Scheme;
 
 import java.net.InetSocketAddress;
@@ -26,15 +26,14 @@ import java.net.SocketAddress;
 interface ServerSelector {
 
     ServerSelector DEFAULT = (request, ctx) -> {
-        final RequestOptions options = request.config();
-
-        int port = options.uri().port();
+        final HttpUri uri = request.uri();
+        int port = uri.port();
         if (port <= 0) {
-            port = Scheme.HTTPS == options.scheme()
+            port = Scheme.HTTPS == Utils.toScheme(uri.netURI())
                     ? Scheme.HTTPS.port() : Scheme.HTTP.port();
         }
 
-        return InetSocketAddress.createUnresolved(options.uri().host(), port);
+        return InetSocketAddress.createUnresolved(uri.host(), port);
     };
 
     /**

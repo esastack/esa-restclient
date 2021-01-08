@@ -17,7 +17,7 @@ package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderValues;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -34,11 +34,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class MultipartWriterTest extends Http2ConnectionHelper {
 
+    private final HttpClient client = HttpClient.ofDefault();
 
     ////////*********************************HTTP1 MULTIPART WRITER**************************************////////
 
@@ -57,13 +57,12 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.MultipartRequest request =
-                    esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                            .method(esa.commons.http.HttpMethod.POST)
-                            .file("file", file, null, true)
-                            .attribute("key1", "value1")
-                            .build();
-            final Context ctx = new ContextImpl();
+            final esa.httpclient.core.MultipartRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .multipart()
+                    .file("file", file, null, true)
+                    .attribute("key1", "value1");
+            final Context ctx = new Context();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -96,14 +95,13 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         final MultipartWriter writer = MultipartWriter.singleton();
         final EmbeddedChannel channel = new EmbeddedChannel();
 
-        final esa.httpclient.core.MultipartRequest request =
-                esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                        .method(esa.commons.http.HttpMethod.POST)
-                        .attribute("key1", "value1")
-                        .attribute("key2", "value2")
-                        .multipart(false)
-                        .build();
-        final Context ctx = new ContextImpl();
+        final esa.httpclient.core.MultipartRequest request = client
+                .post("http://127.0.0.1/abc")
+                .multipart()
+                .attribute("key1", "value1")
+                .attribute("key2", "value2")
+                .multipartEncode(false);
+        final Context ctx = new Context();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -139,14 +137,15 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.MultipartRequest request =
-                    esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                            .method(esa.commons.http.HttpMethod.POST)
-                            .file("file", file, null, true)
-                            .attribute("key1", "value1")
-                            .build();
-            final NettyContext ctx = new NettyContext();
-            ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+            final esa.httpclient.core.MultipartRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .multipart()
+                    .file("file", file, null, true)
+                    .attribute("key1", "value1")
+                    .expectContinueEnabled(true);
+
+            final MockNettyContext ctx = new MockNettyContext();
+            ctx.expectContinueEnabled(true);
 
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
@@ -194,14 +193,14 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.MultipartRequest request =
-                    esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                            .method(esa.commons.http.HttpMethod.POST)
-                            .file("file", file, null, true)
-                            .attribute("key1", "value1")
-                            .build();
+            final esa.httpclient.core.MultipartRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .multipart()
+                    .file("file", file, null, true)
+                    .attribute("key1", "value1");
+
             file.delete();
-            final Context ctx = new ContextImpl();
+            final Context ctx = new Context();
 
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
@@ -237,11 +236,11 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.MultipartRequest request =
-                    esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                            .file("file", file, null, true)
-                            .build();
-            final Context ctx = new ContextImpl();
+            final esa.httpclient.core.MultipartRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .multipart()
+                    .file("file", file, null, true);
+            final Context ctx = new Context();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -279,13 +278,14 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         setUp();
         final MultipartWriter writer = MultipartWriter.singleton();
 
-        final esa.httpclient.core.MultipartRequest request =
-                esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                        .attribute("key1", "value1")
-                        .attribute("key2", "value2")
-                        .multipart(false)
-                        .build();
-        final Context ctx = new ContextImpl();
+        final esa.httpclient.core.MultipartRequest request = client
+                .post("http://127.0.0.1/abc")
+                .multipart()
+                .attribute("key1", "value1")
+                .attribute("key2", "value2")
+                .multipartEncode(false);
+
+        final Context ctx = new Context();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -327,13 +327,13 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.MultipartRequest request =
-                    esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                            .file("file", file, null, true)
-                            .build();
-            final NettyContext ctx = new NettyContext();
+            final esa.httpclient.core.MultipartRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .multipart()
+                    .file("file", file, null, true);
 
-            ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+            final MockNettyContext ctx = new MockNettyContext();
+            ctx.expectContinueEnabled(true);
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -386,11 +386,12 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.MultipartRequest request =
-                    esa.httpclient.core.HttpRequest.multipart("http://127.0.0.1/abc")
-                            .file("file", file, null, true)
-                            .build();
-            final Context ctx = new ContextImpl();
+            final esa.httpclient.core.MultipartRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .multipart()
+                    .file("file", file, null, true);
+
+            final Context ctx = new Context();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
             file.delete();
 

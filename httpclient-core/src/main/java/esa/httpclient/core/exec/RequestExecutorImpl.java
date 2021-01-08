@@ -17,59 +17,44 @@ package esa.httpclient.core.exec;
 
 import esa.commons.Checks;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.HttpClientBuilder;
+import esa.httpclient.core.Handle;
+import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.netty.HandleImpl;
 import esa.httpclient.core.netty.NettyResponse;
 import esa.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
-import static esa.httpclient.core.ContextNames.MAX_REDIRECTS;
-import static esa.httpclient.core.ContextNames.MAX_RETRIES;
+import java.util.function.Consumer;
 
 public class RequestExecutorImpl implements RequestExecutor {
 
     static final String LISTENER_KEY = "$listener";
 
-    private final HttpClientBuilder builder;
     private final Interceptor[] interceptors;
     private final HttpTransceiver transceiver;
-    private final int defaultMaxRedirects;
-    private final int defaultMaxRetries;
-    private final boolean defaultExpectContinueEnabled;
 
-    public RequestExecutorImpl(HttpClientBuilder builder,
-                               Interceptor[] interceptors,
-                               HttpTransceiver transceiver,
-                               int defaultMaxRedirects,
-                               int defaultMaxRetries,
-                               boolean defaultExpectContinueEnabled) {
-        Checks.checkNotNull(builder, "HttpClientBuilder must not be null");
+    public RequestExecutorImpl(Interceptor[] interceptors,
+                               HttpTransceiver transceiver) {
         Checks.checkNotNull(interceptors, "Interceptors must not be null");
         Checks.checkNotNull(transceiver, "NettyTransceiver must not be null");
-        this.builder = builder;
         this.transceiver = transceiver;
         this.interceptors = interceptors;
-        this.defaultMaxRedirects = defaultMaxRedirects;
-        this.defaultMaxRetries = defaultMaxRetries;
-        this.defaultExpectContinueEnabled = defaultExpectContinueEnabled;
     }
 
     @Override
     public CompletableFuture<HttpResponse> execute(HttpRequest request,
                                                    Context ctx,
-                                                   Listener listener) {
-        ExecChain chain = build(request,
-                (l, r) -> decideCustomHandle(request),
+                                                   Listener listener,
+                                                   Consumer<Handle> handle,
+                                                   Handler handler) {
+        final ExecChain chain = build(
+                (l, r) -> decideCustomHandle(request, handle, handler),
                 ctx,
-                listener,
-                decideReadTimeout(request.config().readTimeout()));
+                listener);
 
         listener.onInterceptorsStart(request, chain.ctx());
         chain.ctx().setAttr(LISTENER_KEY, listener);
@@ -79,45 +64,28 @@ public class RequestExecutorImpl implements RequestExecutor {
     /**
      * Builds a execution chain to execute {@link HttpRequest}
      *
-     * @param request      request
      * @param handle       handler
      * @param ctx          ctx
      * @param listener     listener
-     * @param readTimeout  readTimeout
      * @return chain       execution chain
      */
-    ExecChain build(HttpRequest request,
-                    BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                    Context ctx,
-                    Listener listener,
-                    int readTimeout) {
-        final RequestOptions options = request.config();
-        if (options.expectContinueEnabled() != null
-                ? options.expectContinueEnabled() : defaultExpectContinueEnabled) {
-            ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
-        }
-
-        ctx.setAttr(MAX_RETRIES, options.maxRetries() > 0
-                ? options.maxRetries() : options.maxRetries() == 0
-                ? 0 : defaultMaxRetries);
-
-        ctx.setAttr(MAX_REDIRECTS, options.maxRedirects() > 0
-                ? options.maxRedirects() : options.maxRedirects() == 0
-                ? 0 : defaultMaxRedirects);
-
-        return LinkedExecChain.from(interceptors, transceiver, handle, ctx, listener, readTimeout);
+    private ExecChain build(BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
+                            Context ctx,
+                            Listener listener) {
+        return LinkedExecChain.from(interceptors, transceiver, handle, ctx, listener);
     }
 
-    private HandleImpl decideCustomHandle(HttpRequest request) {
-        final RequestOptions options = request.config();
-        if (options.handler() != null && options.handle() != null) {
+    private HandleImpl decideCustomHandle(HttpRequest request,
+                                          Consumer<Handle> handle,
+                                          Handler handler) {
+        if (handler != null && handle != null) {
             LoggerUtils.logger().warn("Both handler and consumer<handle> are found to handle the" +
                     "inbound message, the handler will be used, uri: {}", request.uri());
         }
-        if (options.handler() != null) {
-            return new HandleImpl(new NettyResponse(false), options.handler());
-        } else if (options.handle() != null) {
-            return new HandleImpl(new NettyResponse(false), options.handle());
+        if (handler != null) {
+            return new HandleImpl(new NettyResponse(false), handler);
+        } else if (handle != null) {
+            return new HandleImpl(new NettyResponse(false), handle);
         }
 
         if (LoggerUtils.logger().isDebugEnabled()) {
@@ -126,14 +94,6 @@ public class RequestExecutorImpl implements RequestExecutor {
         }
 
         return null;
-    }
-
-    private int decideReadTimeout(int readTimeout) {
-        if (readTimeout > 0) {
-            return readTimeout;
-        }
-
-        return builder.readTimeout();
     }
 
 }

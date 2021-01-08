@@ -102,13 +102,13 @@ class ListenerProxyTest {
         assertThrows(Exception.class, () -> proxy.onAcquireConnectionFailed(request, ctx, address, cause));
         verify(normal, never()).onAcquireConnectionFailed(request, ctx, address, cause);
 
-        doThrow(ex).when(abnormal).onWriteAttempt(request, ctx, -1L);
-        assertThrows(Exception.class, () -> proxy.onWriteAttempt(request, ctx, -1L));
-        verify(normal, never()).onWriteAttempt(request, ctx, -1L);
+        doThrow(ex).when(abnormal).onWriteAttempt(request, ctx);
+        assertThrows(Exception.class, () -> proxy.onWriteAttempt(request, ctx));
+        verify(normal, never()).onWriteAttempt(request, ctx);
 
-        doThrow(ex).when(abnormal).onWriteDone(request, ctx, -1L);
-        assertThrows(Exception.class, () -> proxy.onWriteDone(request, ctx, -1L));
-        verify(normal, never()).onWriteDone(request, ctx, -1L);
+        doThrow(ex).when(abnormal).onWriteDone(request, ctx);
+        assertThrows(Exception.class, () -> proxy.onWriteDone(request, ctx));
+        verify(normal, never()).onWriteDone(request, ctx);
 
         doThrow(ex).when(abnormal).onWriteFailed(request, ctx, cause);
         assertThrows(Exception.class, () -> proxy.onWriteFailed(request, ctx, cause));

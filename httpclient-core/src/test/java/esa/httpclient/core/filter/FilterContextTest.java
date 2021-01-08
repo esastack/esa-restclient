@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.httpclient.core;
+package esa.httpclient.core.filter;
 
+import esa.httpclient.core.Context;
+import esa.httpclient.core.mock.MockFilterContext;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
-class ContextImplTest {
+class FilterContextTest {
+
+    @Test
+    void testConstructor() {
+        assertThrows(NullPointerException.class,
+                () -> new FilterContext(null));
+        new FilterContext(mock(Context.class));
+    }
 
     @Test
     void testIllegalArgument() {
-        final Context ctx = new ContextImpl();
+        final FilterContext ctx = new FilterContext(mock(Context.class));
         assertThrows(NullPointerException.class, () -> ctx.setAttr(null, "a"));
         assertThrows(NullPointerException.class, () -> ctx.setAttr("a", null));
         assertThrows(NullPointerException.class, () -> ctx.removeAttr(null));
@@ -33,7 +43,8 @@ class ContextImplTest {
 
     @Test
     void testAttrOperation() {
-        final ContextImpl ctx = new ContextImpl();
+        final Context ctx0 = mock(Context.class);
+        final MockFilterContext ctx = new MockFilterContext(ctx0);
 
         final Object value1 = new Object();
         ctx.setAttr("A", value1);
@@ -64,5 +75,8 @@ class ContextImplTest {
 
         then(ctx.attrNames().size()).isEqualTo(1);
         then(ctx.attrNames().contains("A")).isTrue();
+
+        ctx.clear();
+        then(ctx.parent()).isSameAs(ctx0);
     }
 }

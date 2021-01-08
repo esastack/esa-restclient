@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.httpclient.core;
+package esa.httpclient.core.mock;
 
-public class Context extends AttributesMap {
+import esa.httpclient.core.Context;
 
-    protected volatile int maxRedirects;
-    protected volatile int maxRetries;
-    protected volatile boolean expectContinueEnabled;
+public class MockContext extends Context {
 
-    public int maxRedirects() {
-        return maxRedirects;
-    }
-
-    public int maxRetries() {
-        return maxRetries;
-    }
-
-    public boolean expectContinueEnabled() {
-        return expectContinueEnabled;
-    }
-
-    protected void maxRedirects(int maxRedirects) {
+    @Override
+    public void maxRedirects(int maxRedirects) {
         this.maxRedirects = maxRedirects;
     }
 
-    protected void maxRetries(int maxRetries) {
+    @Override
+    public void maxRetries(int maxRetries) {
         this.maxRetries = maxRetries;
     }
 
-    protected void expectContinueEnabled(boolean expectContinueEnabled) {
+    @Override
+    public void expectContinueEnabled(boolean expectContinueEnabled) {
         this.expectContinueEnabled = expectContinueEnabled;
     }
+
+    public void clear() {
+        super.attributes.clear();
+        expectContinueEnabled = true;
+        maxRedirects = 0;
+        maxRetries = 0;
+    }
 }
+

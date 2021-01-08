@@ -16,24 +16,24 @@
 package esa.httpclient.core.exec;
 
 import esa.commons.StringUtils;
+import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.logging.Logger;
-import esa.httpclient.core.ChunkRequest;
+import esa.httpclient.core.DelegatingRequest;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
-import esa.httpclient.core.RequestOptions;
+import esa.httpclient.core.MultipartFileItem;
 import esa.httpclient.core.exception.RedirectException;
-import esa.httpclient.core.netty.NettyRequest;
 import esa.httpclient.core.util.LoggerUtils;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import static esa.httpclient.core.ContextNames.MAX_REDIRECTS;
 
 public class RedirectInterceptor implements Interceptor {
 
@@ -50,10 +50,8 @@ public class RedirectInterceptor implements Interceptor {
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
         // Pass directly when redirect is disabled
-        final int maxRedirects = next.ctx().getUncheckedAttr(MAX_REDIRECTS, 0);
-        if (request instanceof ChunkRequest || maxRedirects < 1) {
-            next.ctx().removeAttr(MAX_REDIRECTS);
-
+        final int maxRedirects = next.ctx().maxRedirects();
+        if (request.isSegmented() || maxRedirects < 1) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Pass redirection directly, uri: {}, maxRedirects: {}",
                         request.uri().toString(), maxRedirects);
@@ -121,44 +119,61 @@ public class RedirectInterceptor implements Interceptor {
     }
 
     protected HttpRequest newRequest(HttpRequest request, URI uri, int status) {
-        final RequestOptions preOptions = request.config();
-        HttpMethod method = switchToGet(request, status) ? HttpMethod.GET : request.method();
+        final HttpMethod method0 = switchToGet(request, status) ? HttpMethod.GET : request.method();
+        final HttpUri uri0 = new HttpUri(uri, request.uri().params());
         boolean cleanBody = cleanBody(status);
 
-        final HttpRequest request0;
-        if (cleanBody) {
-            request0 = NettyRequest.from(new RequestOptions(method,
-                    new HttpUri(uri, request.uri().params()),
-                    preOptions.readTimeout(),
-                    preOptions.uriEncodeEnabled(),
-                    preOptions.maxRetries(),
-                    0,
-                    preOptions.headers(),
-                    preOptions.expectContinueEnabled(),
-                    preOptions.handle(),
-                    preOptions.handler(),
-                    null,
-                    null,
-                    false,
-                    null,
-                    null));
-        } else {
-            request0 = NettyRequest.from(new RequestOptions(method,
-                    new HttpUri(uri, request.uri().params()),
-                    preOptions.readTimeout(),
-                    preOptions.uriEncodeEnabled(),
-                    preOptions.maxRetries(),
-                    0,
-                    preOptions.headers(),
-                    preOptions.expectContinueEnabled(),
-                    preOptions.handle(),
-                    preOptions.handler(),
-                    preOptions.body(),
-                    preOptions.file(),
-                    preOptions.multipart(),
-                    preOptions.attributes(),
-                    preOptions.files()));
-        }
+        final HttpRequest request0 = new DelegatingRequest(request.copy()) {
+            @Override
+            public HttpMethod method() {
+                return method0;
+            }
+
+            @Override
+            public String scheme() {
+                return uri0.netURI().getScheme();
+            }
+
+            @Override
+            public String path() {
+                return uri0.path();
+            }
+
+            @Override
+            public HttpUri uri() {
+                return uri0;
+            }
+
+            @Override
+            public boolean isSegmented() {
+                return !cleanBody && super.isSegmented();
+            }
+
+            @Override
+            public boolean isMultipart() {
+                return !cleanBody && super.isMultipart();
+            }
+
+            @Override
+            public byte[] bytes() {
+                return cleanBody ? null : super.bytes();
+            }
+
+            @Override
+            public File file() {
+                return cleanBody ? null : super.file();
+            }
+
+            @Override
+            public MultiValueMap<String, String> attributes() {
+                return cleanBody ? null : super.attributes();
+            }
+
+            @Override
+            public List<MultipartFileItem> files() {
+                return cleanBody ? null : super.files();
+            }
+        };
 
         standardHeaders(request0.headers(), cleanBody);
         return request0;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.httpclient.core.netty;
+package esa.httpclient.core.mock;
 
-import esa.httpclient.core.PlainRequest;
-import esa.httpclient.core.RequestOptions;
+import esa.httpclient.core.Context;
+import esa.httpclient.core.filter.FilterContext;
 
-class PlainRequestImpl extends NettyRequest implements PlainRequest {
+public class MockFilterContext extends FilterContext {
 
-    PlainRequestImpl(RequestOptions options) {
-        super(options);
+    public MockFilterContext(Context parent) {
+        super(parent);
     }
 
-    @Override
-    public byte[] body() {
-        return options.body();
+    public void clear() {
+        super.attributes.clear();
     }
 }
+

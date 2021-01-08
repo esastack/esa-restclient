@@ -143,9 +143,8 @@ public interface Listener extends EventListener {
      *
      * @param request request
      * @param ctx     ctx
-     * @param readTimeout readTimeout
      */
-    default void onWriteAttempt(HttpRequest request, Context ctx, long readTimeout) {
+    default void onWriteAttempt(HttpRequest request, Context ctx) {
     }
 
     /**
@@ -153,9 +152,8 @@ public interface Listener extends EventListener {
      *
      * @param request request
      * @param ctx     ctx
-     * @param readTimeout readTimeout
      */
-    default void onWriteDone(HttpRequest request, Context ctx, long readTimeout) {
+    default void onWriteDone(HttpRequest request, Context ctx) {
     }
 
     /**

@@ -16,23 +16,17 @@
 package esa.httpclient.core.exec;
 
 import esa.commons.http.HttpHeaderNames;
-import esa.httpclient.core.ChunkRequest;
-import esa.httpclient.core.FileRequest;
+import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.MultipartRequest;
-import esa.httpclient.core.PlainRequest;
-import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.handler.codec.http.HttpHeaderValues;
 
 import java.util.concurrent.CompletableFuture;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
-
 /**
  * This interceptor is designed to handle request which needs 100-continue negotiation with remote peer.
- * When the {@link RequestOptions#expectContinueEnabled()} is true, current interceptor will
+ * When the {@link Context#expectContinueEnabled()} is true, current interceptor will
  * take effect to the corresponding {@link HttpRequest}.
  */
 public class ExpectContinueInterceptor implements Interceptor {
@@ -40,7 +34,7 @@ public class ExpectContinueInterceptor implements Interceptor {
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
         // Pass directly if not configured
-        if (!Boolean.TRUE.equals(next.ctx().getAttr(EXPECT_CONTINUE_ENABLED))) {
+        if (!Boolean.TRUE.equals(next.ctx().expectContinueEnabled())) {
             if (LoggerUtils.logger().isDebugEnabled()) {
                 LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
                         request.uri().toString());
@@ -49,8 +43,7 @@ public class ExpectContinueInterceptor implements Interceptor {
         }
 
         // Chunk request is not allowed to handle Expect: 100-Continue
-        if (request instanceof ChunkRequest) {
-            next.ctx().removeAttr(EXPECT_CONTINUE_ENABLED);
+        if (request.isSegmented()) {
             if (LoggerUtils.logger().isDebugEnabled()) {
                 LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
                         request.uri().toString());
@@ -59,7 +52,6 @@ public class ExpectContinueInterceptor implements Interceptor {
         }
 
         if (emptyBody(request)) {
-            next.ctx().removeAttr(EXPECT_CONTINUE_ENABLED);
             if (LoggerUtils.logger().isDebugEnabled()) {
                 LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly due to empty body, uri: {}",
                         request.uri().toString());
@@ -80,16 +72,16 @@ public class ExpectContinueInterceptor implements Interceptor {
     }
 
     protected boolean emptyBody(HttpRequest request) {
-        if (request instanceof PlainRequest) {
-            return ((PlainRequest) request).body() == null || ((PlainRequest) request).body().length == 0;
-        } else if (request instanceof MultipartRequest) {
-            return ((MultipartRequest) request).files().isEmpty()
-                    && ((MultipartRequest) request).attributes().isEmpty();
-        } else if (request instanceof FileRequest) {
-            return ((FileRequest) request).file() == null;
+        // NOTE: Expect-continue isn't supported for ChunkRequest
+        if (request.isSegmented()) {
+            return true;
         }
 
-        return true;
+        if (request.isMultipart()) {
+            return request.files().isEmpty() && request.attributes().isEmpty();
+        }
+        return request.file() == null
+                && (request.bytes() == null || request.bytes().length == 0);
     }
 
 }

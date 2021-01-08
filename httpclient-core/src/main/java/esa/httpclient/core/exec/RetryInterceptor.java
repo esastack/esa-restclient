@@ -17,7 +17,6 @@ package esa.httpclient.core.exec;
 
 import esa.commons.Checks;
 import esa.commons.logging.Logger;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.exception.RetryException;
@@ -26,8 +25,6 @@ import esa.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntToLongFunction;
-
-import static esa.httpclient.core.ContextNames.MAX_RETRIES;
 
 public class RetryInterceptor implements Interceptor {
 
@@ -46,7 +43,7 @@ public class RetryInterceptor implements Interceptor {
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
         // Pass directly if not configured
-        final int maxRetries = next.ctx().getUncheckedAttr(MAX_RETRIES, 0);
+        final int maxRetries = next.ctx().maxRetries();
         if (maxRetries < 1) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),
@@ -54,8 +51,7 @@ public class RetryInterceptor implements Interceptor {
             }
             return next.proceed(request);
         }
-        if (request instanceof ChunkRequest) {
-            next.ctx().removeAttr(MAX_RETRIES);
+        if (request.isSegmented()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),
                         maxRetries);

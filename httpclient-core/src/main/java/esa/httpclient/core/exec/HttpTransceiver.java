@@ -40,13 +40,11 @@ public interface HttpTransceiver {
      * @param ctx         ctx
      * @param handle      handle
      * @param listener    listener
-     * @param readTimeout readTimeout
      * @return response
      */
     CompletableFuture<HttpResponse> handle(HttpRequest request,
                                            Context ctx,
                                            BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                                           Listener listener,
-                                           int readTimeout);
+                                           Listener listener);
 
 }

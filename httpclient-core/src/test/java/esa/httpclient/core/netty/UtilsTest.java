@@ -15,6 +15,7 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.httpclient.core.Scheme;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -23,6 +24,7 @@ import io.netty.handler.codec.http2.DefaultHttp2Headers;
 import io.netty.handler.codec.http2.Http2Headers;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.BDDAssertions.then;
@@ -86,5 +88,20 @@ class UtilsTest {
         Utils.tryRelease(buf);
         then(buf.refCnt()).isEqualTo(0);
         Utils.tryRelease(buf);
+    }
+
+    @Test
+    void testToScheme() {
+        final URI uri0 = URI.create("https://127.0.0.1:8080/abc");
+        then(Utils.toScheme(uri0)).isSameAs(Scheme.HTTPS);
+
+        final URI uri1 = URI.create("HTTPS://127.0.0.1:8080/abc");
+        then(Utils.toScheme(uri1)).isSameAs(Scheme.HTTPS);
+
+        final URI uri2 = URI.create("http://127.0.0.1:8080/abc");
+        then(Utils.toScheme(uri2)).isSameAs(Scheme.HTTP);
+
+        final URI uri3 = URI.create("HTTP://127.0.0.1:8080/abc");
+        then(Utils.toScheme(uri3)).isSameAs(Scheme.HTTP);
     }
 }

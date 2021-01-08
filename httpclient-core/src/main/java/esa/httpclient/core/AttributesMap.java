@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,77 @@
 package esa.httpclient.core;
 
 import esa.commons.Checks;
+import esa.commons.annotation.Internal;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ContextImpl implements Context {
+@Internal
+public class AttributesMap {
 
-    private final Map<String, Object> attributes = new ConcurrentHashMap<>(0);
+    protected final Map<String, Object> attributes = new ConcurrentHashMap<>(4);
 
-    @Override
     public Object getAttr(String name) {
         Checks.checkNotNull(name, "name must not be null");
         return attributes.get(name);
     }
 
-    @Override
     public Object setAttr(String name, Object value) {
         Checks.checkNotNull(name, "name must not be null");
         Checks.checkNotNull(value, "value must not be null");
         return attributes.put(name, value);
     }
 
-    @Override
     public Object removeAttr(String name) {
         Checks.checkNotNull(name, "name must not be null");
         return attributes.remove(name);
     }
 
-    @Override
     public Set<String> attrNames() {
         return attributes.keySet();
     }
 
     /**
-     * Clears current context.
-     * Please don't call this manually, otherwise something wrong may occur.
+     * Obtains generic type value by name
+     *
+     * @param name name
+     * @param <T>  generic type
+     * @return value
      */
-    public void clear() {
-        attributes.clear();
+    @SuppressWarnings("unchecked")
+    public <T> T getUncheckedAttr(String name) {
+        return (T) getAttr(name);
     }
+
+    /**
+     * Obtains generic type value by name with default value
+     *
+     * @param name         name
+     * @param defaultValue default value
+     * @param <T>          generic type
+     * @return value
+     */
+    public <T> T getUncheckedAttr(String name, T defaultValue) {
+        try {
+            final T value = getUncheckedAttr(name);
+            return value != null ? value : defaultValue;
+        } catch (Throwable th) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Removes the attribute value by name
+     *
+     * @param name name
+     * @param <T>  generic type
+     * @return value
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T removeUncheckedAttr(String name) {
+        return (T) removeAttr(name);
+    }
+
 }
+

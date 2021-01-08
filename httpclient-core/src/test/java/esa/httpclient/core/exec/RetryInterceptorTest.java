@@ -16,10 +16,10 @@
 package esa.httpclient.core.exec;
 
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
+import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntToLongFunction;
 
-import static esa.httpclient.core.ContextNames.MAX_RETRIES;
 import static esa.httpclient.core.exec.RetryInterceptor.HAS_RETRIED_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,16 +41,18 @@ class RetryInterceptorTest {
 
     private static final String DO_RETRY = "$doRetry";
 
+    private final HttpClient client = HttpClient.ofDefault();
+
     @Test
     void testProceed() {
         // Retry is allowed as default
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:9999/abc/def").build();
+        final HttpRequest request = client.get("http://127.0.0.1:9999/abc/def");
         final ExecChain chain = mock(ExecChain.class);
-        final ContextImpl ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
         final HttpResponse response = new MockHttpResponse(200);
         when(chain.proceed(request)).thenReturn(Futures.completed(response));
         when(chain.ctx()).thenReturn(ctx);
-        ctx.setAttr(MAX_RETRIES, 10);
+        ctx.maxRetries(10);
         final RetryInterceptor interceptor = new AuxiliaryRetryInterceptor(
                 RetryPredicateImpl.DEFAULT, null);
         final CompletableFuture<HttpResponse> response0 = interceptor.proceed(request, chain);
@@ -61,7 +62,7 @@ class RetryInterceptorTest {
         ctx.clear();
 
         // Disable retry
-        ctx.setAttr(MAX_RETRIES, 0);
+        ctx.maxRetries(0);
         final CompletableFuture<HttpResponse> response1 = interceptor.proceed(request, chain);
         then(response1.isDone()).isTrue();
         then(response1.getNow(null)).isSameAs(response);
@@ -69,8 +70,8 @@ class RetryInterceptorTest {
         ctx.clear();
 
         // Retry is not allowed for chunk request
-        ctx.setAttr(MAX_RETRIES, 10);
-        final HttpRequest request1 = HttpClient.ofDefault().prepare("http://127.0.0.1:9999/abc/def").build();
+        ctx.maxRetries(10);
+        final HttpRequest request1 = client.get("http://127.0.0.1:9999/abc/def").segment();
         when(chain.proceed(request1)).thenReturn(Futures.completed(response));
         final CompletableFuture<HttpResponse> response2 = interceptor.proceed(request1, chain);
         then(response2.isDone()).isTrue();
@@ -81,9 +82,9 @@ class RetryInterceptorTest {
 
     @Test
     void testDoRetry() {
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:9999/abc/def").build();
+        final HttpRequest request = client.get("http://127.0.0.1:9999/abc/def");
         final ExecChain chain = mock(ExecChain.class);
-        final ContextImpl ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
         when(chain.proceed(request)).thenReturn(Futures.completed(new ConnectException()));
         when(chain.ctx()).thenReturn(ctx);
 
@@ -112,10 +113,10 @@ class RetryInterceptorTest {
         final int maxRetries = 10;
         final AtomicInteger count = new AtomicInteger();
 
-        final Context ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
         final ExecChain chain = mock(ExecChain.class);
         when(chain.ctx()).thenReturn(ctx);
-        ctx.setAttr(MAX_RETRIES, maxRetries);
+        ctx.maxRetries(maxRetries);
 
         final HttpResponse succeed = new MockHttpResponse(200);
 
@@ -131,7 +132,7 @@ class RetryInterceptorTest {
         });
 
         final RetryInterceptor interceptor = new RetryInterceptor(RetryPredicateImpl.DEFAULT, (cunt) -> 0);
-        final HttpResponse result = interceptor.proceed(HttpRequest.get("/abc").build(), chain).get();
+        final HttpResponse result = interceptor.proceed(client.get("/abc"), chain).get();
         then(result.status()).isEqualTo(200);
         int hasRetriedCount = ctx.getUncheckedAttr(HAS_RETRIED_COUNT);
         then(hasRetriedCount).isEqualTo(maxRetries);
@@ -139,9 +140,9 @@ class RetryInterceptorTest {
 
     @Test
     void testBackOff() {
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:9999/abc/def").build();
+        final HttpRequest request = client.get("http://127.0.0.1:9999/abc/def");
         final ExecChain chain = mock(ExecChain.class);
-        final ContextImpl ctx = new ContextImpl();
+        final Context ctx = new Context();
         when(chain.proceed(request)).thenReturn(Futures.completed(new ConnectException()));
         when(chain.ctx()).thenReturn(ctx);
 
@@ -164,8 +165,6 @@ class RetryInterceptorTest {
         for (int i = 0; i < 10; i++) {
             then(backOffs.get(i)).isEqualTo(intervalMs.applyAsLong(i + 1));
         }
-
-        ctx.clear();
     }
 
     private static final class AuxiliaryRetryInterceptor extends RetryInterceptor {

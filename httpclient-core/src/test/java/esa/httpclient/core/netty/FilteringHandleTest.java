@@ -20,14 +20,13 @@ import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpMessage;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
 import esa.httpclient.core.filter.FilterContext;
-import esa.httpclient.core.filter.FilterContextImpl;
 import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
@@ -45,6 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class FilteringHandleTest {
+
+    private final HttpClient client = HttpClient.ofDefault();
 
     @SuppressWarnings("unchecked")
     @Test
@@ -84,8 +85,8 @@ class FilteringHandleTest {
     @Test
     void testOpsNormal() throws Exception {
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final ResponseFilter[] filters = new ResponseFilter[2];
@@ -111,7 +112,7 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContextImpl(ctx);
+        final FilterContext fCtx = new FilterContext(ctx);
 
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
                 listener, response, filters, fCtx);
@@ -155,8 +156,8 @@ class FilteringHandleTest {
     @Test
     void testOnFilterError() {
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final ResponseFilter[] filters = new ResponseFilter[2];
@@ -183,7 +184,7 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContextImpl(ctx);
+        final FilterContext fCtx = new FilterContext(ctx);
 
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
                 listener, response, filters, fCtx);
@@ -218,8 +219,8 @@ class FilteringHandleTest {
     @Test
     void testExceptionThrownByFilter() {
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final ResponseFilter[] filters = new ResponseFilter[2];
@@ -236,7 +237,7 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContextImpl(ctx);
+        final FilterContext fCtx = new FilterContext(ctx);
 
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
                 listener, response, filters, fCtx);
@@ -270,8 +271,8 @@ class FilteringHandleTest {
 
     @Test
     void testOnMessageError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -287,8 +288,8 @@ class FilteringHandleTest {
 
     @Test
     void testOnDataError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -304,8 +305,8 @@ class FilteringHandleTest {
 
     @Test
     void testOnTrailersError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -321,8 +322,8 @@ class FilteringHandleTest {
 
     @Test
     void testOnEndError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -338,8 +339,8 @@ class FilteringHandleTest {
 
     @Test
     void testOnErrorError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = NoopListener.INSTANCE;
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -384,7 +385,7 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContextImpl(ctx);
+        final FilterContext fCtx = new FilterContext(ctx);
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
                 listener, response, filters, fCtx);
 

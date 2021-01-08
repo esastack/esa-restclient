@@ -16,8 +16,7 @@
 package esa.httpclient.core.netty;
 
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
-import esa.httpclient.core.FileRequest;
+import esa.httpclient.core.HttpClient;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -37,10 +36,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class FileWriterTest extends Http2ConnectionHelper {
+
+    private final HttpClient client = HttpClient.ofDefault();
 
     ////////*********************************HTTP1 FILE WRITER**************************************////////
 
@@ -59,10 +59,10 @@ class FileWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.FileRequest request =
-                    (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
-                            .file(file).build();
-            final Context ctx = new ContextImpl();
+            final esa.httpclient.core.FileRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .body(file);
+            final Context ctx = new Context();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -107,11 +107,11 @@ class FileWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.FileRequest request =
-                    (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
-                            .file(file).build();
-            final NettyContext ctx = new NettyContext();
-            ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+            final esa.httpclient.core.FileRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .body(file);
+            final MockNettyContext ctx = new MockNettyContext();
+            ctx.expectContinueEnabled(true);
 
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
@@ -163,12 +163,12 @@ class FileWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.FileRequest request =
-                    (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
-                            .file(file).build();
+            final esa.httpclient.core.FileRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .body(file);
             file.delete();
 
-            final Context ctx = new ContextImpl();
+            final Context ctx = new Context();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -212,10 +212,10 @@ class FileWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.FileRequest request =
-                    (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
-                            .file(file).build();
-            final Context ctx = new ContextImpl();
+            final esa.httpclient.core.FileRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .body(file);
+            final Context ctx = new Context();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -264,11 +264,11 @@ class FileWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.FileRequest request =
-                    (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
-                            .file(file).build();
-            final NettyContext ctx = new NettyContext();
-            ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+            final esa.httpclient.core.FileRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .body(file);
+            final MockNettyContext ctx = new MockNettyContext();
+            ctx.expectContinueEnabled(true);
 
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
@@ -324,12 +324,12 @@ class FileWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final esa.httpclient.core.FileRequest request =
-                    (FileRequest) esa.httpclient.core.HttpRequest.post("http://127.0.0.1/abc")
-                            .file(file).build();
+            final esa.httpclient.core.FileRequest request = client
+                    .post("http://127.0.0.1/abc")
+                    .body(file);
             file.delete();
 
-            final Context ctx = new ContextImpl();
+            final Context ctx = new Context();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,

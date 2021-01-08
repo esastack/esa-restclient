@@ -26,7 +26,7 @@ import java.net.ConnectException;
 public class RetryPredicateImpl implements RetryPredicate {
 
     /**
-     * Default to retry only {@link ConnectException} was caught.
+     * Default to retry only when {@link ConnectException} was caught.
      */
     public static final RetryPredicateImpl DEFAULT = new RetryPredicateImpl();
 

@@ -15,12 +15,47 @@
  */
 package esa.httpclient.core;
 
-public interface PlainRequest extends HttpRequest {
+import java.util.Map;
+import java.util.function.Consumer;
 
-    /**
-     * Obtains request's body as byte[] format
-     *
-     * @return data
-     */
-    byte[] body();
+public interface PlainRequest extends ExecutableRequest {
+
+    @Override
+    PlainRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+
+    @Override
+    PlainRequest expectContinueEnabled(Boolean expectContinueEnabled);
+
+    @Override
+    PlainRequest maxRedirects(int maxRedirects);
+
+    @Override
+    PlainRequest maxRetries(int maxRetries);
+
+    @Override
+    PlainRequest readTimeout(int readTimeout);
+
+    @Override
+    PlainRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
+    PlainRequest addParams(Map<String, String> params);
+
+    @Override
+    PlainRequest handle(Consumer<Handle> handle);
+
+    @Override
+    PlainRequest handler(Handler handler);
+
+    @Override
+    PlainRequest addHeader(CharSequence name, CharSequence value);
+
+    @Override
+    PlainRequest setHeader(CharSequence name, CharSequence value);
+
+    @Override
+    PlainRequest removeHeader(CharSequence name);
+
+    @Override
+    PlainRequest addParam(String name, String value);
 }

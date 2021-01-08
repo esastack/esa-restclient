@@ -165,24 +165,24 @@ public class ListenerProxy implements Listener {
     }
 
     @Override
-    public void onWriteAttempt(HttpRequest request, Context ctx, long readTimeout) {
+    public void onWriteAttempt(HttpRequest request, Context ctx) {
         if (listenersAbsent) {
             return;
         }
 
         for (Listener listener : listeners) {
-            listener.onWriteAttempt(request, ctx, readTimeout);
+            listener.onWriteAttempt(request, ctx);
         }
     }
 
     @Override
-    public void onWriteDone(HttpRequest request, Context ctx, long readTimeout) {
+    public void onWriteDone(HttpRequest request, Context ctx) {
         if (listenersAbsent) {
             return;
         }
 
         for (Listener listener : listeners) {
-            listener.onWriteDone(request, ctx, readTimeout);
+            listener.onWriteDone(request, ctx);
         }
     }
 

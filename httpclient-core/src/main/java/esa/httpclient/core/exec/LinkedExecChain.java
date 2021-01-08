@@ -25,9 +25,6 @@ import esa.httpclient.core.netty.HandleImpl;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-/**
- * The default implementation of {@link LinkedExecChain}.
- */
 public class LinkedExecChain implements ExecChain {
 
     private final Interceptor current;
@@ -59,13 +56,12 @@ public class LinkedExecChain implements ExecChain {
                           HttpTransceiver transceiver,
                           BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
                           Context ctx,
-                          Listener listener,
-                          int readTimeout) {
+                          Listener listener) {
         if (interceptors.length == 0) {
-            return buildTransceiver(transceiver, handle, ctx, listener, readTimeout);
+            return buildTransceiver(transceiver, handle, ctx, listener);
         }
 
-        ExecChain chain = buildTransceiver(transceiver, handle, ctx, listener, readTimeout);
+        ExecChain chain = buildTransceiver(transceiver, handle, ctx, listener);
         for (int i = interceptors.length - 1; i >= 0; i--) {
             chain = new LinkedExecChain(interceptors[i], chain, ctx);
         }
@@ -77,8 +73,7 @@ public class LinkedExecChain implements ExecChain {
                                               BiFunction<Listener,
                                                       CompletableFuture<HttpResponse>, HandleImpl> handle,
                                               Context ctx,
-                                              Listener listener,
-                                              int readTimeout) {
+                                              Listener listener) {
         return new ExecChain() {
             @Override
             public Context ctx() {
@@ -87,7 +82,7 @@ public class LinkedExecChain implements ExecChain {
 
             @Override
             public CompletableFuture<HttpResponse> proceed(HttpRequest request) {
-                return transceiver.handle(request, ctx, handle, listener, readTimeout);
+                return transceiver.handle(request, ctx, handle, listener);
             }
         };
 

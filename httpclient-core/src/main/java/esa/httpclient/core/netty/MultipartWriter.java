@@ -257,7 +257,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
             throws HttpPostRequestEncoder.ErrorDataEncoderException {
         final HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(FACTORY,
                 request0,
-                request.config().multipart());
+                request.multipartEncode());
 
         final MultiValueMap<String, String> attributes = request.attributes();
         for (Map.Entry<String, List<String>> entry : attributes.entrySet()) {

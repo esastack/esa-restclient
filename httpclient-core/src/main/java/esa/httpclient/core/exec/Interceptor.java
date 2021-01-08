@@ -15,7 +15,6 @@
  */
 package esa.httpclient.core.exec;
 
-import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.filter.DuplexFilter;
@@ -31,10 +30,8 @@ import java.util.concurrent.CompletableFuture;
  * and {@link HttpResponse} when {@link #proceed(HttpRequest, ExecChain)}ing. The context among
  * {@link Interceptor} can be obtained by {@link ExecChain#ctx()}. More importantly, the most important difference
  * between {@link Interceptor} and {@link DuplexFilter} is that the former will only be executed once in every
- * {@link HttpClient#execute(HttpRequest)}, but the latter may be executed more than one times due to retrying,
- * redirecting and so on. And you can also think that the interceptors are strongly related to the original
- * invocation, such as {@link HttpClient#execute(HttpRequest)}, and the filters are strongly related to network
- * transmission. The order of multiple {@link Interceptor}s can be specified by {@link #getOrder()} and the
+ * request's execution, but the latter may be executed more than one times due to retrying,
+ * redirecting and so on. The order of multiple {@link Interceptor}s can be specified by {@link #getOrder()} and the
  * lowest value has the highest order.
  */
 public interface Interceptor extends Ordered {

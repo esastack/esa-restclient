@@ -81,7 +81,7 @@ public interface CallbackExecutorMetric {
     long completedTaskCount();
 
     /**
-     * Obtains the identity of current executor.
+     * Obtains the id of current executor.
      *
      * @return identify
      */

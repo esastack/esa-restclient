@@ -199,7 +199,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     @Override
     public IoThreadGroupMetric ioThreadsMetric() {
         if (ioThreads.origin() instanceof MultithreadEventLoopGroup) {
-            return new IoThreadGroupMetricImpl((MultithreadEventLoopGroup) ioThreads.origin(), ioThreads.identity());
+            return new IoThreadGroupMetricImpl((MultithreadEventLoopGroup) ioThreads.origin(), ioThreads.id());
         } else {
             return null;
         }
@@ -210,7 +210,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         if (callbackExecutor.origin() == null) {
             return null;
         }
-        return new CallbackExecutorMetricImpl(callbackExecutor.origin(), callbackExecutor.identity());
+        return new CallbackExecutorMetricImpl(callbackExecutor.origin(), callbackExecutor.id());
     }
 
     @Override
@@ -287,7 +287,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     @Override
-    public String identity() {
+    public String id() {
         return id;
     }
 

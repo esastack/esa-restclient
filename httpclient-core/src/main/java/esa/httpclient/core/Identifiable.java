@@ -19,10 +19,10 @@ package esa.httpclient.core;
 public interface Identifiable {
 
     /**
-     * Obtains the identity of current component.
+     * Obtains the id of current component.
      *
-     * @return identity
+     * @return id
      */
-    String identity();
+    String id();
 
 }

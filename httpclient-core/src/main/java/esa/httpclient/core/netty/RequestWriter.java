@@ -28,7 +28,7 @@ import java.io.IOException;
  * The writer can convert, write and flush given {@link HttpRequest} and {@link HttpHeaders} to the
  * specified {@link Channel}.
  */
-public interface RequestWriter<Request extends HttpRequest> {
+interface RequestWriter<Request extends HttpRequest> {
 
     /**
      * Convert, write and flush the given request to the specified channel.

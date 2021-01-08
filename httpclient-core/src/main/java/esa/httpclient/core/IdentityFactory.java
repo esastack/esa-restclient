@@ -41,7 +41,7 @@ public interface IdentityFactory<T> {
         }
 
         @Override
-        public String identity() {
+        public String id() {
             return id;
         }
     }

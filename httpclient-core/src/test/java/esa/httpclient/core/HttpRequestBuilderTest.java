@@ -36,7 +36,7 @@ class HttpRequestBuilderTest {
         params.put("x", "y");
         params.put("m", "n");
 
-        final Map<CharSequence, CharSequence> headers = new HashMap<>();
+        final Map<String, String> headers = new HashMap<>();
         headers.put("Cookie", "xxxxxxxxxx");
         headers.put("Session", "xxxxxx===");
 

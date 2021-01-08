@@ -102,12 +102,12 @@ public abstract class HttpRequestBuilder<Builder extends HttpRequestBuilder<Buil
         return self();
     }
 
-    public Builder addHeaders(Map<CharSequence, CharSequence> headers) {
+    public Builder addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
         if (headers == null) {
             return self();
         }
 
-        for (Map.Entry<CharSequence, CharSequence> row : headers.entrySet()) {
+        for (Map.Entry<? extends CharSequence, ? extends CharSequence> row : headers.entrySet()) {
             addHeader(row.getKey(), row.getValue());
         }
 

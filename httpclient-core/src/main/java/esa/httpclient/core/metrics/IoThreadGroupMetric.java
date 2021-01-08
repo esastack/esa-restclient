@@ -41,7 +41,7 @@ public interface IoThreadGroupMetric {
     List<IoThreadMetric> childExecutors();
 
     /**
-     * Obtains the identity of current thread group.
+     * Obtains the id of current thread group.
      *
      * @return identify
      */

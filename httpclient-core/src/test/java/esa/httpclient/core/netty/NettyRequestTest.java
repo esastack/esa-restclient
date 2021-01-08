@@ -20,7 +20,16 @@ import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.*;
+import esa.httpclient.core.FileRequest;
+import esa.httpclient.core.Handle;
+import esa.httpclient.core.Handler;
+import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.HttpUri;
+import esa.httpclient.core.MultipartFileItem;
+import esa.httpclient.core.MultipartRequest;
+import esa.httpclient.core.PlainRequest;
+import esa.httpclient.core.RequestOptions;
+import esa.httpclient.core.Scheme;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -65,7 +74,6 @@ class NettyRequestTest {
                 handler,
                 body);
 
-        then(request1.type()).isEqualTo(RequestType.PLAIN);
         then(request1.body()).isSameAs(body);
 
         final FileRequest request2 = NettyRequest.from(method,
@@ -79,7 +87,6 @@ class NettyRequestTest {
                 handle,
                 handler,
                 file);
-        then(request2.type()).isEqualTo(RequestType.FILE);
         then(request2.file()).isSameAs(file);
 
         final MultiValueMap<String, String> attributes = new HashMultiValueMap<>();
@@ -101,7 +108,6 @@ class NettyRequestTest {
                 true,
                 attributes,
                 files);
-        then(request3.type()).isEqualTo(RequestType.MULTIPART);
         then(request3.files()).isEqualTo(files);
         then(request3.attributes()).isEqualTo(attributes);
 
@@ -159,7 +165,6 @@ class NettyRequestTest {
         then(request.uri()).isEqualTo(uri);
         then(request.scheme()).isEqualTo(Scheme.HTTP.name0());
         then(request.path()).isEqualTo(uri.netURI().getPath());
-        then(request.type()).isEqualTo(RequestType.FILE);
 
         request.addParam("a", "b");
         request.addParam("a", "c");

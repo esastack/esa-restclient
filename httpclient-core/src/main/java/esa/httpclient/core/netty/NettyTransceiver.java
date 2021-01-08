@@ -19,12 +19,14 @@ import esa.commons.Checks;
 import esa.commons.concurrent.ThreadFactories;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.netty.http.Http1HeadersImpl;
+import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
+import esa.httpclient.core.FileRequest;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.RequestType;
+import esa.httpclient.core.MultipartRequest;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.exception.ConnectionException;
@@ -117,7 +119,7 @@ class NettyTransceiver implements HttpTransceiver {
 
         // Saves chunk write for further using.
         final CompletableFuture<ChunkWriter> chunkWriterPromise;
-        if (RequestType.CHUNK == request.type()) {
+        if (request instanceof ChunkRequest) {
             chunkWriterPromise = new CompletableFuture<>();
             ((NettyContext) ctx).setWriter(chunkWriterPromise);
         } else {
@@ -135,7 +137,7 @@ class NettyTransceiver implements HttpTransceiver {
         listener.onConnectionPoolAcquired(request, ctx, address);
         listener.onConnectionAttempt(request, ctx, address);
 
-        final RequestWriter writer = RequestWriter.getByType(request.type());
+        final RequestWriter writer = getWriter(request);
         final Future<Channel> channel = channelPool.acquire();
 
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
@@ -407,6 +409,19 @@ class NettyTransceiver implements HttpTransceiver {
 
                     return sslHandler;
                 }).underlying;
+    }
+
+    static RequestWriter getWriter(HttpRequest request) {
+        if (request instanceof FileRequest) {
+            return FileWriter.singleton();
+        }
+        if (request instanceof MultipartRequest) {
+            return MultipartWriter.singleton();
+        }
+        if (request instanceof ChunkRequest) {
+            return new ChunkWriter();
+        }
+        return PlainWriter.singleton();
     }
 
     private boolean isHttp2(Channel channel) {

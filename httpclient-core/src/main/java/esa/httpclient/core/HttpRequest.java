@@ -131,15 +131,6 @@ public interface HttpRequest {
     HttpRequest removeHeader(CharSequence name);
 
     /**
-     * Obtains the {@link RequestType} of current request
-     *
-     * @return type
-     */
-    default RequestType type() {
-        return RequestType.PLAIN;
-    }
-
-    /**
      * Obtains the original {@link RequestOptions}. You must be aware that the modification of
      * the result config has impact of current {@link HttpRequest} instance.
      *

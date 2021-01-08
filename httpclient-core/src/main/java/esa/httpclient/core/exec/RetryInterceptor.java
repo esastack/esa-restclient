@@ -17,9 +17,9 @@ package esa.httpclient.core.exec;
 
 import esa.commons.Checks;
 import esa.commons.logging.Logger;
+import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.RequestType;
 import esa.httpclient.core.exception.RetryException;
 import esa.httpclient.core.util.Futures;
 import esa.httpclient.core.util.LoggerUtils;
@@ -54,7 +54,7 @@ public class RetryInterceptor implements Interceptor {
             }
             return next.proceed(request);
         }
-        if (RequestType.CHUNK == request.type()) {
+        if (request instanceof ChunkRequest) {
             next.ctx().removeAttr(MAX_RETRIES);
             if (logger.isDebugEnabled()) {
                 logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),

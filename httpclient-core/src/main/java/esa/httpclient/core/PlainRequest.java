@@ -23,14 +23,4 @@ public interface PlainRequest extends HttpRequest {
      * @return data
      */
     byte[] body();
-
-    /**
-     * {@link HttpRequest} as {@link RequestType#PLAIN}
-     *
-     * @return type
-     */
-    @Override
-    default RequestType type() {
-        return RequestType.PLAIN;
-    }
 }

@@ -34,14 +34,4 @@ public interface MultipartRequest extends HttpRequest {
      * @return file items
      */
     List<MultipartFileItem> files();
-
-    /**
-     * {@link RequestType} of current request
-     *
-     * @return request
-     */
-    @Override
-    default RequestType type() {
-        return RequestType.MULTIPART;
-    }
 }

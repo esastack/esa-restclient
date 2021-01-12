@@ -23,6 +23,7 @@ import esa.httpclient.core.netty.NettyHttpClient;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -42,7 +43,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
      * Body data
      */
     private final MultiValueMap<String, String> attributes = new HashMultiValueMap<>();
-    private final List<MultipartFileItem> files = new ArrayList<>();
+    private final List<MultipartFileItem> files = new LinkedList<>();
     private volatile byte[] bytes;
     private volatile File file;
     private volatile boolean multipartEncode = true;

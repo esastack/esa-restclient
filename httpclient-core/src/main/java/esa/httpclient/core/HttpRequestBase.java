@@ -37,8 +37,30 @@ public interface HttpRequestBase extends HttpRequest {
 
     HttpRequestBase addParams(Map<String, String> params);
 
+    /**
+     * Specifies the given {@link Handle} to handle the inbound message.
+     * <p>
+     * When this method is invoked, the {@link Handler} which has been set
+     * before will be reset to {@code null}. You can get more information
+     * about difference between {@link Handle} and {@link Handler} from their
+     * class description.
+     *
+     * @param handle handle
+     * @return this
+     */
     HttpRequestBase handle(Consumer<Handle> handle);
 
+    /**
+     * Specifies the given {@link Handler} to handle the inbound message.
+     * <p>
+     * When this method is invoked, the {@link Handle} which has been set
+     * before will be reset to {@code null}. You can get more information
+     * about difference between {@link Handle} and {@link Handler} from their
+     * class description.
+     *
+     * @param handler handler
+     * @return this
+     */
     HttpRequestBase handler(Handler handler);
 
     @Override

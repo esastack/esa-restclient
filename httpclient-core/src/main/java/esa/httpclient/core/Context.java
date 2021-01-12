@@ -15,7 +15,7 @@
  */
 package esa.httpclient.core;
 
-public class Context extends AttributesMap {
+public class Context extends AttributeMap {
 
     protected volatile int maxRedirects;
     protected volatile int maxRetries;

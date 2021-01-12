@@ -16,10 +16,10 @@
 package esa.httpclient.core.filter;
 
 import esa.commons.Checks;
-import esa.httpclient.core.AttributesMap;
+import esa.httpclient.core.AttributeMap;
 import esa.httpclient.core.Context;
 
-public class FilterContext extends AttributesMap {
+public class FilterContext extends AttributeMap {
 
     private final Context parent;
 

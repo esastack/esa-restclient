@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Internal
-public class AttributesMap {
+public class AttributeMap {
 
     protected final Map<String, Object> attributes = new ConcurrentHashMap<>(4);
 

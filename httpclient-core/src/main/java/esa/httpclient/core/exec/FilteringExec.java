@@ -47,7 +47,7 @@ public class FilteringExec implements Interceptor {
         final FilterContext ctx0 = new FilterContext(next.ctx());
         next.ctx().setAttr(ContextNames.FILTER_CONTEXT, ctx0);
 
-        Listener listener = next.ctx().removeUncheckedAttr(LISTENER_KEY);
+        Listener listener = next.ctx().removeAttr(LISTENER_KEY);
         if (listener != null) {
             listener.onInterceptorsEnd(request, next.ctx());
             listener.onFiltersStart(request, ctx0);

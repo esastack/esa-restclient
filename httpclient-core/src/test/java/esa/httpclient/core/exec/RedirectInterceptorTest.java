@@ -63,7 +63,7 @@ class RedirectInterceptorTest {
 
         final RedirectInterceptor interceptor = new AuxiliaryRedirectInterceptor();
         final CompletableFuture<HttpResponse> response00 = interceptor.proceed(request0, next);
-        then(ctx.getAttr(DO_REDIRECT)).isNull();
+        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
         then(response00.isDone()).isTrue();
         then(response00.getNow(null)).isSameAs(response);
         ctx.clear();
@@ -72,14 +72,14 @@ class RedirectInterceptorTest {
         final HttpRequest request1 = client.get("http://127.0.0.1:8080/abc");
         when(next.proceed(request1)).thenReturn(Futures.completed(response));
         final CompletableFuture<HttpResponse> response11 = interceptor.proceed(request1, next);
-        then(ctx.getAttr(DO_REDIRECT)).isNull();
+        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
         ctx.clear();
 
         // redirect is configured as false
         final CompletableFuture<HttpResponse> response22 = interceptor.proceed(request1, next);
-        then(ctx.getAttr(DO_REDIRECT)).isNull();
+        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
         ctx.clear();
@@ -87,7 +87,7 @@ class RedirectInterceptorTest {
         // redirect is configured as true
         ctx.maxRedirects(1);
         final CompletableFuture<HttpResponse> response33 = interceptor.proceed(request1, next);
-        then(ctx.getAttr(DO_REDIRECT)).isEqualTo(true);
+        then((Boolean) ctx.getAttr(DO_REDIRECT)).isEqualTo(true);
         then(response33.isDone()).isTrue();
         then(response33.getNow(null)).isSameAs(AuxiliaryRedirectInterceptor.RESPONSE);
         ctx.clear();
@@ -139,7 +139,7 @@ class RedirectInterceptorTest {
         final CompletableFuture<HttpResponse> response44 = interceptor.proceed(request0, next);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
-        then(ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(10);
+        then((Integer) ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(10);
         ctx.clear();
 
         // Case 5: when complete with location, status is 302 and redirected response is null
@@ -150,7 +150,7 @@ class RedirectInterceptorTest {
         final CompletableFuture<HttpResponse> response55 = interceptor.proceed(request0, next);
         then(response55.isDone()).isTrue();
         then(response55.isCompletedExceptionally()).isTrue();
-        then(ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(0);
+        then((Integer) ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(0);
         ctx.clear();
     }
 
@@ -338,7 +338,7 @@ class RedirectInterceptorTest {
         final HttpResponse result = interceptor.proceed(client.get("/abc"), chain).get();
         then(result.status()).isEqualTo(200);
         then(result.headers().get("a")).isEqualTo("b");
-        final int hasRedirectedCount = ctx.getUncheckedAttr(HAS_REDIRECTED_COUNT);
+        final int hasRedirectedCount = ctx.getAttr(HAS_REDIRECTED_COUNT);
         then(hasRedirectedCount).isEqualTo(maxRedirects);
     }
 

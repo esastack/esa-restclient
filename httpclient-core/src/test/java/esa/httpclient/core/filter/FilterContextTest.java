@@ -48,30 +48,30 @@ class FilterContextTest {
 
         final Object value1 = new Object();
         ctx.setAttr("A", value1);
-        then(ctx.getAttr("A")).isSameAs(value1);
+        then((Object) ctx.getAttr("A")).isSameAs(value1);
 
         ctx.removeAttr("A");
-        then(ctx.getAttr("A")).isNull();
+        then((Object) ctx.getAttr("A")).isNull();
 
         ctx.setAttr("A", value1);
         final Object value2 = new Object();
         ctx.setAttr("A", value2);
-        then(ctx.getAttr("A")).isSameAs(value2);
+        then((Object) ctx.getAttr("A")).isSameAs(value2);
         ctx.clear();
-        then(ctx.getAttr("A")).isNull();
+        then((Object) ctx.getAttr("A")).isNull();
 
         ctx.clear();
         ctx.setAttr("A", true);
-        then(ctx.getAttr("A")).isEqualTo(true);
+        then((Boolean) ctx.getAttr("A")).isEqualTo(true);
 
         ctx.clear();
         ctx.setAttr("B", false);
-        then(ctx.getAttr("B")).isEqualTo(false);
+        then((Boolean) ctx.getAttr("B")).isEqualTo(false);
 
         ctx.clear();
         ctx.setAttr("A", 3);
-        then(ctx.getAttr("A")).isEqualTo(3);
-        then(ctx.getAttr("B")).isNull();
+        then((Integer) ctx.getAttr("A")).isEqualTo(3);
+        then((Integer) ctx.getAttr("B")).isNull();
 
         then(ctx.attrNames().size()).isEqualTo(1);
         then(ctx.attrNames().contains("A")).isTrue();

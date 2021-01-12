@@ -101,7 +101,7 @@ abstract class TransceiverHandle {
             return new NettyHandle(handle, request, ctx, listener, response);
         } else {
             return new FilteringHandle(handle, request, ctx, listener, response, filters,
-                    ctx.removeUncheckedAttr(ContextNames.FILTER_CONTEXT));
+                    ctx.removeAttr(ContextNames.FILTER_CONTEXT));
         }
     }
 }

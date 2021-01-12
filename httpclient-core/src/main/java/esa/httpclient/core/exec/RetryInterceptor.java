@@ -81,7 +81,7 @@ public class RetryInterceptor implements Interceptor {
             try {
                 // Update hasRetriedCount immediately.
                 // may be it will be used further, such as metrics, logging...
-                int hasRetriedCount = next.ctx().getUncheckedAttr(HAS_RETRIED_COUNT, -1) + 1;
+                int hasRetriedCount = next.ctx().getAttr(HAS_RETRIED_COUNT, -1) + 1;
                 next.ctx().removeAttr(HAS_RETRIED_COUNT);
                 next.ctx().setAttr(HAS_RETRIED_COUNT, hasRetriedCount);
 

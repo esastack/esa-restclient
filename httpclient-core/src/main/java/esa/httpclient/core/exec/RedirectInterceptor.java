@@ -81,7 +81,7 @@ public class RedirectInterceptor implements Interceptor {
             try {
                 // Update hasRedirectedCount immediately
                 // may be it will be used further, such as metrics, logging...
-                final int hasDirectedCount = next.ctx().getUncheckedAttr(HAS_REDIRECTED_COUNT, -1) + 1;
+                final int hasDirectedCount = next.ctx().getAttr(HAS_REDIRECTED_COUNT, -1) + 1;
                 next.ctx().removeAttr(HAS_REDIRECTED_COUNT);
                 next.ctx().setAttr(HAS_REDIRECTED_COUNT, hasDirectedCount);
 

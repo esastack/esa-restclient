@@ -25,12 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Internal
 public class AttributeMap {
 
-    protected final Map<String, Object> attributes = new ConcurrentHashMap<>(4);
-
-    public Object getAttr(String name) {
-        Checks.checkNotNull(name, "name must not be null");
-        return attributes.get(name);
-    }
+    protected final Map<String, Object> attributes = new ConcurrentHashMap<>(8);
 
     public Object setAttr(String name, Object value) {
         Checks.checkNotNull(name, "name must not be null");
@@ -38,13 +33,14 @@ public class AttributeMap {
         return attributes.put(name, value);
     }
 
-    public Object removeAttr(String name) {
-        Checks.checkNotNull(name, "name must not be null");
-        return attributes.remove(name);
-    }
-
     public Set<String> attrNames() {
         return attributes.keySet();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T removeAttr(String name) {
+        Checks.checkNotNull(name, "name must not be null");
+        return (T) attributes.remove(name);
     }
 
     /**
@@ -55,37 +51,14 @@ public class AttributeMap {
      * @return value
      */
     @SuppressWarnings("unchecked")
-    public <T> T getUncheckedAttr(String name) {
-        return (T) getAttr(name);
+    public <T> T getAttr(String name) {
+        Checks.checkNotNull(name, "name must not be null");
+        return (T) attributes.get(name);
     }
 
-    /**
-     * Obtains generic type value by name with default value
-     *
-     * @param name         name
-     * @param defaultValue default value
-     * @param <T>          generic type
-     * @return value
-     */
-    public <T> T getUncheckedAttr(String name, T defaultValue) {
-        try {
-            final T value = getUncheckedAttr(name);
-            return value != null ? value : defaultValue;
-        } catch (Throwable th) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Removes the attribute value by name
-     *
-     * @param name name
-     * @param <T>  generic type
-     * @return value
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T removeUncheckedAttr(String name) {
-        return (T) removeAttr(name);
+    public <T> T getAttr(String name, T defaultValue) {
+        final T value = getAttr(name);
+        return value == null ? defaultValue : value;
     }
 
 }

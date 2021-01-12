@@ -15,20 +15,20 @@
  */
 package esa.httpclient.core.filter;
 
+import esa.commons.Checks;
+import esa.httpclient.core.AttributeMap;
 import esa.httpclient.core.Context;
 
-public interface FilterContext extends Context {
+public class FilterContext extends AttributeMap {
 
-    /**
-     * Obtains the {@code parent} context of current filter context.
-     *
-     * @return context
-     */
-    Context parent();
+    private final Context parent;
 
-    /**
-     * Clears the context
-     */
-    void clear();
+    public FilterContext(Context parent) {
+        Checks.checkNotNull(parent, "Parent context must not be null");
+        this.parent = parent;
+    }
 
+    public Context parent() {
+        return parent;
+    }
 }

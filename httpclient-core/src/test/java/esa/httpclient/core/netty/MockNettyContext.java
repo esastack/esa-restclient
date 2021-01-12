@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,21 @@
  */
 package esa.httpclient.core.netty;
 
-import esa.commons.collection.MultiValueMap;
-import esa.httpclient.core.MultipartFileItem;
-import esa.httpclient.core.MultipartRequest;
-import esa.httpclient.core.RequestOptions;
+public class MockNettyContext extends NettyContext {
 
-import java.util.List;
-
-class MultipartRequestImpl extends NettyRequest implements MultipartRequest {
-
-    MultipartRequestImpl(RequestOptions options) {
-        super(options);
+    @Override
+    public void maxRedirects(int maxRedirects) {
+        this.maxRedirects = maxRedirects;
     }
 
     @Override
-    public MultiValueMap<String, String> attributes() {
-        return options.attributes();
+    public void maxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
     }
 
     @Override
-    public List<MultipartFileItem> files() {
-        return options.files();
+    public void expectContinueEnabled(boolean expectContinueEnabled) {
+        this.expectContinueEnabled = expectContinueEnabled;
     }
+
 }

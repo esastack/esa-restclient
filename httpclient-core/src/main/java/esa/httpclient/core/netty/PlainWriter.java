@@ -15,6 +15,7 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.PlainRequest;
@@ -35,7 +36,6 @@ import java.io.IOException;
 
 class PlainWriter extends RequestWriterImpl<PlainRequest> {
 
-    private static final byte[] EMPTY_DATA = new byte[0];
     private static final PlainWriter INSTANCE = new PlainWriter();
 
     private PlainWriter() {
@@ -48,7 +48,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                                        boolean uriEncodeEnabled,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
-        addContentLengthIfAbsent(request, v -> request.body() == null ? 0L : request.body().length);
+        addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
 
         return super.writeAndFlush(request, channel, ctx, uriEncodeEnabled, version, http2);
     }
@@ -59,7 +59,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                                  Context context,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
-        if (request.body() == null || request.body().length == 0) {
+        if (request.buffer() == null || !request.buffer().isReadable()) {
             return channel.writeAndFlush(new DefaultFullHttpRequest(version,
                     HttpMethod.valueOf(request.method().name()),
                     request.uri().relative(uriEncodeEnabled),
@@ -75,11 +75,11 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
 
             final ChannelPromise endPromise = channel.newPromise();
             if (writeContentNow(context)) {
-                Utils.runInChannel(channel, () -> doWriteContent1(channel, request.body(), endPromise));
+                Utils.runInChannel(channel, () -> doWriteContent1(channel, request.buffer(), endPromise));
             } else {
                 channel.flush();
                 ((NettyContext) context).set100ContinueCallback(() ->
-                        Utils.runInChannel(channel, () -> doWriteContent1(channel, request.body(), endPromise)));
+                        Utils.runInChannel(channel, () -> doWriteContent1(channel, request.buffer(), endPromise)));
             }
 
             return endPromise;
@@ -87,9 +87,9 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     }
 
     private static void doWriteContent1(Channel channel,
-                                        byte[] content,
+                                        Buffer content,
                                         ChannelPromise endPromise) {
-        ByteBuf buf = channel.alloc().buffer(content.length).writeBytes(content);
+        final ByteBuf buf = content.getByteBuf();
         try {
             channel.writeAndFlush(new DefaultLastHttpContent(buf), endPromise);
         } catch (Throwable ex) {
@@ -115,7 +115,8 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
             return future;
         }
 
-        final byte[] data = request.body() == null ? EMPTY_DATA : request.body();
+        final ByteBuf data = request.buffer() == null
+                ? Unpooled.EMPTY_BUFFER : request.buffer().getByteBuf();
         final ChannelPromise endPromise = channel.newPromise();
         if (writeContentNow(context)) {
             doWriteContent2(channel,
@@ -133,7 +134,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     }
 
     private static void doWriteContent2(Channel channel,
-                                        byte[] data,
+                                        ByteBuf data,
                                         Http2ConnectionHandler handler,
                                         int streamId,
                                         ChannelPromise endPromise) {

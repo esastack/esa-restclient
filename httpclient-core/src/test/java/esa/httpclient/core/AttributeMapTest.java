@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,17 @@
  */
 package esa.httpclient.core;
 
+import esa.httpclient.core.mock.MockContext;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ContextImplTest {
+class AttributeMapTest {
 
     @Test
     void testIllegalArgument() {
-        final Context ctx = new ContextImpl();
+        final Context ctx = new Context();
         assertThrows(NullPointerException.class, () -> ctx.setAttr(null, "a"));
         assertThrows(NullPointerException.class, () -> ctx.setAttr("a", null));
         assertThrows(NullPointerException.class, () -> ctx.removeAttr(null));
@@ -33,36 +34,40 @@ class ContextImplTest {
 
     @Test
     void testAttrOperation() {
-        final ContextImpl ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
 
         final Object value1 = new Object();
         ctx.setAttr("A", value1);
-        then(ctx.getAttr("A")).isSameAs(value1);
+        then((Object) ctx.getAttr("A")).isSameAs(value1);
 
         ctx.removeAttr("A");
-        then(ctx.getAttr("A")).isNull();
+        then((Object) ctx.getAttr("A")).isNull();
 
         ctx.setAttr("A", value1);
         final Object value2 = new Object();
         ctx.setAttr("A", value2);
-        then(ctx.getAttr("A")).isSameAs(value2);
+        then((Object) ctx.getAttr("A")).isSameAs(value2);
         ctx.clear();
-        then(ctx.getAttr("A")).isNull();
+        then((Object) ctx.getAttr("A")).isNull();
 
         ctx.clear();
         ctx.setAttr("A", true);
-        then(ctx.getAttr("A")).isEqualTo(true);
+        then((Boolean) ctx.getAttr("A")).isEqualTo(true);
 
         ctx.clear();
         ctx.setAttr("B", false);
-        then(ctx.getAttr("B")).isEqualTo(false);
+        then((Boolean) ctx.getAttr("B")).isEqualTo(false);
 
         ctx.clear();
         ctx.setAttr("A", 3);
-        then(ctx.getAttr("A")).isEqualTo(3);
-        then(ctx.getAttr("B")).isNull();
+        then((Integer) ctx.getAttr("A")).isEqualTo(3);
+        then((Integer) ctx.getAttr("B")).isNull();
 
         then(ctx.attrNames().size()).isEqualTo(1);
         then(ctx.attrNames().contains("A")).isTrue();
+
+        ctx.setAttr("A", value1);
+        final Object value11 = ctx.getAttr("A");
+        then(value1).isSameAs(value11);
     }
 }

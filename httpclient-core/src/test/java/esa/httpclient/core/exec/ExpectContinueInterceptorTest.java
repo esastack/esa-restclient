@@ -16,16 +16,19 @@
 package esa.httpclient.core.exec;
 
 import esa.commons.http.HttpHeaderNames;
+import esa.commons.netty.core.Buffer;
+import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.ChunkRequest;
-import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import org.junit.jupiter.api.Test;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
+import java.io.File;
+
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,60 +41,68 @@ class ExpectContinueInterceptorTest {
     @Test
     void testProceed() {
         final ExecChain next = mock(ExecChain.class);
-        final ContextImpl ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
+
         when(next.ctx()).thenReturn(ctx);
 
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request0 = client.prepare("http://127.0.0.1:8080/abc").build();
+        final ChunkRequest request0 = client.get("http://127.0.0.1:8080/abc").segment();
         when(next.proceed(request0)).thenReturn(Futures.completed(new MockHttpResponse()));
 
-        // Case 1: EXPECT_CONTINUE_ENABLED in context is null
-        EXPECT_CONTINUE_INTERCEPTOR.proceed(request0, next);
-        then(request0.getHeader(HttpHeaderNames.EXPECT)).isNull();
-        ctx.clear();
-
-        // Case 2: EXPECT_CONTINUE_ENABLED in context is false
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, false);
+        ctx.expectContinueEnabled(false);
+        // Case 1: disable expect-continue
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request0, next);
         then(request0.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
-        // Case 3: EXPECT_CONTINUE_ENABLED in context is true(chunked)
-        ctx.clear();
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+        // Case 2: enable expect-continue
+        ctx.expectContinueEnabled(true);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request0, next);
         then(request0.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
-        final HttpRequest request1 = HttpRequest.get("http://127.0.0.1:8080/abc").build();
-        // Case 4: EXPECT_CONTINUE_ENABLED in context is true(non-chunked, body is empty)
         ctx.clear();
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+        final HttpRequest request1 = client.get("http://127.0.0.1:8080/abc");
+        ctx.expectContinueEnabled(true);
+
+        // Case 3: enable expect-continue but body is empty
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request1, next);
         then(request1.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
-        final HttpRequest request2 = HttpRequest.post("http://127.0.0.1:8080/abc")
-                .body("Hello World!".getBytes()).build();
-        // Case 4: EXPECT_CONTINUE_ENABLED in context is true(non-chunked, body is empty)
-        ctx.clear();
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+        final HttpRequest request2 = client.post("http://127.0.0.1:8080/abc")
+                .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
+        ctx.expectContinueEnabled(true);
+        // Case 4: enable expect-continue but body isn't empty
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request2, next);
         then(HttpHeaderValues.CONTINUE.toString()).isEqualTo(request2.getHeader(HttpHeaderNames.EXPECT));
 
-        // Case 5: EXPECT_CONTINUE_ENABLED in context is true(non-chunked, body is empty)
-        final HttpRequest request3 = HttpRequest.post("http://127.0.0.1:8080/abc")
-                .body("Hello World!".getBytes()).build();
-        ctx.clear();
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
-        request3.setHeader(HttpHeaderNames.EXPECT, "100-continue0");
+        // Case 5: disable expect-continue and body isn't empty
+        final HttpRequest request3 = client.post("http://127.0.0.1:8080/abc")
+                .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
+        ctx.expectContinueEnabled(false);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request3, next);
-        then("100-continue0").isEqualTo(request3.getHeader(HttpHeaderNames.EXPECT));
+        then(request3.getHeader(HttpHeaderNames.EXPECT)).isNull();
+
+        // Case 6: enable expect-continue but body isn't empty
+        final HttpRequest request4 = client.post("http://127.0.0.1:8080/abc")
+                .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
+        ctx.clear();
+        ctx.expectContinueEnabled(false);
+        request4.setHeader(HttpHeaderNames.EXPECT, "100-continue0");
+        EXPECT_CONTINUE_INTERCEPTOR.proceed(request4, next);
+        then("100-continue0").isEqualTo(request4.getHeader(HttpHeaderNames.EXPECT));
     }
 
     @Test
     void testEmptyBody() {
-        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(HttpRequest.get("/abc").build())).isTrue();
-        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(HttpRequest.post("/abc").body(null).build())).isTrue();
-        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(HttpRequest.post("/abc").body(new byte[0]).build())).isTrue();
+        final HttpClient client = HttpClient.ofDefault();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc"))).isTrue();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.post("/abc").body((Buffer) null))).isTrue();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.post("/abc").body(new BufferImpl()))).isTrue();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").segment())).isTrue();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").multipart()
+                .attr("a", "b"))).isFalse();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").multipart())).isTrue();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").body(new File("/")))).isFalse();
     }
 
 }

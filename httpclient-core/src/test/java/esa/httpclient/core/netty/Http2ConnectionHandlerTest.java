@@ -17,7 +17,7 @@ package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
@@ -53,6 +53,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
 
+    private final HttpClient client = HttpClient.ofDefault();
+
     @Test
     void testAddChunkWriteHandlerAfterAdded() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
@@ -66,8 +68,8 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
         final HandleRegistry registry = new HandleRegistry(2, 1);
         setUp(registry);
 
-        final HttpRequest request1 = HttpRequest.get("/abc").build();
-        final Context ctx1 = new ContextImpl();
+        final HttpRequest request1 = client.get("/abc");
+        final Context ctx1 = new Context();
         final Listener listener1 = new NoopListener();
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
@@ -75,8 +77,8 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
                 request1, ctx1, listener1, response1);
         final int requestId1 = registry.put(handle1);
 
-        final HttpRequest request2 = HttpRequest.get("/abc").build();
-        final Context ctx2 = new ContextImpl();
+        final HttpRequest request2 = client.get("/abc");
+        final Context ctx2 = new Context();
         final Listener listener2 = new NoopListener();
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 

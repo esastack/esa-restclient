@@ -37,8 +37,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToLongFunction;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
-
 abstract class RequestWriterImpl<Request extends HttpRequest> implements RequestWriter<Request> {
 
     private static final Predicate<HttpRequest> CONTENT_LENGTH_ABSENT = request -> {
@@ -187,7 +185,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
     }
 
     static boolean writeContentNow(Context context) {
-        return !context.getUncheckedAttr(EXPECT_CONTINUE_ENABLED, false);
+        return !context.expectContinueEnabled();
     }
 
     static String computeHost(URI uri) {

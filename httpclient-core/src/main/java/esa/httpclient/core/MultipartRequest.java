@@ -15,23 +15,67 @@
  */
 package esa.httpclient.core;
 
-import esa.commons.collection.MultiValueMap;
+import java.io.File;
+import java.util.Map;
+import java.util.function.Consumer;
 
-import java.util.List;
+public interface MultipartRequest extends ExecutableRequest {
 
-public interface MultipartRequest extends HttpRequest {
+    MultipartRequest multipartEncode(boolean multipartEncode);
 
-    /**
-     * Obtains attributes of current multipart body, which is a unmodifiable copy of current attributes.
-     *
-     * @return attributes
-     */
-    MultiValueMap<String, String> attributes();
+    boolean multipartEncode();
 
-    /**
-     * Obtains multipart files of current multipart body
-     *
-     * @return file items
-     */
-    List<MultipartFileItem> files();
+    MultipartRequest attr(String name, String value);
+
+    MultipartRequest file(String name, File file);
+
+    MultipartRequest file(String name, File file, String contentType);
+
+    MultipartRequest file(String name, File file, String contentType, boolean isText);
+
+    MultipartRequest file(String name, String filename, File file, String contentType, boolean isText);
+
+    @Override
+    MultipartRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+
+    @Override
+    MultipartRequest expectContinueEnabled(Boolean expectContinueEnabled);
+
+    @Override
+    MultipartRequest maxRedirects(int maxRedirects);
+
+    @Override
+    MultipartRequest maxRetries(int maxRetries);
+
+    @Override
+    MultipartRequest readTimeout(int readTimeout);
+
+    @Override
+    MultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
+    MultipartRequest addParams(Map<String, String> params);
+
+    @Override
+    MultipartRequest handle(Consumer<Handle> handle);
+
+    @Override
+    MultipartRequest handler(Handler handler);
+
+    @Override
+    MultipartRequest addHeader(CharSequence name, CharSequence value);
+
+    @Override
+    MultipartRequest setHeader(CharSequence name, CharSequence value);
+
+    @Override
+    MultipartRequest removeHeader(CharSequence name);
+
+    @Override
+    MultipartRequest addParam(String name, String value);
+
+    @Override
+    default boolean isMultipart() {
+        return true;
+    }
 }

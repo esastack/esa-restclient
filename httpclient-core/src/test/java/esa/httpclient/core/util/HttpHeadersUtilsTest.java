@@ -16,19 +16,14 @@
 package esa.httpclient.core.util;
 
 import esa.commons.http.HttpHeaders;
-import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.EmptyHttpHeaders;
 import esa.commons.netty.http.Http1HeadersAdaptor;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.commons.netty.http.Http2HeadersAdaptor;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpUri;
-import esa.httpclient.core.RequestOptions;
-import esa.httpclient.core.netty.NettyRequest;
 import io.netty.handler.codec.http2.Http2Headers;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -100,28 +95,10 @@ class HttpHeadersUtilsTest {
         headers.add("Cookie", "value1");
         headers.add("Cookie", "value2");
 
-        final HttpMethod method = HttpMethod.POST;
-        final HttpUri uri = new HttpUri("https://127.0.0.1:8080/abc");
-        final int readTimeout = ThreadLocalRandom.current().nextInt();
-        final boolean uriEncodeEnabled = ThreadLocalRandom.current().nextBoolean();
-        final boolean expectContinueEnabled = ThreadLocalRandom.current().nextBoolean();
-        final byte[] body = "Hello World".getBytes();
-        final int maxRetries = ThreadLocalRandom.current().nextInt();
-        final int maxRedirects = ThreadLocalRandom.current().nextInt();
+        final HttpRequest request = HttpClient.ofDefault()
+                .post("https://127.0.0.1:8080/abc");
+        request.headers().add(headers);
 
-        final RequestOptions options = new RequestOptions(method,
-                uri,
-                readTimeout,
-                uriEncodeEnabled,
-                expectContinueEnabled,
-                maxRetries,
-                maxRedirects,
-                headers,
-                null,
-                null,
-                body);
-
-        final HttpRequest request = NettyRequest.from(options);
         final Http2Headers out = HttpHeadersUtils.toHttp2Headers(request, headers, false);
         then(out.path().toString()).isEqualTo("/abc");
         then(out.method().toString()).isEqualTo("POST");

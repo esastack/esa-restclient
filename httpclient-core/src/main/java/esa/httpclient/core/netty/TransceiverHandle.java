@@ -70,6 +70,16 @@ abstract class TransceiverHandle {
         return addRspHandle0(request, ctx, channel, nHandle, registry);
     }
 
+    /**
+     * Saves {@code handle} to {@link HandleRegistry} and returns the key of it.
+     *
+     * @param request  request
+     * @param ctx      ctx
+     * @param channel  channel
+     * @param handle   handle
+     * @param registry registry
+     * @return id
+     */
     abstract int addRspHandle0(HttpRequest request,
                                Context ctx,
                                Channel channel,
@@ -91,7 +101,7 @@ abstract class TransceiverHandle {
             return new NettyHandle(handle, request, ctx, listener, response);
         } else {
             return new FilteringHandle(handle, request, ctx, listener, response, filters,
-                    ctx.removeUncheckedAttr(ContextNames.FILTER_CONTEXT));
+                    ctx.removeAttr(ContextNames.FILTER_CONTEXT));
         }
     }
 }

@@ -15,10 +15,25 @@
  */
 package esa.httpclient.core;
 
-public final class ContextNames {
+import org.junit.jupiter.api.Test;
 
-    public static final String FILTER_CONTEXT = "$filterContext";
+import static org.assertj.core.api.Java6BDDAssertions.then;
 
-    private ContextNames() {
+class ContextTest {
+
+    @Test
+    void testBasic() {
+        final Context ctx = new Context();
+        then(ctx.expectContinueEnabled()).isFalse();
+        then(ctx.maxRedirects()).isEqualTo(0);
+        then(ctx.maxRetries()).isEqualTo(0);
+
+        ctx.expectContinueEnabled(true);
+        ctx.maxRetries(10);
+        ctx.maxRedirects(100);
+        then(ctx.expectContinueEnabled()).isTrue();
+        then(ctx.maxRedirects()).isEqualTo(100);
+        then(ctx.maxRetries()).isEqualTo(10);
     }
+
 }

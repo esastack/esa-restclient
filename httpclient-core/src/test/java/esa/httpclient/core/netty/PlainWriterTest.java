@@ -15,9 +15,9 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
-import esa.httpclient.core.PlainRequest;
+import esa.httpclient.core.HttpClient;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -30,12 +30,13 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class PlainWriterTest extends Http2ConnectionHelper {
 
     private static final byte[] DATA = "Hello World!".getBytes();
+
+    private final HttpClient client = HttpClient.ofDefault();
 
     ////////*********************************HTTP1 PLAIN WRITER**************************************////////
 
@@ -44,11 +45,10 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final PlainWriter writer = PlainWriter.singleton();
         final EmbeddedChannel channel = new EmbeddedChannel();
 
-        final esa.httpclient.core.PlainRequest request =
-                (PlainRequest) esa.httpclient.core.HttpRequest.put("http://127.0.0.1/abc")
-                        .body(DATA)
-                        .build();
-        final Context ctx = new ContextImpl();
+        final esa.httpclient.core.PlainRequest request = client
+                .put("http://127.0.0.1/abc")
+                .body(new BufferImpl().writeBytes(DATA));
+        final Context ctx = new Context();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -75,13 +75,12 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final PlainWriter writer = PlainWriter.singleton();
         final EmbeddedChannel channel = new EmbeddedChannel();
 
-        final esa.httpclient.core.PlainRequest request =
-                (PlainRequest) esa.httpclient.core.HttpRequest.put("http://127.0.0.1/abc")
-                        .body(DATA)
-                        .build();
-        final NettyContext ctx = new NettyContext();
+        final esa.httpclient.core.PlainRequest request = client
+                .put("http://127.0.0.1/abc")
+                .body(new BufferImpl().writeBytes(DATA));
+        final MockNettyContext ctx = new MockNettyContext();
+        ctx.expectContinueEnabled(true);
 
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -114,11 +113,10 @@ class PlainWriterTest extends Http2ConnectionHelper {
         setUp();
         final PlainWriter writer = PlainWriter.singleton();
 
-        final esa.httpclient.core.PlainRequest request =
-                (PlainRequest) esa.httpclient.core.HttpRequest.put("http://127.0.0.1/abc")
-                        .body(DATA)
-                        .build();
-        final Context ctx = new ContextImpl();
+        final esa.httpclient.core.PlainRequest request = client
+                .put("http://127.0.0.1/abc")
+                .body(new BufferImpl().writeBytes(DATA));
+        final Context ctx = new Context();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -151,14 +149,15 @@ class PlainWriterTest extends Http2ConnectionHelper {
         setUp();
         final PlainWriter writer = PlainWriter.singleton();
 
-        final esa.httpclient.core.PlainRequest request =
-                (PlainRequest) esa.httpclient.core.HttpRequest.put("http://127.0.0.1/abc")
-                        .body(DATA)
-                        .build();
-        final NettyContext ctx = new NettyContext();
+        final esa.httpclient.core.PlainRequest request = client
+                .put("http://127.0.0.1/abc")
+                .body(new BufferImpl().writeBytes(DATA));
+
+        final MockNettyContext ctx = new MockNettyContext();
+        ctx.expectContinueEnabled(true);
+
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,

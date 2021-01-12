@@ -20,6 +20,7 @@ import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import io.netty.buffer.Unpooled;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
  * better use {@link #isWritable()} to judge whether current request can continue writing
  * or not.
  */
-public interface ChunkRequest extends HttpRequest {
+public interface ChunkRequest extends HttpRequestBase {
 
     /**
      * Writes the chunked data to channel.
@@ -249,4 +250,48 @@ public interface ChunkRequest extends HttpRequest {
      * @return      true or false
      */
     boolean isWritable();
+
+    @Override
+    ChunkRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+
+    @Override
+    ChunkRequest expectContinueEnabled(Boolean expectContinueEnabled);
+
+    @Override
+    ChunkRequest maxRedirects(int maxRedirects);
+
+    @Override
+    ChunkRequest maxRetries(int maxRetries);
+
+    @Override
+    ChunkRequest readTimeout(int readTimeout);
+
+    @Override
+    ChunkRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
+    ChunkRequest addParams(Map<String, String> params);
+
+    @Override
+    ChunkRequest handle(Consumer<Handle> handle);
+
+    @Override
+    ChunkRequest handler(Handler handler);
+
+    @Override
+    ChunkRequest addHeader(CharSequence name, CharSequence value);
+
+    @Override
+    ChunkRequest setHeader(CharSequence name, CharSequence value);
+
+    @Override
+    ChunkRequest removeHeader(CharSequence name);
+
+    @Override
+    ChunkRequest addParam(String name, String value);
+
+    @Override
+    default boolean isSegmented() {
+        return true;
+    }
 }

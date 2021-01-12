@@ -15,11 +15,12 @@
  */
 package esa.httpclient.core.exec;
 
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.ListenerProxy;
+import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
@@ -32,28 +33,28 @@ import static org.mockito.Mockito.when;
 
 class LinkedExecChainTest {
 
+    private final HttpClient client = HttpClient.ofDefault();
+
     @Test
     void testFrom1() {
         final HttpTransceiver transceiver = mock(HttpTransceiver.class);
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:8888/abc/def").build();
-        final ContextImpl ctx = new ContextImpl();
+        final HttpRequest request = client.get("http://127.0.0.1:8888/abc/def");
+        final MockContext ctx = new MockContext();
         final HttpResponse response = new MockHttpResponse(200);
         final Listener listener = ListenerProxy.DEFAULT;
-        final int readTimeout = 5000;
 
         when(transceiver.handle(request,
                 ctx,
                 null,
-                listener,
-                readTimeout)).thenReturn(Futures.completed(response));
+                listener))
+                .thenReturn(Futures.completed(response));
 
         // interceptors.length == 0
         final ExecChain chain1 = LinkedExecChain.from(new Interceptor[0],
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response11 = chain1.proceed(request);
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
@@ -82,8 +83,7 @@ class LinkedExecChainTest {
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response22 = chain2.proceed(request);
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
@@ -104,8 +104,7 @@ class LinkedExecChainTest {
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response33 = chain3.proceed(request);
         then(response33.isDone()).isTrue();
         then(response33.isCompletedExceptionally()).isTrue();
@@ -119,8 +118,7 @@ class LinkedExecChainTest {
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response44 = chain4.proceed(request);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
@@ -136,25 +134,23 @@ class LinkedExecChainTest {
     @Test
     void testFrom2() {
         final HttpTransceiver transceiver = mock(HttpTransceiver.class);
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:8888/abc/def").build();
-        final ContextImpl ctx = new ContextImpl();
+        final HttpRequest request = client.get("http://127.0.0.1:8888/abc/def");
+        final MockContext ctx = new MockContext();
         final HttpResponse response = new MockHttpResponse(200);
         final Listener listener = ListenerProxy.DEFAULT;
-        final int readTimeout = 5000;
 
         when(transceiver.handle(request,
                 ctx,
                 null,
-                listener,
-                readTimeout)).thenReturn(Futures.completed(response));
+                listener))
+                .thenReturn(Futures.completed(response));
 
         // interceptors.length == 0
         final ExecChain chain1 = LinkedExecChain.from(new Interceptor[0],
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response11 = chain1.proceed(request);
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
@@ -183,8 +179,7 @@ class LinkedExecChainTest {
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response22 = chain2.proceed(request);
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
@@ -205,8 +200,7 @@ class LinkedExecChainTest {
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response33 = chain3.proceed(request);
         then(response33.isDone()).isTrue();
         then(response33.isCompletedExceptionally()).isTrue();
@@ -220,8 +214,7 @@ class LinkedExecChainTest {
                 transceiver,
                 null,
                 ctx,
-                listener,
-                readTimeout);
+                listener);
         final CompletableFuture<HttpResponse> response44 = chain4.proceed(request);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();

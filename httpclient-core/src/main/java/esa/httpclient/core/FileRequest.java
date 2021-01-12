@@ -15,14 +15,50 @@
  */
 package esa.httpclient.core;
 
-import java.io.File;
+import java.util.Map;
+import java.util.function.Consumer;
 
-public interface FileRequest extends HttpRequest {
+public interface FileRequest extends ExecutableRequest {
 
-    /**
-     * Obtains file to write to body
-     *
-     * @return file
-     */
-    File file();
+    @Override
+    FileRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+
+    @Override
+    FileRequest expectContinueEnabled(Boolean expectContinueEnabled);
+
+    @Override
+    FileRequest maxRedirects(int maxRedirects);
+
+    @Override
+    FileRequest maxRetries(int maxRetries);
+
+    @Override
+    FileRequest readTimeout(int readTimeout);
+
+    @Override
+    FileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
+    FileRequest addParams(Map<String, String> params);
+
+    @Override
+    FileRequest handle(Consumer<Handle> handle);
+
+    @Override
+    FileRequest handler(Handler handler);
+
+    @Override
+    FileRequest addHeader(CharSequence name, CharSequence value);
+
+    @Override
+    FileRequest setHeader(CharSequence name, CharSequence value);
+
+    @Override
+    FileRequest removeHeader(CharSequence name);
+
+    @Override
+    FileRequest addParam(String name, String value);
+
+    @Override
+    FileRequest copy();
 }

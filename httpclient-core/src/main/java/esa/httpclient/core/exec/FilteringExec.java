@@ -20,7 +20,6 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.filter.FilterContext;
-import esa.httpclient.core.filter.FilterContextImpl;
 import esa.httpclient.core.filter.RequestFilter;
 import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.util.Futures;
@@ -45,10 +44,10 @@ public class FilteringExec implements Interceptor {
 
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
-        final FilterContext ctx0 = new FilterContextImpl(next.ctx());
+        final FilterContext ctx0 = new FilterContext(next.ctx());
         next.ctx().setAttr(ContextNames.FILTER_CONTEXT, ctx0);
 
-        Listener listener = next.ctx().removeUncheckedAttr(LISTENER_KEY);
+        Listener listener = next.ctx().removeAttr(LISTENER_KEY);
         if (listener != null) {
             listener.onInterceptorsEnd(request, next.ctx());
             listener.onFiltersStart(request, ctx0);
@@ -77,4 +76,3 @@ public class FilteringExec implements Interceptor {
     }
 
 }
-

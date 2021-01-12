@@ -17,12 +17,15 @@ package esa.httpclient.core.netty;
 
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
+import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.ChunkRequest;
-import esa.httpclient.core.Context;
+import esa.httpclient.core.Handle;
+import esa.httpclient.core.Handler;
+import esa.httpclient.core.HttpClientBuilder;
+import esa.httpclient.core.HttpRequestBaseImpl;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.ListenerProxy;
-import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.exec.RequestExecutor;
 import esa.httpclient.core.util.Futures;
 import io.netty.channel.Channel;
@@ -30,6 +33,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.util.internal.MathUtil;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -37,7 +41,7 @@ import java.util.function.Consumer;
 /**
  * The implementation of {@link ChunkRequest} based on netty.
  */
-public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
+public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkRequest {
 
     private static final IllegalStateException REQUEST_HAS_ENDED = new IllegalStateException("Request has ended");
     private static final IllegalStateException CHANNEL_IS_NULL = new IllegalStateException("Channel is null");
@@ -45,21 +49,22 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
     private static final byte[] EMPTY_BYTES = new byte[0];
 
     private final RequestExecutor executor;
-    private final Context ctx;
 
     private volatile CompletableFuture<HttpResponse> response;
     private volatile CompletableFuture<ChunkWriter> chunkWriter;
 
     private CompletableFuture<ChunkWriter> orderedWriterOpsChain;
+
+    private boolean started;
     private boolean ended;
 
-    ChunkRequestImpl(RequestExecutor executor,
-                     RequestOptions options,
-                     Context ctx) {
-        super(options);
+    ChunkRequestImpl(HttpClientBuilder builder,
+                     RequestExecutor executor,
+                     HttpMethod method,
+                     String uri) {
+        super(builder, method, uri);
         Checks.checkNotNull(executor, "RequestExecutor must not be null");
         this.executor = executor;
-        this.ctx = ctx;
     }
 
     @Override
@@ -69,14 +74,14 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
         }
         checkIndex(data, offset, length);
 
-        checkStarted();
+        checkAndStart();
 
         return checkAndWrite(data, offset, length);
     }
 
     @Override
     public CompletableFuture<Void> write(Buffer data) {
-        checkStarted();
+        checkAndStart();
 
         return checkAndWrite(data, -1, -1);
     }
@@ -98,7 +103,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
     @Override
     public CompletableFuture<HttpResponse> end(Consumer<Throwable> handle) {
-        checkStarted();
+        checkAndStart();
 
         safelyDoEnd(null).whenComplete(handleOnEnd(handle));
 
@@ -107,7 +112,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
     @Override
     public CompletableFuture<HttpResponse> end(HttpHeaders trailers, Consumer<Throwable> handle) {
-        checkStarted();
+        checkAndStart();
 
         safelyDoEnd(trailers).whenComplete(handleOnEnd(handle));
         return response;
@@ -115,7 +120,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
 
     @Override
     public CompletableFuture<HttpResponse> end(Buffer data, Consumer<Throwable> handle) {
-        checkStarted();
+        checkAndStart();
 
         // Check and write data and then end the request, if any exception caught,
         // we should close the request.
@@ -256,7 +261,7 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
         return promise;
     }
 
-    private void checkStarted() {
+    private void checkAndStart() {
         if (chunkWriter != null) {
             return;
         }
@@ -266,9 +271,9 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
                 return;
             }
 
-            final Context ctx0 = ctx != null ? ctx : new NettyContext();
-            response = executor.execute(this, ctx0, ListenerProxy.DEFAULT);
-            chunkWriter = ((NettyContext) ctx0).getWriter().orElse(null);
+            this.started = true;
+            response = executor.execute(this, ctx, ListenerProxy.DEFAULT, handle, handler);
+            chunkWriter = ctx.getWriter().orElse(null);
         }
     }
 
@@ -312,5 +317,110 @@ public class ChunkRequestImpl extends NettyRequest implements ChunkRequest {
                 }
             });
         }
+    }
+
+    private void checkStarted() {
+        if (started) {
+            throw new IllegalStateException("Request has started to execute" +
+                    " and the modification isn't allowed");
+        }
+    }
+
+    @Override
+    public ChunkRequest copy() {
+        final ChunkRequestImpl copied = new ChunkRequestImpl(builder, executor, method(), uri().toString());
+        copyTo(this, copied);
+        return copied;
+    }
+
+    @Override
+    public synchronized ChunkRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
+        checkStarted();
+        super.uriEncodeEnabled(uriEncodeEnabled);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest expectContinueEnabled(Boolean expectContinueEnabled) {
+        checkStarted();
+        super.expectContinueEnabled(expectContinueEnabled);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest maxRedirects(int maxRedirects) {
+        checkStarted();
+        super.maxRedirects(maxRedirects);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest maxRetries(int maxRetries) {
+        checkStarted();
+        super.maxRetries(maxRetries);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest readTimeout(int readTimeout) {
+        checkStarted();
+        super.readTimeout(readTimeout);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
+        checkStarted();
+        super.addHeaders(headers);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest addHeader(CharSequence name, CharSequence value) {
+        checkStarted();
+        super.addHeader(name, value);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest setHeader(CharSequence name, CharSequence value) {
+        checkStarted();
+        super.setHeader(name, value);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest removeHeader(CharSequence name) {
+        checkStarted();
+        super.removeHeader(name);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest addParams(Map<String, String> params) {
+        checkStarted();
+        super.addParams(params);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest addParam(String name, String value) {
+        checkStarted();
+        super.addParam(name, value);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest handle(Consumer<Handle> handle) {
+        checkStarted();
+        super.handle(handle);
+        return this;
+    }
+
+    @Override
+    public synchronized ChunkRequest handler(Handler handler) {
+        checkStarted();
+        super.handler(handler);
+        return this;
     }
 }

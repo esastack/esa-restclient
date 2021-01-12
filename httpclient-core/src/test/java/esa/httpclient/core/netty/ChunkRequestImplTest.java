@@ -15,14 +15,16 @@
  */
 package esa.httpclient.core.netty;
 
+import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
+import esa.httpclient.core.Handler;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
-import esa.httpclient.core.RequestOptions;
 import esa.httpclient.core.exec.RequestExecutor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -59,15 +63,17 @@ class ChunkRequestImplTest {
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> {
                     final NettyContext ctx = answer.getArgument(1);
                     ctx.setWriter(writerPromise);
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new NettyContext());
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final byte[] dataToWrite = new byte[1024 * 1025 + 512];
         ThreadLocalRandom.current().nextBytes(dataToWrite);
@@ -117,15 +123,17 @@ class ChunkRequestImplTest {
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> {
                     final NettyContext ctx = answer.getArgument(1);
                     ctx.setWriter(writerPromise);
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new NettyContext());
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         for (int i = 0; i < 10; i++) {
             request.write(new BufferImpl(Unpooled.buffer().writeBytes((COMMON_DATA + i).getBytes())));
@@ -166,15 +174,17 @@ class ChunkRequestImplTest {
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> {
                     final NettyContext ctx = answer.getArgument(1);
                     ctx.setWriter(writerPromise);
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new NettyContext());
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         for (int i = 0; i < 10; i++) {
             request.write((COMMON_DATA + i).getBytes());
@@ -213,15 +223,17 @@ class ChunkRequestImplTest {
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> {
                     final NettyContext ctx = answer.getArgument(1);
                     ctx.setWriter(writerPromise);
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new NettyContext());
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final List<byte[]> data = new LinkedList<>();
         final ChunkWriter writer = mock(ChunkWriter.class);
@@ -265,15 +277,17 @@ class ChunkRequestImplTest {
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> {
                     final NettyContext ctx = answer.getArgument(1);
                     ctx.setWriter(writerPromise);
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new NettyContext());
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final List<byte[]> data = new LinkedList<>();
         final ChunkWriter writer = mock(ChunkWriter.class);
@@ -322,15 +336,18 @@ class ChunkRequestImplTest {
         final RequestExecutor executor = mock(RequestExecutor.class);
         when(executor.execute(any(HttpRequest.class),
                 any(Context.class),
-                any(Listener.class)))
+                any(Listener.class),
+                any(),
+                any()))
                 .thenAnswer(answer -> {
                     final NettyContext ctx = answer.getArgument(1);
                     ctx.setWriter(writerPromise);
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(executor, mock(RequestOptions.class),
-                new NettyContext());
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
+
         request.write(COMMON_DATA.getBytes());
 
         final Channel channel = mock(Channel.class);
@@ -341,6 +358,83 @@ class ChunkRequestImplTest {
         then(request.isWritable()).isFalse();
         when(channel.isWritable()).thenReturn(true);
         then(request.isWritable()).isTrue();
+    }
+
+    @Test
+    void testUnmodifiableAfterStarted() {
+        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
+        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        writerPromise.complete(mock(ChunkWriter.class));
+
+        final RequestExecutor executor = mock(RequestExecutor.class);
+        when(executor.execute(any(HttpRequest.class),
+                any(Context.class),
+                any(Listener.class),
+                any(),
+                any()))
+                .thenAnswer(answer -> {
+                    final NettyContext ctx = answer.getArgument(1);
+                    ctx.setWriter(writerPromise);
+                    return response;
+                });
+
+        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+                executor, HttpMethod.POST, "http://127.0.0.1/chunked");
+
+        final byte[] dataToWrite = new byte[1024 * 1025 + 512];
+        ThreadLocalRandom.current().nextBytes(dataToWrite);
+
+        // Before writing
+        request.expectContinueEnabled(true);
+
+        request.uriEncodeEnabled(true);
+        then(request.uriEncodeEnabled()).isTrue();
+
+        request.maxRedirects(10);
+        request.maxRetries(10);
+
+        request.readTimeout(100);
+        then(request.readTimeout()).isEqualTo(100);
+
+        request.addHeaders(Collections.singletonMap("a", "b"));
+        then(request.getHeader("a")).isEqualTo("b");
+
+        request.addParams(Collections.singletonMap("m", "n"));
+        then(request.getParam("m")).isEqualTo("n");
+
+        request.handle((h) -> {
+        });
+        request.handler(mock(Handler.class));
+
+        request.addHeader("x", "y");
+        then(request.getHeader("x")).isEqualTo("y");
+
+        request.setHeader("a", "bb");
+        then(request.getHeader("a")).isEqualTo("bb");
+
+        request.removeHeader("a");
+        then(request.getHeader("a")).isNullOrEmpty();
+
+        request.addParam("p", "q");
+        then(request.getParam("p")).isEqualTo("q");
+
+        request.write(dataToWrite);
+
+        // After writing
+        assertThrows(IllegalStateException.class, () -> request.expectContinueEnabled(true));
+        assertThrows(IllegalStateException.class, () -> request.uriEncodeEnabled(true));
+        assertThrows(IllegalStateException.class, () -> request.maxRedirects(10));
+        assertThrows(IllegalStateException.class, () -> request.maxRetries(10));
+        assertThrows(IllegalStateException.class, () -> request.readTimeout(100));
+        assertThrows(IllegalStateException.class, () -> request.addHeaders(Collections.singletonMap("a", "b")));
+        assertThrows(IllegalStateException.class, () -> request.addParams(Collections.singletonMap("m", "n")));
+        assertThrows(IllegalStateException.class, () -> request.handle((h) -> {
+        }));
+        assertThrows(IllegalStateException.class, () -> request.handler(mock(Handler.class)));
+        assertThrows(IllegalStateException.class, () -> request.addHeader("x", "y"));
+        assertThrows(IllegalStateException.class, () -> request.setHeader("a", "bb"));
+        assertThrows(IllegalStateException.class, () -> request.removeHeader("a"));
+        assertThrows(IllegalStateException.class, () -> request.addParam("p", "q"));
     }
 
 }

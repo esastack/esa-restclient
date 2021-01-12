@@ -21,7 +21,7 @@ import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpMessage;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
@@ -62,8 +62,8 @@ class DefaultHandleTest {
 
     @Test
     void testAggregate() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = HttpClient.ofDefault().get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 

@@ -62,12 +62,12 @@ class H2TransceiverHandle extends TransceiverHandle {
         }
 
         @Override
-        public void onWriteDone(HttpRequest request, Context ctx, long readTimeout) {
+        public void onWriteDone(HttpRequest request, Context ctx) {
             if (released.compareAndSet(false, true)) {
                 channelPool.release(channel);
             }
 
-            super.onWriteDone(request, ctx, readTimeout);
+            super.onWriteDone(request, ctx);
         }
 
         @Override

@@ -19,7 +19,7 @@ import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
@@ -37,6 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class NettyHandleTest {
+
+    private final HttpClient client = HttpClient.ofDefault();
 
     @SuppressWarnings("unchecked")
     @Test
@@ -63,8 +65,8 @@ class NettyHandleTest {
     void testOnOpsNormal() {
         final AtomicInteger count = new AtomicInteger();
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -89,8 +91,8 @@ class NettyHandleTest {
 
     @Test
     void testOnStartError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
@@ -112,8 +114,8 @@ class NettyHandleTest {
 
     @Test
     void testOnEndError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
@@ -136,8 +138,8 @@ class NettyHandleTest {
 
     @Test
     void testOnDataError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
@@ -160,8 +162,8 @@ class NettyHandleTest {
 
     @Test
     void testOnTrailerError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
@@ -184,8 +186,8 @@ class NettyHandleTest {
 
     @Test
     void testOnErrorError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -205,8 +207,8 @@ class NettyHandleTest {
 
     @Test
     void testNoOpsAfterOnError() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger count = new AtomicInteger();
@@ -232,8 +234,8 @@ class NettyHandleTest {
 
     @Test
     void testNoOpsAfterOnEnd() {
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger count = new AtomicInteger();

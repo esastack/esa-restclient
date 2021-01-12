@@ -18,9 +18,8 @@ package esa.httpclient.core.netty;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpRequestBuilder;
 import esa.httpclient.core.exception.StreamIdExhaustedException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -36,12 +35,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static esa.httpclient.core.ContextNames.EXPECT_CONTINUE_ENABLED;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class RequestWriterImplTest {
+
+    private final HttpClient client = HttpClient.ofDefault();
 
     @SuppressWarnings("unchecked")
     @Test
@@ -51,10 +51,9 @@ class RequestWriterImplTest {
         channel.pipeline().addLast(mock(Http2ConnectionHandler.class));
 
         // Case 1: Host is present
-        final HttpRequestBuilder.BodyForbiddenBuilder builder = HttpRequest.get("http://127.0.0.1:8080/abc");
-        builder.addHeader(HttpHeaderNames.HOST, "127.0.0.1:8080");
-        builder.addHeader(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
-        final HttpRequest request1 = builder.build();
+        final HttpRequest request1 = client.get("http://127.0.0.1:8080/abc")
+                .addHeader(HttpHeaderNames.HOST, "127.0.0.1:8080")
+                .addHeader(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
 
         ChannelFuture future = writer.writeAndFlush(request1,
                 channel,
@@ -67,7 +66,7 @@ class RequestWriterImplTest {
         then(request1.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1:8080");
 
         // Case 2: Host is absent
-        final HttpRequest request2 = HttpRequest.get("http://localhost:8080/abc").build();
+        final HttpRequest request2 = client.get("http://localhost:8080/abc");
         request2.addHeader(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
 
         future = writer.writeAndFlush(request2,
@@ -118,30 +117,28 @@ class RequestWriterImplTest {
 
     @Test
     void testWriteContentNow() {
-        final ContextImpl ctx = new ContextImpl();
+        final Context ctx = mock(Context.class);
+        when(ctx.expectContinueEnabled()).thenReturn(false);
         then(RequestWriterImpl.writeContentNow(ctx)).isTrue();
 
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, true);
+        when(ctx.expectContinueEnabled()).thenReturn(true);
         then(RequestWriterImpl.writeContentNow(ctx)).isFalse();
 
-        ctx.setAttr(EXPECT_CONTINUE_ENABLED, false);
+        when(ctx.expectContinueEnabled()).thenReturn(false);
         then(RequestWriterImpl.writeContentNow(ctx)).isTrue();
-
-        ctx.clear();
     }
 
     @Test
     void testAddContentLengthIfAbsent() {
         // Case 1: Content-Length is present
-        final HttpRequest request1 = HttpRequest.get("/abc")
-                .addHeader(HttpHeaderNames.CONTENT_LENGTH, "100")
-                .build();
+        final HttpRequest request1 = client.get("/abc")
+                .addHeader(HttpHeaderNames.CONTENT_LENGTH, "100");
 
         RequestWriterImpl.addContentLengthIfAbsent(request1, (request) -> 200L);
         then(request1.headers().getLong(HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(100L);
 
         // Case 2: Content-Length is present
-        final HttpRequest request2 = HttpRequest.get("/abc").build();
+        final HttpRequest request2 = client.get("/abc");
         RequestWriterImpl.addContentLengthIfAbsent(request2, (request) -> 200L);
         then(request2.headers().getLong(HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(200L);
     }
@@ -149,15 +146,14 @@ class RequestWriterImplTest {
     @Test
     void testAddContentTypeIfAbsent() {
         // Case 1: Content-Type is present
-        final HttpRequest request1 = HttpRequest.get("/abc")
-                .addHeader(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON)
-                .build();
+        final HttpRequest request1 = client.get("/abc")
+                .addHeader(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
 
         RequestWriterImpl.addContentTypeIfAbsent(request1, () -> HttpHeaderValues.APPLICATION_OCTET_STREAM);
         then(request1.headers().get(HttpHeaderNames.CONTENT_TYPE)).isEqualTo(HttpHeaderValues.APPLICATION_JSON);
 
         // Case 2: Content-Length is present
-        final HttpRequest request2 = HttpRequest.get("/abc").build();
+        final HttpRequest request2 = client.get("/abc");
         RequestWriterImpl.addContentTypeIfAbsent(request2, () -> HttpHeaderValues.APPLICATION_OCTET_STREAM);
         then(request2.headers().get(HttpHeaderNames.CONTENT_TYPE)).isEqualTo(HttpHeaderValues
                 .APPLICATION_OCTET_STREAM);

@@ -20,12 +20,11 @@ import esa.commons.http.HttpHeaderValues;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.ChunkRequest;
-import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.exception.RedirectException;
+import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Assertions;
@@ -38,7 +37,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static esa.httpclient.core.ContextNames.MAX_REDIRECTS;
 import static esa.httpclient.core.exec.RedirectInterceptor.HAS_REDIRECTED_COUNT;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,45 +47,47 @@ class RedirectInterceptorTest {
 
     private static final String DO_REDIRECT = "$doRedirect";
 
+    private final HttpClient client = HttpClient.ofDefault();
+
     @Test
     void testProceed() {
         final ExecChain next = mock(ExecChain.class);
-        final ContextImpl ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
         when(next.ctx()).thenReturn(ctx);
 
         // chunk request is not allowed to redirect
-        final ChunkRequest request0 = HttpClient.ofDefault().prepare("http://127.0.0.1:8080/abc").build();
+        final ChunkRequest request0 = client.post("http://127.0.0.1:8080/abc").segment();
         final HttpResponse response = new MockHttpResponse();
         response.headers().add(HttpHeaderNames.LOCATION, "127.0.0.1:9999");
         when(next.proceed(request0)).thenReturn(Futures.completed(response));
 
         final RedirectInterceptor interceptor = new AuxiliaryRedirectInterceptor();
         final CompletableFuture<HttpResponse> response00 = interceptor.proceed(request0, next);
-        then(ctx.getAttr(DO_REDIRECT)).isNull();
+        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
         then(response00.isDone()).isTrue();
         then(response00.getNow(null)).isSameAs(response);
         ctx.clear();
 
         // redirect is not allowed as default
-        final HttpRequest request1 = HttpRequest.get("http://127.0.0.1:8080/abc").build();
+        final HttpRequest request1 = client.get("http://127.0.0.1:8080/abc");
         when(next.proceed(request1)).thenReturn(Futures.completed(response));
         final CompletableFuture<HttpResponse> response11 = interceptor.proceed(request1, next);
-        then(ctx.getAttr(DO_REDIRECT)).isNull();
+        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
         ctx.clear();
 
         // redirect is configured as false
         final CompletableFuture<HttpResponse> response22 = interceptor.proceed(request1, next);
-        then(ctx.getAttr(DO_REDIRECT)).isNull();
+        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
         ctx.clear();
 
         // redirect is configured as true
-        ctx.setAttr(MAX_REDIRECTS, 1);
+        ctx.maxRedirects(1);
         final CompletableFuture<HttpResponse> response33 = interceptor.proceed(request1, next);
-        then(ctx.getAttr(DO_REDIRECT)).isEqualTo(true);
+        then((Boolean) ctx.getAttr(DO_REDIRECT)).isEqualTo(true);
         then(response33.isDone()).isTrue();
         then(response33.getNow(null)).isSameAs(AuxiliaryRedirectInterceptor.RESPONSE);
         ctx.clear();
@@ -99,11 +99,11 @@ class RedirectInterceptorTest {
 
         // Case 1: when complete exceptionally
         final ExecChain next = mock(ExecChain.class);
-        final ContextImpl ctx = new ContextImpl();
-        ctx.setAttr(MAX_REDIRECTS, 10);
+        final MockContext ctx = new MockContext();
+        ctx.maxRedirects(10);
         when(next.ctx()).thenReturn(ctx);
 
-        final HttpRequest request0 = HttpRequest.get("http://127.0.0.1:8080/abc").build();
+        final HttpRequest request0 = client.get("http://127.0.0.1:8080/abc");
         when(next.proceed(request0)).thenReturn(Futures.completed(new IOException()));
         final CompletableFuture<HttpResponse> response00 = interceptor.proceed(request0, next);
         then(response00.isDone()).isTrue();
@@ -111,7 +111,7 @@ class RedirectInterceptorTest {
         ctx.clear();
 
         // Case 2: when complete normally
-        ctx.setAttr(MAX_REDIRECTS, 10);
+        ctx.maxRedirects(10);
         final HttpResponse response2 = new MockHttpResponse();
         when(next.proceed(request0)).thenReturn(Futures.completed(response2));
         final CompletableFuture<HttpResponse> response22 = interceptor.proceed(request0, next);
@@ -121,7 +121,7 @@ class RedirectInterceptorTest {
         ctx.clear();
 
         // Case 3: when complete with location, status is 200
-        ctx.setAttr(MAX_REDIRECTS, 10);
+        ctx.maxRedirects(10);
         final HttpResponse response3 = new MockHttpResponse();
         response3.headers().add(HttpHeaderNames.LOCATION, "127.0.0.1:9999");
         when(next.proceed(request0)).thenReturn(Futures.completed(response3));
@@ -132,32 +132,32 @@ class RedirectInterceptorTest {
         ctx.clear();
 
         // Case 4: when complete with location, status is 302
-        ctx.setAttr(MAX_REDIRECTS, 10);
+        ctx.maxRedirects(10);
         final HttpResponse response4 = new MockHttpResponse(302);
         response4.headers().add(HttpHeaderNames.LOCATION, "http://127.0.0.1:9999/abc");
         when(next.proceed(request0)).thenReturn(Futures.completed(response4));
         final CompletableFuture<HttpResponse> response44 = interceptor.proceed(request0, next);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
-        then(ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(10);
+        then((Integer) ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(10);
         ctx.clear();
 
         // Case 5: when complete with location, status is 302 and redirected response is null
-        ctx.setAttr(MAX_REDIRECTS, 10);
+        ctx.maxRedirects(10);
         final HttpResponse response5 = new MockHttpResponse(302);
         response5.headers().add(HttpHeaderNames.LOCATION, "127.0.0.1:9999");
         when(next.proceed(request0)).thenReturn(Futures.completed(response5));
         final CompletableFuture<HttpResponse> response55 = interceptor.proceed(request0, next);
         then(response55.isDone()).isTrue();
         then(response55.isCompletedExceptionally()).isTrue();
-        then(ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(0);
+        then((Integer) ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(0);
         ctx.clear();
     }
 
     @Test
     void testNewRequest() {
         final RedirectInterceptor interceptor = new RedirectInterceptor();
-        final HttpRequest request0 = HttpRequest.get("http://127.0.0.1:9999/abc/def").build();
+        final HttpRequest request0 = client.get("http://127.0.0.1:9999/abc/def");
 
         final HttpRequest request1 = interceptor.newRequest(request0,
                 java.net.URI.create("http://127.0.0.1:8888/abc/def"), 301);
@@ -171,9 +171,9 @@ class RedirectInterceptorTest {
         final RedirectInterceptor interceptor = new RedirectInterceptor();
 
         // location is absent
-        final HttpRequest request = HttpRequest.get("http://127.0.0.1:9999/abc").build();
+        final HttpRequest request = client.get("http://127.0.0.1:9999/abc");
         final HttpResponse response = new MockHttpResponse(301);
-        final ContextImpl ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
         Executable executable = () -> interceptor.detectURI(request, response);
         Assertions.assertThrows(RedirectException.class, executable);
         ctx.clear();
@@ -313,12 +313,12 @@ class RedirectInterceptorTest {
         final int maxRedirects = 10;
         final AtomicInteger count = new AtomicInteger();
 
-        final Context ctx = new ContextImpl();
+        final MockContext ctx = new MockContext();
         final HttpResponse response = new MockHttpResponse(302);
         response.headers().add(HttpHeaderNames.LOCATION, "/abc");
         final ExecChain chain = mock(ExecChain.class);
         when(chain.ctx()).thenReturn(ctx);
-        ctx.setAttr(MAX_REDIRECTS, maxRedirects);
+        ctx.maxRedirects(maxRedirects);
 
         final HttpResponse succeed = new MockHttpResponse(200);
         succeed.headers().add("a", "b");
@@ -335,10 +335,10 @@ class RedirectInterceptorTest {
         });
 
         final RedirectInterceptor interceptor = new RedirectInterceptor();
-        final HttpResponse result = interceptor.proceed(HttpRequest.get("/abc").build(), chain).get();
+        final HttpResponse result = interceptor.proceed(client.get("/abc"), chain).get();
         then(result.status()).isEqualTo(200);
         then(result.headers().get("a")).isEqualTo("b");
-        final int hasRedirectedCount = ctx.getUncheckedAttr(HAS_REDIRECTED_COUNT);
+        final int hasRedirectedCount = ctx.getAttr(HAS_REDIRECTED_COUNT);
         then(hasRedirectedCount).isEqualTo(maxRedirects);
     }
 

@@ -19,7 +19,7 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.ContextImpl;
+import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
@@ -67,6 +67,7 @@ class Http2FrameHandlerTest {
 
     private static final byte[] DATA = "Hello World!".getBytes();
 
+    private final HttpClient client = HttpClient.ofDefault();
     private EmbeddedChannel channel;
     private Http2FrameInboundWriter frameInboundWriter;
 
@@ -106,8 +107,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -143,8 +144,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -182,8 +183,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -227,7 +228,7 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
+        final HttpRequest request = client.get("/abc");
         final NettyContext ctx = new NettyContext();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
@@ -304,8 +305,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength1);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -353,8 +354,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength1);
 
-        final HttpRequest request1 = HttpRequest.get("/abc").build();
-        final Context ctx1 = new ContextImpl();
+        final HttpRequest request1 = client.get("/abc");
+        final Context ctx1 = new Context();
         final Listener listener1 = new NoopListener();
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
@@ -397,8 +398,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength2);
 
-        final HttpRequest request2 = HttpRequest.get("/abc").build();
-        final Context ctx2 = new ContextImpl();
+        final HttpRequest request2 = client.get("/abc");
+        final Context ctx2 = new Context();
         final Listener listener2 = new NoopListener();
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
@@ -438,8 +439,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -480,8 +481,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength1);
 
-        final HttpRequest request1 = HttpRequest.get("/abc").build();
-        final Context ctx1 = new ContextImpl();
+        final HttpRequest request1 = client.get("/abc");
+        final Context ctx1 = new Context();
         final Listener listener1 = new NoopListener();
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
@@ -517,8 +518,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength2);
 
-        final HttpRequest request2 = HttpRequest.get("/abc").build();
-        final Context ctx2 = new ContextImpl();
+        final HttpRequest request2 = client.get("/abc");
+        final Context ctx2 = new Context();
         final Listener listener2 = new NoopListener();
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
@@ -556,8 +557,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -585,8 +586,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -619,8 +620,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -648,8 +649,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -680,8 +681,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -719,8 +720,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -760,8 +761,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -803,8 +804,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -846,8 +847,8 @@ class Http2FrameHandlerTest {
 
         setUp(registry, maxContentLength);
 
-        final HttpRequest request = HttpRequest.get("/abc").build();
-        final Context ctx = new ContextImpl();
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
         final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 

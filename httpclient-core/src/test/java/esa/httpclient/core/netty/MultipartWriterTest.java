@@ -61,7 +61,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
-                    .attribute("key1", "value1");
+                    .attr("key1", "value1");
             final Context ctx = new Context();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
@@ -98,8 +98,8 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         final esa.httpclient.core.MultipartRequest request = client
                 .post("http://127.0.0.1/abc")
                 .multipart()
-                .attribute("key1", "value1")
-                .attribute("key2", "value2")
+                .attr("key1", "value1")
+                .attr("key2", "value2")
                 .multipartEncode(false);
         final Context ctx = new Context();
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -141,7 +141,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
-                    .attribute("key1", "value1")
+                    .attr("key1", "value1")
                     .expectContinueEnabled(true);
 
             final MockNettyContext ctx = new MockNettyContext();
@@ -197,7 +197,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
-                    .attribute("key1", "value1");
+                    .attr("key1", "value1");
 
             file.delete();
             final Context ctx = new Context();
@@ -281,8 +281,8 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         final esa.httpclient.core.MultipartRequest request = client
                 .post("http://127.0.0.1/abc")
                 .multipart()
-                .attribute("key1", "value1")
-                .attribute("key2", "value2")
+                .attr("key1", "value1")
+                .attr("key2", "value2")
                 .multipartEncode(false);
 
         final Context ctx = new Context();

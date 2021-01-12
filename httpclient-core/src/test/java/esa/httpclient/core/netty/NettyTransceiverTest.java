@@ -408,7 +408,7 @@ class NettyTransceiverTest {
         final HttpRequest request3 = client.patch("/abc").body(new File(""));
         then(NettyTransceiver.getWriter(request3)).isInstanceOf(FileWriter.class);
 
-        final HttpRequest request4 = client.get("/abc").multipart().attribute("", "");
+        final HttpRequest request4 = client.get("/abc").multipart().attr("", "");
         then(NettyTransceiver.getWriter(request4)).isInstanceOf(MultipartWriter.class);
 
         final HttpRequest request5 = client.get("/abc").segment();

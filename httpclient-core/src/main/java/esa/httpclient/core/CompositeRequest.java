@@ -127,7 +127,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized MultipartRequest attribute(String name, String value) {
+    public synchronized MultipartRequest attr(String name, String value) {
         checkStarted();
         if (illegalArgs(name, value)) {
             return self();

@@ -52,9 +52,9 @@ class CompositeRequestTest {
         then(multipart.attributes()).isEmpty();
         then(multipart.files()).isEmpty();
 
-        multipart.attribute("a", "b");
-        multipart.attribute("x", "y");
-        multipart.attribute("xxxxx", "mmmmmmm");
+        multipart.attr("a", "b");
+        multipart.attr("x", "y");
+        multipart.attr("xxxxx", "mmmmmmm");
 
         final File file = new File("/abc");
         multipart.file("a1", file);
@@ -88,9 +88,9 @@ class CompositeRequestTest {
                 client, () -> chunk0, method, uri);
 
         final MultipartRequest multipart = request.multipart();
-        multipart.attribute("a", "b");
-        multipart.attribute("x", "y");
-        multipart.attribute("xxxxx", "mmmmmmm");
+        multipart.attr("a", "b");
+        multipart.attr("x", "y");
+        multipart.attr("xxxxx", "mmmmmmm");
 
         final File file = new File("/abc");
         multipart.file("a1", file);
@@ -115,7 +115,7 @@ class CompositeRequestTest {
 
         // Test isolation
         request.file("m", file);
-        request.attribute("mm", "nn");
+        request.attr("mm", "nn");
         then(request.attributes().size()).isEqualTo(4);
         then(request.files().size()).isEqualTo(6);
         then(copied.attributes().size()).isEqualTo(3);
@@ -176,7 +176,7 @@ class CompositeRequestTest {
         request.file("a2", file, HttpHeaderValues.APPLICATION_OCTET_STREAM);
         request.file("a3", file, "xxx", true);
         request.file("a4", "file1", file, HttpHeaderValues.TEXT_PLAIN, true);
-        request.attribute("a", "b");
+        request.attr("a", "b");
         request.multipartEncode(true);
         request.body(file);
         request.body(data);
@@ -206,7 +206,7 @@ class CompositeRequestTest {
                 () -> request.file("a3", file, "xxx", true));
         assertThrows(IllegalStateException.class,
                 () -> request.file("a4", "file1", file, HttpHeaderValues.TEXT_PLAIN, true));
-        assertThrows(IllegalStateException.class, () -> request.attribute("a", "b"));
+        assertThrows(IllegalStateException.class, () -> request.attr("a", "b"));
         assertThrows(IllegalStateException.class, () -> request.multipartEncode(true));
         assertThrows(IllegalStateException.class, () -> request.body(file));
         assertThrows(IllegalStateException.class, () -> request.body(data));

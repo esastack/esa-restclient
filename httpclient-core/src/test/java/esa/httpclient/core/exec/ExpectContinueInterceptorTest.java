@@ -98,7 +98,7 @@ class ExpectContinueInterceptorTest {
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.post("/abc").body(new byte[0]))).isTrue();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").segment())).isTrue();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").multipart()
-                .attribute("a", "b"))).isFalse();
+                .attr("a", "b"))).isFalse();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").multipart())).isTrue();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").body(new File("/")))).isFalse();
     }

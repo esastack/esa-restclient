@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class AttributesMapTest {
+class AttributeMapTest {
 
     @Test
     void testIllegalArgument() {

@@ -138,27 +138,30 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized MultipartRequest file(String name, File file) {
-        checkStarted();
-        return file(name, file, DEFAULT_BINARY_CONTENT_TYPE);
-    }
-
-    @Override
-    public synchronized MultipartRequest file(String name, File file, String contentType) {
-        checkStarted();
-        return file(name, file, contentType, DEFAULT_TEXT_CONTENT_TYPE.equalsIgnoreCase(contentType));
-    }
-
-    @Override
-    public synchronized MultipartRequest file(String name,
-                                              File file,
-                                              String contentType,
-                                              boolean isText) {
-        checkStarted();
+    public MultipartRequest file(String name, File file) {
         if (illegalArgs(name, file)) {
             return self();
         }
-        checkMultipartFile();
+        return file(name, file.getName(), file, DEFAULT_BINARY_CONTENT_TYPE, false);
+    }
+
+    @Override
+    public MultipartRequest file(String name, File file, String contentType) {
+        if (illegalArgs(name, file)) {
+            return self();
+        }
+        return file(name, file.getName(), file, contentType,
+                DEFAULT_TEXT_CONTENT_TYPE.equalsIgnoreCase(contentType));
+    }
+
+    @Override
+    public MultipartRequest file(String name,
+                                 File file,
+                                 String contentType,
+                                 boolean isText) {
+        if (illegalArgs(name, file)) {
+            return self();
+        }
         return file(name, file.getName(), file, contentType, isText);
     }
 
@@ -168,6 +171,9 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
                                               File file,
                                               String contentType,
                                               boolean isText) {
+        if (illegalArgs(name, file)) {
+            return self();
+        }
         checkStarted();
         checkMultipartFile();
         files.add(new MultipartFileItem(name, filename, file, contentType, isText));

@@ -259,7 +259,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                 request0,
                 request.multipartEncode());
 
-        final MultiValueMap<String, String> attributes = request.attributes();
+        final MultiValueMap<String, String> attributes = request.attrs();
         for (Map.Entry<String, List<String>> entry : attributes.entrySet()) {
             for (String value : entry.getValue()) {
                 encoder.addBodyAttribute(entry.getKey(), value);

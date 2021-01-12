@@ -18,6 +18,7 @@ package esa.httpclient.core;
 import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
+import esa.commons.netty.core.Buffer;
 
 import java.io.File;
 import java.util.List;
@@ -165,9 +166,9 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     /**
      * Obtains given {@code byte[]} which is regarded as request's body.
      *
-     * @return bytes, which may be null if you haven't set the {@code byte[]} before.
+     * @return buffer, which may be null if you haven't set the {@code byte[]} before.
      */
-    default byte[] bytes() {
+    default Buffer buffer() {
         return null;
     }
 
@@ -181,11 +182,11 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     }
 
     /**
-     * Obtains the attributes which are used to multipart encoded.
+     * Obtains the attrs which are used to multipart encoded.
      *
-     * @return attributes, must be null if {@link #isMultipart()} is false.
+     * @return attrs, must be null if {@link #isMultipart()} is false.
      */
-    default MultiValueMap<String, String> attributes() {
+    default MultiValueMap<String, String> attrs() {
         return null;
     }
 

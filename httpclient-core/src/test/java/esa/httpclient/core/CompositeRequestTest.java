@@ -17,6 +17,8 @@ package esa.httpclient.core;
 
 import esa.commons.http.HttpHeaderValues;
 import esa.commons.http.HttpMethod;
+import esa.commons.netty.core.Buffer;
+import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.netty.NettyHttpClient;
 import esa.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
@@ -47,9 +49,9 @@ class CompositeRequestTest {
         final MultipartRequest multipart = request.multipart();
         then(multipart.isMultipart()).isTrue();
         then(multipart.isSegmented()).isFalse();
-        then(multipart.bytes()).isNull();
+        then(multipart.buffer()).isNull();
         then(multipart.file()).isNull();
-        then(multipart.attributes()).isEmpty();
+        then(multipart.attrs()).isEmpty();
         then(multipart.files()).isEmpty();
 
         multipart.attr("a", "b");
@@ -66,12 +68,14 @@ class CompositeRequestTest {
         multipart.multipartEncode(false);
         then(multipart.multipartEncode()).isFalse();
 
-        then(request.attributes().size()).isEqualTo(3);
+        then(request.attrs().size()).isEqualTo(3);
         then(request.files().size()).isEqualTo(5);
 
         then(request.segment()).isSameAs(chunk0);
         then(request.body(new File("")).file()).isNotNull();
-        then(request.body("Hello".getBytes())).isNotNull();
+        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes("Hello".getBytes())));
+        request.body((File) null);
+        then(request.body(new BufferImpl().writeBytes("Hello".getBytes()))).isNotNull();
     }
 
     @Test
@@ -100,25 +104,31 @@ class CompositeRequestTest {
         multipart.file("xxxx", new File("/def"), "mmm", true);
         multipart.multipartEncode(multipartEncode);
 
-        then(request.attributes().size()).isEqualTo(3);
+        then(request.attrs().size()).isEqualTo(3);
         then(request.files().size()).isEqualTo(5);
 
         request.body(file);
-        request.body(data);
+        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes(data)));
+        request.body((File) null);
+        request.body(new BufferImpl().writeBytes(data));
 
         final CompositeRequest copied = request.copy();
         then(copied.multipartEncode()).isEqualTo(multipartEncode);
-        then(copied.attributes().size()).isEqualTo(3);
+        then(copied.attrs().size()).isEqualTo(3);
         then(copied.files().size()).isEqualTo(5);
         then(copied.file()).isNull();
-        then(Arrays.equals(request.bytes(), data)).isTrue();
+        final byte[] copiedData = new byte[data.length];
+        copied.buffer().readBytes(copiedData);
+        then(Arrays.equals(copiedData, data)).isTrue();
+        then(request.buffer()).isNotSameAs(copied.buffer());
+        then(request.buffer().getByteBuf()).isNotSameAs(copied.buffer().getByteBuf());
 
         // Test isolation
         request.file("m", file);
         request.attr("mm", "nn");
-        then(request.attributes().size()).isEqualTo(4);
+        then(request.attrs().size()).isEqualTo(4);
         then(request.files().size()).isEqualTo(6);
-        then(copied.attributes().size()).isEqualTo(3);
+        then(copied.attrs().size()).isEqualTo(3);
         then(copied.files().size()).isEqualTo(5);
     }
 
@@ -178,8 +188,10 @@ class CompositeRequestTest {
         request.file("a4", "file1", file, HttpHeaderValues.TEXT_PLAIN, true);
         request.attr("a", "b");
         request.multipartEncode(true);
+        request.body(new BufferImpl().writeBytes(data));
+        assertThrows(IllegalStateException.class, () -> request.body(file));
+        request.body((Buffer) null);
         request.body(file);
-        request.body(data);
 
         request.execute();
 
@@ -209,7 +221,7 @@ class CompositeRequestTest {
         assertThrows(IllegalStateException.class, () -> request.attr("a", "b"));
         assertThrows(IllegalStateException.class, () -> request.multipartEncode(true));
         assertThrows(IllegalStateException.class, () -> request.body(file));
-        assertThrows(IllegalStateException.class, () -> request.body(data));
+        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes(data)));
 
         assertThrows(IllegalStateException.class, request::execute);
     }

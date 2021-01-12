@@ -21,6 +21,7 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.logging.Logger;
+import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.DelegatingRequest;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
@@ -155,8 +156,8 @@ public class RedirectInterceptor implements Interceptor {
             }
 
             @Override
-            public byte[] bytes() {
-                return cleanBody ? null : super.bytes();
+            public Buffer buffer() {
+                return cleanBody ? null : super.buffer();
             }
 
             @Override
@@ -165,8 +166,8 @@ public class RedirectInterceptor implements Interceptor {
             }
 
             @Override
-            public MultiValueMap<String, String> attributes() {
-                return cleanBody ? null : super.attributes();
+            public MultiValueMap<String, String> attrs() {
+                return cleanBody ? null : super.attrs();
             }
 
             @Override

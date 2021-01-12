@@ -75,10 +75,10 @@ class HttpRequestBaseImplTest {
                 .setHeader("xx", "xxx");
 
         then(request.method()).isEqualTo(HttpMethod.PUT);
-        then(request.bytes()).isNull();
+        then(request.buffer()).isNull();
         then(request.file()).isNull();
         then(request.files()).isNull();
-        then(request.attributes()).isNull();
+        then(request.attrs()).isNull();
         then(request.uri().toString()).isEqualTo("http://127.0.0.1:8080/abc");
         then(request.scheme()).isEqualTo(Scheme.HTTP.name0());
 

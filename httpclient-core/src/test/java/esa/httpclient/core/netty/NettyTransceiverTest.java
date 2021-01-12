@@ -17,6 +17,7 @@ package esa.httpclient.core.netty;
 
 import esa.commons.function.ThrowingSupplier;
 import esa.commons.http.HttpVersion;
+import esa.commons.netty.core.BufferImpl;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
@@ -402,7 +403,7 @@ class NettyTransceiverTest {
         final HttpRequest request1 = client.get("/abc");
         then(NettyTransceiver.getWriter(request1)).isInstanceOf(PlainWriter.class);
 
-        final HttpRequest request2 = client.post("/abc").body(new byte[0]);
+        final HttpRequest request2 = client.post("/abc").body(new BufferImpl());
         then(NettyTransceiver.getWriter(request2)).isInstanceOf(PlainWriter.class);
 
         final HttpRequest request3 = client.patch("/abc").body(new File(""));

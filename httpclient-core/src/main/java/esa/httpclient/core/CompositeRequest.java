@@ -19,6 +19,7 @@ import esa.commons.Checks;
 import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpMethod;
+import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.netty.NettyHttpClient;
 
 import java.io.File;
@@ -42,9 +43,9 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     /**
      * Body data
      */
-    private final MultiValueMap<String, String> attributes = new HashMultiValueMap<>();
+    private final MultiValueMap<String, String> attrs = new HashMultiValueMap<>();
     private final List<MultipartFileItem> files = new LinkedList<>();
-    private volatile byte[] bytes;
+    private volatile Buffer buffer;
     private volatile File file;
     private volatile boolean multipartEncode = true;
     private boolean started;
@@ -76,11 +77,14 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized PlainRequest body(byte[] bytes) {
+    public synchronized PlainRequest body(Buffer data) {
         checkStarted();
-        cleanBody();
+        if (file != null) {
+            throw new IllegalStateException("You have specified a file: "
+                    + file.getName() + " as request's content");
+        }
         this.type = 0;
-        this.bytes = bytes;
+        this.buffer = data;
         return self();
     }
 
@@ -99,15 +103,17 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     @Override
     public synchronized FileRequest body(File file) {
         checkStarted();
-        cleanBody();
+        if (buffer != null) {
+            throw new IllegalStateException("You have specified a buffer as request's content");
+        }
         this.type = 3;
         this.file = file;
         return self();
     }
 
     @Override
-    public byte[] bytes() {
-        return bytes;
+    public Buffer buffer() {
+        return buffer;
     }
 
     @Override
@@ -133,7 +139,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         if (illegalArgs(name, value)) {
             return self();
         }
-        attributes.add(name, value);
+        attrs.add(name, value);
         return self();
     }
 
@@ -181,8 +187,8 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public MultiValueMap<String, String> attributes() {
-        return new HashMultiValueMap<>(attributes);
+    public MultiValueMap<String, String> attrs() {
+        return new HashMultiValueMap<>(attrs);
     }
 
     @Override
@@ -299,11 +305,11 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
                 request, method(), uri().toString());
         copyTo(this, copied);
 
-        copied.attributes.putAll(attributes);
+        copied.attrs.putAll(attrs);
         copied.files.addAll(files);
         copied.multipartEncode(multipartEncode);
-        if (bytes != null) {
-            copied.body(bytes);
+        if (buffer != null) {
+            copied.body(buffer.copy());
         }
         if (file != null) {
             copied.body(file);
@@ -323,11 +329,6 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     private CompositeRequest self() {
         return this;
-    }
-
-    private void cleanBody() {
-        this.bytes = null;
-        this.file = null;
     }
 
     private void checkMultipartFile() {

@@ -17,6 +17,7 @@ package esa.httpclient.core;
 
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
+import esa.commons.netty.core.Buffer;
 
 import java.io.File;
 import java.util.Map;
@@ -25,12 +26,12 @@ import java.util.function.Consumer;
 public interface HttpRequestFacade extends ExecutableRequest {
 
     /**
-     * Fills the request's body with given {@code bytes}.
+     * Fills the request's body with given {@code buffer}.
      *
-     * @param bytes bytes
+     * @param data buffer
      * @return request
      */
-    PlainRequest body(byte[] bytes);
+    PlainRequest body(Buffer data);
 
     /**
      * Fills the request's body with given {@code file}'s content.

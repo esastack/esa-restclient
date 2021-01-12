@@ -19,6 +19,7 @@ import esa.commons.Checks;
 import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
+import esa.commons.netty.core.Buffer;
 
 import java.io.File;
 import java.util.List;
@@ -119,8 +120,8 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
-    public byte[] bytes() {
-        return underlying.bytes();
+    public Buffer buffer() {
+        return underlying.buffer();
     }
 
     @Override
@@ -129,8 +130,8 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
-    public MultiValueMap<String, String> attributes() {
-        return underlying.attributes();
+    public MultiValueMap<String, String> attrs() {
+        return underlying.attrs();
     }
 
     @Override

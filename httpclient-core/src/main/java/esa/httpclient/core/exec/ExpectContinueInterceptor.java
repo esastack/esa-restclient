@@ -78,10 +78,10 @@ public class ExpectContinueInterceptor implements Interceptor {
         }
 
         if (request.isMultipart()) {
-            return request.files().isEmpty() && request.attributes().isEmpty();
+            return request.files().isEmpty() && request.attrs().isEmpty();
         }
         return request.file() == null
-                && (request.bytes() == null || request.bytes().length == 0);
+                && (request.buffer() == null || !request.buffer().isReadable());
     }
 
 }

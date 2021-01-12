@@ -97,17 +97,17 @@ class DelegatingRequestTest {
         request.isMultipart();
         verify(underlying).isMultipart();
 
-        verify(underlying, never()).bytes();
-        request.bytes();
-        verify(underlying).bytes();
+        verify(underlying, never()).buffer();
+        request.buffer();
+        verify(underlying).buffer();
 
         verify(underlying, never()).file();
         request.file();
         verify(underlying).file();
 
-        verify(underlying, never()).attributes();
-        request.attributes();
-        verify(underlying).attributes();
+        verify(underlying, never()).attrs();
+        request.attrs();
+        verify(underlying).attrs();
 
         verify(underlying, never()).files();
         request.files();

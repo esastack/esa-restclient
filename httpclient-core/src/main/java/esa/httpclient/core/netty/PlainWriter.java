@@ -89,13 +89,14 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     private static void doWriteContent1(Channel channel,
                                         Buffer content,
                                         ChannelPromise endPromise) {
-        final ByteBuf buf = content.getByteBuf();
-        try {
-            channel.writeAndFlush(new DefaultLastHttpContent(buf), endPromise);
-        } catch (Throwable ex) {
-            endPromise.setFailure(ex);
-            Utils.tryRelease(buf);
-        }
+        // Note: retained the buffer so that channel can release it normally which has
+        // no effect to us when we release the buffer after ending the request.
+        //
+        // slice the buffer so that we can reRead the original buffer for
+        // retrying\redirecting and other purpose.
+
+        final ByteBuf buf = content.getByteBuf().retainedSlice();
+        channel.writeAndFlush(new DefaultLastHttpContent(buf), endPromise);
     }
 
     @Override
@@ -115,8 +116,13 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
             return future;
         }
 
+        // Note: retained the buffer so that channel can release it normally which has
+        // no effect to us when we release the buffer after ending the request.
+        //
+        // slice the buffer so that we can reRead the original buffer for
+        // retrying\redirecting and other purpose.
         final ByteBuf data = request.buffer() == null
-                ? Unpooled.EMPTY_BUFFER : request.buffer().getByteBuf();
+                ? Unpooled.EMPTY_BUFFER : request.buffer().getByteBuf().retainedSlice();
         final ChannelPromise endPromise = channel.newPromise();
         if (writeContentNow(context)) {
             doWriteContent2(channel,

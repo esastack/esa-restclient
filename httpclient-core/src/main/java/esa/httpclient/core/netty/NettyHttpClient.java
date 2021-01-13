@@ -216,6 +216,18 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      * and {@code handler} are null, the default {@link DefaultHandle} will be used to aggregate the inbound
      * message to a {@link HttpResponse}.
      *
+     * Be aware that, if the {@link CompletableFuture} is returned, which means that we will release
+     * the {@link HttpRequest#buffer()} automatically even if it's an exceptionally {@code future}.
+     * Besides, you should manage the {@link HttpRequest#buffer()} by yourself. eg:
+     * <pre>
+     *     final Buffer buffer = xxx;
+     *     try {
+     *         client.execute();
+     *     } catch (Throwable th) {
+     *         buffer.getByteBuf().release();
+     *     }
+     * </pre>
+     *
      * @param request request
      * @param ctx     ctx
      * @param handle  handle, which may be null
@@ -232,18 +244,18 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
         addAcceptEncodingIfAbsent(request);
 
+        CompletableFuture<HttpResponse> response = executor.execute(request, ctx, listener, handle, handler);
+        if (request.buffer() != null) {
+            response = response.whenComplete((rsp, th) -> Utils.tryRelease(request.buffer().getByteBuf()));
+        }
+
         if (callbackExecutor.origin() == null) {
-            return executor.execute(request, ctx, listener, handle, handler);
+            return response;
         } else {
             // Note that: only if callback executor exists and the response
             // of original execution completes normally, we switch the original
             // response to continue execute in callback executor.
-            return executor.execute(request,
-                    ctx,
-                    listener,
-                    handle,
-                    handler)
-                    .thenComposeAsync(Futures::completed, callbackExecutor.origin());
+            return response.thenComposeAsync(Futures::completed, callbackExecutor.origin());
         }
     }
 

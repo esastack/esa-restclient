@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ChunkWriterTest extends Http2ConnectionHelper {
 
@@ -247,8 +248,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
                 true);
         channel.flush();
 
-        ChannelFuture future = writer.write("Hello".getBytes(), -1, -1);
-        then(future.isDone() && !future.isSuccess()).isTrue();
+        assertThrows(IllegalArgumentException.class, () -> writer.write("Hello".getBytes(), -1, -1));
     }
 
     @Test

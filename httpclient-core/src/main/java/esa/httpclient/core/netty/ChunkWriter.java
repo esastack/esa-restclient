@@ -119,34 +119,32 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
 
     <T> ChannelFuture write(T data, int offset, int length) {
         assert channel.eventLoop().inEventLoop();
-        ByteBuf buf = null;
-        try {
-            if (data instanceof Buffer) {
-                buf = ((Buffer) data).getByteBuf();
-            } else if (data instanceof byte[]) {
-                buf = channel.alloc().buffer(length);
-                buf.writeBytes((byte[]) data, offset, length);
-            } else {
-                return channel.newFailedFuture(new IllegalArgumentException("Unexpected writable data format: "
-                        + data.getClass() + ", expected(byte[], Buffer)"));
-            }
+        ByteBuf buf;
+        if (data instanceof Buffer) {
+            // Note: retained the buffer so that channel can release it normally which has
+            // no effect to us when we release the buffer after ending the write.
 
-            ChannelFuture future;
-            if (http2) {
-                future = h2Handler.writeData(streamId,
-                        buf,
-                        false,
-                        channel.newPromise());
-                channel.flush();
-            } else {
-                future = channel.writeAndFlush(new DefaultHttpContent(buf));
-            }
-
-            return future;
-        } catch (Throwable ex) {
-            Utils.tryRelease(buf);
-            return channel.newFailedFuture(new IOException("Failed to write data to connection", ex));
+            buf = ((Buffer) data).getByteBuf().retain();
+        } else if (data instanceof byte[]) {
+            buf = channel.alloc().buffer(length);
+            buf.writeBytes((byte[]) data, offset, length);
+        } else {
+            return channel.newFailedFuture(new IllegalArgumentException("Unexpected writable data format: "
+                    + data.getClass() + ", expected(byte[], Buffer)"));
         }
+
+        ChannelFuture future;
+        if (http2) {
+            future = h2Handler.writeData(streamId,
+                    buf,
+                    false,
+                    channel.newPromise());
+            channel.flush();
+        } else {
+            future = channel.writeAndFlush(new DefaultHttpContent(buf));
+        }
+
+        return future;
     }
 
     ChannelFuture end() {

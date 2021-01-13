@@ -25,6 +25,18 @@ interface ExecutableRequest extends HttpRequestBase {
     /**
      * Sends current {@link HttpRequest} and obtains corresponding {@link HttpResponse}.
      *
+     * Be aware that, if the {@link CompletableFuture} is returned, which means that we will release
+     * the {@link HttpRequest#buffer()} automatically even if it's an exceptionally {@code future}.
+     * Besides, you should manage the {@link HttpRequest#buffer()} by yourself. eg:
+     * <pre>
+     *     final Buffer buffer = xxx;
+     *     try {
+     *         client.execute();
+     *     } catch (Throwable th) {
+     *         buffer.getByteBuf().release();
+     *     }
+     * </pre>
+     *
      * @return response
      */
     CompletableFuture<HttpResponse> execute();

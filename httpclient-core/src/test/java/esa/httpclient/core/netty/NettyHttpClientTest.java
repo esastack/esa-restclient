@@ -42,6 +42,7 @@ import io.netty.channel.pool.SimpleChannelPool;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
@@ -121,6 +122,30 @@ class NettyHttpClientTest {
         rsp = client.execute(request, new Context(), null, null);
         then(rsp).isSameAs(response);
         then(request.headers().get(HttpHeaderNames.ACCEPT_ENCODING)).isEqualTo(Decompression.GZIP_DEFLATE.format());
+    }
+
+    @Test
+    void testExecuteAndReleaseBuffer() {
+        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
+        final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
+
+        when(EXECUTOR.execute(any(HttpRequest.class),
+                any(Context.class),
+                any(Listener.class),
+                any(),
+                any()))
+                .thenAnswer(answer -> response);
+
+        assertThrows(NullPointerException.class, () -> client.execute(null,
+                null, null, null));
+        final HttpRequest request = client.post("http://127.0.0.1:8080").body("Hello World!".getBytes());
+
+        request.buffer().getByteBuf().retain().retain().retain();
+        then(request.buffer().getByteBuf().refCnt()).isEqualTo(4);
+        CompletableFuture<HttpResponse> rsp = client.execute(request, new Context(), null, null);
+        then(rsp).isNotSameAs(response);
+        response.completeExceptionally(new IOException());
+        then(request.buffer().getByteBuf().refCnt()).isEqualTo(3);
     }
 
     @Test

@@ -206,7 +206,11 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
             });
         }
 
-        return future;
+        if (data instanceof Buffer) {
+            return future.whenComplete((rsp, th) -> Utils.tryRelease(((Buffer) data).getByteBuf()));
+        } else {
+            return future;
+        }
     }
 
     private CompletableFuture<Void> safelyDoEnd(HttpHeaders headers) {

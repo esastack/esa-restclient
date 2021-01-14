@@ -21,7 +21,6 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.Scheme;
-import esa.httpclient.core.exception.StreamIdExhaustedException;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -32,10 +31,13 @@ import io.netty.handler.codec.http2.Http2Headers;
 import io.netty.handler.codec.http2.HttpConversionUtil;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToLongFunction;
+
+import static esa.httpclient.core.netty.Utils.CONNECT_INACTIVE;
 
 abstract class RequestWriterImpl<Request extends HttpRequest> implements RequestWriter<Request> {
 
@@ -55,6 +57,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
     public ChannelFuture writeAndFlush(Request request,
                                        Channel channel,
                                        Context ctx,
+                                       ChannelPromise headFuture,
                                        boolean uriEncodeEnabled,
                                        io.netty.handler.codec.http.HttpVersion version,
                                        boolean http2) throws IOException {
@@ -66,6 +69,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
             return writeAndFlush2(request,
                     channel,
                     ctx,
+                    headFuture,
                     handler,
                     streamId,
                     uriEncodeEnabled);
@@ -73,6 +77,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
             return writeAndFlush1(request,
                     channel,
                     ctx,
+                    headFuture,
                     version,
                     uriEncodeEnabled);
         }
@@ -87,7 +92,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
      * @param handler   handler
      * @param headers   headers
      * @param endOfStream endOfStream or not
-     * @param promise   promise
+     * @param headFuture   headFuture
      * @return future of write
      */
     final ChannelFuture checkAndWriteH2Headers(Channel channel,
@@ -95,18 +100,18 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
                                                Http2Headers headers,
                                                int streamId,
                                                boolean endOfStream,
-                                               ChannelPromise promise) {
+                                               ChannelPromise headFuture) {
         if (streamId < 0) {
-            promise.setFailure(new StreamIdExhaustedException("No more streams can be created on connection: "
+            headFuture.setFailure(new StreamIdExhaustedException("No more streams can be created on connection: "
                     + channel + "(local), and current connection will close gracefully"));
 
             // Simulate a GOAWAY being received due to stream exhaustion on this connection. We use the maximum
             // valid stream ID for the current peer.
             handler.writeGoAwayOnExhaustion(channel.newPromise());
-            return promise;
+            return headFuture;
         }
 
-        return handler.writeHeaders(streamId, headers, endOfStream, promise);
+        return handler.writeHeaders(streamId, headers, endOfStream, headFuture);
     }
 
     /**
@@ -115,6 +120,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
      * @param request  request
      * @param channel  channel
      * @param context  context
+     * @param headFuture headFuture
      * @param streamId channel
      * @param handler  handler
      * @param uriEncodeEnabled uriEncode or not
@@ -125,6 +131,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
     abstract ChannelFuture writeAndFlush2(Request request,
                                           Channel channel,
                                           Context context,
+                                          ChannelPromise headFuture,
                                           Http2ConnectionHandler handler,
                                           int streamId,
                                           boolean uriEncodeEnabled) throws IOException;
@@ -135,6 +142,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
      * @param request request
      * @param channel channel
      * @param context context
+     * @param headFuture headFuture
      * @param version version
      * @param uriEncodeEnabled enabled uriEncodeEnabled or not
      * @return future
@@ -143,6 +151,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
     abstract ChannelFuture writeAndFlush1(Request request,
                                           Channel channel,
                                           Context context,
+                                          ChannelPromise headFuture,
                                           io.netty.handler.codec.http.HttpVersion version,
                                           boolean uriEncodeEnabled) throws IOException;
 
@@ -221,13 +230,23 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
         request.headers().set(HttpHeaderNames.HOST, host.get());
     }
 
-    private static Http2ConnectionHandler getH2Handler(Channel channel) {
+    private static Http2ConnectionHandler getH2Handler(Channel channel) throws ConnectException {
         Http2ConnectionHandler handler;
         if ((handler = channel.pipeline().get(Http2ConnectionHandler.class)) != null) {
             return handler;
         }
 
-        throw new IllegalStateException("Unable to detect http2 handler from last handler of pipeline: "
-                + channel.pipeline());
+        throw CONNECT_INACTIVE;
     }
+
+    private static class StreamIdExhaustedException extends RuntimeException {
+
+        private static final long serialVersionUID = 6638917105569802492L;
+
+        private StreamIdExhaustedException(String msg) {
+            super(msg);
+        }
+
+    }
+
 }

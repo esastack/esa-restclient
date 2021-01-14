@@ -20,7 +20,6 @@ import esa.commons.http.HttpHeaderValues;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.exception.StreamIdExhaustedException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPromise;
@@ -58,6 +57,7 @@ class RequestWriterImplTest {
         ChannelFuture future = writer.writeAndFlush(request1,
                 channel,
                 mock(Context.class),
+                channel.newPromise(),
                 ThreadLocalRandom.current().nextBoolean(),
                 HttpVersion.HTTP_1_1,
                 ThreadLocalRandom.current().nextBoolean());
@@ -72,6 +72,7 @@ class RequestWriterImplTest {
         future = writer.writeAndFlush(request2,
                 channel,
                 mock(Context.class),
+                channel.newPromise(),
                 ThreadLocalRandom.current().nextBoolean(),
                 HttpVersion.HTTP_1_1,
                 ThreadLocalRandom.current().nextBoolean());
@@ -95,7 +96,7 @@ class RequestWriterImplTest {
                 -1,
                 true,
                 promise1);
-        then(result1.cause()).isInstanceOf(StreamIdExhaustedException.class);
+        then(result1.cause()).isInstanceOf(RuntimeException.class);
 
         // legal streamId
         final ChannelPromise promise2 = channel.newPromise();
@@ -183,6 +184,7 @@ class RequestWriterImplTest {
         ChannelFuture writeAndFlush2(HttpRequest request,
                                      Channel channel,
                                      Context context,
+                                     ChannelPromise headFuture,
                                      Http2ConnectionHandler handler,
                                      int streamId,
                                      boolean uriEncodeEnabled) {
@@ -193,6 +195,7 @@ class RequestWriterImplTest {
         ChannelFuture writeAndFlush1(HttpRequest request,
                                      Channel channel,
                                      Context context,
+                                     ChannelPromise headFuture,
                                      HttpVersion version,
                                      boolean uriEncodeEnabled) {
             return channel.newSucceededFuture();

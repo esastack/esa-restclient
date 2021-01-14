@@ -19,6 +19,7 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpVersion;
 
@@ -36,6 +37,7 @@ interface RequestWriter<Request extends HttpRequest> {
      * @param request request
      * @param channel channel
      * @param ctx     ctx
+     * @param headFuture headFuture
      * @param uriEncodeEnabled enabled uriEncodeEnabled or not
      * @param version version
      * @param http2   http2 or not
@@ -45,6 +47,7 @@ interface RequestWriter<Request extends HttpRequest> {
     ChannelFuture writeAndFlush(Request request,
                                 Channel channel,
                                 Context ctx,
+                                ChannelPromise headFuture,
                                 boolean uriEncodeEnabled,
                                 HttpVersion version,
                                 boolean http2) throws IOException;

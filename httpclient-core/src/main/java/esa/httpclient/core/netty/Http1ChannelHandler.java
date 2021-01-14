@@ -67,24 +67,6 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
     }
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        try {
-            super.channelInactive(ctx);
-        } finally {
-            onError(new ConnectionException("Connection: " + ctx.channel() + " inactive"), false);
-        }
-    }
-
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        try {
-            super.handlerRemoved(ctx);
-        } finally {
-            onError(new ConnectionException("Connection: " + ctx.channel() + " removed"), false);
-        }
-    }
-
     /**
      * We don't need to care the releasing of {@code msg}, more information at
      * {@link SimpleChannelInboundHandler#channelRead(ChannelHandlerContext, Object)}.

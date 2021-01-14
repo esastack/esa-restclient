@@ -86,6 +86,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
     ChannelFuture writeAndFlush1(MultipartRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
         // Prepare the HTTP request.
@@ -97,7 +98,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
         final ChannelPromise endPromise = channel.newPromise();
         final Runnable runnable = () -> {
             try {
-                encodeAndWrite1(request, request0, channel, context, endPromise);
+                encodeAndWrite1(request, request0, channel, context, headFuture, endPromise);
             } catch (IOException e) {
                 endPromise.setFailure(e);
             }
@@ -111,6 +112,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                                         HttpRequest request0,
                                         Channel channel,
                                         Context ctx,
+                                        ChannelPromise headFuture,
                                         ChannelPromise endPromise) throws IOException {
         try {
             final HttpPostRequestEncoder encoder = buildEncoder(request0, request);
@@ -119,7 +121,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
             final HttpRequest finalizedRequest = encoder.finalizeRequest();
 
             // Considering 100-expect-continue, We must write request immediately.
-            channel.write(request0);
+            channel.write(request0, headFuture);
 
             final Runnable writeContent = () -> {
                 if (encoder.isChunked()) {
@@ -151,6 +153,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
     ChannelFuture writeAndFlush2(MultipartRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  boolean uriEncodeEnabled) {
@@ -169,6 +172,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                         request0,
                         context,
                         uriEncodeEnabled,
+                        headFuture,
                         endPromise);
             } catch (IOException e) {
                 endPromise.setFailure(e);
@@ -186,6 +190,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                                  HttpRequest request0,
                                  Context ctx,
                                  boolean uriEncodeEnabled,
+                                 ChannelPromise headFuture,
                                  ChannelPromise endPromise) throws IOException {
         try {
             final HttpPostRequestEncoder encoder = buildEncoder(request0, request);
@@ -197,7 +202,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                     toHttp2Headers(request, (Http1HeadersImpl) request.headers(), uriEncodeEnabled),
                     streamId,
                     false,
-                    channel.newPromise());
+                    headFuture);
 
             if (future.isDone() && !future.isSuccess()) {
                 endPromise.setFailure(future.cause());

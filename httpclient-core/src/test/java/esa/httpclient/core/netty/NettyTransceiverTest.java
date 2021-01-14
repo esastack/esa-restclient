@@ -28,13 +28,13 @@ import esa.httpclient.core.Listener;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.SslOptions;
-import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.spi.SslEngineFactory;
 import esa.httpclient.core.util.Futures;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.ssl.SslHandler;
@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
@@ -169,23 +170,24 @@ class NettyTransceiverTest {
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
         final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
-
         // Case 1: unexpected error caught
         when(future.isSuccess()).thenReturn(true);
-        when(future.getNow()).thenReturn(null);
+        final Channel channel = mock(Channel.class);
+        when(future.getNow()).thenReturn(channel);
+        when(channel.isActive()).thenReturn(false);
         transceiver.handle0(request, mock(SocketAddress.class), ctx, channelPool, future, null,
                 listener, response1, writer, chunkWriterPromise1);
         verify(channelPool).release(any());
         verify(listener).onError(any(), any(), any());
         then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response1)).isInstanceOf(NullPointerException.class);
+        then(Futures.getCause(response1)).isInstanceOf(ConnectException.class);
 
         then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(NullPointerException.class);
+        then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(ConnectException.class);
     }
 
     @Test
-    void testDoWrite() {
+    void testDoWrite() throws Exception {
         final EventLoopGroup ioThreads = mock(EventLoopGroup.class);
         final ChannelPools channelPools = mock(ChannelPools.class);
         final HttpClientBuilder builder = HttpClient.create();
@@ -218,9 +220,9 @@ class NettyTransceiverTest {
                 listener, response1, writer, chunkWriterPromise1);
         verify(channel).close();
         then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response1)).isSameAs(ConnectionException.INSTANCE);
+        then(Futures.getCause(response1)).isInstanceOf(ConnectException.class);
         then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise1)).isSameAs(ConnectionException.INSTANCE);
+        then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(ConnectException.class);
         verify(listener).onError(any(), any(), any());
 
         // Case 2: channel is not writable
@@ -285,6 +287,7 @@ class NettyTransceiverTest {
         when(writer.writeAndFlush(any(ChunkRequest.class),
                 any(Channel.class),
                 any(Context.class),
+                any(ChannelPromise.class),
                 anyBoolean(),
                 any(io.netty.handler.codec.http.HttpVersion.class),
                 anyBoolean())).thenReturn(future);

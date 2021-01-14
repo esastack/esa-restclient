@@ -52,25 +52,27 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
     public ChannelFuture writeAndFlush(FileRequest request,
                                        Channel channel,
                                        Context ctx,
+                                       ChannelPromise headFuture,
                                        boolean uriEncodeEnabled,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         addContentLengthIfAbsent(request, v -> request.file() == null ? 0L : request.file().length());
         addContentTypeIfAbsent(request, () -> HttpHeaderValues.APPLICATION_OCTET_STREAM);
 
-        return super.writeAndFlush(request, channel, ctx, uriEncodeEnabled, version, http2);
+        return super.writeAndFlush(request, channel, ctx, headFuture, uriEncodeEnabled, version, http2);
     }
 
     @Override
     ChannelFuture writeAndFlush1(FileRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
         channel.write(new DefaultHttpRequest(version,
                 HttpMethod.valueOf(request.method().name()),
                 request.uri().relative(uriEncodeEnabled),
-                ((Http1HeadersImpl) request.headers())));
+                ((Http1HeadersImpl) request.headers())), headFuture);
 
         final ChannelPromise endPromise = channel.newPromise();
         // Write content
@@ -119,6 +121,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
     ChannelFuture writeAndFlush2(FileRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  boolean uriEncodeEnabled) {
@@ -127,7 +130,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
                 toHttp2Headers(request, (Http1HeadersImpl) request.headers(), uriEncodeEnabled),
                 streamId,
                 false,
-                channel.newPromise());
+                headFuture);
         // Writes http2 headers
         if (future.isDone() && !future.isSuccess()) {
             return future;

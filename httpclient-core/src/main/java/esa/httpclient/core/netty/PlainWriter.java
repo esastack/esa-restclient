@@ -45,18 +45,20 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     public ChannelFuture writeAndFlush(PlainRequest request,
                                        Channel channel,
                                        Context ctx,
+                                       ChannelPromise headFuture,
                                        boolean uriEncodeEnabled,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
 
-        return super.writeAndFlush(request, channel, ctx, uriEncodeEnabled, version, http2);
+        return super.writeAndFlush(request, channel, ctx, headFuture, uriEncodeEnabled, version, http2);
     }
 
     @Override
     ChannelFuture writeAndFlush1(PlainRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
         if (request.buffer() == null || !request.buffer().isReadable()) {
@@ -65,13 +67,13 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                     request.uri().relative(uriEncodeEnabled),
                     Unpooled.EMPTY_BUFFER,
                     (Http1HeadersImpl) request.headers(),
-                    EmptyHttpHeaders.INSTANCE));
+                    EmptyHttpHeaders.INSTANCE), headFuture);
         } else {
             final String uri = request.uri().relative(uriEncodeEnabled);
             channel.write(new DefaultHttpRequest(version,
                     HttpMethod.valueOf(request.method().name()),
                     uri,
-                    (Http1HeadersImpl) request.headers()));
+                    (Http1HeadersImpl) request.headers()), headFuture);
 
             final ChannelPromise endPromise = channel.newPromise();
             if (writeContentNow(context)) {
@@ -103,6 +105,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     ChannelFuture writeAndFlush2(PlainRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  boolean uriEncodeEnabled) {
@@ -111,7 +114,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                 HttpHeadersUtils.toHttp2Headers(request, (Http1HeadersImpl) request.headers(), uriEncodeEnabled),
                 streamId,
                 false,
-                channel.newPromise());
+                headFuture);
         if ((future.isDone() && !future.isSuccess())) {
             return future;
         }

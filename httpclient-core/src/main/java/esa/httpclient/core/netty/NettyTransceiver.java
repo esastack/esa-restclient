@@ -27,7 +27,6 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.config.SslOptions;
-import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.exec.HttpTransceiver;
 import esa.httpclient.core.filter.ResponseFilter;
@@ -37,6 +36,7 @@ import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.pool.ChannelPool;
 import io.netty.handler.codec.http.HttpUtil;
@@ -60,6 +60,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
+import static esa.httpclient.core.netty.Utils.CONNECT_INACTIVE;
 import static esa.httpclient.core.netty.Utils.getValue;
 
 class NettyTransceiver implements HttpTransceiver {
@@ -203,7 +204,7 @@ class NettyTransceiver implements HttpTransceiver {
             return;
         }
 
-        Channel channel0 = channel.getNow();
+        final Channel channel0 = channel.getNow();
         try {
             this.doWrite(request,
                     ctx,
@@ -216,7 +217,8 @@ class NettyTransceiver implements HttpTransceiver {
                     chunkWriterPromise);
         } catch (Throwable th) {
             channelPool.release(channel0);
-            endWithError(request, ctx, listener, response, chunkWriterPromise, th);
+            endWithError(request, ctx, listener, response, chunkWriterPromise,
+                    channel0.isActive() ? th : CONNECT_INACTIVE);
         }
     }
 
@@ -228,7 +230,7 @@ class NettyTransceiver implements HttpTransceiver {
                  Listener listener,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
-                 CompletableFuture<ChunkWriter> chunkWriterPromise) {
+                 CompletableFuture<ChunkWriter> chunkWriterPromise) throws ConnectException {
         listener.onConnectionAcquired(request, ctx, channel.remoteAddress());
 
         final boolean http2 = isHttp2(channel);
@@ -244,13 +246,14 @@ class NettyTransceiver implements HttpTransceiver {
             channel.close();
             channelPool.release(channel);
             endWithError(request, ctx, listener, response, chunkWriterPromise,
-                    ConnectionException.INSTANCE);
+                    CONNECT_INACTIVE);
             return;
         }
 
         // Stop writing when the write buffer has full, otherwise it will cause OOM
         if (!channel.isWritable()) {
             channelPool.release(channel);
+            // Allow to retry on another channel
             endWithError(request, ctx, listener, response, chunkWriterPromise,
                     WriteBufFullException.INSTANCE);
             return;
@@ -270,7 +273,8 @@ class NettyTransceiver implements HttpTransceiver {
                     chunkWriterPromise);
         } catch (Throwable ex) {
             channelPool.release(channel);
-            endWithError(request, ctx, listener, response, chunkWriterPromise, ex);
+            endWithError(request, ctx, listener, response, chunkWriterPromise,
+                    channel.isActive() ? ex : CONNECT_INACTIVE);
         }
     }
 
@@ -313,7 +317,7 @@ class NettyTransceiver implements HttpTransceiver {
 
         h.onWriteAttempt(request, ctx);
 
-        // we should add response handle before writing because that the inbound
+        // Note: we should add response handle before writing because that the inbound
         // message may arrive before completing writing.
         final int requestId = addRspHandle(request,
                 ctx,
@@ -323,10 +327,11 @@ class NettyTransceiver implements HttpTransceiver {
                 http2,
                 registry,
                 response);
-        @SuppressWarnings("unchecked")
-        final ChannelFuture result = writer.writeAndFlush(request,
+        final ChannelPromise headFuture = channel.newPromise();
+        @SuppressWarnings("unchecked") final ChannelFuture endFuture = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                headFuture,
                 getValue(request.uriEncodeEnabled(), builder.isUriEncodeEnabled()),
                 esa.commons.http.HttpVersion.HTTP_1_1 == version
                         ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,
@@ -336,22 +341,24 @@ class NettyTransceiver implements HttpTransceiver {
             chunkWriterPromise.complete((ChunkWriter) writer);
         }
 
-        if (result.isDone()) {
+        if (endFuture.isDone()) {
             this.onWriteDone(requestId,
                     request,
                     ctx,
-                    result,
+                    headFuture,
+                    endFuture,
                     h,
                     registry,
                     response,
                     chunkWriterPromise);
         } else {
-            result.addListener(f -> {
+            endFuture.addListener(f -> {
                 try {
                     this.onWriteDone(requestId,
                             request,
                             ctx,
-                            result,
+                            headFuture,
+                            endFuture,
                             h,
                             registry,
                             response,
@@ -412,7 +419,7 @@ class NettyTransceiver implements HttpTransceiver {
         return PlainWriter.singleton();
     }
 
-    private boolean isHttp2(Channel channel) {
+    private boolean isHttp2(Channel channel) throws ConnectException {
         ChannelPipeline pipeline = channel.pipeline();
         if (pipeline.get(Http2ConnectionHandler.class) != null) {
             return true;
@@ -420,8 +427,7 @@ class NettyTransceiver implements HttpTransceiver {
             return false;
         }
 
-        throw new IllegalStateException("Unable to recognize http version by last handler in pipeline: "
-                + channel.pipeline());
+        throw CONNECT_INACTIVE;
     }
 
     private TimeoutHandle buildTimeoutHandle(boolean http2,
@@ -468,7 +474,7 @@ class NettyTransceiver implements HttpTransceiver {
         }
     }
 
-    private HandleRegistry detectRegistry(Channel channel) {
+    private HandleRegistry detectRegistry(Channel channel) throws ConnectException {
         ChannelPipeline pipeline = channel.pipeline();
         Http1ChannelHandler handler1;
         if ((handler1 = pipeline.get(Http1ChannelHandler.class)) != null) {
@@ -480,24 +486,24 @@ class NettyTransceiver implements HttpTransceiver {
             return handler2.getRegistry();
         }
 
-        throw new IllegalStateException("Unable to detect handler registry by last handler in pipeline: "
-                + channel.pipeline());
+        throw CONNECT_INACTIVE;
     }
 
     private void onWriteDone(int requestId,
                              HttpRequest request,
                              Context ctx,
-                             ChannelFuture result,
+                             ChannelFuture headFuture,
+                             ChannelFuture endFuture,
                              TimeoutHandle handle,
                              HandleRegistry registry,
                              CompletableFuture<HttpResponse> response,
                              CompletableFuture<ChunkWriter> chunkWriterPromise) {
-        if (result.isSuccess()) {
+        if (endFuture.isSuccess()) {
             handle.onWriteDone(request, ctx);
 
             Timeout timeout = READ_TIMEOUT_TIMER.newTimeout(new ReadTimeoutTask(requestId,
                             request.uri().toString(),
-                            result.channel(),
+                            endFuture.channel(),
                             registry),
                     TimeUnit.MILLISECONDS.toNanos(request.readTimeout()),
                     TimeUnit.NANOSECONDS);
@@ -505,10 +511,17 @@ class NettyTransceiver implements HttpTransceiver {
             return;
         }
 
-        final Throwable cause = new IOException("Failed to write request: " + request + " to connection: "
-                + result.channel(), result.cause());
+        final Throwable cause;
+        if (headFuture.isDone() && !headFuture.isSuccess()) {
+            // Note: we instantiate a ConnectException if have failed to write header, so
+            // that we can retry current request soon without worrying server idempotent.
+            cause = new ConnectException(endFuture.cause().getMessage());
+        } else {
+            cause = new IOException("Failed to write request: " + request + " to connection: "
+                    + endFuture.channel(), endFuture.cause());
+        }
 
-        handle.onWriteFailed(request, ctx, result.cause());
+        handle.onWriteFailed(request, ctx, endFuture.cause());
         endWithError(request, ctx, handle, response, chunkWriterPromise, cause);
     }
 

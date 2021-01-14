@@ -44,7 +44,6 @@ class ChunkWriterTest extends Http2ConnectionHelper {
 
     ////////*********************************HTTP1 CHUNK WRITER**************************************////////
 
-
     @Test
     void testWriteAndFlush1() throws IOException {
         final ChunkWriter writer = new ChunkWriter();
@@ -56,6 +55,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 HttpVersion.HTTP_1_1,
                 false);
@@ -117,6 +117,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 HttpVersion.HTTP_1_1,
                 false);
@@ -145,6 +146,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 null,
                 true);
@@ -212,6 +214,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 null,
                 true);
@@ -243,6 +246,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 null,
                 true);
@@ -264,6 +268,7 @@ class ChunkWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 null,
                 true);

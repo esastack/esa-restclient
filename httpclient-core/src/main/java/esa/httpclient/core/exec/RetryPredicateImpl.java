@@ -18,7 +18,6 @@ package esa.httpclient.core.exec;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.exception.StreamIdExhaustedException;
 import esa.httpclient.core.util.Futures;
 
 import java.net.ConnectException;
@@ -40,7 +39,7 @@ public class RetryPredicateImpl implements RetryPredicate {
         }
 
         final Throwable unwrapped = Futures.unwrapped(cause);
-        if (unwrapped instanceof ConnectException || unwrapped instanceof StreamIdExhaustedException) {
+        if (unwrapped instanceof ConnectException) {
             return true;
         }
 

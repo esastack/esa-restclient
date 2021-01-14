@@ -22,7 +22,6 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
-import esa.httpclient.core.exception.ConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.exception.ProtocolException;
 import esa.httpclient.core.util.Futures;
@@ -552,51 +551,6 @@ class Http1ChannelHandlerTest {
         channel.pipeline().fireExceptionCaught(new IllegalStateException());
 
         testChannelInactive0(response, registry, requestId, channel, IllegalStateException.class, true);
-
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testChannelInactive() {
-        final HandleRegistry registry = new HandleRegistry(1, 0);
-        final Http1ChannelHandler handler = new Http1ChannelHandler(registry, -1L);
-        final EmbeddedChannel channel = new EmbeddedChannel(handler);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
-        final int requestId = registry.put(handle);
-        handler.updateRequestId(requestId);
-        channel.pipeline().fireChannelInactive();
-
-        testChannelInactive0(response, registry, requestId, channel, ConnectionException.class, false);
-
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testHandlerRemoved() {
-        final HandleRegistry registry = new HandleRegistry(1, 0);
-        final Http1ChannelHandler handler = new Http1ChannelHandler(registry, -1L);
-        final EmbeddedChannel channel = new EmbeddedChannel();
-        channel.pipeline().addLast(handler);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
-        final int requestId = registry.put(handle);
-        handler.updateRequestId(requestId);
-        channel.pipeline().remove(handler);
-
-        testChannelInactive0(response, registry, requestId, channel, ConnectionException.class, false);
 
         channel.finishAndReleaseAll();
     }

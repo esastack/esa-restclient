@@ -66,6 +66,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
+                    channel.newPromise(),
                     false,
                     HttpVersion.HTTP_1_1,
                     false);
@@ -105,6 +106,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 HttpVersion.HTTP_1_1,
                 false);
@@ -150,6 +152,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
+                    channel.newPromise(),
                     false,
                     HttpVersion.HTTP_1_1,
                     false);
@@ -205,6 +208,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
+                    channel.newPromise(),
                     false,
                     HttpVersion.HTTP_1_1,
                     false);
@@ -246,6 +250,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
+                    channel.newPromise(),
                     false,
                     null,
                     true);
@@ -291,6 +296,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
+                channel.newPromise(),
                 false,
                 null,
                 true);
@@ -339,6 +345,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
+                    channel.newPromise(),
                     false,
                     null,
                     true);
@@ -398,6 +405,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
+                    channel.newPromise(),
                     false,
                     null,
                     true);

@@ -60,19 +60,21 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
     public ChannelFuture writeAndFlush(ChunkRequest request,
                                        Channel channel,
                                        Context ctx,
+                                       ChannelPromise headFuture,
                                        boolean uriEncodeEnabled,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         this.endPromise = channel.newPromise();
         this.channel = channel;
 
-        return super.writeAndFlush(request, channel, ctx, uriEncodeEnabled, version, http2);
+        return super.writeAndFlush(request, channel, ctx, headFuture, uriEncodeEnabled, version, http2);
     }
 
     @Override
     ChannelFuture writeAndFlush2(ChunkRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  boolean uriEncodeEnabled) {
@@ -82,7 +84,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
                 toHttp2Headers(request, (Http1HeadersImpl) request.headers(), uriEncodeEnabled),
                 streamId,
                 false,
-                channel.newPromise());
+                headFuture);
         if (future.isDone() && !future.isSuccess()) {
             return future;
         }
@@ -97,9 +99,10 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
     ChannelFuture writeAndFlush1(ChunkRequest request,
                                  Channel channel,
                                  Context context,
+                                 ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
-        HttpRequest request0 = new DefaultHttpRequest(version,
+        final HttpRequest request0 = new DefaultHttpRequest(version,
                 HttpMethod.valueOf(request.method().name()),
                 request.uri().relative(uriEncodeEnabled),
                 ((Http1HeadersImpl) request.headers()));
@@ -112,7 +115,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
             }
             HttpUtil.setTransferEncodingChunked(request0, true);
         }
-        channel.write(request0);
+        channel.write(request0, headFuture);
         http2 = false;
         return endPromise;
     }

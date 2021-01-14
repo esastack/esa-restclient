@@ -23,9 +23,12 @@ import io.netty.handler.codec.http2.Http2Headers;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.ReferenceCounted;
 
+import java.net.ConnectException;
 import java.net.URI;
 
 final class Utils {
+
+    static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
 
     static void runInChannel(Channel channel, Runnable runnable) {
         if (channel.eventLoop().inEventLoop()) {

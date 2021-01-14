@@ -15,12 +15,12 @@
  */
 package esa.httpclient.core.exception;
 
-import java.io.IOException;
+import java.net.ConnectException;
 
-public class WriteBufFullException extends IOException {
+public class WriteBufFullException extends ConnectException {
 
     public static final WriteBufFullException INSTANCE =
-            new WriteBufFullException("Connection's write buffer has been full");
+            new WriteBufFullException("Connection write buffer is full");
 
     private static final long serialVersionUID = -2964248671411414742L;
 

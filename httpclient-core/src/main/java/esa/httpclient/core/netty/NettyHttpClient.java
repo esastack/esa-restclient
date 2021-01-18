@@ -425,6 +425,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
         channelPools.put(address,
                 ChannelPools.CHANNEL_POOL_FACTORY.create(old.ssl,
+                        true,
                         address,
                         ioThreads.origin(),
                         builder,

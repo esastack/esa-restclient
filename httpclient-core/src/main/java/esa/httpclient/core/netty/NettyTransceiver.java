@@ -16,8 +16,10 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.Checks;
+import esa.commons.StringUtils;
 import esa.commons.concurrent.ThreadFactories;
 import esa.commons.http.HttpHeaderNames;
+import esa.commons.http.HttpHeaderValues;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
@@ -135,7 +137,7 @@ class NettyTransceiver implements HttpTransceiver {
         listener.onConnectionPoolAcquired(request, ctx, address);
         listener.onConnectionAttempt(request, ctx, address);
 
-        final RequestWriter writer = getWriter(request);
+        final RequestWriter writer = detectWriter(request);
         final Future<Channel> channel = channelPool.acquire();
 
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
@@ -313,7 +315,7 @@ class NettyTransceiver implements HttpTransceiver {
                   RequestWriter writer,
                   CompletableFuture<ChunkWriter> chunkWriterPromise) throws IOException {
         final HandleRegistry registry = detectRegistry(channel);
-        setKeepAlive((Http1HeadersImpl) request.headers(), version);
+        setKeepAliveIfNecessary((Http1HeadersImpl) request.headers(), version);
 
         h.onWriteAttempt(request, ctx);
 
@@ -371,13 +373,16 @@ class NettyTransceiver implements HttpTransceiver {
     }
 
     ChannelPool getChannelPool(HttpRequest request, SocketAddress address) {
-        esa.httpclient.core.netty.ChannelPool channelPool = channelPools.getIfPresent(address);
+        final boolean keepAlive = isKeepAlive(request);
+
+        esa.httpclient.core.netty.ChannelPool channelPool = keepAlive ? channelPools.getIfPresent(address) : null;
         if (channelPool != null) {
             return channelPool.underlying;
         }
 
         final boolean ssl = Scheme.HTTPS.name0().equals(request.scheme());
         return channelPools.getOrCreate(ssl,
+                keepAlive,
                 address,
                 ioThreads,
                 builder.copy(),
@@ -406,7 +411,7 @@ class NettyTransceiver implements HttpTransceiver {
                 }).underlying;
     }
 
-    static RequestWriter getWriter(HttpRequest request) {
+    static RequestWriter detectWriter(HttpRequest request) {
         if (request.isSegmented()) {
             return new ChunkWriter();
         }
@@ -428,6 +433,21 @@ class NettyTransceiver implements HttpTransceiver {
         }
 
         throw CONNECT_INACTIVE;
+    }
+
+    private boolean isKeepAlive(HttpRequest request) {
+        final String value = request.headers().get(HttpHeaderNames.CONNECTION);
+        if (StringUtils.isEmpty(value)) {
+            return builder.isKeepAlive();
+        } else {
+            if (HttpHeaderValues.CLOSE.equalsIgnoreCase(value)) {
+                return false;
+            } else if (HttpHeaderValues.KEEP_ALIVE.equalsIgnoreCase(value)) {
+                return true;
+            }
+
+            return builder.isKeepAlive();
+        }
     }
 
     private TimeoutHandle buildTimeoutHandle(boolean http2,
@@ -531,7 +551,7 @@ class NettyTransceiver implements HttpTransceiver {
      * @param headers   headers
      * @param version   version
      */
-    private void setKeepAlive(Http1HeadersImpl headers, esa.commons.http.HttpVersion version) {
+    private void setKeepAliveIfNecessary(Http1HeadersImpl headers, esa.commons.http.HttpVersion version) {
         if (esa.commons.http.HttpVersion.HTTP_2 == builder.version()) {
             headers.remove(HttpHeaderNames.CONNECTION);
         }

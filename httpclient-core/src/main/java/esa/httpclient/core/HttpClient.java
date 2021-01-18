@@ -34,38 +34,6 @@ public interface HttpClient extends Closeable, Identifiable, MetricPoint {
     HttpRequestFacade get(String uri);
 
     /**
-     * An easy way to build {@link HttpMethod#GET} request.
-     *
-     * @param uri request uri
-     * @return builder
-     */
-    HttpRequestFacade head(String uri);
-
-    /**
-     * An easy way to build {@link HttpMethod#OPTIONS} request.
-     *
-     * @param uri request uri
-     * @return builder
-     */
-    HttpRequestFacade options(String uri);
-
-    /**
-     * An easy way to build {@link HttpMethod#TRACE} request.
-     *
-     * @param uri request uri
-     * @return builder
-     */
-    HttpRequestFacade trace(String uri);
-
-    /**
-     * An easy way to build {@link HttpMethod#CONNECT} request.
-     *
-     * @param uri request uri
-     * @return builder
-     */
-    HttpRequestFacade connect(String uri);
-
-    /**
      * An easy way to build {@link HttpMethod#POST} request.
      *
      * @param uri request uri
@@ -88,6 +56,38 @@ public interface HttpClient extends Closeable, Identifiable, MetricPoint {
      * @return builder
      */
     HttpRequestFacade put(String uri);
+
+    /**
+     * An easy way to build {@link HttpMethod#GET} request.
+     *
+     * @param uri request uri
+     * @return builder
+     */
+    HttpRequestFacade head(String uri);
+
+    /**
+     * An easy way to build {@link HttpMethod#CONNECT} request.
+     *
+     * @param uri request uri
+     * @return builder
+     */
+    HttpRequestFacade connect(String uri);
+
+    /**
+     * An easy way to build {@link HttpMethod#OPTIONS} request.
+     *
+     * @param uri request uri
+     * @return builder
+     */
+    HttpRequestFacade options(String uri);
+
+    /**
+     * An easy way to build {@link HttpMethod#TRACE} request.
+     *
+     * @param uri request uri
+     * @return builder
+     */
+    HttpRequestFacade trace(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#PATCH} request.

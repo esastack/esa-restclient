@@ -66,10 +66,26 @@ class ChannelPoolsTest {
         then(pools2.getIfPresent(address1)).isNull();
         then(pools2.getIfPresent(address2)).isNull();
 
-        pools2.getOrCreate(false, address1, mock(EventLoopGroup.class), HttpClient.create(), () -> null);
-        pools2.getOrCreate(false, address2, mock(EventLoopGroup.class), HttpClient.create(), () -> null);
+        pools2.getOrCreate(false, true, address1, mock(EventLoopGroup.class),
+                HttpClient.create(), () -> null);
+        pools2.getOrCreate(false, true, address2, mock(EventLoopGroup.class),
+                HttpClient.create(), () -> null);
         then(pools2.getIfPresent(address1)).isNotNull();
         then(pools2.getIfPresent(address2)).isNotNull();
+
+        // Connection which keepAlive is true will be cached.
+        final ChannelPool pool11 = pools2.getOrCreate(false, true, address1, mock(EventLoopGroup.class),
+                HttpClient.create(), () -> null);
+        final ChannelPool pool12 = pools2.getOrCreate(false, true, address1, mock(EventLoopGroup.class),
+                HttpClient.create(), () -> null);
+        then(pool11).isSameAs(pool12);
+
+        // Connection which keepAlive is false won't be cached.
+        final ChannelPool pool21 = pools2.getOrCreate(false, false, address1, mock(EventLoopGroup.class),
+                HttpClient.create(), () -> null);
+        final ChannelPool pool22 = pools2.getOrCreate(false, false, address1, mock(EventLoopGroup.class),
+                HttpClient.create(), () -> null);
+        then(pool21).isNotSameAs(pool22);
 
         pools2.close();
     }
@@ -82,7 +98,7 @@ class ChannelPoolsTest {
         final ChannelPools pools = new ChannelPools(CacheOptions.ofDefault());
         pools.close();
         assertThrows(IllegalStateException.class, () -> pools.getIfPresent(address));
-        assertThrows(IllegalStateException.class, () -> pools.getOrCreate(false, address,
+        assertThrows(IllegalStateException.class, () -> pools.getOrCreate(false, true, address,
                 mock(EventLoopGroup.class), HttpClient.create(), () -> null));
         assertThrows(IllegalStateException.class, () -> pools.put(address, pool));
         then(pools.get(address)).isNull();
@@ -96,7 +112,7 @@ class ChannelPoolsTest {
         final HttpClientBuilder builder = HttpClient.create();
 
         final ChannelPools pools = new ChannelPools(CacheOptions.ofDefault());
-        pools.getOrCreate(false, address, group, builder, () -> null);
+        pools.getOrCreate(false, true, address, group, builder, () -> null);
 
         final ChannelPoolOptions options = ChannelPoolOptions.ofDefault();
         final ConnectionPoolMetric metric = pools.get(address);

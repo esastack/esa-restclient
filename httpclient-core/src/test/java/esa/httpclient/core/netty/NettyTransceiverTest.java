@@ -166,7 +166,7 @@ class NettyTransceiverTest {
         final Listener listener = mock(Listener.class);
         final io.netty.channel.pool.ChannelPool channelPool = mock(io.netty.channel.pool.ChannelPool.class);
         final Future<Channel> future = mock(Future.class);
-        final RequestWriter writer = NettyTransceiver.getWriter(request);
+        final RequestWriter writer = NettyTransceiver.detectWriter(request);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
         final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
@@ -202,7 +202,7 @@ class NettyTransceiverTest {
         final Context ctx = new Context();
         final Listener listener = mock(Listener.class);
         final io.netty.channel.pool.ChannelPool channelPool = mock(io.netty.channel.pool.ChannelPool.class);
-        final RequestWriter writer = NettyTransceiver.getWriter(request);
+        final RequestWriter writer = NettyTransceiver.detectWriter(request);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
         final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
 
@@ -351,26 +351,30 @@ class NettyTransceiverTest {
         when(channelPools.getIfPresent(address)).thenReturn(null);
 
         final AtomicBoolean ssl = new AtomicBoolean();
+        final AtomicBoolean keepAlive = new AtomicBoolean();
         final AtomicReference<SocketAddress> address0 = new AtomicReference<>();
         final AtomicReference<EventLoopGroup> ioThreads0 = new AtomicReference<>();
         final AtomicReference<HttpClientBuilder> builder0 = new AtomicReference<>();
         final AtomicReference<ThrowingSupplier> supplier = new AtomicReference<>();
 
         when(channelPools.getOrCreate(anyBoolean(),
+                anyBoolean(),
                 any(SocketAddress.class),
                 any(EventLoopGroup.class),
                 any(HttpClientBuilder.class),
                 any(ThrowingSupplier.class)))
                 .thenAnswer(answer -> {
                     ssl.set(answer.getArgument(0));
-                    address0.set(answer.getArgument(1));
-                    ioThreads0.set(answer.getArgument(2));
-                    builder0.set(answer.getArgument(3));
-                    supplier.set(answer.getArgument(4));
+                    keepAlive.set(answer.getArgument(1));
+                    address0.set(answer.getArgument(2));
+                    ioThreads0.set(answer.getArgument(3));
+                    builder0.set(answer.getArgument(4));
+                    supplier.set(answer.getArgument(5));
                     return channelPool1;
                 });
         then(transceiver.getChannelPool(request, address)).isSameAs(pool1);
         then(ssl.get()).isSameAs(Scheme.HTTPS.name0().equals(request.scheme()));
+        then(keepAlive.get()).isEqualTo(true);
         then(address0.get()).isEqualTo(address);
         then(ioThreads0.get()).isSameAs(ioThreads);
         then(builder0.get()).isNotSameAs(builder);
@@ -384,16 +388,18 @@ class NettyTransceiverTest {
         builder.connectTimeout(1);
         builder.sslOptions(sslOptions);
         when(channelPools.getOrCreate(anyBoolean(),
+                anyBoolean(),
                 any(SocketAddress.class),
                 any(EventLoopGroup.class),
                 any(HttpClientBuilder.class),
                 any(ThrowingSupplier.class)))
                 .thenAnswer(answer -> {
                     ssl.set(answer.getArgument(0));
-                    address0.set(answer.getArgument(1));
-                    ioThreads0.set(answer.getArgument(2));
-                    builder0.set(answer.getArgument(3));
-                    supplier.set(answer.getArgument(4));
+                    keepAlive.set(answer.getArgument(1));
+                    address0.set(answer.getArgument(2));
+                    ioThreads0.set(answer.getArgument(3));
+                    builder0.set(answer.getArgument(4));
+                    supplier.set(answer.getArgument(5));
                     return channelPool1;
                 });
 
@@ -402,20 +408,20 @@ class NettyTransceiverTest {
     }
 
     @Test
-    void testGetWriter() {
+    void testDetectWriter() {
         final HttpRequest request1 = client.get("/abc");
-        then(NettyTransceiver.getWriter(request1)).isInstanceOf(PlainWriter.class);
+        then(NettyTransceiver.detectWriter(request1)).isInstanceOf(PlainWriter.class);
 
         final HttpRequest request2 = client.post("/abc").body(new BufferImpl());
-        then(NettyTransceiver.getWriter(request2)).isInstanceOf(PlainWriter.class);
+        then(NettyTransceiver.detectWriter(request2)).isInstanceOf(PlainWriter.class);
 
         final HttpRequest request3 = client.patch("/abc").body(new File(""));
-        then(NettyTransceiver.getWriter(request3)).isInstanceOf(FileWriter.class);
+        then(NettyTransceiver.detectWriter(request3)).isInstanceOf(FileWriter.class);
 
         final HttpRequest request4 = client.get("/abc").multipart().attr("", "");
-        then(NettyTransceiver.getWriter(request4)).isInstanceOf(MultipartWriter.class);
+        then(NettyTransceiver.detectWriter(request4)).isInstanceOf(MultipartWriter.class);
 
         final HttpRequest request5 = client.get("/abc").segment();
-        then(NettyTransceiver.getWriter(request5)).isInstanceOf(ChunkWriter.class);
+        then(NettyTransceiver.detectWriter(request5)).isInstanceOf(ChunkWriter.class);
     }
 }

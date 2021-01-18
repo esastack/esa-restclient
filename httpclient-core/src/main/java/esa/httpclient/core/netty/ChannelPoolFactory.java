@@ -33,7 +33,9 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.pool.AbstractChannelPoolHandler;
 import io.netty.channel.pool.ChannelHealthChecker;
+import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.pool.FixedChannelPool;
+import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.internal.SystemPropertyUtil;
@@ -55,6 +57,7 @@ final class ChannelPoolFactory {
     }
 
     ChannelPool create(boolean ssl,
+                       boolean keepAlive,
                        SocketAddress address,
                        EventLoopGroup ioThreads,
                        HttpClientBuilder builder,
@@ -68,38 +71,50 @@ final class ChannelPoolFactory {
 
         NETTY_CONFIGURE.onBootstrapCreated(address, bootstrap);
 
-        LoggerUtils.logger().info("Begin to create a new connection pool, address: {}, options: {}",
-                address, options);
+        final ChannelPoolHandler handler = new AbstractChannelPoolHandler() {
+            @Override
+            public void channelReleased(Channel ch) {
+                ch.flush();
+            }
 
-        return new ChannelPool(new ChannelPoolImpl(bootstrap,
-                new AbstractChannelPoolHandler() {
-                    @Override
-                    public void channelReleased(Channel ch) {
-                        ch.flush();
-                    }
+            @Override
+            public void channelCreated(Channel ch) {
 
-                    @Override
-                    public void channelCreated(Channel ch) {
+            }
+        };
+        final ChannelInitializer initializer = new ChannelInitializer(builder, sslHandler, ssl);
+        final io.netty.channel.pool.ChannelPool underlying;
+        if (keepAlive) {
+            LoggerUtils.logger().info("Begin to create a new connection pool, address: {}, options: {}",
+                    address, options);
+            underlying = new ChannelPoolImpl(bootstrap,
+                    handler,
+                    initializer,
+                    ChannelHealthChecker.ACTIVE,
+                    FixedChannelPool.AcquireTimeoutAction.FAIL,
+                    options.connectTimeout(),
+                    options.poolSize(),
+                    options.waitingQueueLength());
+        } else {
+            LoggerUtils.logger().debug("Begin to create a new connection pool, address: {}, options: {}",
+                    address, options);
+            underlying = new DirectConnectAndCloseChannelPool(bootstrap, handler, initializer);
+        }
 
-                    }
-                },
-                new ChannelInitializer(builder, sslHandler, ssl),
-                ChannelHealthChecker.ACTIVE,
-                FixedChannelPool.AcquireTimeoutAction.FAIL,
-                options.connectTimeout(),
-                options.poolSize(),
-                options.waitingQueueLength()),
+        return new ChannelPool(underlying,
                 options,
                 ssl,
                 sslHandler);
     }
 
     ChannelPool create(boolean ssl,
+                       boolean keepAlive,
                        SocketAddress address,
                        EventLoopGroup ioThreads,
                        HttpClientBuilder builder,
                        ThrowingSupplier<SslHandler> sslHandler) {
         return create(ssl,
+                keepAlive,
                 address,
                 ioThreads,
                 builder,
@@ -211,6 +226,35 @@ final class ChannelPoolFactory {
                     acquireTimeoutMillis, maxConnections, maxPendingAcquires);
             Checks.checkNotNull(initializer, "ChannelInitializer must not be null");
             this.initializer = initializer;
+        }
+
+        @Override
+        protected ChannelFuture connectChannel(Bootstrap bs) {
+            return initializer.onConnected(super.connectChannel(bs));
+        }
+    }
+
+    private static final class DirectConnectAndCloseChannelPool extends SimpleChannelPool {
+
+        private final ChannelInitializer initializer;
+
+        private DirectConnectAndCloseChannelPool(Bootstrap bootstrap,
+                                                 ChannelPoolHandler handler,
+                                                 ChannelInitializer initializer) {
+            super(bootstrap, handler, ChannelHealthChecker.ACTIVE, false, false);
+            Checks.checkNotNull(initializer, "ChannelInitializer must not be null");
+            this.initializer = initializer;
+        }
+
+        @Override
+        protected Channel pollChannel() {
+            return null;
+        }
+
+        @Override
+        protected boolean offerChannel(Channel channel) {
+            channel.close();
+            return true;
         }
 
         @Override

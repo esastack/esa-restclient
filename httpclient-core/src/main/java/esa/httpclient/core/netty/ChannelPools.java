@@ -67,17 +67,24 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
     }
 
     ChannelPool getOrCreate(boolean ssl,
+                            boolean keepAlive,
                             SocketAddress address,
                             EventLoopGroup ioThreads,
                             HttpClientBuilder builder,
                             ThrowingSupplier<SslHandler> sslHandler) {
         checkClosed();
 
-        return cachedPools.get(address, addr -> CHANNEL_POOL_FACTORY.create(ssl,
-                addr,
-                ioThreads,
-                builder,
-                sslHandler));
+        // Only keepAlive connection will be cached.
+        if (keepAlive) {
+            return cachedPools.get(address, addr -> CHANNEL_POOL_FACTORY.create(ssl,
+                    true,
+                    addr,
+                    ioThreads,
+                    builder,
+                    sslHandler));
+        } else {
+            return CHANNEL_POOL_FACTORY.create(ssl, false, address, ioThreads, builder, sslHandler);
+        }
     }
 
     void put(SocketAddress address, ChannelPool channelPool) {

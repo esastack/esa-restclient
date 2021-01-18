@@ -58,4 +58,7 @@ public interface PlainRequest extends ExecutableRequest {
 
     @Override
     PlainRequest addParam(String name, String value);
+
+    @Override
+    PlainRequest copy();
 }

@@ -291,6 +291,9 @@ public interface ChunkRequest extends HttpRequestBase {
     ChunkRequest addParam(String name, String value);
 
     @Override
+    ChunkRequest copy();
+
+    @Override
     default boolean isSegmented() {
         return true;
     }

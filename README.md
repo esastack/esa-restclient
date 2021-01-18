@@ -40,21 +40,21 @@ final HttpClient client = HttpClient.create()
         .build();
 
 // Example 1: automatic aggregation
-final HttpResponse response = client.execute(HttpRequest.get("http://127.0.0.1:8081/").build()).get();
+final HttpResponse response = client.get("http://127.0.0.1:8081/").execute().get();
 logger.info(response.body().string(StandardCharsets.UTF_8));
 
 // Example 2: chunk read
-client.execute(HttpRequest.get("http://127.0.0.1:8081/handle")
+client.get("http://127.0.0.1:8081/handle")
         .handle(h -> {
             h.onData(data -> {
                 logger.info("Received response data, size: " + data.readableBytes());
             }).onEnd(v -> {
                 logger.info("Response has ended");
             });
-        }).build());
+        }).execute();
 
 // Example 3: chunk write
-final ChunkRequest chunk = client.prepare("http://127.0.0.1:8081/handle").build();
+final ChunkRequest chunk = client.post("http://127.0.0.1:8081/handle").segment();
 
 chunk.write("Hello World!".getBytes());
 chunk.write("Continue sending data...".getBytes());

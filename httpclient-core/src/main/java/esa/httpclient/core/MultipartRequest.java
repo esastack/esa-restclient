@@ -75,6 +75,9 @@ public interface MultipartRequest extends ExecutableRequest {
     MultipartRequest addParam(String name, String value);
 
     @Override
+    MultipartRequest copy();
+
+    @Override
     default boolean isMultipart() {
         return true;
     }

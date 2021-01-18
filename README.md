@@ -26,7 +26,7 @@ ESA HttpClient is an asynchronous event-driven http client based on netty.
 ```xml
 <dependency>
     <groupId>io.esastack</groupId>
-    <artifactId>httpclient</artifactId>
+    <artifactId>httpclient-core</artifactId>
     <version>${esa-httpclient.version}</version>
 </dependency>
 ```

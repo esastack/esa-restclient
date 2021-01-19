@@ -33,6 +33,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 
 import java.io.IOException;
 
+import static esa.httpclient.core.netty.Utils.handleIdleEvt;
 import static io.netty.buffer.ByteBufUtil.writeAscii;
 import static io.netty.handler.codec.http2.Http2CodecUtil.getEmbeddedHttp2Exception;
 import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
@@ -115,6 +116,13 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                     // Ignore
                 }
             }));
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (!handleIdleEvt(ctx, evt)) {
+            super.userEventTriggered(ctx, evt);
         }
     }
 

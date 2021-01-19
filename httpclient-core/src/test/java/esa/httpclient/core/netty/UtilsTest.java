@@ -18,10 +18,13 @@ package esa.httpclient.core.netty;
 import esa.httpclient.core.Scheme;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http2.DefaultHttp2Headers;
 import io.netty.handler.codec.http2.Http2Headers;
+import io.netty.handler.timeout.IdleStateEvent;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
@@ -31,8 +34,24 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class UtilsTest {
+
+    @Test
+    void testHandleIdleEvt() {
+        then(Utils.handleIdleEvt(mock(ChannelHandlerContext.class),
+                IdleStateEvent.READER_IDLE_STATE_EVENT)).isFalse();
+
+        then(Utils.handleIdleEvt(mock(ChannelHandlerContext.class),
+                IdleStateEvent.WRITER_IDLE_STATE_EVENT)).isFalse();
+
+        final ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
+        final Channel channel = mock(Channel.class);
+        when(ctx.channel()).thenReturn(channel);
+        then(Utils.handleIdleEvt(ctx, IdleStateEvent.ALL_IDLE_STATE_EVENT)).isTrue();
+        verify(channel).close();
+    }
 
     @Test
     void testRunInChannel() {

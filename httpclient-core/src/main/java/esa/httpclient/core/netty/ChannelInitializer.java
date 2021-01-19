@@ -65,6 +65,7 @@ import io.netty.handler.ssl.ApplicationProtocolNames;
 import io.netty.handler.ssl.ApplicationProtocolNegotiationHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.internal.SystemPropertyUtil;
 
 import java.net.ConnectException;
@@ -172,6 +173,11 @@ final class ChannelInitializer {
 
         if (INTERNAL_DEBUG_ENABLED) {
             pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+        }
+
+        if (builder.idleTimeoutSeconds() > 0) {
+            pipeline.addLast(new IdleStateHandler(0,
+                    0, builder.idleTimeoutSeconds()));
         }
 
         if (ssl) {
@@ -295,7 +301,7 @@ final class ChannelInitializer {
 
                 ctx.fireChannelActive();
 
-                // Done with this handler, remove it from the pipeline.
+                // Remove itself from the pipeline after writing first request.
                 ctx.pipeline().remove(this);
             }
         });

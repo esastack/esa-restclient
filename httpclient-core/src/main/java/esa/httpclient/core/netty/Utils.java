@@ -19,7 +19,10 @@ import esa.commons.StringUtils;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http2.Http2Headers;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.ReferenceCounted;
 
@@ -29,6 +32,24 @@ import java.net.URI;
 final class Utils {
 
     static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
+
+    static boolean handleIdleEvt(ChannelHandlerContext ctx, Object evt) {
+        if (evt instanceof IdleStateEvent) {
+            final IdleStateEvent idleEvt = (IdleStateEvent) evt;
+            if (IdleState.ALL_IDLE == idleEvt.state()) {
+                if (LoggerUtils.logger().isDebugEnabled()) {
+                    LoggerUtils.logger().debug("Close idle connection: {}", ctx.channel());
+                }
+
+                // use ctx.channel().close() to fire channelInactive event from the tail of pipeline instead of
+                // ctx.close()
+                ctx.channel().close();
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     static void runInChannel(Channel channel, Runnable runnable) {
         if (channel.eventLoop().inEventLoop()) {

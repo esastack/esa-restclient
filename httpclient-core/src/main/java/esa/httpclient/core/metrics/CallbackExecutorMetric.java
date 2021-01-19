@@ -17,74 +17,29 @@ package esa.httpclient.core.metrics;
 
 public interface CallbackExecutorMetric {
 
-    /**
-     * Obtains core size of current executor.
-     *
-     * @return core size
-     */
     int coreSize();
 
-    /**
-     * Obtains max size of current executor.
-     *
-     * @return max size
-     */
     int maxSize();
 
     /**
-     * Obtains keep alive seconds
+     * Obtains keep alive seconds of internal thread.
      *
      * @return keep alive seconds
      */
     long keepAliveSeconds();
 
-    /**
-     * Obtains active threads count
-     *
-     * @return active count
-     */
     int activeCount();
 
-    /**
-     * Obtains pool size of current executor.
-     *
-     * @return pool size
-     */
     int poolSize();
 
-    /**
-     * Obtains largest pool size of current executor.
-     *
-     * @return largest pool size
-     */
     int largestPoolSize();
 
-    /**
-     * Obtains the count of task.
-     *
-     * @return the number of task
-     */
     long taskCount();
 
-    /**
-     * Obtains the size of blocking queue.
-     *
-     * @return size of blocking queue
-     */
     int queueSize();
 
-    /**
-     * Obtains the count of completed task.
-     *
-     * @return the number of completed task
-     */
     long completedTaskCount();
 
-    /**
-     * Obtains the id of current executor.
-     *
-     * @return identify
-     */
     String executorId();
 
 }

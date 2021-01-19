@@ -26,54 +26,20 @@ import java.util.Set;
 
 public interface HttpRequest extends Reusable<HttpRequest> {
 
-    /**
-     * Obtains method name
-     *
-     * @return method
-     */
     HttpMethod method();
 
-    /**
-     * Obtains scheme
-     *
-     * @return scheme
-     */
     String scheme();
 
-    /**
-     * Obtains path of current request
-     *
-     * @return  path
-     */
     String path();
 
-    /**
-     * Obtains original request's uri as string format.
-     *
-     * @return uri
-     */
     HttpUri uri();
 
-    /**
-     * Adds param.
-     *
-     * @param name  name
-     * @param value value
-     *
-     * @return this
-     */
     HttpRequest addParam(String name, String value);
 
-    /**
-     * Obtains params by name
-     *
-     * @param name name
-     * @return value
-     */
     String getParam(String name);
 
     /**
-     * Obtains param values as a copy of specified {@code name}.
+     * Obtains unmodifiable param values by specified {@code name}.
      *
      * @param name name
      * @return value
@@ -81,54 +47,20 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     List<String> getParams(String name);
 
     /**
-     * Obtains a copy of current parameter names.
+     * Obtains unmodifiable parameter names.
      *
      * @return names
      */
     Set<String> paramNames();
 
-    /**
-     * Obtains {@link HttpHeaders}
-     *
-     * @return headers
-     */
     HttpHeaders headers();
 
-    /**
-     * Adds header
-     *
-     * @param name  name
-     * @param value value
-     *
-     * @return this
-     */
     HttpRequest addHeader(CharSequence name, CharSequence value);
 
-    /**
-     * Gets header
-     *
-     * @param name name
-     * @return value
-     */
     CharSequence getHeader(CharSequence name);
 
-    /**
-     * Sets header
-     *
-     * @param name  name
-     * @param value value
-     *
-     * @return this
-     */
     HttpRequest setHeader(CharSequence name, CharSequence value);
 
-    /**
-     * Removes header
-     *
-     * @param name name
-     *
-     * @return this
-     */
     HttpRequest removeHeader(CharSequence name);
 
     /**

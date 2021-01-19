@@ -28,13 +28,13 @@ import java.util.function.BiFunction;
 
 /**
  * The core transceiver which can transform and write the given {@code request} to network and
- * then aggregate the inbound messages to a {@code response} or handle those messages by customizing
+ * then aggregate the inbound messages to a {@code response} or handle those messages by custom
  * {@link Handle} or {@link Handler}.
  */
 public interface HttpTransceiver {
 
     /**
-     * Send the given {@code request} and get the corresponding response.
+     * Sends the given {@code request} and obtains the corresponding response.
      *
      * @param request     request
      * @param ctx         ctx

@@ -21,6 +21,7 @@ import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.netty.NettyContext;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,12 +189,12 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
 
     @Override
     public List<String> getParams(String name) {
-        return uri.params(name);
+        return Collections.unmodifiableList(uri.params(name));
     }
 
     @Override
     public Set<String> paramNames() {
-        return uri.paramNames();
+        return Collections.unmodifiableSet(uri.paramNames());
     }
 
     @Override

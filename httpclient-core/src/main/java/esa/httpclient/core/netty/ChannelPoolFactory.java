@@ -123,7 +123,7 @@ final class ChannelPoolFactory {
     }
 
     /**
-     * Designed as package visibility for unit test.
+     * Designed as package visibility for unit test purpose.
      *
      * @param address       address
      * @param builder       builder
@@ -149,7 +149,7 @@ final class ChannelPoolFactory {
     }
 
     /**
-     * Designed as package visibility for unit test.
+     * Designed as package visibility for unit test purpose.
      *
      * @param address           address
      * @param ioThreads         ioThreads

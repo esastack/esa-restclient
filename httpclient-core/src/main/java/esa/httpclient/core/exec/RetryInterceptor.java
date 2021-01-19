@@ -46,15 +46,15 @@ public class RetryInterceptor implements Interceptor {
         final int maxRetries = next.ctx().maxRetries();
         if (maxRetries < 1) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),
+                logger.debug("Retry is disabled, uri: {}, maxRetries: {}", request.uri().toString(),
                         maxRetries);
             }
             return next.proceed(request);
         }
         if (request.isSegmented()) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Pass retry directly, uri: {}, maxRetries: {}", request.uri().toString(),
-                        maxRetries);
+                logger.debug("Retry is unsupported for chunk request, uri: {}, maxRetries: {}",
+                        request.uri().toString(), maxRetries);
             }
             return next.proceed(request);
         }
@@ -80,7 +80,6 @@ public class RetryInterceptor implements Interceptor {
         next.proceed(request).whenComplete((rsp, th) -> {
             try {
                 // Update hasRetriedCount immediately.
-                // may be it will be used further, such as metrics, logging...
                 int hasRetriedCount = next.ctx().getAttr(HAS_RETRIED_COUNT, -1) + 1;
                 next.ctx().removeAttr(HAS_RETRIED_COUNT);
                 next.ctx().setAttr(HAS_RETRIED_COUNT, hasRetriedCount);
@@ -107,7 +106,7 @@ public class RetryInterceptor implements Interceptor {
                     }
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Begin to retry request: {}, retryCount: {}",
+                        logger.debug("Begin to retry request: {}, current retryCount: {}",
                                 request, hasRetriedCount + 1);
                     }
 

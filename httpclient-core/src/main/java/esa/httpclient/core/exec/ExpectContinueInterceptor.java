@@ -33,19 +33,17 @@ public class ExpectContinueInterceptor implements Interceptor {
 
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
-        // Pass directly if not configured
         if (!Boolean.TRUE.equals(next.ctx().expectContinueEnabled())) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
+                LoggerUtils.logger().debug("100-Continue is disabled, uri: {}",
                         request.uri().toString());
             }
             return next.proceed(request);
         }
 
-        // Chunk request is not allowed to handle Expect: 100-Continue
         if (request.isSegmented()) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly, uri: {}",
+                LoggerUtils.logger().debug("100-Continue is unsupported for chunk request, uri: {}",
                         request.uri().toString());
             }
             return next.proceed(request);
@@ -53,7 +51,7 @@ public class ExpectContinueInterceptor implements Interceptor {
 
         if (emptyBody(request)) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("Pass ExpectContinue-interceptor directly due to empty body, uri: {}",
+                LoggerUtils.logger().debug("100-Continue is ignored due to empty body, uri: {}",
                         request.uri().toString());
             }
             return next.proceed(request);

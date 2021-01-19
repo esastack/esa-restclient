@@ -19,39 +19,14 @@ import esa.httpclient.core.config.ChannelPoolOptions;
 
 public interface ConnectionPoolMetric {
 
-    /**
-     * Obtains the {@code maxSize} of current channel pool.
-     *
-     * @return maxSize
-     */
     int maxSize();
 
-    /**
-     * Obtains the {@code maxPendingAcquires} of current channel pool.
-     *
-     * @return maxPendingAcquires
-     */
     int maxPendingAcquires();
 
-    /**
-     * Obtains the {@code active} connection of current pool.
-     *
-     * @return the number active channel
-     */
     int active();
 
-    /**
-     * Obtains the {@code pendingAcquireCount} of current pool.
-     *
-     * @return the count of pending acquire
-     */
     int pendingAcquireCount();
 
-    /**
-     * Obtains the {@link ChannelPoolOptions} of current channel pool.
-     *
-     * @return options
-     */
     ChannelPoolOptions options();
 
 }

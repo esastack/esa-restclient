@@ -20,6 +20,7 @@ import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.PlainRequest;
 import esa.httpclient.core.util.HttpHeadersUtils;
+import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -62,12 +63,17 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
         if (request.buffer() == null || !request.buffer().isReadable()) {
-            return channel.writeAndFlush(new DefaultFullHttpRequest(version,
+            final DefaultFullHttpRequest req = new DefaultFullHttpRequest(version,
                     HttpMethod.valueOf(request.method().name()),
                     request.uri().relative(uriEncodeEnabled),
                     Unpooled.EMPTY_BUFFER,
                     (Http1HeadersImpl) request.headers(),
-                    EmptyHttpHeaders.INSTANCE), headFuture);
+                    EmptyHttpHeaders.INSTANCE);
+
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("Send Request:\n" + req);
+            }
+            return channel.writeAndFlush(req, headFuture);
         } else {
             final String uri = request.uri().relative(uriEncodeEnabled);
             channel.write(new DefaultHttpRequest(version,

@@ -21,7 +21,6 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.filter.FilterContext;
 import esa.httpclient.core.filter.RequestFilter;
-import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.util.Futures;
 
 import java.util.concurrent.CompletableFuture;
@@ -29,8 +28,8 @@ import java.util.concurrent.CompletableFuture;
 import static esa.httpclient.core.exec.RequestExecutorImpl.LISTENER_KEY;
 
 /**
- * This interceptor is designed to execute {@link RequestFilter} and {@link ResponseFilter} around
- * every network transports.
+ * This interceptor is designed to execute all {@link RequestFilter}s before
+ * writing {@link HttpRequest} to channel.
  */
 public class FilteringExec implements Interceptor {
 

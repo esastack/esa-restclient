@@ -36,6 +36,8 @@ import io.netty.handler.codec.http.LastHttpContent;
 
 import java.io.IOException;
 
+import static esa.httpclient.core.netty.Utils.handleIdleEvt;
+
 class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private final HandleRegistry registry;
@@ -70,6 +72,13 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         onError(new ClosedConnectionException("Connection: " + ctx.channel() + " inactive"), false);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (!handleIdleEvt(ctx, evt)) {
+            super.userEventTriggered(ctx, evt);
+        }
     }
 
     /**

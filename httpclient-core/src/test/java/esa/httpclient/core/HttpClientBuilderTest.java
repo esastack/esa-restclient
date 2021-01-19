@@ -64,6 +64,7 @@ class HttpClientBuilderTest {
         final RetryOptions retryOptions = RetryOptions.ofDefault();
         final int maxRedirects = ThreadLocalRandom.current().nextInt(10, 1000);
         final long maxContentLength = ThreadLocalRandom.current().nextLong(10000);
+        final int idleTimeoutSeconds = ThreadLocalRandom.current().nextInt(1000);
 
         final HttpClientBuilder builder = new HttpClientBuilder();
         builder.resolver(resolver);
@@ -85,6 +86,7 @@ class HttpClientBuilderTest {
         builder.retryOptions(retryOptions);
         builder.maxRedirects(maxRedirects);
         builder.maxContentLength(maxContentLength);
+        builder.idleTimeoutSeconds(idleTimeoutSeconds);
 
         then(builder.resolver()).isSameAs(resolver);
         then(builder.ish2ClearTextUpgrade()).isEqualTo(h2ClearTextUpgrade);
@@ -105,6 +107,7 @@ class HttpClientBuilderTest {
         then(builder.retryOptions()).isSameAs(retryOptions);
         then(builder.maxRedirects()).isEqualTo(maxRedirects);
         then(builder.maxContentLength()).isEqualTo(maxContentLength);
+        then(builder.idleTimeoutSeconds()).isEqualTo(idleTimeoutSeconds);
     }
 
     @Test
@@ -128,6 +131,7 @@ class HttpClientBuilderTest {
         final RetryOptions retryOptions = RetryOptions.ofDefault();
         final int maxRedirects = ThreadLocalRandom.current().nextInt(10, 1000);
         final long maxContentLength = ThreadLocalRandom.current().nextLong(10000);
+        final int idleTimeoutSeconds = ThreadLocalRandom.current().nextInt(1000);
 
         final HttpClientBuilder builder = new HttpClientBuilder();
         builder.resolver(resolver);
@@ -149,6 +153,7 @@ class HttpClientBuilderTest {
         builder.retryOptions(retryOptions);
         builder.maxRedirects(maxRedirects);
         builder.maxContentLength(maxContentLength);
+        builder.idleTimeoutSeconds(idleTimeoutSeconds);
 
         final HttpClientBuilder builder1 = builder.copy();
 
@@ -171,6 +176,7 @@ class HttpClientBuilderTest {
         then(builder1.retryOptions()).isNotSameAs(retryOptions);
         then(builder1.maxRedirects()).isEqualTo(maxRedirects);
         then(builder1.maxContentLength()).isEqualTo(maxContentLength);
+        then(builder1.idleTimeoutSeconds()).isEqualTo(idleTimeoutSeconds);
     }
 
     @Test

@@ -83,6 +83,8 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
      */
     private long maxContentLength = -1L;
 
+    private int idleTimeoutSeconds = -1;
+
     private int readTimeout = 6000;
 
     /**
@@ -143,6 +145,11 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     public HttpClientBuilder connectTimeout(int timeout) {
         Checks.checkArg(timeout > 0, "connectTimeout must greater than 0");
         this.connectTimeout = timeout;
+        return self();
+    }
+
+    public HttpClientBuilder idleTimeoutSeconds(int idleTimeoutSeconds) {
+        this.idleTimeoutSeconds = idleTimeoutSeconds;
         return self();
     }
 
@@ -341,6 +348,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
                 .expectContinueEnabled(expectContinueEnabled)
                 .uriEncodeEnabled(uriEncodeEnabled)
                 .connectTimeout(connectTimeout)
+                .idleTimeoutSeconds(idleTimeoutSeconds)
                 .readTimeout(readTimeout)
                 .maxContentLength(maxContentLength)
                 .keepAlive(keepAlive)
@@ -371,6 +379,10 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
 
     public long maxContentLength() {
         return maxContentLength;
+    }
+
+    public int idleTimeoutSeconds() {
+        return idleTimeoutSeconds;
     }
 
     public boolean isKeepAlive() {

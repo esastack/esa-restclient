@@ -37,7 +37,7 @@ public abstract class Handler {
     }
 
     /**
-     * Be informed while receiving response' body content partly.
+     * Be informed while receiving response content partly.
      *
      * @param content  content
      */

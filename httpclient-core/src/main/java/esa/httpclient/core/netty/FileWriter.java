@@ -69,10 +69,15 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
-        channel.write(new DefaultHttpRequest(version,
+        final DefaultHttpRequest req = new DefaultHttpRequest(version,
                 HttpMethod.valueOf(request.method().name()),
                 request.uri().relative(uriEncodeEnabled),
-                ((Http1HeadersImpl) request.headers())), headFuture);
+                ((Http1HeadersImpl) request.headers()));
+
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("Send Request:\n" + req);
+        }
+        channel.write(req, headFuture);
 
         final ChannelPromise endPromise = channel.newPromise();
         // Write content

@@ -50,7 +50,7 @@ public abstract class BalancedHostResolver implements HostResolver {
     }
 
     /**
-     * Resolves the given {@code inetHost} and returns all resolved {@link InetAddress}s.
+     * Resolves the given {@code inetHost} and obtains all resolved {@link InetAddress}s.
      *
      * @param inetHost inetHost
      * @return addresses

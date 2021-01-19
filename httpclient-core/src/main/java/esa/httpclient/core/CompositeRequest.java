@@ -81,7 +81,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         checkStarted();
         if (file != null) {
             throw new IllegalStateException("You have specified a file: "
-                    + file.getName() + " as request's content");
+                    + file.getName() + " as request's body");
         }
         this.type = 0;
         this.buffer = data;
@@ -104,7 +104,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     public synchronized FileRequest body(File file) {
         checkStarted();
         if (buffer != null) {
-            throw new IllegalStateException("You have specified a buffer as request's content");
+            throw new IllegalStateException("You have specified a buffer as request's body");
         }
         this.type = 3;
         this.file = file;

@@ -23,8 +23,9 @@ import esa.httpclient.core.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * This chain is designed for {@link Interceptor}s to proceed {@link HttpRequest} and {@link HttpResponse}
- * one by one. Usually, we can do retry, redirect, cache and so on while {@link #proceed(HttpRequest)}ing.
+ * This chain is designed for {@link Interceptor}s to modify or replace {@link HttpRequest}
+ * and {@link HttpResponse} around {@link #proceed(HttpRequest)}ing. We can do retry, redirect,
+ * cache and so on by this.
  */
 @Internal
 public interface ExecChain {
@@ -37,7 +38,7 @@ public interface ExecChain {
     Context ctx();
 
     /**
-     * Proceeds {@link HttpRequest} and get result.
+     * Proceeds {@link HttpRequest} and obtains asynchronous result.
      *
      * @param request request
      * @return response

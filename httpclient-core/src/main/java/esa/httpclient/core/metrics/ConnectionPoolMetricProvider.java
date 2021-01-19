@@ -23,12 +23,12 @@ public interface ConnectionPoolMetricProvider {
     /**
      * Obtains all {@link ConnectionPoolMetric}s
      *
-     * @return all, must be not null
+     * @return metrics, must be not null
      */
     Map<SocketAddress, ConnectionPoolMetric> all();
 
     /**
-     * Obtains {@link SocketAddress} of specified {@link SocketAddress}
+     * Obtains {@link ConnectionPoolMetric} of specified {@link SocketAddress}
      *
      * @param address address
      * @return metric

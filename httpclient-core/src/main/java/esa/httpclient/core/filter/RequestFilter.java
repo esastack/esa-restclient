@@ -22,7 +22,7 @@ import esa.httpclient.core.util.Ordered;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The {@link RequestFilter} which will be executed before every network transports. You can get more information
+ * The {@link RequestFilter} will be executed before every network transports. You can get more information
  * about the difference between filter and interceptor from {@link Interceptor}.
  */
 public interface RequestFilter extends Ordered {

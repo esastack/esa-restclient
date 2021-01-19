@@ -19,32 +19,12 @@ import java.util.List;
 
 public interface IoThreadGroupMetric {
 
-    /**
-     * Whether current group is shutdown or not.
-     *
-     * @return shutdown or not
-     */
     boolean isShutdown();
 
-    /**
-     * Whether current group is terminated or not.
-     *
-     * @return terminated or not
-     */
     boolean isTerminated();
 
-    /**
-     * Obtains the {@link IoThreadMetric}.
-     *
-     * @return ioThread metric
-     */
     List<IoThreadMetric> childExecutors();
 
-    /**
-     * Obtains the id of current thread group.
-     *
-     * @return identify
-     */
     String groupId();
 
 }

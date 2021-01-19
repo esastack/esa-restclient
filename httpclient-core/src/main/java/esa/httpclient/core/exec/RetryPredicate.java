@@ -23,7 +23,7 @@ import esa.httpclient.core.HttpResponse;
 public interface RetryPredicate {
 
     /**
-     * Whether to retry specified {@link HttpRequest} after throwable caught.
+     * Whether to retry specified {@link HttpRequest} when {@code throwable} caught.
      *
      * @param request   request, must not be null
      * @param response  response, may be null

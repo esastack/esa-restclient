@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The default implementation of {@link HostResolver} which use {@link InetAddress#getAllByName(String)} to get
- * ips from host name.
+ * ips by host name.
  */
 public class SystemDefaultResolver extends BalancedHostResolver {
 

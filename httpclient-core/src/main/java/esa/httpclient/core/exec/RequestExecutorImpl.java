@@ -40,7 +40,7 @@ public class RequestExecutorImpl implements RequestExecutor {
     public RequestExecutorImpl(Interceptor[] interceptors,
                                HttpTransceiver transceiver) {
         Checks.checkNotNull(interceptors, "Interceptors must not be null");
-        Checks.checkNotNull(transceiver, "NettyTransceiver must not be null");
+        Checks.checkNotNull(transceiver, "HttpTransceiver must not be null");
         this.transceiver = transceiver;
         this.interceptors = interceptors;
     }
@@ -62,7 +62,7 @@ public class RequestExecutorImpl implements RequestExecutor {
     }
 
     /**
-     * Builds a execution chain to execute {@link HttpRequest}
+     * Builds a  execChain to execute {@link HttpRequest}
      *
      * @param handle       handler
      * @param ctx          ctx
@@ -90,7 +90,7 @@ public class RequestExecutorImpl implements RequestExecutor {
 
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger().debug("The default handle will be used to aggregate the inbound message to" +
-                    " response");
+                    " a response");
         }
 
         return null;

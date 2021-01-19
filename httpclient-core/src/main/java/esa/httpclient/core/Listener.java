@@ -23,10 +23,6 @@ import esa.httpclient.core.filter.RequestFilter;
 import java.net.SocketAddress;
 import java.util.EventListener;
 
-/**
- * The interface is designed to handle the specified notifications throughout the
- * life cycle of the {@link HttpRequest}.
- */
 @Internal
 public interface Listener extends EventListener {
 

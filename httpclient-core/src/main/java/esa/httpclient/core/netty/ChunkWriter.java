@@ -115,6 +115,10 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
             }
             HttpUtil.setTransferEncodingChunked(request0, true);
         }
+
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("Send Request:\n" + request0);
+        }
         channel.write(request0, headFuture);
         http2 = false;
         return endPromise;

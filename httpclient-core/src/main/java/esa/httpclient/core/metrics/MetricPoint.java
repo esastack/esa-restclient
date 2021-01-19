@@ -17,25 +17,10 @@ package esa.httpclient.core.metrics;
 
 public interface MetricPoint {
 
-    /**
-     * Obtains {@link ConnectionPoolMetric}.
-     *
-     * @return metric
-     */
     ConnectionPoolMetricProvider connectionPoolMetric();
 
-    /**
-     * Obtains {@link IoThreadGroupMetric}.
-     *
-     * @return metric
-     */
     IoThreadGroupMetric ioThreadsMetric();
 
-    /**
-     * Obtains {@link CallbackExecutorMetric}.
-     *
-     * @return metric
-     */
     CallbackExecutorMetric callbackExecutorMetric();
 
 }

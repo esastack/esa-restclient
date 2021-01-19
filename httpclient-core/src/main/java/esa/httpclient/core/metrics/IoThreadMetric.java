@@ -17,46 +17,16 @@ package esa.httpclient.core.metrics;
 
 public interface IoThreadMetric {
 
-    /**
-     * Obtains the number of pending task
-     *
-     * @return pending task
-     */
     int pendingTasks();
 
-    /**
-     * Obtains the max pending task
-     *
-     * @return max pending task
-     */
     int maxPendingTasks();
 
-    /**
-     * Obtains the io ratio
-     *
-     * @return ratio
-     */
     int ioRatio();
 
-    /**
-     * Obtains thread's name
-     *
-     * @return name
-     */
     String name();
 
-    /**
-     * Obtains thread's priority
-     *
-     * @return priority
-     */
     int priority();
 
-    /**
-     * Obtains thread's state
-     *
-     * @return state
-     */
     String state();
 
 }

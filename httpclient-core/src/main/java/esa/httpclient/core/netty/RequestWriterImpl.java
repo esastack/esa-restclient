@@ -111,6 +111,10 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
             return headFuture;
         }
 
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("Send Request:\n" +
+                    headers);
+        }
         return handler.writeHeaders(streamId, headers, endOfStream, headFuture);
     }
 

@@ -20,25 +20,10 @@ import esa.commons.http.HttpVersion;
 
 public interface HttpMessage {
 
-    /**
-     * Obtains the status of current message.
-     *
-     * @return status
-     */
     int status();
 
-    /**
-     * Obtains {@link HttpVersion}.
-     *
-     * @return version
-     */
     HttpVersion version();
 
-    /**
-     * Obtains {@link HttpHeaders}.
-     *
-     * @return headers
-     */
     HttpHeaders headers();
 
 }

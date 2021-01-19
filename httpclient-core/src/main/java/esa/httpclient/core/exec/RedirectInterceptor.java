@@ -54,7 +54,7 @@ public class RedirectInterceptor implements Interceptor {
         final int maxRedirects = next.ctx().maxRedirects();
         if (request.isSegmented() || maxRedirects < 1) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Pass redirection directly, uri: {}, maxRedirects: {}",
+                logger.debug("Redirection is disabled, uri: {}, maxRedirects: {}",
                         request.uri().toString(), maxRedirects);
             }
             return next.proceed(request);
@@ -81,7 +81,6 @@ public class RedirectInterceptor implements Interceptor {
         next.proceed(request).whenComplete((rsp, th) -> {
             try {
                 // Update hasRedirectedCount immediately
-                // may be it will be used further, such as metrics, logging...
                 final int hasDirectedCount = next.ctx().getAttr(HAS_REDIRECTED_COUNT, -1) + 1;
                 next.ctx().removeAttr(HAS_REDIRECTED_COUNT);
                 next.ctx().setAttr(HAS_REDIRECTED_COUNT, hasDirectedCount);
@@ -103,7 +102,7 @@ public class RedirectInterceptor implements Interceptor {
                     HttpRequest request0 = newRequest(request, uri, rsp.status());
 
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Begin to redirect from {} to {}, redirectCount: {}",
+                        logger.debug("Begin to redirect from {} to {}, current redirectCount: {}",
                                 request, request0, hasDirectedCount + 1);
                     }
 

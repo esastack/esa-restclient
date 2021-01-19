@@ -19,7 +19,7 @@ import esa.commons.Checks;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http2HeadersAdaptor;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.exception.ConnectionException;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
@@ -165,12 +165,12 @@ class Http2FrameHandler extends Http2EventAdapter {
                              long errorCode, ByteBuf debugData) throws Http2Exception {
         final String errMsg = debugData.toString(StandardCharsets.UTF_8);
 
-        final ConnectionException ex;
+        final ClosedConnectionException ex;
         if (NO_ERROR.code() == errorCode) {
-            ex = new ConnectionException("Received goAway stream in connection: " + ctx.channel()
+            ex = new ClosedConnectionException("Received goAway stream in connection: " + ctx.channel()
                     + ", maybe server has closed the connection");
         } else {
-            ex = new ConnectionException("Received goAway stream in connection: " +
+            ex = new ClosedConnectionException("Received goAway stream in connection: " +
                     ctx.channel() + ", msg: " + errMsg);
         }
 

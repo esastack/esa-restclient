@@ -22,6 +22,7 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.exception.ProtocolException;
 import esa.httpclient.core.util.Futures;
@@ -54,6 +55,28 @@ class Http1ChannelHandlerTest {
     private static final byte[] DATA = "Hello World!".getBytes();
 
     private final HttpClient client = HttpClient.ofDefault();
+
+    @Test
+    void testChannelInactive() {
+        final HandleRegistry registry = new HandleRegistry(1, 0);
+        final Http1ChannelHandler handler = new Http1ChannelHandler(registry, -1L);
+        final EmbeddedChannel channel = new EmbeddedChannel(handler);
+
+        final HttpRequest request = client.get("/abc");
+        final Context ctx = new Context();
+        final Listener listener = new NoopListener();
+        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
+
+        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, listener, response);
+        final int requestId = registry.put(handle);
+        handler.updateRequestId(requestId);
+        channel.pipeline().fireChannelInactive();
+
+        testChannelInactive0(response, registry, requestId, channel, ClosedConnectionException.class, false);
+
+        channel.finishAndReleaseAll();
+    }
 
     @Test
     void testHandleFullHttpResponse() throws Exception {

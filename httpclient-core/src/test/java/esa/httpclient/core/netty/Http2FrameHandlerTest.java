@@ -24,7 +24,7 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
-import esa.httpclient.core.exception.ConnectionException;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
@@ -668,7 +668,7 @@ class Http2FrameHandlerTest {
         channel.flushInbound();
 
         then(response.isDone() && response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(ConnectionException.class);
+        then(Futures.getCause(response)).isInstanceOf(ClosedConnectionException.class);
 
         then(registry.get(requestId)).isNull();
         channel.finishAndReleaseAll();

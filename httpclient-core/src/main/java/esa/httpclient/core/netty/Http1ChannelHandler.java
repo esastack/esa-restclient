@@ -18,7 +18,7 @@ package esa.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http1HeadersAdaptor;
-import esa.httpclient.core.exception.ConnectionException;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.exception.ProtocolException;
 import esa.httpclient.core.util.LoggerUtils;
@@ -65,6 +65,11 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         } finally {
             ctx.close();
         }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        onError(new ClosedConnectionException("Connection: " + ctx.channel() + " inactive"), false);
     }
 
     /**
@@ -162,9 +167,9 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
             return;
         }
         boolean hasLogged = false;
-        if (cause instanceof ConnectionException) {
+        if (cause instanceof ClosedConnectionException) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("ConnectionException occurred in connection: {}",
+                LoggerUtils.logger().debug("ClosedConnectionException occurred in connection: {}",
                         ctx.channel(), cause);
             } else {
                 LoggerUtils.logger().warn(cause.getMessage());

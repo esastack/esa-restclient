@@ -16,7 +16,7 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.Buffer;
-import esa.httpclient.core.exception.ConnectionException;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -103,15 +103,15 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                 }
             }
 
-            // Builds a ConnectionException and ends all running requests with it after
+            // Build a ClosedConnectionException and end all running requests with it after
             // closing the connection.
-            final ConnectionException wrappedEx =
-                    new ConnectionException("Unexpected exception occurred in connection: "
+            final ClosedConnectionException ex =
+                    new ClosedConnectionException("Unexpected exception occurred in connection: "
                             + ctx.channel(), cause);
             ctx.close().addListener(future -> registry.handleAndClearAll((h) -> {
                 try {
-                    Utils.handleException(h, wrappedEx, false);
-                } catch (Throwable ex) {
+                    Utils.handleException(h, ex, false);
+                } catch (Throwable ex0) {
                     // Ignore
                 }
             }));

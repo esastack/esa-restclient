@@ -36,7 +36,7 @@ class NettyContextTest {
 
     @Test
     void testSetAndGetWriter() {
-        final CompletableFuture<ChunkWriter> writer = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writer = new CompletableFuture<>();
         final NettyContext context = new NettyContext();
         context.setWriter(writer);
         then(context.getWriter().orElse(null)).isSameAs(writer);

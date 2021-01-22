@@ -20,8 +20,8 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -48,7 +48,7 @@ import static esa.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 /**
  * This class is designed as thread-safe, so we need't worry about a serial of conflicts.
  */
-class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
+class SegmentWriter extends RequestWriterImpl<SegmentRequest> {
 
     private volatile ChannelPromise endPromise;
     private volatile Channel channel;
@@ -57,7 +57,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
     private volatile int streamId;
 
     @Override
-    public ChannelFuture writeAndFlush(ChunkRequest request,
+    public ChannelFuture writeAndFlush(SegmentRequest request,
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
@@ -71,7 +71,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush2(ChunkRequest request,
+    ChannelFuture writeAndFlush2(SegmentRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,
@@ -96,7 +96,7 @@ class ChunkWriter extends RequestWriterImpl<ChunkRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush1(ChunkRequest request,
+    ChannelFuture writeAndFlush1(SegmentRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,

@@ -21,7 +21,7 @@ import esa.httpclient.core.metrics.MetricPoint;
 import java.io.Closeable;
 
 /**
- * The facade class for preparing a {@link ChunkRequest} or executing a common {@link HttpRequest}.
+ * The facade class for preparing a {@link SegmentRequest} or executing a common {@link HttpRequest}.
  */
 public interface HttpClient extends Closeable, Identifiable, MetricPoint {
 

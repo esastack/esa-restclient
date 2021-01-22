@@ -41,7 +41,7 @@ class CompositeRequestTest {
         final HttpClientBuilder builder = HttpClient.create();
         final NettyHttpClient client = mock(NettyHttpClient.class);
         final HttpMethod method = HttpMethod.PUT;
-        final ChunkRequest chunk0 = mock(ChunkRequest.class);
+        final SegmentRequest chunk0 = mock(SegmentRequest.class);
 
         final CompositeRequest request = new CompositeRequest(builder,
                 client, () -> chunk0, method, uri);
@@ -84,7 +84,7 @@ class CompositeRequestTest {
         final HttpClientBuilder builder = HttpClient.create();
         final NettyHttpClient client = mock(NettyHttpClient.class);
         final HttpMethod method = HttpMethod.PUT;
-        final ChunkRequest chunk0 = mock(ChunkRequest.class);
+        final SegmentRequest chunk0 = mock(SegmentRequest.class);
         final boolean multipartEncode = true;
         final byte[] data = "Hello".getBytes();
 
@@ -138,7 +138,7 @@ class CompositeRequestTest {
         final HttpClientBuilder builder = HttpClient.create();
         final NettyHttpClient client = mock(NettyHttpClient.class);
         final HttpMethod method = HttpMethod.PUT;
-        final ChunkRequest chunk0 = mock(ChunkRequest.class);
+        final SegmentRequest chunk0 = mock(SegmentRequest.class);
         final byte[] data = "Hello".getBytes();
 
         final CompositeRequest request = new CompositeRequest(builder,

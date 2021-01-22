@@ -78,9 +78,9 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     int readTimeout();
 
     /**
-     * Whether chunk write or not.
+     * Whether segment write or not.
      *
-     * @return true if current request is chunk write, otherwise false.
+     * @return true if current request is segment write, otherwise false.
      */
     default boolean isSegmented() {
         return false;

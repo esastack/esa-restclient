@@ -19,13 +19,13 @@ import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Handle;
 import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequestBaseImpl;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.ListenerProxy;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.exec.RequestExecutor;
 import esa.httpclient.core.util.Futures;
 import io.netty.channel.Channel;
@@ -39,9 +39,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * The implementation of {@link ChunkRequest} based on netty.
+ * The implementation of {@link SegmentRequest} based on netty.
  */
-public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkRequest {
+public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRequest {
 
     private static final IllegalStateException REQUEST_HAS_ENDED = new IllegalStateException("Request has ended");
     private static final IllegalStateException CHANNEL_IS_NULL = new IllegalStateException("Channel is null");
@@ -51,17 +51,17 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
     private final RequestExecutor executor;
 
     private volatile CompletableFuture<HttpResponse> response;
-    private volatile CompletableFuture<ChunkWriter> chunkWriter;
+    private volatile CompletableFuture<SegmentWriter> segmentWriter;
 
-    private CompletableFuture<ChunkWriter> orderedWriterOpsChain;
+    private CompletableFuture<SegmentWriter> orderedWriterOpsChain;
 
     private boolean started;
     private boolean ended;
 
-    ChunkRequestImpl(HttpClientBuilder builder,
-                     RequestExecutor executor,
-                     HttpMethod method,
-                     String uri) {
+    SegmentRequestImpl(HttpClientBuilder builder,
+                       RequestExecutor executor,
+                       HttpMethod method,
+                       String uri) {
         super(builder, method, uri);
         Checks.checkNotNull(executor, "RequestExecutor must not be null");
         this.executor = executor;
@@ -132,16 +132,16 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
 
     @Override
     public boolean isWritable() {
-        if (chunkWriter == null) {
+        if (segmentWriter == null) {
             return false;
         }
 
-        if (!chunkWriter.isDone()) {
+        if (!segmentWriter.isDone()) {
             return false;
         }
 
         Channel channel;
-        if ((channel = chunkWriter.getNow(null).channel()) != null) {
+        if ((channel = segmentWriter.getNow(null).channel()) != null) {
             return channel.isWritable();
         }
         return false;
@@ -155,12 +155,12 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
 
     private <T> CompletableFuture<Void> checkAndWrite(T data, int offset, int length) {
         try {
-            if (chunkWriter.isDone() && chunkWriter.isCompletedExceptionally()) {
+            if (segmentWriter.isDone() && segmentWriter.isCompletedExceptionally()) {
                 return Futures.completed(new IOException("Failed to acquire connection",
-                        Futures.getCause(chunkWriter)));
+                        Futures.getCause(segmentWriter)));
             } else {
                 final CompletableFuture<Void> result = new CompletableFuture<>();
-                final BiConsumer<ChunkWriter, Throwable> consumer = (wr, th) ->
+                final BiConsumer<SegmentWriter, Throwable> consumer = (wr, th) ->
                         doWrite(wr, data, offset, length).whenComplete((v, th0) -> {
                             if (th0 != null) {
                                 result.completeExceptionally(th0);
@@ -178,7 +178,7 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
         }
     }
 
-    private <T> CompletableFuture<Void> doWrite(ChunkWriter writer,
+    private <T> CompletableFuture<Void> doWrite(SegmentWriter writer,
                                                 T data,
                                                 int offset,
                                                 int length) {
@@ -215,12 +215,12 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
 
     private CompletableFuture<Void> safelyDoEnd(HttpHeaders headers) {
         try {
-            if (chunkWriter.isDone() && chunkWriter.isCompletedExceptionally()) {
+            if (segmentWriter.isDone() && segmentWriter.isCompletedExceptionally()) {
                 return Futures.completed(new IOException("Failed to acquire connection",
-                        Futures.getCause(chunkWriter)));
+                        Futures.getCause(segmentWriter)));
             } else {
                 final CompletableFuture<Void> result = new CompletableFuture<>();
-                final BiConsumer<ChunkWriter, Throwable> consumer = (wr, th) ->
+                final BiConsumer<SegmentWriter, Throwable> consumer = (wr, th) ->
                         doEnd(wr, headers).whenComplete((v, th0) -> {
                             if (th0 != null) {
                                 result.completeExceptionally(th0);
@@ -238,7 +238,7 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
         }
     }
 
-    private CompletableFuture<Void> doEnd(ChunkWriter writer, HttpHeaders headers) {
+    private CompletableFuture<Void> doEnd(SegmentWriter writer, HttpHeaders headers) {
         if (writer == null || writer.channel() == null) {
             return Futures.completed(CHANNEL_IS_NULL);
         }
@@ -266,18 +266,18 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
     }
 
     private void checkAndStart() {
-        if (chunkWriter != null) {
+        if (segmentWriter != null) {
             return;
         }
 
         synchronized (this) {
-            if (chunkWriter != null) {
+            if (segmentWriter != null) {
                 return;
             }
 
             this.started = true;
             response = executor.execute(this, ctx, ListenerProxy.DEFAULT, handle, handler);
-            chunkWriter = ctx.getWriter().orElse(null);
+            segmentWriter = ctx.getWriter().orElse(null);
         }
     }
 
@@ -287,8 +287,8 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
                 handle.accept(th);
             }
 
-            ChunkWriter writer;
-            if ((writer = chunkWriter.getNow(null)) != null) {
+            SegmentWriter writer;
+            if ((writer = segmentWriter.getNow(null)) != null) {
                 writer.close(th);
             }
             if (th != null) {
@@ -297,9 +297,9 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
         };
     }
 
-    private synchronized void appendToOrderedWriterOpsChain(BiConsumer<ChunkWriter, Throwable> consumer) {
+    private synchronized void appendToOrderedWriterOpsChain(BiConsumer<SegmentWriter, Throwable> consumer) {
         if (orderedWriterOpsChain == null) {
-            orderedWriterOpsChain = chunkWriter.whenComplete(consumer);
+            orderedWriterOpsChain = segmentWriter.whenComplete(consumer);
         } else {
             orderedWriterOpsChain = orderedWriterOpsChain.whenComplete(consumer);
         }
@@ -331,98 +331,98 @@ public class ChunkRequestImpl extends HttpRequestBaseImpl implements ChunkReques
     }
 
     @Override
-    public ChunkRequest copy() {
-        final ChunkRequestImpl copied = new ChunkRequestImpl(builder, executor, method(), uri().toString());
+    public SegmentRequest copy() {
+        final SegmentRequestImpl copied = new SegmentRequestImpl(builder, executor, method(), uri().toString());
         copyTo(this, copied);
         return copied;
     }
 
     @Override
-    public synchronized ChunkRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
+    public synchronized SegmentRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
         checkStarted();
         super.uriEncodeEnabled(uriEncodeEnabled);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest expectContinueEnabled(Boolean expectContinueEnabled) {
+    public synchronized SegmentRequest expectContinueEnabled(Boolean expectContinueEnabled) {
         checkStarted();
         super.expectContinueEnabled(expectContinueEnabled);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest maxRedirects(int maxRedirects) {
+    public synchronized SegmentRequest maxRedirects(int maxRedirects) {
         checkStarted();
         super.maxRedirects(maxRedirects);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest maxRetries(int maxRetries) {
+    public synchronized SegmentRequest maxRetries(int maxRetries) {
         checkStarted();
         super.maxRetries(maxRetries);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest readTimeout(int readTimeout) {
+    public synchronized SegmentRequest readTimeout(int readTimeout) {
         checkStarted();
         super.readTimeout(readTimeout);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
+    public synchronized SegmentRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
         checkStarted();
         super.addHeaders(headers);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest addHeader(CharSequence name, CharSequence value) {
+    public synchronized SegmentRequest addHeader(CharSequence name, CharSequence value) {
         checkStarted();
         super.addHeader(name, value);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest setHeader(CharSequence name, CharSequence value) {
+    public synchronized SegmentRequest setHeader(CharSequence name, CharSequence value) {
         checkStarted();
         super.setHeader(name, value);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest removeHeader(CharSequence name) {
+    public synchronized SegmentRequest removeHeader(CharSequence name) {
         checkStarted();
         super.removeHeader(name);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest addParams(Map<String, String> params) {
+    public synchronized SegmentRequest addParams(Map<String, String> params) {
         checkStarted();
         super.addParams(params);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest addParam(String name, String value) {
+    public synchronized SegmentRequest addParam(String name, String value) {
         checkStarted();
         super.addParam(name, value);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest handle(Consumer<Handle> handle) {
+    public synchronized SegmentRequest handle(Consumer<Handle> handle) {
         checkStarted();
         super.handle(handle);
         return this;
     }
 
     @Override
-    public synchronized ChunkRequest handler(Handler handler) {
+    public synchronized SegmentRequest handler(Handler handler) {
         checkStarted();
         super.handler(handler);
         return this;

@@ -18,7 +18,6 @@ package esa.httpclient.core.netty;
 import esa.commons.function.ThrowingSupplier;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.BufferImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpClientBuilder;
@@ -26,6 +25,7 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.Scheme;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.exception.WriteBufFullException;
@@ -112,9 +112,9 @@ class NettyTransceiverTest {
         verify(listener).onConnectionPoolAttempt(any(), any(), any());
         verify(listener).onAcquireConnectionPoolFailed(any(), any(), any(), any());
 
-        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = ctx.getWriter().orElse(Futures.completed());
-        then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(RuntimeException.class);
+        final CompletableFuture<SegmentWriter> segmentWriterPromise1 = ctx.getWriter().orElse(Futures.completed());
+        then(segmentWriterPromise1.isDone() && segmentWriterPromise1.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(segmentWriterPromise1)).isInstanceOf(RuntimeException.class);
 
         // Case 2: Acquired channelPool successfully.
         final io.netty.channel.pool.ChannelPool underlying = mock(io.netty.channel.pool.ChannelPool.class);
@@ -143,9 +143,9 @@ class NettyTransceiverTest {
         verify(listener2).onAcquireConnectionFailed(any(), any(), any(), any());
         verify(listener2).onError(any(), any(), any());
 
-        final CompletableFuture<ChunkWriter> chunkWriterPromise2 = ctx1.getWriter().orElse(Futures.completed());
-        then(chunkWriterPromise2.isDone() && chunkWriterPromise2.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise2)).isInstanceOf(IOException.class);
+        final CompletableFuture<SegmentWriter> segmentWriterPromise2 = ctx1.getWriter().orElse(Futures.completed());
+        then(segmentWriterPromise2.isDone() && segmentWriterPromise2.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(segmentWriterPromise2)).isInstanceOf(IOException.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -168,7 +168,7 @@ class NettyTransceiverTest {
         final Future<Channel> future = mock(Future.class);
         final RequestWriter writer = NettyTransceiver.detectWriter(request);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> segmentWriterPromise1 = new CompletableFuture<>();
 
         // Case 1: unexpected error caught
         when(future.isSuccess()).thenReturn(true);
@@ -176,14 +176,14 @@ class NettyTransceiverTest {
         when(future.getNow()).thenReturn(channel);
         when(channel.isActive()).thenReturn(false);
         transceiver.handle0(request, mock(SocketAddress.class), ctx, channelPool, future, null,
-                listener, response1, writer, chunkWriterPromise1);
+                listener, response1, writer, segmentWriterPromise1);
         verify(channelPool).release(any());
         verify(listener).onError(any(), any(), any());
         then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response1)).isInstanceOf(ConnectException.class);
 
-        then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(ConnectException.class);
+        then(segmentWriterPromise1.isDone() && segmentWriterPromise1.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(segmentWriterPromise1)).isInstanceOf(ConnectException.class);
     }
 
     @Test
@@ -204,7 +204,7 @@ class NettyTransceiverTest {
         final io.netty.channel.pool.ChannelPool channelPool = mock(io.netty.channel.pool.ChannelPool.class);
         final RequestWriter writer = NettyTransceiver.detectWriter(request);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> segmentWriterPromise1 = new CompletableFuture<>();
 
         final Channel channel = mock(Channel.class);
         final ChannelPipeline pipeline = mock(ChannelPipeline.class);
@@ -217,12 +217,12 @@ class NettyTransceiverTest {
         when(channel.isActive()).thenReturn(false);
 
         transceiver.doWrite(request, ctx, channelPool, channel, null,
-                listener, response1, writer, chunkWriterPromise1);
+                listener, response1, writer, segmentWriterPromise1);
         verify(channel).close();
         then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response1)).isInstanceOf(ConnectException.class);
-        then(chunkWriterPromise1.isDone() && chunkWriterPromise1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise1)).isInstanceOf(ConnectException.class);
+        then(segmentWriterPromise1.isDone() && segmentWriterPromise1.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(segmentWriterPromise1)).isInstanceOf(ConnectException.class);
         verify(listener).onError(any(), any(), any());
 
         // Case 2: channel is not writable
@@ -233,15 +233,15 @@ class NettyTransceiverTest {
 
         final Listener listener2 = mock(Listener.class);
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> chunkWriterPromise2 = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> segmentWriterPromise2 = new CompletableFuture<>();
 
         transceiver.doWrite(request, ctx, channelPool, channel, null,
-                listener2, response2, writer, chunkWriterPromise2);
+                listener2, response2, writer, segmentWriterPromise2);
 
         then(response2.isDone() && response2.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response2)).isSameAs(WriteBufFullException.INSTANCE);
-        then(chunkWriterPromise2.isDone() && chunkWriterPromise2.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise2)).isSameAs(WriteBufFullException.INSTANCE);
+        then(segmentWriterPromise2.isDone() && segmentWriterPromise2.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(segmentWriterPromise2)).isSameAs(WriteBufFullException.INSTANCE);
         verify(listener2).onError(any(), any(), any());
 
 
@@ -249,15 +249,15 @@ class NettyTransceiverTest {
         when(channel.isWritable()).thenReturn(true);
         final Listener listener3 = mock(Listener.class);
         final CompletableFuture<HttpResponse> response3 = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> chunkWriterPromise3 = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> segmentWriterPromise3 = new CompletableFuture<>();
 
         transceiver.doWrite(request, ctx, channelPool, channel, null,
-                listener3, response3, writer, chunkWriterPromise3);
+                listener3, response3, writer, segmentWriterPromise3);
 
         then(response3.isDone() && response3.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response3)).isInstanceOf(NullPointerException.class);
-        then(chunkWriterPromise3.isDone() && chunkWriterPromise3.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(chunkWriterPromise3)).isInstanceOf(NullPointerException.class);
+        then(segmentWriterPromise3.isDone() && segmentWriterPromise3.isCompletedExceptionally()).isTrue();
+        then(Futures.getCause(segmentWriterPromise3)).isInstanceOf(NullPointerException.class);
         verify(listener3).onError(any(), any(), any());
     }
 
@@ -277,14 +277,14 @@ class NettyTransceiverTest {
         final Context ctx = new Context();
         final TimeoutHandle h = mock(TimeoutHandle.class);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> chunkWriterPromise1 = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> segmentWriterPromise1 = new CompletableFuture<>();
         final Channel channel = new EmbeddedChannel();
         final HandleRegistry registry = new HandleRegistry(1, 0);
         channel.pipeline().addLast(new Http1ChannelHandler(registry, -1L));
 
         final ChannelFuture future = mock(ChannelFuture.class);
-        final ChunkWriter writer = mock(ChunkWriter.class);
-        when(writer.writeAndFlush(any(ChunkRequest.class),
+        final SegmentWriter writer = mock(SegmentWriter.class);
+        when(writer.writeAndFlush(any(SegmentRequest.class),
                 any(Channel.class),
                 any(Context.class),
                 any(ChannelPromise.class),
@@ -298,10 +298,10 @@ class NettyTransceiverTest {
 
         transceiver.doWrite0(request, ctx,
                 channel, (l, rsp) -> null, h,
-                true, HttpVersion.HTTP_2, response1, writer, chunkWriterPromise1);
+                true, HttpVersion.HTTP_2, response1, writer, segmentWriterPromise1);
         verify(h).onWriteAttempt(any(), any());
-        then(chunkWriterPromise1.isDone()).isTrue();
-        then(chunkWriterPromise1.get()).isSameAs(writer);
+        then(segmentWriterPromise1.isDone()).isTrue();
+        then(segmentWriterPromise1.get()).isSameAs(writer);
         verify(h).onWriteDone(any(), any());
 
         // Case 2: write failure
@@ -309,16 +309,16 @@ class NettyTransceiverTest {
         when(future.cause()).thenReturn(new IllegalStateException());
 
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> chunkWriterPromise2 = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> segmentWriterPromise2 = new CompletableFuture<>();
 
         transceiver.doWrite0(request, ctx, channel, (l, rsp) -> null, h,
-                true, HttpVersion.HTTP_2, response2, writer, chunkWriterPromise2);
+                true, HttpVersion.HTTP_2, response2, writer, segmentWriterPromise2);
         verify(h).onWriteFailed(any(), any(), any());
         verify(h).onError(any(), any(), any());
         then(response2.isDone() && response2.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response2)).isInstanceOf(IOException.class);
-        then(chunkWriterPromise2.isDone()).isTrue();
-        then(chunkWriterPromise2.get()).isSameAs(writer);
+        then(segmentWriterPromise2.isDone()).isTrue();
+        then(segmentWriterPromise2.get()).isSameAs(writer);
     }
 
     @SuppressWarnings("unchecked")
@@ -422,6 +422,6 @@ class NettyTransceiverTest {
         then(NettyTransceiver.detectWriter(request4)).isInstanceOf(MultipartWriter.class);
 
         final HttpRequest request5 = client.get("/abc").segment();
-        then(NettyTransceiver.detectWriter(request5)).isInstanceOf(ChunkWriter.class);
+        then(NettyTransceiver.detectWriter(request5)).isInstanceOf(SegmentWriter.class);
     }
 }

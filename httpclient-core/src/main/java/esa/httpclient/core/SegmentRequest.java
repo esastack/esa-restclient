@@ -33,7 +33,7 @@ import java.util.function.Consumer;
  * better use {@link #isWritable()} to judge whether current request can continue writing
  * or not.
  */
-public interface ChunkRequest extends HttpRequestBase {
+public interface SegmentRequest extends HttpRequestBase {
 
     /**
      * Writes the chunked data to channel.
@@ -252,46 +252,46 @@ public interface ChunkRequest extends HttpRequestBase {
     boolean isWritable();
 
     @Override
-    ChunkRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+    SegmentRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
 
     @Override
-    ChunkRequest expectContinueEnabled(Boolean expectContinueEnabled);
+    SegmentRequest expectContinueEnabled(Boolean expectContinueEnabled);
 
     @Override
-    ChunkRequest maxRedirects(int maxRedirects);
+    SegmentRequest maxRedirects(int maxRedirects);
 
     @Override
-    ChunkRequest maxRetries(int maxRetries);
+    SegmentRequest maxRetries(int maxRetries);
 
     @Override
-    ChunkRequest readTimeout(int readTimeout);
+    SegmentRequest readTimeout(int readTimeout);
 
     @Override
-    ChunkRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+    SegmentRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
 
     @Override
-    ChunkRequest addParams(Map<String, String> params);
+    SegmentRequest addParams(Map<String, String> params);
 
     @Override
-    ChunkRequest handle(Consumer<Handle> handle);
+    SegmentRequest handle(Consumer<Handle> handle);
 
     @Override
-    ChunkRequest handler(Handler handler);
+    SegmentRequest handler(Handler handler);
 
     @Override
-    ChunkRequest addHeader(CharSequence name, CharSequence value);
+    SegmentRequest addHeader(CharSequence name, CharSequence value);
 
     @Override
-    ChunkRequest setHeader(CharSequence name, CharSequence value);
+    SegmentRequest setHeader(CharSequence name, CharSequence value);
 
     @Override
-    ChunkRequest removeHeader(CharSequence name);
+    SegmentRequest removeHeader(CharSequence name);
 
     @Override
-    ChunkRequest addParam(String name, String value);
+    SegmentRequest addParam(String name, String value);
 
     @Override
-    ChunkRequest copy();
+    SegmentRequest copy();
 
     @Override
     default boolean isSegmented() {

@@ -301,7 +301,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         Checks.checkNotNull("HttpMethod must not be null");
         Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
         return new CompositeRequest(builder, this,
-                () -> new ChunkRequestImpl(builder, executor, method, uri),
+                () -> new SegmentRequestImpl(builder, executor, method, uri),
                 method, uri);
     }
 

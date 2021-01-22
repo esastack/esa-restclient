@@ -18,9 +18,9 @@ package esa.httpclient.core.exec;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
@@ -47,7 +47,7 @@ class ExpectContinueInterceptorTest {
 
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request0 = client.get("http://127.0.0.1:8080/abc").segment();
+        final SegmentRequest request0 = client.get("http://127.0.0.1:8080/abc").segment();
         when(next.proceed(request0)).thenReturn(Futures.completed(new MockHttpResponse()));
 
         ctx.expectContinueEnabled(false);

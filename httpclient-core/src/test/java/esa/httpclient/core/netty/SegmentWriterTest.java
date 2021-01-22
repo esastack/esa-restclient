@@ -19,9 +19,9 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
+import esa.httpclient.core.SegmentRequest;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpContent;
@@ -40,17 +40,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ChunkWriterTest extends Http2ConnectionHelper {
+class SegmentWriterTest extends Http2ConnectionHelper {
 
     ////////*********************************HTTP1 CHUNK WRITER**************************************////////
 
     @Test
     void testWriteAndFlush1() throws IOException {
-        final ChunkWriter writer = new ChunkWriter();
+        final SegmentWriter writer = new SegmentWriter();
         final EmbeddedChannel channel = new EmbeddedChannel();
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request = client.post("http://127.0.0.1/abc").segment();
+        final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
         final Context ctx = new Context();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
@@ -108,11 +108,11 @@ class ChunkWriterTest extends Http2ConnectionHelper {
 
     @Test
     void testEndH1WithEmptyTrailers() throws IOException {
-        final ChunkWriter writer = new ChunkWriter();
+        final SegmentWriter writer = new SegmentWriter();
         final EmbeddedChannel channel = new EmbeddedChannel();
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request = client.post("http://127.0.0.1/abc").segment();
+        final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
         final Context ctx = new Context();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
@@ -136,10 +136,10 @@ class ChunkWriterTest extends Http2ConnectionHelper {
     @Test
     void testWriteAndFlush2() throws Exception {
         setUp();
-        final ChunkWriter writer = new ChunkWriter();
+        final SegmentWriter writer = new SegmentWriter();
 
         final HttpClient client = HttpClient.ofDefault();
-        final ChunkRequest request = client.post("http://127.0.0.1/abc").segment();
+        final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
         final Context ctx = new Context();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
@@ -204,10 +204,10 @@ class ChunkWriterTest extends Http2ConnectionHelper {
     @Test
     void testEndH2WithEmptyData() throws Exception {
         setUp();
-        final ChunkWriter writer = new ChunkWriter();
+        final SegmentWriter writer = new SegmentWriter();
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request = client.post("http://127.0.0.1/abc").segment();
+        final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
         final Context ctx = new Context();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
@@ -236,10 +236,10 @@ class ChunkWriterTest extends Http2ConnectionHelper {
     @Test
     void testWriteError() throws Exception {
         setUp();
-        final ChunkWriter writer = new ChunkWriter();
+        final SegmentWriter writer = new SegmentWriter();
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request = client.post("http://127.0.0.1/abc").segment();
+        final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
         final Context ctx = new Context();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
@@ -258,10 +258,10 @@ class ChunkWriterTest extends Http2ConnectionHelper {
     @Test
     void testClose() throws Exception {
         setUp();
-        final ChunkWriter writer = new ChunkWriter();
+        final SegmentWriter writer = new SegmentWriter();
         final HttpClient client = HttpClient.ofDefault();
 
-        final ChunkRequest request = client.post("http://127.0.0.1/abc").segment();
+        final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
         final Context ctx = new Context();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 

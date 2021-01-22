@@ -38,7 +38,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     private static final String DEFAULT_TEXT_CONTENT_TYPE = "text/plain";
 
     private final NettyHttpClient client;
-    private final Supplier<ChunkRequest> request;
+    private final Supplier<SegmentRequest> request;
 
     /**
      * Body data
@@ -57,12 +57,12 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     public CompositeRequest(HttpClientBuilder builder,
                             NettyHttpClient client,
-                            Supplier<ChunkRequest> request,
+                            Supplier<SegmentRequest> request,
                             HttpMethod method,
                             String uri) {
         super(builder, method, uri);
         Checks.checkNotNull(client, "NettyHttpClient must not be null");
-        Checks.checkNotNull(request, "ChunkRequest must not be null");
+        Checks.checkNotNull(request, "SegmentRequest must not be null");
         this.client = client;
         this.request = request;
     }
@@ -95,7 +95,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public ChunkRequest segment() {
+    public SegmentRequest segment() {
         this.type = 2;
         return request.get();
     }

@@ -43,7 +43,7 @@ public class ExpectContinueInterceptor implements Interceptor {
 
         if (request.isSegmented()) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("100-Continue is unsupported for chunk request, uri: {}",
+                LoggerUtils.logger().debug("100-Continue is unsupported for segment request, uri: {}",
                         request.uri().toString());
             }
             return next.proceed(request);
@@ -70,7 +70,7 @@ public class ExpectContinueInterceptor implements Interceptor {
     }
 
     protected boolean emptyBody(HttpRequest request) {
-        // NOTE: Expect-continue isn't supported for ChunkRequest
+        // NOTE: Expect-continue isn't supported for SegmentRequest
         if (request.isSegmented()) {
             return true;
         }

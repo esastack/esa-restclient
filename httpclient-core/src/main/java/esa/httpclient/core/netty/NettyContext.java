@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 public class NettyContext extends Context {
 
     private volatile Runnable continueCallback;
-    protected volatile CompletableFuture<ChunkWriter> writer;
+    protected volatile CompletableFuture<SegmentWriter> writer;
 
     void set100ContinueCallback(Runnable callback) {
         this.continueCallback = callback;
@@ -35,11 +35,11 @@ public class NettyContext extends Context {
         return callback0;
     }
 
-    void setWriter(CompletableFuture<ChunkWriter> writer) {
+    void setWriter(CompletableFuture<SegmentWriter> writer) {
         this.writer = writer;
     }
 
-    Optional<CompletableFuture<ChunkWriter>> getWriter() {
+    Optional<CompletableFuture<SegmentWriter>> getWriter() {
         return Optional.ofNullable(writer);
     }
 

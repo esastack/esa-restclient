@@ -19,10 +19,10 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.exception.RedirectException;
 import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
@@ -55,8 +55,8 @@ class RedirectInterceptorTest {
         final MockContext ctx = new MockContext();
         when(next.ctx()).thenReturn(ctx);
 
-        // chunk request is not allowed to redirect
-        final ChunkRequest request0 = client.post("http://127.0.0.1:8080/abc").segment();
+        // segment request is not allowed to redirect
+        final SegmentRequest request0 = client.post("http://127.0.0.1:8080/abc").segment();
         final HttpResponse response = new MockHttpResponse();
         response.headers().add(HttpHeaderNames.LOCATION, "127.0.0.1:9999");
         when(next.proceed(request0)).thenReturn(Futures.completed(response));

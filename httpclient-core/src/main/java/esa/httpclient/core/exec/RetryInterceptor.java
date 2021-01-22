@@ -53,7 +53,7 @@ public class RetryInterceptor implements Interceptor {
         }
         if (request.isSegmented()) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Retry is unsupported for chunk request, uri: {}, maxRetries: {}",
+                logger.debug("Retry is unsupported for segment request, uri: {}, maxRetries: {}",
                         request.uri().toString(), maxRetries);
             }
             return next.proceed(request);

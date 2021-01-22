@@ -69,7 +69,7 @@ class RetryInterceptorTest {
         then((Boolean) ctx.getAttr(DO_RETRY)).isNull();
         ctx.clear();
 
-        // Retry is not allowed for chunk request
+        // Retry is not allowed for segment request
         ctx.maxRetries(10);
         final HttpRequest request1 = client.get("http://127.0.0.1:9999/abc/def").segment();
         when(chain.proceed(request1)).thenReturn(Futures.completed(response));

@@ -18,13 +18,13 @@ package esa.httpclient.core.netty;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.exec.RequestExecutor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -49,15 +49,15 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ChunkRequestImplTest {
+class SegmentRequestImplTest {
 
     private static final String COMMON_DATA = "Hello World";
     private static final String END = "It's end";
 
     @Test
-    void testWriteArrayDataBeforeChunkWriterCompleted() {
+    void testWriteArrayDataBeforeSegmentWriterCompleted() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
@@ -72,7 +72,7 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final byte[] dataToWrite = new byte[1024 * 1025 + 512];
@@ -87,7 +87,7 @@ class ChunkRequestImplTest {
         request.end();
 
         final ByteBuf out = Unpooled.buffer();
-        final ChunkWriter writer = mock(ChunkWriter.class);
+        final SegmentWriter writer = mock(SegmentWriter.class);
 
         when(writer.channel()).thenReturn(channel);
         when(writer.write(any(), anyInt(), anyInt()))
@@ -115,9 +115,9 @@ class ChunkRequestImplTest {
     }
 
     @Test
-    void testWriteBufferDataBeforeChunkWriterCompleted() {
+    void testWriteBufferDataBeforeSegmentWriterCompleted() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
@@ -132,7 +132,7 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         for (int i = 0; i < 10; i++) {
@@ -141,7 +141,7 @@ class ChunkRequestImplTest {
 
         request.end(new BufferImpl(Unpooled.buffer().writeBytes(END.getBytes())));
         final List<byte[]> data = new LinkedList<>();
-        final ChunkWriter writer = mock(ChunkWriter.class);
+        final SegmentWriter writer = mock(SegmentWriter.class);
 
         when(writer.channel()).thenReturn(channel);
         when(writer.write(any(), anyInt(), anyInt()))
@@ -166,9 +166,9 @@ class ChunkRequestImplTest {
     }
 
     @Test
-    void testNoMatterWhenWriteChunkedFailure() {
+    void testNoMatterWhenWriteSegmentedFailure() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
@@ -183,7 +183,7 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         for (int i = 0; i < 10; i++) {
@@ -192,7 +192,7 @@ class ChunkRequestImplTest {
 
         request.end(END.getBytes());
         final List<byte[]> data = new LinkedList<>();
-        final ChunkWriter writer = mock(ChunkWriter.class);
+        final SegmentWriter writer = mock(SegmentWriter.class);
 
         when(writer.channel()).thenReturn(channel);
         when(writer.write(any(), anyInt(), anyInt()))
@@ -215,9 +215,9 @@ class ChunkRequestImplTest {
     }
 
     @Test
-    void testWriteArrayDataAfterChunkWriterCompleted() {
+    void testWriteArrayDataAfterSegmentWriterCompleted() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
@@ -232,11 +232,11 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final List<byte[]> data = new LinkedList<>();
-        final ChunkWriter writer = mock(ChunkWriter.class);
+        final SegmentWriter writer = mock(SegmentWriter.class);
 
         when(writer.channel()).thenReturn(channel);
         when(writer.write(any(), anyInt(), anyInt()))
@@ -271,7 +271,7 @@ class ChunkRequestImplTest {
     @Test
     void testErrorWhileEnding() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
@@ -286,11 +286,11 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final List<byte[]> data = new LinkedList<>();
-        final ChunkWriter writer = mock(ChunkWriter.class);
+        final SegmentWriter writer = mock(SegmentWriter.class);
 
         when(writer.channel()).thenReturn(channel);
         when(writer.write(any(), anyInt(), anyInt()))
@@ -331,7 +331,7 @@ class ChunkRequestImplTest {
     @Test
     void testIsWritable() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         when(executor.execute(any(HttpRequest.class),
@@ -345,13 +345,13 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         request.write(COMMON_DATA.getBytes());
 
         final Channel channel = mock(Channel.class);
-        final ChunkWriter writer = mock(ChunkWriter.class);
+        final SegmentWriter writer = mock(SegmentWriter.class);
         writerPromise.complete(writer);
         when(writer.channel()).thenReturn(channel);
         when(channel.isWritable()).thenReturn(false);
@@ -363,8 +363,8 @@ class ChunkRequestImplTest {
     @Test
     void testUnmodifiableAfterStarted() {
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final CompletableFuture<ChunkWriter> writerPromise = new CompletableFuture<>();
-        writerPromise.complete(mock(ChunkWriter.class));
+        final CompletableFuture<SegmentWriter> writerPromise = new CompletableFuture<>();
+        writerPromise.complete(mock(SegmentWriter.class));
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         when(executor.execute(any(HttpRequest.class),
@@ -378,7 +378,7 @@ class ChunkRequestImplTest {
                     return response;
                 });
 
-        final ChunkRequest request = new ChunkRequestImpl(HttpClient.create(),
+        final SegmentRequest request = new SegmentRequestImpl(HttpClient.create(),
                 executor, HttpMethod.POST, "http://127.0.0.1/chunked");
 
         final byte[] dataToWrite = new byte[1024 * 1025 + 512];

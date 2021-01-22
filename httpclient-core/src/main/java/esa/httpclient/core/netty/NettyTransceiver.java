@@ -21,13 +21,13 @@ import esa.commons.concurrent.ThreadFactories;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.ChunkRequest;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.Scheme;
+import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.exec.HttpTransceiver;
@@ -117,20 +117,20 @@ class NettyTransceiver implements HttpTransceiver {
         ChannelPool channelPool;
         listener.onConnectionPoolAttempt(request, ctx, address);
 
-        // Saves chunk write for further using.
-        final CompletableFuture<ChunkWriter> chunkWriterPromise;
-        if (request instanceof ChunkRequest) {
-            chunkWriterPromise = new CompletableFuture<>();
-            ((NettyContext) ctx).setWriter(chunkWriterPromise);
+        // Saves segment write for further using.
+        final CompletableFuture<SegmentWriter> segmentWriterPromise;
+        if (request instanceof SegmentRequest) {
+            segmentWriterPromise = new CompletableFuture<>();
+            ((NettyContext) ctx).setWriter(segmentWriterPromise);
         } else {
-            chunkWriterPromise = null;
+            segmentWriterPromise = null;
         }
 
         try {
             channelPool = getChannelPool(request, address);
         } catch (Throwable ex) {
             listener.onAcquireConnectionPoolFailed(request, ctx, address, ex);
-            endRequestWriter(chunkWriterPromise, ex);
+            endRequestWriter(segmentWriterPromise, ex);
             return Futures.completed(ex);
         }
 
@@ -151,7 +151,7 @@ class NettyTransceiver implements HttpTransceiver {
                     listener,
                     response,
                     writer,
-                    chunkWriterPromise);
+                    segmentWriterPromise);
         } else {
             channel.addListener(channel0 -> this.handle0(request,
                     address,
@@ -162,7 +162,7 @@ class NettyTransceiver implements HttpTransceiver {
                     listener,
                     response,
                     writer,
-                    chunkWriterPromise));
+                    segmentWriterPromise));
         }
 
         return response;
@@ -194,7 +194,7 @@ class NettyTransceiver implements HttpTransceiver {
                  Listener listener,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
-                 CompletableFuture<ChunkWriter> chunkWriterPromise) {
+                 CompletableFuture<SegmentWriter> segmentWriterPromise) {
         if (!channel.isSuccess()) {
             this.onAcquireConnectionFailed(request,
                     address,
@@ -202,7 +202,7 @@ class NettyTransceiver implements HttpTransceiver {
                     channel,
                     listener,
                     response,
-                    chunkWriterPromise);
+                    segmentWriterPromise);
             return;
         }
 
@@ -216,10 +216,10 @@ class NettyTransceiver implements HttpTransceiver {
                     listener,
                     response,
                     writer,
-                    chunkWriterPromise);
+                    segmentWriterPromise);
         } catch (Throwable th) {
             channelPool.release(channel0);
-            endWithError(request, ctx, listener, response, chunkWriterPromise,
+            endWithError(request, ctx, listener, response, segmentWriterPromise,
                     channel0.isActive() ? th : CONNECT_INACTIVE);
         }
     }
@@ -232,7 +232,7 @@ class NettyTransceiver implements HttpTransceiver {
                  Listener listener,
                  CompletableFuture<HttpResponse> response,
                  RequestWriter writer,
-                 CompletableFuture<ChunkWriter> chunkWriterPromise) throws ConnectException {
+                 CompletableFuture<SegmentWriter> segmentWriterPromise) throws ConnectException {
         listener.onConnectionAcquired(request, ctx, channel.remoteAddress());
 
         final boolean http2 = isHttp2(channel);
@@ -247,7 +247,7 @@ class NettyTransceiver implements HttpTransceiver {
         if (!channel.isActive()) {
             channel.close();
             channelPool.release(channel);
-            endWithError(request, ctx, listener, response, chunkWriterPromise,
+            endWithError(request, ctx, listener, response, segmentWriterPromise,
                     CONNECT_INACTIVE);
             return;
         }
@@ -256,7 +256,7 @@ class NettyTransceiver implements HttpTransceiver {
         if (!channel.isWritable()) {
             channelPool.release(channel);
             // Allow to retry on another channel
-            endWithError(request, ctx, listener, response, chunkWriterPromise,
+            endWithError(request, ctx, listener, response, segmentWriterPromise,
                     WriteBufFullException.INSTANCE);
             return;
         }
@@ -272,10 +272,10 @@ class NettyTransceiver implements HttpTransceiver {
                     version,
                     response,
                     writer,
-                    chunkWriterPromise);
+                    segmentWriterPromise);
         } catch (Throwable ex) {
             channelPool.release(channel);
-            endWithError(request, ctx, listener, response, chunkWriterPromise,
+            endWithError(request, ctx, listener, response, segmentWriterPromise,
                     channel.isActive() ? ex : CONNECT_INACTIVE);
         }
     }
@@ -286,7 +286,7 @@ class NettyTransceiver implements HttpTransceiver {
                                            Future<Channel> channel,
                                            Listener listener,
                                            CompletableFuture<HttpResponse> response,
-                                           CompletableFuture<ChunkWriter> chunkWriterPromise) {
+                                           CompletableFuture<SegmentWriter> segmentWriterPromise) {
         Throwable cause = channel.cause();
 
         // Maybe caused by too many acquires or channel has closed.
@@ -298,7 +298,7 @@ class NettyTransceiver implements HttpTransceiver {
         }
 
         response.completeExceptionally(cause);
-        endRequestWriter(chunkWriterPromise, cause);
+        endRequestWriter(segmentWriterPromise, cause);
 
         listener.onAcquireConnectionFailed(request, ctx, address, cause);
         listener.onError(request, ctx, cause);
@@ -313,7 +313,7 @@ class NettyTransceiver implements HttpTransceiver {
                   esa.commons.http.HttpVersion version,
                   CompletableFuture<HttpResponse> response,
                   RequestWriter writer,
-                  CompletableFuture<ChunkWriter> chunkWriterPromise) throws IOException {
+                  CompletableFuture<SegmentWriter> segmentWriterPromise) throws IOException {
         final HandleRegistry registry = detectRegistry(channel);
         setKeepAliveIfNecessary((Http1HeadersImpl) request.headers(), version);
 
@@ -339,8 +339,8 @@ class NettyTransceiver implements HttpTransceiver {
                         ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,
                 http2);
 
-        if (chunkWriterPromise != null) {
-            chunkWriterPromise.complete((ChunkWriter) writer);
+        if (segmentWriterPromise != null) {
+            segmentWriterPromise.complete((SegmentWriter) writer);
         }
 
         if (endFuture.isDone()) {
@@ -352,7 +352,7 @@ class NettyTransceiver implements HttpTransceiver {
                     h,
                     registry,
                     response,
-                    chunkWriterPromise);
+                    segmentWriterPromise);
         } else {
             endFuture.addListener(f -> {
                 try {
@@ -364,9 +364,9 @@ class NettyTransceiver implements HttpTransceiver {
                             h,
                             registry,
                             response,
-                            chunkWriterPromise);
+                            segmentWriterPromise);
                 } catch (Throwable ex) {
-                    endWithError(request, ctx, h, response, chunkWriterPromise, ex);
+                    endWithError(request, ctx, h, response, segmentWriterPromise, ex);
                 }
             });
         }
@@ -413,7 +413,7 @@ class NettyTransceiver implements HttpTransceiver {
 
     static RequestWriter detectWriter(HttpRequest request) {
         if (request.isSegmented()) {
-            return new ChunkWriter();
+            return new SegmentWriter();
         }
         if (request.isMultipart()) {
             return MultipartWriter.singleton();
@@ -517,7 +517,7 @@ class NettyTransceiver implements HttpTransceiver {
                              TimeoutHandle handle,
                              HandleRegistry registry,
                              CompletableFuture<HttpResponse> response,
-                             CompletableFuture<ChunkWriter> chunkWriterPromise) {
+                             CompletableFuture<SegmentWriter> segmentWriterPromise) {
         if (endFuture.isSuccess()) {
             handle.onWriteDone(request, ctx);
 
@@ -542,7 +542,7 @@ class NettyTransceiver implements HttpTransceiver {
         }
 
         handle.onWriteFailed(request, ctx, endFuture.cause());
-        endWithError(request, ctx, handle, response, chunkWriterPromise, cause);
+        endWithError(request, ctx, handle, response, segmentWriterPromise, cause);
     }
 
     /**
@@ -571,16 +571,16 @@ class NettyTransceiver implements HttpTransceiver {
                                      Context ctx,
                                      Listener listener,
                                      CompletableFuture<HttpResponse> response,
-                                     CompletableFuture<ChunkWriter> chunkWriterPromise,
+                                     CompletableFuture<SegmentWriter> segmentWriterPromise,
                                      Throwable cause) {
         response.completeExceptionally(cause);
-        if (chunkWriterPromise != null) {
-            chunkWriterPromise.completeExceptionally(cause);
+        if (segmentWriterPromise != null) {
+            segmentWriterPromise.completeExceptionally(cause);
         }
         listener.onError(request, ctx, cause);
     }
 
-    private static void endRequestWriter(CompletableFuture<ChunkWriter> requestWriterPromise,
+    private static void endRequestWriter(CompletableFuture<SegmentWriter> requestWriterPromise,
                                          Throwable cause) {
         if (requestWriterPromise == null) {
             return;

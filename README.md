@@ -42,7 +42,7 @@ final HttpClient client = HttpClient.create()
 final HttpResponse response = client.get("http://127.0.0.1:8081/").execute().get();
 logger.info(response.body().string(StandardCharsets.UTF_8));
 
-// Example 2: chunk read
+// Example 2: segment read
 client.get("http://127.0.0.1:8081/handle")
         .handle(h -> {
             h.onData(data -> {
@@ -52,12 +52,12 @@ client.get("http://127.0.0.1:8081/handle")
             });
         }).execute();
 
-// Example 3: chunk write
-final ChunkRequest chunk = client.post("http://127.0.0.1:8081/handle").segment();
+// Example 3: segment write
+final SegmentRequest segment = client.post("http://127.0.0.1:8081/handle").segment();
 
-chunk.write("Hello World!".getBytes());
-chunk.write("Continue sending data...".getBytes());
-chunk.end("It's end!".getBytes());
+segment.write("Hello World!".getBytes());
+segment.write("Continue sending data...".getBytes());
+segment.end("It's end!".getBytes());
 
 client.close();
 ```

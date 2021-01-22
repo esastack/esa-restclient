@@ -71,12 +71,12 @@ public interface HttpRequestFacade extends ExecutableRequest {
     MultipartRequest multipart();
 
     /**
-     * Converts to a {@link ChunkRequest} which can be used to write the body's content
+     * Converts to a {@link SegmentRequest} which can be used to write the body's content
      * chunk by chunk (not means chunk protocol will be used).
      *
      * @return request
      */
-    ChunkRequest segment();
+    SegmentRequest segment();
 
     @Override
     HttpRequestFacade uriEncodeEnabled(Boolean uriEncodeEnabled);

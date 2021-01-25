@@ -24,6 +24,7 @@ import esa.httpclient.core.netty.NettyHttpClient;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,17 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     private static final String DEFAULT_BINARY_CONTENT_TYPE = "application/octet-stream";
     private static final String DEFAULT_TEXT_CONTENT_TYPE = "text/plain";
 
+    private static final byte INIT_STATUS = -1;
+    private static final byte PLAIN_PREPARING_STATUS = 0;
+    private static final byte MULTIPART_PREPARING_STATUS = 1;
+    private static final byte SEGMENT_PREPARING_STATUS = 2;
+    private static final byte FILE_PREPARING_STATUS = 3;
+    private static final byte PLAIN_EXECUTED_STATUS = 4;
+    private static final byte MULTIPART_EXECUTED_STATUS = 5;
+    private static final byte SEGMENT_EXECUTED_STATUS = 6;
+    private static final byte FILE_EXECUTED_STATUS = 7;
+
+    private final Object monitor = new Object();
     private final NettyHttpClient client;
     private final Supplier<SegmentRequest> request;
 
@@ -45,15 +57,23 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
      */
     private final MultiValueMap<String, String> attrs = new HashMultiValueMap<>();
     private final List<MultipartFileItem> files = new LinkedList<>();
-    private volatile Buffer buffer;
-    private volatile File file;
-    private volatile boolean multipartEncode = true;
-    private boolean started;
+
+    private Buffer buffer;
+    private File file;
+    private boolean multipartEncode = true;
 
     /**
-     * 1: multipart; 2: segment; 3. file; others: plain
+     *-1: init
+     * 0: plain-preparing;
+     * 1: multipart-preparing;
+     * 2: segment-preparing;
+     * 3: file-preparing;
+     * 4: plain-executed;
+     * 5: multipart-executed;
+     * 6: segment-executed;
+     * 7: file-executed;
      */
-    private volatile byte type = 0;
+    private volatile byte status = INIT_STATUS;
 
     public CompositeRequest(HttpClientBuilder builder,
                             NettyHttpClient client,
@@ -68,45 +88,35 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized CompletableFuture<HttpResponse> execute() {
-        if (started) {
-            throw new IllegalStateException("The execute() has been called before");
-        }
-        this.started = true;
+    public CompletableFuture<HttpResponse> execute() {
+        final byte newStatus = status >= 0 ? (byte) (status + (byte) 4) : PLAIN_EXECUTED_STATUS;
+        checkNotStartedAndUpdateStatus(newStatus);
         return client.execute(this, ctx, handle, handler);
     }
 
     @Override
-    public synchronized PlainRequest body(Buffer data) {
-        checkStarted();
-        if (file != null) {
-            throw new IllegalStateException("You have specified a file: "
-                    + file.getName() + " as request's body");
-        }
-        this.type = 0;
+    public PlainRequest body(Buffer data) {
+        checkNotStartedAndUpdateStatus(PLAIN_PREPARING_STATUS);
         this.buffer = data;
         return self();
     }
 
     @Override
     public MultipartRequest multipart() {
-        this.type = 1;
+        checkNotStartedAndUpdateStatus(MULTIPART_PREPARING_STATUS);
         return this;
     }
 
     @Override
     public SegmentRequest segment() {
-        this.type = 2;
+        checkNotStartedAndUpdateStatus(SEGMENT_PREPARING_STATUS);
         return request.get();
     }
 
     @Override
-    public synchronized FileRequest body(File file) {
-        checkStarted();
-        if (buffer != null) {
-            throw new IllegalStateException("You have specified a buffer as request's body");
-        }
-        this.type = 3;
+    public FileRequest body(File file) {
+        Checks.checkNotNull(file, "File must not b null");
+        checkNotStartedAndUpdateStatus(FILE_PREPARING_STATUS);
         this.file = file;
         return self();
     }
@@ -122,7 +132,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized MultipartRequest multipartEncode(boolean multipartEncode) {
+    public MultipartRequest multipartEncode(boolean multipartEncode) {
         checkStarted();
         this.multipartEncode = multipartEncode;
         return self();
@@ -134,11 +144,11 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized MultipartRequest attr(String name, String value) {
-        checkStarted();
+    public MultipartRequest attr(String name, String value) {
         if (illegalArgs(name, value)) {
             return self();
         }
+        checkStarted();
         attrs.add(name, value);
         return self();
     }
@@ -172,11 +182,11 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public synchronized MultipartRequest file(String name,
-                                              String filename,
-                                              File file,
-                                              String contentType,
-                                              boolean isText) {
+    public MultipartRequest file(String name,
+                                 String filename,
+                                 File file,
+                                 String contentType,
+                                 boolean isText) {
         if (illegalArgs(name, file)) {
             return self();
         }
@@ -188,102 +198,110 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public MultiValueMap<String, String> attrs() {
-        return new HashMultiValueMap<>(attrs);
+        if (status == MULTIPART_PREPARING_STATUS || status == MULTIPART_EXECUTED_STATUS) {
+            return new HashMultiValueMap<>(attrs);
+        } else {
+            return new HashMultiValueMap<>();
+        }
     }
 
     @Override
     public List<MultipartFileItem> files() {
-        return new ArrayList<>(files);
+        if (status == MULTIPART_PREPARING_STATUS || status == MULTIPART_EXECUTED_STATUS) {
+            return new ArrayList<>(files);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     ////////**********************COMMON SETTER************************////////
 
     @Override
-    public synchronized CompositeRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
+    public CompositeRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
         checkStarted();
         super.uriEncodeEnabled(uriEncodeEnabled);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest expectContinueEnabled(Boolean expectContinueEnabled) {
+    public CompositeRequest expectContinueEnabled(Boolean expectContinueEnabled) {
         checkStarted();
         super.expectContinueEnabled(expectContinueEnabled);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest maxRedirects(int maxRedirects) {
+    public CompositeRequest maxRedirects(int maxRedirects) {
         checkStarted();
         super.maxRedirects(maxRedirects);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest maxRetries(int maxRetries) {
+    public CompositeRequest maxRetries(int maxRetries) {
         checkStarted();
         super.maxRetries(maxRetries);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest readTimeout(int readTimeout) {
+    public CompositeRequest readTimeout(int readTimeout) {
         checkStarted();
         super.readTimeout(readTimeout);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
+    public CompositeRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
         checkStarted();
         super.addHeaders(headers);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest addHeader(CharSequence name, CharSequence value) {
+    public CompositeRequest addHeader(CharSequence name, CharSequence value) {
         checkStarted();
         super.addHeader(name, value);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest setHeader(CharSequence name, CharSequence value) {
+    public CompositeRequest setHeader(CharSequence name, CharSequence value) {
         checkStarted();
         super.setHeader(name, value);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest removeHeader(CharSequence name) {
+    public CompositeRequest removeHeader(CharSequence name) {
         checkStarted();
         super.removeHeader(name);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest addParams(Map<String, String> params) {
+    public CompositeRequest addParams(Map<String, String> params) {
         checkStarted();
         super.addParams(params);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest addParam(String name, String value) {
+    public CompositeRequest addParam(String name, String value) {
         checkStarted();
         super.addParam(name, value);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest handle(Consumer<Handle> handle) {
+    public CompositeRequest handle(Consumer<Handle> handle) {
         checkStarted();
         super.handle(handle);
         return self();
     }
 
     @Override
-    public synchronized CompositeRequest handler(Handler handler) {
+    public CompositeRequest handler(Handler handler) {
         checkStarted();
         super.handler(handler);
         return self();
@@ -291,12 +309,17 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public boolean isSegmented() {
-        return this.type == 2;
+        return this.status == SEGMENT_PREPARING_STATUS || this.status == SEGMENT_EXECUTED_STATUS;
     }
 
     @Override
     public boolean isMultipart() {
-        return this.type == 1;
+        return this.status == MULTIPART_PREPARING_STATUS || this.status == MULTIPART_EXECUTED_STATUS;
+    }
+
+    @Override
+    public boolean isFile() {
+        return this.status == FILE_PREPARING_STATUS || this.status == FILE_EXECUTED_STATUS;
     }
 
     @Override
@@ -315,13 +338,13 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
             copied.body(file);
         }
 
-        copied.type = type;
+        copied.status = status >= PLAIN_EXECUTED_STATUS ? (byte) (status - (byte) 4) : status;
 
         return copied;
     }
 
     private void checkStarted() {
-        if (started) {
+        if (status >= PLAIN_EXECUTED_STATUS) {
             throw new IllegalStateException("Request has started to execute" +
                     " and the modification isn't allowed");
         }
@@ -334,6 +357,32 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     private void checkMultipartFile() {
         if (!multipartEncode) {
             throw new IllegalArgumentException("File is not allowed to be added, maybe multipart is false?");
+        }
+    }
+
+    private void checkNotStartedAndUpdateStatus(byte newStatus) {
+        synchronized (monitor) {
+            if (status >= PLAIN_EXECUTED_STATUS) {
+                throw new IllegalStateException("The execute() has been called before");
+            } else if (status != INIT_STATUS && newStatus < PLAIN_EXECUTED_STATUS) {
+                throw new IllegalStateException(decideType() + " request has been set before");
+            }
+            this.status = newStatus;
+        }
+    }
+
+    private String decideType() {
+        switch (status) {
+            case PLAIN_PREPARING_STATUS:
+                return "PLAIN";
+            case MULTIPART_PREPARING_STATUS:
+                return "MULTIPART";
+            case SEGMENT_PREPARING_STATUS:
+                return "SEGMENT";
+            case FILE_PREPARING_STATUS:
+                return "FILE";
+            default:
+                return "PLAIN";
         }
     }
 

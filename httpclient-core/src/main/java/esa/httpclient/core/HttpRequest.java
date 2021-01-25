@@ -96,6 +96,15 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     }
 
     /**
+     * Whether file content is regarded as body or not.
+     *
+     * @return {@code true} if current request's body is the content of {@link #file()}, otherwise {@code false}.
+     */
+    default boolean isFile() {
+        return false;
+    }
+
+    /**
      * Obtains given {@code byte[]} which is regarded as request's body.
      *
      * @return buffer, which may be null if you haven't set the {@code byte[]} before.

@@ -19,11 +19,11 @@
     <parent>
         <groupId>io.esastack</groupId>
         <artifactId>httpclient</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.2-beta</version>
     </parent>
 
     <artifactId>httpclient-core</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2-beta</version>
     <name>HttpClient :: Core</name>
 
     <properties>

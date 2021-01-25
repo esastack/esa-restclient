@@ -38,26 +38,8 @@ final HttpClient client = HttpClient.create()
         .h2ClearTextUpgrade(true)
         .build();
 
-// Example 1: automatic aggregation
 final HttpResponse response = client.get("http://127.0.0.1:8081/").execute().get();
 logger.info(response.body().string(StandardCharsets.UTF_8));
-
-// Example 2: segment read
-client.get("http://127.0.0.1:8081/handle")
-        .handle(h -> {
-            h.onData(data -> {
-                logger.info("Received response data, size: " + data.readableBytes());
-            }).onEnd(v -> {
-                logger.info("Response has ended");
-            });
-        }).execute();
-
-// Example 3: segment write
-final SegmentRequest segment = client.post("http://127.0.0.1:8081/handle").segment();
-
-segment.write("Hello World!".getBytes());
-segment.write("Continue sending data...".getBytes());
-segment.end("It's end!".getBytes());
 
 client.close();
 ```

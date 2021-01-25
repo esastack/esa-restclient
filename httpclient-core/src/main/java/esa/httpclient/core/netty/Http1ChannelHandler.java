@@ -34,8 +34,6 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
 
-import java.io.IOException;
-
 import static esa.httpclient.core.netty.Utils.handleIdleEvt;
 
 class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
@@ -170,31 +168,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private void onError(Throwable cause, boolean enableLog) {
-        final NettyHandle handle = registry.remove(reusableRequestId);
-
-        if (handle == null) {
-            return;
-        }
-        boolean hasLogged = false;
-        if (cause instanceof ClosedConnectionException) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("ClosedConnectionException occurred in connection: {}",
-                        ctx.channel(), cause);
-            } else {
-                LoggerUtils.logger().warn(cause.getMessage());
-            }
-            hasLogged = true;
-        } else if (cause instanceof IOException) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("IOException occurred in connection: {}", ctx.channel(), cause);
-            } else {
-                LoggerUtils.logger().warn("Exception occurred in connection: {}," +
-                        " maybe server has closed connection", ctx.channel());
-            }
-            hasLogged = true;
-        }
-
-        Utils.handleException(handle, cause, !hasLogged && enableLog);
+        Utils.handleH1ChannelEx(registry, ctx, reusableRequestId, cause, enableLog);
     }
 
     void updateRequestId(int requestId) {

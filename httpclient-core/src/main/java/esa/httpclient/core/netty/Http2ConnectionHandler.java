@@ -16,8 +16,6 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.Buffer;
-import esa.httpclient.core.exception.ClosedConnectionException;
-import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -30,8 +28,6 @@ import io.netty.handler.codec.http2.Http2Headers;
 import io.netty.handler.codec.http2.Http2Settings;
 import io.netty.handler.codec.http2.HttpConversionUtil;
 import io.netty.handler.stream.ChunkedWriteHandler;
-
-import java.io.IOException;
 
 import static esa.httpclient.core.netty.Utils.handleIdleEvt;
 import static io.netty.buffer.ByteBufUtil.writeAscii;
@@ -90,32 +86,7 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
         if (getEmbeddedHttp2Exception(cause) != null) {
             super.exceptionCaught(ctx, cause);
         } else {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("Unexpected exception occurred in connection: {}", ctx.channel(),
-                        cause);
-            } else {
-                // Ignores the cause that remote endpoint closed the connection.
-                if (cause instanceof IOException) {
-                    LoggerUtils.logger().warn("IOException occurred in connection: {}," +
-                            " maybe server has closed connection", ctx.channel());
-                } else {
-                    LoggerUtils.logger().warn("Unexpected exception occurred in connection: {}", ctx.channel(),
-                            cause);
-                }
-            }
-
-            // Build a ClosedConnectionException and end all running requests with it after
-            // closing the connection.
-            final ClosedConnectionException ex =
-                    new ClosedConnectionException("Unexpected exception occurred in connection: "
-                            + ctx.channel(), cause);
-            ctx.close().addListener(future -> registry.handleAndClearAll((h) -> {
-                try {
-                    Utils.handleException(h, ex, false);
-                } catch (Throwable ex0) {
-                    // Ignore
-                }
-            }));
+            Utils.handleH2ChannelEx(registry, ctx, cause);
         }
     }
 

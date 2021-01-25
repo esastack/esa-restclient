@@ -59,7 +59,6 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
 import static esa.httpclient.core.netty.Utils.CONNECT_INACTIVE;
@@ -287,16 +286,8 @@ class NettyTransceiver implements HttpTransceiver {
                                            Listener listener,
                                            CompletableFuture<HttpResponse> response,
                                            CompletableFuture<SegmentWriter> segmentWriterPromise) {
-        Throwable cause = channel.cause();
-
         // Maybe caused by too many acquires or channel has closed.
-        if (cause instanceof IllegalStateException) {
-            cause = new IOException("Error while acquiring connection", cause);
-        } else if (cause instanceof TimeoutException) {
-            // Connection timeout
-            cause = new ConnectException(cause.getMessage());
-        }
-
+        final Throwable cause = new ConnectException(channel.cause().getMessage());
         response.completeExceptionally(cause);
         endRequestWriter(segmentWriterPromise, cause);
 

@@ -17,6 +17,7 @@ package esa.httpclient.core.netty;
 
 import esa.commons.StringUtils;
 import esa.httpclient.core.Scheme;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,12 +27,69 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.ReferenceCounted;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
 
 final class Utils {
 
     static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
+
+    static void handleH1ChannelEx(HandleRegistry registry,
+                                  ChannelHandlerContext ctx,
+                                  int reusableRequestId,
+                                  Throwable cause,
+                                  boolean enableLog) {
+        final NettyHandle handle = registry.remove(reusableRequestId);
+        if (handle == null) {
+            return;
+        }
+
+        boolean hasLogged = false;
+        if (cause instanceof ClosedConnectionException) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("ClosedConnectionException occurred in connection: {}",
+                        ctx.channel(), cause);
+            }
+            hasLogged = true;
+        } else if (cause instanceof IOException) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("IOException occurred in connection: {}", ctx.channel(), cause);
+            } else {
+                LoggerUtils.logger().warn("Exception occurred in connection: {}," +
+                        " maybe server has closed connection", ctx.channel());
+            }
+            hasLogged = true;
+        }
+
+        Utils.handleException(handle, cause, !hasLogged && enableLog);
+    }
+
+    static void handleH2ChannelEx(HandleRegistry registry,
+                                  ChannelHandlerContext ctx,
+                                  Throwable cause) {
+        if (cause instanceof ClosedConnectionException) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("ClosedConnectionException occurred in connection: {}",
+                        ctx.channel(), cause);
+            }
+        } else if (cause instanceof IOException) {
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("IOException occurred in connection: {}", ctx.channel(), cause);
+            } else {
+                LoggerUtils.logger().warn("Exception occurred in connection: {}," +
+                        " maybe server has closed connection", ctx.channel());
+            }
+        }
+
+        ctx.close().addListener(future -> registry.handleAndClearAll((h) -> {
+            try {
+                Utils.handleException(h, cause, false);
+            } catch (Throwable ex0) {
+                // Ignore
+            }
+        }));
+    }
 
     static boolean handleIdleEvt(ChannelHandlerContext ctx, Object evt) {
         if (evt instanceof IdleStateEvent) {

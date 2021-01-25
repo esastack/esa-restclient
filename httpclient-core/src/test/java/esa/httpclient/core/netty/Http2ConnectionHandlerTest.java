@@ -22,7 +22,6 @@ import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
-import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
@@ -88,10 +87,10 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
 
         channel.pipeline().fireExceptionCaught(new IOException());
         then(response1.isDone() && response1.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response1)).isInstanceOf(ClosedConnectionException.class);
+        then(Futures.getCause(response1)).isInstanceOf(IOException.class);
 
         then(response2.isDone() && response2.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response2)).isInstanceOf(ClosedConnectionException.class);
+        then(Futures.getCause(response2)).isInstanceOf(IOException.class);
         then(registry.get(requestId1)).isNull();
         then(registry.get(requestId2)).isNull();
 

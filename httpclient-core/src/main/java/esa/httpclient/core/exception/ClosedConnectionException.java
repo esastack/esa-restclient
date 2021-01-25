@@ -27,8 +27,4 @@ public class ClosedConnectionException extends IOException {
     public ClosedConnectionException(String msg) {
         super(msg);
     }
-
-    public ClosedConnectionException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
 }

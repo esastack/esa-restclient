@@ -61,4 +61,9 @@ public interface FileRequest extends ExecutableRequest {
 
     @Override
     FileRequest copy();
+
+    @Override
+    default boolean isFile() {
+        return true;
+    }
 }

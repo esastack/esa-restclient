@@ -27,6 +27,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.DecoderException;
@@ -53,6 +54,7 @@ import io.netty.handler.ssl.ApplicationProtocolNegotiationHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLException;
@@ -139,11 +141,12 @@ class ChannelInitializerTest {
         then(pipeline1.get(HttpClientCodec.class)).isNotNull();
         then(pipeline1.get(HttpContentDecompressor.class)).isNotNull();
         then(pipeline1.get(ChunkedWriteHandler.class)).isNotNull();
+        then(pipeline1.get(IdleStateHandler.class)).isNull();
         then(pipeline1.last()).isInstanceOf(Http1ChannelHandler.class);
 
 
-        // Case 2: decompress is absent
-        final HttpClientBuilder builder2 = HttpClient.create().useDecompress(true);
+        // Case 2: decompress is absent, idle is present
+        final HttpClientBuilder builder2 = HttpClient.create().useDecompress(true).idleTimeoutSeconds(60);
         final ChannelInitializer initializer2 = new ChannelInitializer(builder2, null, false);
         final Channel channel2 = new EmbeddedChannel();
         final ChannelFuture connectFuture2 = initializer2.onConnected(channel2.newSucceededFuture());
@@ -153,6 +156,7 @@ class ChannelInitializerTest {
         final ChannelPipeline pipeline2 = channel2.pipeline();
         then(pipeline2.get(HttpClientCodec.class)).isNotNull();
         then(pipeline2.get(ChunkedWriteHandler.class)).isNotNull();
+        then(pipeline2.get(IdleStateHandler.class)).isNotNull();
         then(pipeline2.last()).isInstanceOf(Http1ChannelHandler.class);
     }
 
@@ -296,6 +300,44 @@ class ChannelInitializerTest {
         final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
+        then(connectFuture.isDone()).isFalse();
+        final ChannelPipeline pipeline = channel.pipeline();
+        then(pipeline.get(SslHandler.class)).isNotNull();
+        final ApplicationProtocolNegotiationHandler negotiation = pipeline
+                .get(ApplicationProtocolNegotiationHandler.class);
+        then(negotiation).isNotNull();
+        final ChannelHandlerContext context = pipeline.context(ApplicationProtocolNegotiationHandler.class);
+        when(sslHandler.applicationProtocol()).thenReturn("http/1.1");
+
+        negotiation.userEventTriggered(context, SslHandshakeCompletionEvent.SUCCESS);
+
+        then(pipeline.get(Http2ConnectionHandler.class)).isNull();
+        then(pipeline.get(Http1ChannelHandler.class)).isNotNull();
+        then(pipeline.get(ApplicationProtocolNegotiationHandler.class)).isNull();
+        then(connectFuture.isSuccess()).isTrue();
+
+        validateHttp1Handlers(channel.pipeline(), decompression);
+
+        channel.finishAndReleaseAll();
+    }
+
+    @Test
+    void testHttp11s0() throws Exception {
+        final boolean decompression = ThreadLocalRandom.current().nextBoolean();
+        final boolean isHttp10 = ThreadLocalRandom.current().nextBoolean();
+
+        final HttpClientBuilder builder = HttpClient.create()
+                .version(isHttp10 ? HttpVersion.HTTP_1_0 : HttpVersion.HTTP_1_1)
+                .useDecompress(decompression);
+
+        final SslHandler sslHandler = mock(SslHandler.class);
+        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
+        final EmbeddedChannel channel = new EmbeddedChannel();
+
+        final ChannelPromise connectFuture0 = channel.newPromise();
+        final ChannelFuture connectFuture = initializer.onConnected(connectFuture0);
+
+        connectFuture0.setSuccess();
         then(connectFuture.isDone()).isFalse();
         final ChannelPipeline pipeline = channel.pipeline();
         then(pipeline.get(SslHandler.class)).isNotNull();

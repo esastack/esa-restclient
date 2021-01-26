@@ -25,8 +25,8 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * This interceptor is designed to handle request which needs 100-continue negotiation with remote peer.
- * When the {@link Context#expectContinueEnabled()} is true, current interceptor will
+ * The interceptor designed to handle {@link HttpRequest} which needs 100-continue negotiation with remote peer.
+ * When the {@link Context#expectContinueEnabled()} returns {@code true}, current interceptor will
  * take effect to the corresponding {@link HttpRequest}.
  */
 public class ExpectContinueInterceptor implements Interceptor {

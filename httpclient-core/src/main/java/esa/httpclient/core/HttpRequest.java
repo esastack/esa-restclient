@@ -80,7 +80,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     /**
      * Whether segment write or not.
      *
-     * @return true if current request is segment write, otherwise false.
+     * @return {@code true} if current request is segment write, otherwise {@code false}.
      */
     default boolean isSegmented() {
         return false;
@@ -89,7 +89,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     /**
      * Whether multipart or not.
      *
-     * @return true is current request using multipart encode, otherwise false.
+     * @return {@code true} if current request using multipart encode, otherwise {@code false}.
      */
     default boolean isMultipart() {
         return false;
@@ -125,7 +125,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     /**
      * Obtains the attrs which are used to multipart encoded.
      *
-     * @return attrs, must be null if {@link #isMultipart()} is false.
+     * @return attrs, must be null if {@link #isMultipart()} is {@code false}.
      */
     default MultiValueMap<String, String> attrs() {
         return null;
@@ -134,7 +134,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     /**
      * Obtains the files which are used to multipart encoded.
      *
-     * @return files, must be null if {@link #isMultipart()} is false.
+     * @return files, must be null if {@link #isMultipart()} is {@code false}.
      */
     default List<MultipartFileItem> files() {
         return null;

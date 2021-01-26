@@ -247,7 +247,7 @@ public interface SegmentRequest extends HttpRequestBase {
     /**
      * Whether current request is allowed to write or not.
      *
-     * @return      true or false
+     * @return      {@code true} or {@code false}.
      */
     boolean isWritable();
 

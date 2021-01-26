@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2020 OPPO ESA Stack Project
  *
@@ -112,6 +113,14 @@ class SegmentRequestImplTest {
         then(Arrays.equals(dataToWrite, outArray)).isTrue();
 
         then(response.isDone()).isFalse();
+
+        // Test copy
+        final SegmentRequest copied = request.copy();
+        then(copied.headers().size()).isEqualTo(request.headers().size());
+        then(copied.paramNames().size()).isEqualTo(request.paramNames().size());
+        then(copied.isFile()).isEqualTo(request.isFile());
+        then(copied.isMultipart()).isEqualTo(request.isMultipart());
+        then(copied.isSegmented()).isEqualTo(request.isSegmented());
     }
 
     @Test

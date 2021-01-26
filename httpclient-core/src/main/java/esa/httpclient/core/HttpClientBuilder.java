@@ -89,8 +89,9 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
 
     /**
      * Whether to use h2c only when current {@link #version} equals {@link HttpVersion#HTTP_2} and scheme
-     * equals {@link Scheme#HTTP}. If true, we try to use application-layer protocol negotiation firstly(if fails,
-     * fallback to {@link HttpVersion#HTTP_1_1}), otherwise, use {@link HttpVersion#HTTP_2} directly.
+     * equals {@link Scheme#HTTP}. If {@code true}, we try to use application-layer protocol negotiation
+     * firstly(if fails, fallback to {@link HttpVersion#HTTP_1_1}), otherwise, use {@link HttpVersion#HTTP_2}
+     * directly.
      */
     private boolean h2ClearTextUpgrade = true;
 

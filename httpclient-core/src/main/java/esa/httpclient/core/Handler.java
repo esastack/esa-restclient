@@ -30,14 +30,14 @@ public abstract class Handler {
     private final NettyResponse underlying = new NettyResponse(false);
 
     /**
-     * Be informed while receiving response' headers.
+     * Be informed when receiving {@link HttpResponse#headers()}.
      */
     public void onStart() {
 
     }
 
     /**
-     * Be informed while receiving response content partly.
+     * Be informed while receiving response's content partly.
      *
      * @param content  content
      */
@@ -56,7 +56,7 @@ public abstract class Handler {
     public abstract void onError(Throwable cause);
 
     /**
-     * Be informed while receiving {@code trailers}.
+     * Be informed while receiving {@link HttpResponse#trailers()}.
      *
      * @param trailers      trailers
      */

@@ -34,6 +34,7 @@ import java.net.URI;
 final class Utils {
 
     static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
+    static final ConnectException WRITE_BUF_IS_FULL = new ConnectException("Connection write buffer is full");
 
     static void handleH1ChannelEx(HandleRegistry registry,
                                   ChannelHandlerContext ctx,

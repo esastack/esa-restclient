@@ -21,7 +21,7 @@ import esa.commons.netty.core.Buffer;
 import java.util.function.Consumer;
 
 /**
- * The class is designed to help user define customize handler to handle
+ * The class is designed to help user define custom handler to handle
  * the inbound message. The interface is thread-safe, because that all
  * the methods will be executed in a fixed thread.
  */

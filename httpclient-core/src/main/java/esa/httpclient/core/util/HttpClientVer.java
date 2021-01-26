@@ -30,7 +30,7 @@ public final class HttpClientVer {
     private static final String VERSION = getVersion();
 
     /**
-     * Gets the code version of HttpClient.
+     * Obtains the version of HttpClient.
      *
      * @return version
      */

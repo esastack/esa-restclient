@@ -40,7 +40,6 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.LastHttpContent;
@@ -137,8 +136,7 @@ class ChannelInitializerTest {
         then(connectFuture1.isSuccess()).isTrue();
 
         final ChannelPipeline pipeline1 = channel1.pipeline();
-        then(pipeline1.get(ChannelInitializer.DelegatingHttpResponseDecoder.class)).isNotNull();
-        then(pipeline1.get(HttpRequestEncoder.class)).isNotNull();
+        then(pipeline1.get(HttpClientCodec.class)).isNotNull();
         then(pipeline1.get(HttpContentDecompressor.class)).isNotNull();
         then(pipeline1.get(ChunkedWriteHandler.class)).isNotNull();
         then(pipeline1.last()).isInstanceOf(Http1ChannelHandler.class);
@@ -153,8 +151,7 @@ class ChannelInitializerTest {
         then(connectFuture2.isSuccess()).isTrue();
 
         final ChannelPipeline pipeline2 = channel2.pipeline();
-        then(pipeline2.get(ChannelInitializer.DelegatingHttpResponseDecoder.class)).isNotNull();
-        then(pipeline2.get(HttpRequestEncoder.class)).isNotNull();
+        then(pipeline2.get(HttpClientCodec.class)).isNotNull();
         then(pipeline2.get(ChunkedWriteHandler.class)).isNotNull();
         then(pipeline2.last()).isInstanceOf(Http1ChannelHandler.class);
     }
@@ -401,8 +398,7 @@ class ChannelInitializerTest {
     }
 
     private void validateHttp1Handlers(ChannelPipeline pipeline, boolean decompression) {
-        then(pipeline.get(ChannelInitializer.DelegatingHttpResponseDecoder.class)).isNotNull();
-        then(pipeline.get(HttpRequestEncoder.class)).isNotNull();
+        then(pipeline.get(HttpClientCodec.class)).isNotNull();
         then(pipeline.get(ChunkedWriteHandler.class)).isNotNull();
         then(pipeline.get(Http1ChannelHandler.class)).isNotNull();
         if (decompression) {

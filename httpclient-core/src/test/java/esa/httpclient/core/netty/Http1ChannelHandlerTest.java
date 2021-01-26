@@ -26,6 +26,7 @@ import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.exception.ProtocolException;
 import esa.httpclient.core.util.Futures;
+import esa.httpclient.core.util.HttpHeadersUtils;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -175,7 +176,8 @@ class Http1ChannelHandlerTest {
         final HttpResponse rsp = response.get();
         then(rsp.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
         then(rsp.body().readableBytes()).isEqualTo(0);
-        then(rsp.headers().isEmpty()).isTrue();
+        then(rsp.headers().size()).isEqualTo(1);
+        then(rsp.headers().contains(HttpHeadersUtils.TTFB)).isTrue();
         then(rsp.trailers().isEmpty()).isTrue();
         then(rsp.status()).isEqualTo(HttpResponseStatus.MULTI_STATUS.code());
 

@@ -20,7 +20,6 @@ import esa.commons.function.ThrowingSupplier;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.config.Http1Options;
 import esa.httpclient.core.config.Http2Options;
-import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -38,10 +37,8 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpClientUpgradeHandler;
 import io.netty.handler.codec.http.HttpContentDecompressor;
-import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequestEncoder;
-import io.netty.handler.codec.http.HttpResponseDecoder;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http2.DefaultHttp2Connection;
 import io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder;
@@ -247,15 +244,15 @@ final class ChannelInitializer {
     private void addH1Handlers(ChannelPipeline pipeline,
                                Http1Options http1Options,
                                boolean decompression) {
-        HttpResponseDecoder decoder;
+        final HttpClientCodec codec;
         if (http1Options == null) {
-            decoder = new DelegatingHttpResponseDecoder();
+            codec = new HttpClientCodec();
         } else {
-            decoder = new DelegatingHttpResponseDecoder(http1Options.maxInitialLineLength(),
+            codec = new HttpClientCodec(http1Options.maxInitialLineLength(),
                     http1Options.maxHeaderSize(),
                     http1Options.maxChunkSize());
         }
-        pipeline.addLast(decoder);
+        pipeline.addLast(codec);
         pipeline.addLast(new HttpRequestEncoder());
         if (decompression) {
             pipeline.addLast(new HttpContentDecompressor(false));
@@ -403,22 +400,6 @@ final class ChannelInitializer {
                 ctx.fireExceptionCaught(e);
                 ctx.close();
             }
-        }
-    }
-
-    static final class DelegatingHttpResponseDecoder extends HttpResponseDecoder {
-        private DelegatingHttpResponseDecoder() {
-        }
-
-        private DelegatingHttpResponseDecoder(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize) {
-            super(maxInitialLineLength, maxHeaderSize, maxChunkSize);
-        }
-
-        @Override
-        protected HttpMessage createMessage(String[] initialLine) {
-            HttpMessage msg = super.createMessage(initialLine);
-            msg.headers().add(HttpHeadersUtils.TTFB, System.currentTimeMillis());
-            return msg;
         }
     }
 

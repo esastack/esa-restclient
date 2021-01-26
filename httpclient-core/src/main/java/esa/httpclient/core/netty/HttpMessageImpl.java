@@ -21,6 +21,7 @@ import esa.commons.http.HttpVersion;
 import esa.commons.netty.http.Http1HeadersAdaptor;
 import esa.commons.netty.http.Http2HeadersAdaptor;
 import esa.httpclient.core.HttpMessage;
+import esa.httpclient.core.util.HttpHeadersUtils;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http2.Http2Exception;
 import io.netty.handler.codec.http2.Http2Headers;
@@ -67,6 +68,7 @@ class HttpMessageImpl implements HttpMessage {
     }
 
     static HttpMessage from(io.netty.handler.codec.http.HttpResponse message) {
+        message.headers().add(HttpHeadersUtils.TTFB, System.currentTimeMillis());
         return new HttpMessageImpl(message.status().code(),
                 io.netty.handler.codec.http.HttpVersion.HTTP_1_1 == message.protocolVersion()
                         ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,

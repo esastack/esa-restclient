@@ -38,7 +38,6 @@ import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpClientUpgradeHandler;
 import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http2.DefaultHttp2Connection;
 import io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder;
@@ -253,7 +252,6 @@ final class ChannelInitializer {
                     http1Options.maxChunkSize());
         }
         pipeline.addLast(codec);
-        pipeline.addLast(new HttpRequestEncoder());
         if (decompression) {
             pipeline.addLast(new HttpContentDecompressor(false));
         }

@@ -38,15 +38,15 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     private static final String DEFAULT_BINARY_CONTENT_TYPE = "application/octet-stream";
     private static final String DEFAULT_TEXT_CONTENT_TYPE = "text/plain";
 
-    private static final byte INIT_STATUS = -1;
-    private static final byte PLAIN_PREPARING_STATUS = 0;
-    private static final byte MULTIPART_PREPARING_STATUS = 1;
-    private static final byte SEGMENT_PREPARING_STATUS = 2;
-    private static final byte FILE_PREPARING_STATUS = 3;
-    private static final byte PLAIN_EXECUTED_STATUS = 4;
-    private static final byte MULTIPART_EXECUTED_STATUS = 5;
-    private static final byte SEGMENT_EXECUTED_STATUS = 6;
-    private static final byte FILE_EXECUTED_STATUS = 7;
+    private static final byte STATE_INIT = -1;
+    private static final byte STATE_PLAIN_PREPARING = 0;
+    private static final byte STATE_MULTIPART_PREPARING = 1;
+    private static final byte STATE_SEGMENT_PREPARING = 2;
+    private static final byte STATE_FILE_PREPARING = 3;
+    private static final byte STATE_PLAIN_EXECUTED = 4;
+    private static final byte STATE_MULTIPART_EXECUTED = 5;
+    private static final byte STATE_SEGMENT_EXECUTED = 6;
+    private static final byte STATE_FILE_EXECUTED = 7;
 
     private final Object monitor = new Object();
     private final NettyHttpClient client;
@@ -63,17 +63,20 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     private boolean multipartEncode = true;
 
     /**
-     *-1: init
-     * 0: plain-preparing;
-     * 1: multipart-preparing;
-     * 2: segment-preparing;
-     * 3: file-preparing;
-     * 4: plain-executed;
-     * 5: multipart-executed;
-     * 6: segment-executed;
-     * 7: file-executed;
+     * A bitmask where the bits are defined as
+     * <ul>
+     *     <li>{@link #STATE_INIT}</li>
+     *     <li>{@link #STATE_PLAIN_PREPARING}</li>
+     *     <li>{@link #STATE_MULTIPART_PREPARING}</li>
+     *     <li>{@link #STATE_SEGMENT_PREPARING}</li>
+     *     <li>{@link #STATE_FILE_PREPARING}</li>
+     *     <li>{@link #STATE_PLAIN_EXECUTED}</li>
+     *     <li>{@link #STATE_MULTIPART_EXECUTED}</li>
+     *     <li>{@link #STATE_SEGMENT_EXECUTED}</li>
+     *     <li>{@link #STATE_FILE_EXECUTED}</li>
+     * </ul>
      */
-    private volatile byte status = INIT_STATUS;
+    private volatile byte status = STATE_INIT;
 
     public CompositeRequest(HttpClientBuilder builder,
                             NettyHttpClient client,
@@ -89,34 +92,34 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public CompletableFuture<HttpResponse> execute() {
-        final byte newStatus = status >= 0 ? (byte) (status + (byte) 4) : PLAIN_EXECUTED_STATUS;
+        final byte newStatus = status >= 0 ? (byte) (status + (byte) 4) : STATE_PLAIN_EXECUTED;
         checkNotStartedAndUpdateStatus(newStatus);
         return client.execute(this, ctx, handle, handler);
     }
 
     @Override
     public PlainRequest body(Buffer data) {
-        checkNotStartedAndUpdateStatus(PLAIN_PREPARING_STATUS);
+        checkNotStartedAndUpdateStatus(STATE_PLAIN_PREPARING);
         this.buffer = data;
         return self();
     }
 
     @Override
     public MultipartRequest multipart() {
-        checkNotStartedAndUpdateStatus(MULTIPART_PREPARING_STATUS);
+        checkNotStartedAndUpdateStatus(STATE_MULTIPART_PREPARING);
         return this;
     }
 
     @Override
     public SegmentRequest segment() {
-        checkNotStartedAndUpdateStatus(SEGMENT_PREPARING_STATUS);
+        checkNotStartedAndUpdateStatus(STATE_SEGMENT_PREPARING);
         return request.get();
     }
 
     @Override
     public FileRequest body(File file) {
         Checks.checkNotNull(file, "File must not b null");
-        checkNotStartedAndUpdateStatus(FILE_PREPARING_STATUS);
+        checkNotStartedAndUpdateStatus(STATE_FILE_PREPARING);
         this.file = file;
         return self();
     }
@@ -198,7 +201,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public MultiValueMap<String, String> attrs() {
-        if (status == MULTIPART_PREPARING_STATUS || status == MULTIPART_EXECUTED_STATUS) {
+        if (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED) {
             return new HashMultiValueMap<>(attrs);
         } else {
             return new HashMultiValueMap<>();
@@ -207,7 +210,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public List<MultipartFileItem> files() {
-        if (status == MULTIPART_PREPARING_STATUS || status == MULTIPART_EXECUTED_STATUS) {
+        if (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED) {
             return new ArrayList<>(files);
         } else {
             return Collections.emptyList();
@@ -309,17 +312,17 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public boolean isSegmented() {
-        return this.status == SEGMENT_PREPARING_STATUS || this.status == SEGMENT_EXECUTED_STATUS;
+        return this.status == STATE_SEGMENT_PREPARING || this.status == STATE_SEGMENT_EXECUTED;
     }
 
     @Override
     public boolean isMultipart() {
-        return this.status == MULTIPART_PREPARING_STATUS || this.status == MULTIPART_EXECUTED_STATUS;
+        return this.status == STATE_MULTIPART_PREPARING || this.status == STATE_MULTIPART_EXECUTED;
     }
 
     @Override
     public boolean isFile() {
-        return this.status == FILE_PREPARING_STATUS || this.status == FILE_EXECUTED_STATUS;
+        return this.status == STATE_FILE_PREPARING || this.status == STATE_FILE_EXECUTED;
     }
 
     @Override
@@ -338,13 +341,13 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
             copied.body(file);
         }
 
-        copied.status = status >= PLAIN_EXECUTED_STATUS ? (byte) (status - (byte) 4) : status;
+        copied.status = status >= STATE_PLAIN_EXECUTED ? (byte) (status - (byte) 4) : status;
 
         return copied;
     }
 
     private void checkStarted() {
-        if (status >= PLAIN_EXECUTED_STATUS) {
+        if (status >= STATE_PLAIN_EXECUTED) {
             throw new IllegalStateException("Request has started to execute" +
                     " and the modification isn't allowed");
         }
@@ -362,9 +365,9 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     private void checkNotStartedAndUpdateStatus(byte newStatus) {
         synchronized (monitor) {
-            if (status >= PLAIN_EXECUTED_STATUS) {
+            if (status >= STATE_PLAIN_EXECUTED) {
                 throw new IllegalStateException("The execute() has been called before");
-            } else if (status != INIT_STATUS && newStatus < PLAIN_EXECUTED_STATUS) {
+            } else if (status != STATE_INIT && newStatus < STATE_PLAIN_EXECUTED) {
                 throw new IllegalStateException(decideType() + " request has been set before");
             }
             this.status = newStatus;
@@ -373,13 +376,13 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     private String decideType() {
         switch (status) {
-            case PLAIN_PREPARING_STATUS:
+            case STATE_PLAIN_PREPARING:
                 return "PLAIN";
-            case MULTIPART_PREPARING_STATUS:
+            case STATE_MULTIPART_PREPARING:
                 return "MULTIPART";
-            case SEGMENT_PREPARING_STATUS:
+            case STATE_SEGMENT_PREPARING:
                 return "SEGMENT";
-            case FILE_PREPARING_STATUS:
+            case STATE_FILE_PREPARING:
                 return "FILE";
             default:
                 return "PLAIN";

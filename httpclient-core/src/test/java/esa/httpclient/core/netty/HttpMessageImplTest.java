@@ -19,6 +19,7 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.HttpMessage;
+import esa.httpclient.core.util.HttpHeadersUtils;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpResponse;
@@ -66,9 +67,10 @@ class HttpMessageImplTest {
         HttpMessage message = HttpMessageImpl.from(response);
         then(message.version()).isSameAs(HttpVersion.HTTP_1_1);
         then(message.status()).isEqualTo(HttpResponseStatus.MULTI_STATUS.code());
-        then(message.headers().size()).isEqualTo(2);
+        then(message.headers().size()).isEqualTo(3);
         then(message.headers().get("a")).isEqualTo("b");
         then(message.headers().get("c")).isEqualTo("d");
+        then(message.headers().contains(HttpHeadersUtils.TTFB)).isTrue();
     }
 
     @Test

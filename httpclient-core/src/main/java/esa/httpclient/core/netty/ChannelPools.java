@@ -137,7 +137,7 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
 
     private void checkClosed() {
         if (closed.get()) {
-            throw new IllegalStateException("ConnectionPools has closed");
+            throw new IllegalStateException("ConnectionPools has been closed");
         }
     }
 

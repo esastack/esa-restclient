@@ -187,7 +187,9 @@ class Http2FrameHandler extends Http2EventAdapter {
             return true;
         });
 
-        LoggerUtils.logger().warn(ex.getMessage());
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug(ex.getMessage());
+        }
     }
 
     @Override

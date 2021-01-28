@@ -17,6 +17,8 @@ package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
+import esa.commons.http.HttpHeaders;
+import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
@@ -118,15 +120,24 @@ class RequestWriterImplTest {
 
     @Test
     void testWriteContentNow() {
+        final HttpHeaders headers = new Http1HeadersImpl();
+        final HttpRequest request = mock(HttpRequest.class);
+        when(request.headers()).thenReturn(headers);
+
         final Context ctx = mock(Context.class);
         when(ctx.expectContinueEnabled()).thenReturn(false);
-        then(RequestWriterImpl.writeContentNow(ctx)).isTrue();
 
+        headers.set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
+        then(RequestWriterImpl.writeContentNow(ctx, request)).isFalse();
+
+        headers.clear();
+        headers.set(HttpHeaderNames.EXPECT, "");
         when(ctx.expectContinueEnabled()).thenReturn(true);
-        then(RequestWriterImpl.writeContentNow(ctx)).isFalse();
+        then(RequestWriterImpl.writeContentNow(ctx, request)).isTrue();
 
         when(ctx.expectContinueEnabled()).thenReturn(false);
-        then(RequestWriterImpl.writeContentNow(ctx)).isTrue();
+        headers.clear();
+        then(RequestWriterImpl.writeContentNow(ctx, request)).isTrue();
     }
 
     @Test

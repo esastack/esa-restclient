@@ -137,7 +137,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
                     channel.writeAndFlush(last, endPromise);
                 }
             };
-            if (writeContentNow(ctx)) {
+            if (writeContentNow(ctx, request)) {
                 writeContent.run();
             } else {
                 channel.flush();
@@ -228,7 +228,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
             };
 
             // Considering 100-expect-continue, We must write request immediately.
-            if (!writeContentNow(ctx)) {
+            if (!writeContentNow(ctx, request)) {
                 channel.flush();
                 ((NettyContext) ctx).set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
             } else {

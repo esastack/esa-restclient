@@ -46,6 +46,7 @@ public class ExpectContinueInterceptor implements Interceptor {
                 LoggerUtils.logger().debug("100-Continue is unsupported for segment request, uri: {}",
                         request.uri().toString());
             }
+            request.headers().remove(HttpHeaderNames.EXPECT);
             return next.proceed(request);
         }
 
@@ -54,6 +55,7 @@ public class ExpectContinueInterceptor implements Interceptor {
                 LoggerUtils.logger().debug("100-Continue is ignored due to empty body, uri: {}",
                         request.uri().toString());
             }
+            request.headers().remove(HttpHeaderNames.EXPECT);
             return next.proceed(request);
         }
 

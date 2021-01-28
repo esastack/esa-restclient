@@ -122,7 +122,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
 
             // Considering 100-expect-continue, We must write request immediately.
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("Send Request:\n" + finalizedRequest);
+                LoggerUtils.logger().debug("Send Request:\n" + finalizedRequest.headers());
             }
             channel.write(request0, headFuture);
 

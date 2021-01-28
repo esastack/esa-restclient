@@ -140,7 +140,17 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
+    public boolean isFile() {
+        return underlying.isFile();
+    }
+
+    @Override
     public HttpRequest copy() {
         return underlying.copy();
+    }
+
+    @Override
+    public String toString() {
+        return underlying.toString();
     }
 }

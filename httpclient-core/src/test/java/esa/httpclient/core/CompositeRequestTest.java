@@ -234,19 +234,22 @@ class CompositeRequestTest {
         request.execute();
 
         // After writing
+        // Header ops are allowed
+        request.addHeaders(Collections.singletonMap("a", "b"));
+        request.addHeader("x", "y");
+        request.setHeader("a", "bb");
+        request.removeHeader("a");
+
         assertThrows(IllegalStateException.class, () -> request.expectContinueEnabled(true));
         assertThrows(IllegalStateException.class, () -> request.uriEncodeEnabled(true));
         assertThrows(IllegalStateException.class, () -> request.maxRedirects(10));
         assertThrows(IllegalStateException.class, () -> request.maxRetries(10));
         assertThrows(IllegalStateException.class, () -> request.readTimeout(100));
-        assertThrows(IllegalStateException.class, () -> request.addHeaders(Collections.singletonMap("a", "b")));
         assertThrows(IllegalStateException.class, () -> request.addParams(Collections.singletonMap("m", "n")));
         assertThrows(IllegalStateException.class, () -> request.handle((h) -> {
         }));
         assertThrows(IllegalStateException.class, () -> request.handler(mock(Handler.class)));
-        assertThrows(IllegalStateException.class, () -> request.addHeader("x", "y"));
-        assertThrows(IllegalStateException.class, () -> request.setHeader("a", "bb"));
-        assertThrows(IllegalStateException.class, () -> request.removeHeader("a"));
+
         assertThrows(IllegalStateException.class, () -> request.addParam("p", "q"));
 
         assertThrows(IllegalStateException.class, () -> request.file("a1", file));

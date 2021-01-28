@@ -256,28 +256,24 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public CompositeRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
-        checkStarted();
         super.addHeaders(headers);
         return self();
     }
 
     @Override
     public CompositeRequest addHeader(CharSequence name, CharSequence value) {
-        checkStarted();
         super.addHeader(name, value);
         return self();
     }
 
     @Override
     public CompositeRequest setHeader(CharSequence name, CharSequence value) {
-        checkStarted();
         super.setHeader(name, value);
         return self();
     }
 
     @Override
     public CompositeRequest removeHeader(CharSequence name) {
-        checkStarted();
         super.removeHeader(name);
         return self();
     }
@@ -393,4 +389,8 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         return obj1 == null || obj2 == null;
     }
 
+    @Override
+    public String toString() {
+        return uri().toString();
+    }
 }

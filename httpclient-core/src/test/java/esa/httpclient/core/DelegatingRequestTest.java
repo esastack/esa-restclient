@@ -112,6 +112,10 @@ class DelegatingRequestTest {
         verify(underlying, never()).files();
         request.files();
         verify(underlying).files();
+
+        verify(underlying, never()).isFile();
+        request.isFile();
+        verify(underlying).isFile();
     }
 
 }

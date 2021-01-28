@@ -348,7 +348,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     private void checkStarted() {
         if (status >= STATE_PLAIN_EXECUTED) {
-            throw new IllegalStateException("Request has started to execute" +
+            throw new IllegalStateException("Request's execute() has been called " +
                     " and the modification isn't allowed");
         }
     }

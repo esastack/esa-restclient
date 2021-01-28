@@ -83,10 +83,14 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if (getEmbeddedHttp2Exception(cause) != null) {
-            super.exceptionCaught(ctx, cause);
-        } else {
-            Utils.handleH2ChannelEx(registry, ctx, cause);
+        try {
+            if (getEmbeddedHttp2Exception(cause) != null) {
+                super.exceptionCaught(ctx, cause);
+            } else {
+                Utils.handleH2ChannelEx(registry, ctx.channel(), cause);
+            }
+        } finally {
+            ctx.close();
         }
     }
 

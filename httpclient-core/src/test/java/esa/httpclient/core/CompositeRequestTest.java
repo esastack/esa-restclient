@@ -82,6 +82,42 @@ class CompositeRequestTest {
     }
 
     @Test
+    void testType() {
+        final String uri = "http://127.0.0.1:8080/abc";
+        final HttpClientBuilder builder = HttpClient.create();
+        final NettyHttpClient client = mock(NettyHttpClient.class);
+        when(client.execute(any(HttpRequest.class), any(Context.class), any(), any()))
+                .thenReturn(Futures.completed());
+        final HttpMethod method = HttpMethod.PUT;
+        final SegmentRequest chunk0 = mock(SegmentRequest.class);
+
+        final CompositeRequest request0 = new CompositeRequest(builder,
+                client, () -> chunk0, method, uri);
+        then(request0.isMultipart()).isFalse();
+        then(request0.isFile()).isFalse();
+        then(request0.isMultipart()).isFalse();
+
+        request0.multipart();
+        then(request0.isMultipart()).isTrue();
+        then(request0.isFile()).isFalse();
+        then(request0.isSegmented()).isFalse();
+
+        final CompositeRequest request1 = new CompositeRequest(builder,
+                client, () -> chunk0, method, uri);
+        request1.body(mock(File.class));
+        then(request1.isMultipart()).isFalse();
+        then(request1.isFile()).isTrue();
+        then(request1.isSegmented()).isFalse();
+
+        final CompositeRequest request2 = new CompositeRequest(builder,
+                client, () -> chunk0, method, uri);
+        request2.segment();
+        then(request2.isMultipart()).isFalse();
+        then(request2.isFile()).isFalse();
+        then(request2.isSegmented()).isTrue();
+    }
+
+    @Test
     void testCopy() throws Exception {
         final String uri = "http://127.0.0.1:8080/abc";
         final HttpClientBuilder builder = HttpClient.create();

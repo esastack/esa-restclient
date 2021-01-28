@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * This chain is designed for {@link Interceptor}s to modify or replace {@link HttpRequest}
- * and {@link HttpResponse} around {@link #proceed(HttpRequest)}ing. We can do retry, redirect,
+ * and {@link HttpResponse} around {@link #proceed(HttpRequest)}ing. User can do retry, redirect,
  * cache and so on by this.
  */
 @Internal

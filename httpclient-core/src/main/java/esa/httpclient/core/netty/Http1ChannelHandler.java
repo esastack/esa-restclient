@@ -168,7 +168,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private void onError(Throwable cause, boolean enableLog) {
-        Utils.handleH1ChannelEx(registry, ctx, reusableRequestId, cause, enableLog);
+        Utils.handleH1ChannelEx(registry, ctx.channel(), reusableRequestId, cause, enableLog);
     }
 
     void updateRequestId(int requestId) {

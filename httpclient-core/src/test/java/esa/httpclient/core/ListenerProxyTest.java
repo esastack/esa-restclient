@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +44,93 @@ class ListenerProxyTest {
 
     @Test
     void testBasic() {
+        final List<Listener> delegates = new ArrayList<>();
+
+        final Listener normal0 = mock(Listener.class);
+        final Listener normal = mock(Listener.class);
+        delegates.add(normal0);
+        delegates.add(normal);
+
+        final ListenerProxy proxy = new ListenerProxy(delegates);
+        final HttpRequest request = mock(HttpRequest.class);
+        final Context ctx = mock(Context.class);
+        final FilterContext fCtx = mock(FilterContext.class);
+        final SocketAddress address = mock(SocketAddress.class);
+        final Throwable cause = mock(Throwable.class);
+        final HttpMessage message = mock(HttpMessage.class);
+        final HttpResponse response = mock(HttpResponse.class);
+
+        when(request.uri()).thenReturn(new HttpUri("http://127.0.0.1:8080"));
+
+        proxy.onInterceptorsStart(request, ctx);
+        verify(normal0, times(1)).onInterceptorsStart(request, ctx);
+        verify(normal, times(1)).onInterceptorsStart(request, ctx);
+
+        proxy.onInterceptorsEnd(request, ctx);
+        verify(normal0, times(1)).onInterceptorsEnd(request, ctx);
+        verify(normal, times(1)).onInterceptorsEnd(request, ctx);
+
+        proxy.onFiltersStart(request, fCtx);
+        verify(normal0, times(1)).onFiltersStart(request, fCtx);
+        verify(normal, times(1)).onFiltersStart(request, fCtx);
+
+        proxy.onFiltersEnd(request, ctx);
+        verify(normal0, times(1)).onFiltersEnd(request, ctx);
+        verify(normal, times(1)).onFiltersEnd(request, ctx);
+
+        proxy.onConnectionPoolAttempt(request, ctx, address);
+        verify(normal0, times(1)).onConnectionPoolAttempt(request, ctx, address);
+        verify(normal, times(1)).onConnectionPoolAttempt(request, ctx, address);
+
+        proxy.onConnectionPoolAcquired(request, ctx, address);
+        verify(normal0, times(1)).onConnectionPoolAcquired(request, ctx, address);
+        verify(normal, times(1)).onConnectionPoolAcquired(request, ctx, address);
+
+        proxy.onAcquireConnectionPoolFailed(request, ctx, address, cause);
+        verify(normal0, times(1))
+                .onAcquireConnectionPoolFailed(request, ctx, address, cause);
+        verify(normal, times(1))
+                .onAcquireConnectionPoolFailed(request, ctx, address, cause);
+
+        proxy.onConnectionAttempt(request, ctx, address);
+        verify(normal0, times(1)).onConnectionAttempt(request, ctx, address);
+        verify(normal, times(1)).onConnectionAttempt(request, ctx, address);
+
+        proxy.onConnectionAcquired(request, ctx, address);
+        verify(normal0, times(1)).onConnectionAcquired(request, ctx, address);
+        verify(normal, times(1)).onConnectionAcquired(request, ctx, address);
+
+        proxy.onAcquireConnectionFailed(request, ctx, address, cause);
+        verify(normal0, times(1)).onAcquireConnectionFailed(request, ctx, address, cause);
+        verify(normal, times(1)).onAcquireConnectionFailed(request, ctx, address, cause);
+
+        proxy.onWriteAttempt(request, ctx);
+        verify(normal0, times(1)).onWriteAttempt(request, ctx);
+        verify(normal, times(1)).onWriteAttempt(request, ctx);
+
+        proxy.onWriteDone(request, ctx);
+        verify(normal0, times(1)).onWriteDone(request, ctx);
+        verify(normal, times(1)).onWriteDone(request, ctx);
+
+        proxy.onWriteFailed(request, ctx, cause);
+        verify(normal0, times(1)).onWriteFailed(request, ctx, cause);
+        verify(normal, times(1)).onWriteFailed(request, ctx, cause);
+
+        proxy.onMessageReceived(request, ctx, message);
+        verify(normal0, times(1)).onMessageReceived(request, ctx, message);
+        verify(normal, times(1)).onMessageReceived(request, ctx, message);
+
+        proxy.onCompleted(request, ctx, response);
+        verify(normal0, times(1)).onCompleted(request, ctx, response);
+        verify(normal, times(1)).onCompleted(request, ctx, response);
+
+        proxy.onError(request, ctx, cause);
+        verify(normal0, times(1)).onError(request, ctx, cause);
+        verify(normal, times(1)).onError(request, ctx, cause);
+    }
+
+    @Test
+    void testError() {
         final List<Listener> delegates = new ArrayList<>();
 
         final Listener abnormal = mock(Listener.class);

@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * {@link Interceptor} is designed for handling retry, cache, redirect and so on.
- * Be different from {@link RequestFilter} and {@link ResponseFilter} is that you can replace {@link HttpRequest}
+ * Be different from {@link RequestFilter} and {@link ResponseFilter}, you can replace {@link HttpRequest}
  * and {@link HttpResponse} when {@link #proceed(HttpRequest, ExecChain)}ing. The context among
  * {@link Interceptor} can be obtained by {@link ExecChain#ctx()}. The order of multiple {@link Interceptor}s
  * can be specified by {@link #getOrder()} and the lowest value has the highest order.

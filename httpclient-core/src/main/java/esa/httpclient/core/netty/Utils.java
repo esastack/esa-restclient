@@ -16,6 +16,7 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.StringUtils;
+import esa.commons.logging.Logger;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.util.LoggerUtils;
@@ -34,9 +35,12 @@ import java.net.URI;
 final class Utils {
 
     static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
+    static final ConnectException WRITE_BUF_IS_FULL = new ConnectException("Connection write buffer is full");
+
+    private static final Logger logger = LoggerUtils.logger();
 
     static void handleH1ChannelEx(HandleRegistry registry,
-                                  ChannelHandlerContext ctx,
+                                  Channel channel,
                                   int reusableRequestId,
                                   Throwable cause,
                                   boolean enableLog) {
@@ -47,17 +51,17 @@ final class Utils {
 
         boolean hasLogged = false;
         if (cause instanceof ClosedConnectionException) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("ClosedConnectionException occurred in connection: {}",
-                        ctx.channel(), cause);
+            if (logger.isDebugEnabled()) {
+                logger.debug("ClosedConnectionException occurred in connection: {}",
+                        channel, cause);
             }
             hasLogged = true;
         } else if (cause instanceof IOException) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("IOException occurred in connection: {}", ctx.channel(), cause);
+            if (logger.isDebugEnabled()) {
+                logger.debug("IOException occurred in connection: {}", channel, cause);
             } else {
-                LoggerUtils.logger().warn("Exception occurred in connection: {}," +
-                        " maybe server has closed connection", ctx.channel());
+                logger.warn("Exception occurred in connection: {}," +
+                        " maybe server has closed connection", channel);
             }
             hasLogged = true;
         }
@@ -66,23 +70,23 @@ final class Utils {
     }
 
     static void handleH2ChannelEx(HandleRegistry registry,
-                                  ChannelHandlerContext ctx,
+                                  Channel channel,
                                   Throwable cause) {
         if (cause instanceof ClosedConnectionException) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("ClosedConnectionException occurred in connection: {}",
-                        ctx.channel(), cause);
+            if (logger.isDebugEnabled()) {
+                logger.debug("ClosedConnectionException occurred in connection: {}",
+                        channel, cause);
             }
         } else if (cause instanceof IOException) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("IOException occurred in connection: {}", ctx.channel(), cause);
+            if (logger.isDebugEnabled()) {
+                logger.debug("IOException occurred in connection: {}", channel, cause);
             } else {
-                LoggerUtils.logger().warn("Exception occurred in connection: {}," +
-                        " maybe server has closed connection", ctx.channel());
+                logger.warn("Exception occurred in connection: {}," +
+                        " maybe server has closed connection", channel);
             }
         }
 
-        ctx.close().addListener(future -> registry.handleAndClearAll((h) -> {
+        channel.closeFuture().addListener(future -> registry.handleAndClearAll((h) -> {
             try {
                 Utils.handleException(h, cause, false);
             } catch (Throwable ex0) {
@@ -95,8 +99,8 @@ final class Utils {
         if (evt instanceof IdleStateEvent) {
             final IdleStateEvent idleEvt = (IdleStateEvent) evt;
             if (IdleState.ALL_IDLE == idleEvt.state()) {
-                if (LoggerUtils.logger().isDebugEnabled()) {
-                    LoggerUtils.logger().debug("Close idle connection: {}", ctx.channel());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Close idle connection: {}", ctx.channel());
                 }
 
                 // use ctx.channel().close() to fire channelInactive event from the tail of pipeline instead of
@@ -136,7 +140,7 @@ final class Utils {
         }
 
         if (enableLog) {
-            LoggerUtils.logger().warn("Unexpected exception occurred, and request will end abnormally", cause);
+            logger.warn("Unexpected exception occurred, and request will end abnormally", cause);
         }
         handle.onError(cause);
     }

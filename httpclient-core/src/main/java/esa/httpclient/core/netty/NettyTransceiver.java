@@ -29,7 +29,6 @@ import esa.httpclient.core.Listener;
 import esa.httpclient.core.Scheme;
 import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.config.SslOptions;
-import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.exec.HttpTransceiver;
 import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.spi.SslEngineFactory;
@@ -62,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
 import static esa.httpclient.core.netty.Utils.CONNECT_INACTIVE;
+import static esa.httpclient.core.netty.Utils.WRITE_BUF_IS_FULL;
 import static esa.httpclient.core.netty.Utils.getValue;
 
 class NettyTransceiver implements HttpTransceiver {
@@ -256,7 +256,7 @@ class NettyTransceiver implements HttpTransceiver {
             channelPool.release(channel);
             // Allow to retry on another channel
             endWithError(request, ctx, listener, response, segmentWriterPromise,
-                    WriteBufFullException.INSTANCE);
+                    WRITE_BUF_IS_FULL);
             return;
         }
 

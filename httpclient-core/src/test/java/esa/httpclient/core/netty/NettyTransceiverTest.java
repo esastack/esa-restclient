@@ -28,7 +28,6 @@ import esa.httpclient.core.Scheme;
 import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.SslOptions;
-import esa.httpclient.core.exception.WriteBufFullException;
 import esa.httpclient.core.spi.SslEngineFactory;
 import esa.httpclient.core.util.Futures;
 import io.netty.channel.Channel;
@@ -239,9 +238,9 @@ class NettyTransceiverTest {
                 listener2, response2, writer, segmentWriterPromise2);
 
         then(response2.isDone() && response2.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response2)).isSameAs(WriteBufFullException.INSTANCE);
+        then(Futures.getCause(response2)).isSameAs(Utils.WRITE_BUF_IS_FULL);
         then(segmentWriterPromise2.isDone() && segmentWriterPromise2.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(segmentWriterPromise2)).isSameAs(WriteBufFullException.INSTANCE);
+        then(Futures.getCause(segmentWriterPromise2)).isSameAs(Utils.WRITE_BUF_IS_FULL);
         verify(listener2).onError(any(), any(), any());
 
 

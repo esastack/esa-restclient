@@ -44,7 +44,7 @@ public class AttributeMap {
     }
 
     /**
-     * Obtains generic type value by name
+     * Obtains generic type value by {@code name}
      *
      * @param name name
      * @param <T>  generic type

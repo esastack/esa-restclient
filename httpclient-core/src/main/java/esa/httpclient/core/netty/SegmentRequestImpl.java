@@ -44,7 +44,7 @@ import java.util.function.Consumer;
 public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRequest {
 
     private static final IllegalStateException REQUEST_HAS_ENDED = new IllegalStateException("Request has ended");
-    private static final IllegalStateException CHANNEL_IS_NULL = new IllegalStateException("Channel is null");
+    private static final IllegalStateException CONNECTION_IS_NULL = new IllegalStateException("Connection is null");
 
     private static final byte[] EMPTY_BYTES = new byte[0];
 
@@ -174,7 +174,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
                 return result;
             }
         } catch (Throwable th) {
-            return Futures.completed(new IOException("Unexpected error while writing content", th));
+            return Futures.completed(new IOException("Unexpected error occurred when writing content", th));
         }
     }
 
@@ -184,7 +184,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
                                                 int length) {
         Channel channel;
         if (writer == null || (channel = writer.channel()) == null) {
-            return Futures.completed(CHANNEL_IS_NULL);
+            return Futures.completed(CONNECTION_IS_NULL);
         }
 
         final CompletableFuture<Void> future = new CompletableFuture<>();
@@ -234,13 +234,13 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
                 return result;
             }
         } catch (Throwable th) {
-            return Futures.completed(new IOException("Unexpected error while ending request", th));
+            return Futures.completed(new IOException("Unexpected error occurred when ending request", th));
         }
     }
 
     private CompletableFuture<Void> doEnd(SegmentWriter writer, HttpHeaders headers) {
         if (writer == null || writer.channel() == null) {
-            return Futures.completed(CHANNEL_IS_NULL);
+            return Futures.completed(CONNECTION_IS_NULL);
         }
 
         final Channel channel = writer.channel();
@@ -325,7 +325,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
 
     private void checkStarted() {
         if (started) {
-            throw new IllegalStateException("Request has started to execute" +
+            throw new IllegalStateException("Request's execute() has been called " +
                     " and the modification isn't allowed");
         }
     }

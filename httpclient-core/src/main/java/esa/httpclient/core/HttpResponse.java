@@ -42,7 +42,7 @@ public interface HttpResponse extends HttpMessage {
      * by {@link Handle} or {@link Handler}. On the contrary, if the result is {@code true} which
      * means the {@link #body()} contains the fully response's content.
      *
-     * @return  true or false
+     * @return  {@code true} or {@code false}
      */
     boolean aggregated();
 

@@ -43,13 +43,13 @@ final class ReadTimeoutTask implements TimerTask {
     public void run(Timeout timeout) {
         final NettyHandle handle = registry.remove(requestId);
         if (handle != null) {
-            LoggerUtils.logger().error("Request: " + uri + " reads timeout, begin to close connection: "
-                    + channel);
-
-            closeAndLog(channel);
-
             channel.eventLoop().execute(() -> handle.onError(new
                     SocketTimeoutException("Request: " + uri + " reads timeout")));
+            channel.close();
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug("Request: " + uri + " reads timeout, begin to close connection: "
+                        + channel);
+            }
         }
     }
 
@@ -59,16 +59,6 @@ final class ReadTimeoutTask implements TimerTask {
             handle.onError(new IllegalStateException("Request: " + uri +
                     " haven't finished while connection: " + channel + "has closed"));
         }
-    }
-
-    private static void closeAndLog(Channel channel) {
-        channel.close().addListener(future -> {
-            if (future.isSuccess()) {
-                LoggerUtils.logger().info("Closed connection: " + channel + " successfully");
-            } else {
-                LoggerUtils.logger().error("Failed to close connection: " + channel, future.cause());
-            }
-        });
     }
 
 }

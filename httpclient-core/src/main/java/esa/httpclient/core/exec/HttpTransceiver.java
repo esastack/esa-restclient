@@ -27,14 +27,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 /**
- * The core transceiver which can transform and write the given {@code request} to network and
- * then aggregate the inbound messages to a {@code response} or handle those messages by custom
+ * The core transceiver which can transform and write the given {@link HttpRequest} to network and
+ * then aggregate the inbound messages to the {@link HttpResponse} or handle those messages by custom
  * {@link Handle} or {@link Handler}.
  */
 public interface HttpTransceiver {
 
     /**
-     * Sends the given {@code request} and obtains the corresponding response.
+     * Sends the given {@code request} and obtains the corresponding {@link HttpResponse}.
      *
      * @param request     request
      * @param ctx         ctx

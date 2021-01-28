@@ -136,8 +136,13 @@ final class ChannelInitializer {
 
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger().debug("Connection: " + channel + " has connected successfully");
-            channel.closeFuture().addListener(f ->
-                    LoggerUtils.logger().debug("Connection: " + channel + " has disconnected"));
+            channel.closeFuture().addListener(f -> {
+                if (f.isSuccess()) {
+                    LoggerUtils.logger().debug("Connection: " + channel + " has disconnected");
+                } else {
+                    LoggerUtils.logger().error("Failed to close connection: " + channel, f.cause());
+                }
+            });
         }
     }
 

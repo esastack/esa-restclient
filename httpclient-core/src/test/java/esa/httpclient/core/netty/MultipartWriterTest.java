@@ -145,10 +145,9 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .file("file", file, null, true)
                     .attr("key1", "value1")
                     .expectContinueEnabled(true);
+            request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-            final MockNettyContext ctx = new MockNettyContext();
-            ctx.expectContinueEnabled(true);
-
+            final NettyContext ctx = new NettyContext();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -337,9 +336,9 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true);
+            request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-            final MockNettyContext ctx = new MockNettyContext();
-            ctx.expectContinueEnabled(true);
+            final NettyContext ctx = new NettyContext();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,

@@ -16,6 +16,7 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderNames;
+import esa.commons.http.HttpHeaderValues;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.Context;
@@ -197,8 +198,8 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
         request.headers().set(HttpHeaderNames.CONTENT_TYPE, contentTypeVal);
     }
 
-    static boolean writeContentNow(Context context) {
-        return !context.expectContinueEnabled();
+    static boolean writeContentNow(Context context, HttpRequest request) {
+        return !request.headers().contains(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE, true);
     }
 
     static String computeHost(URI uri) {

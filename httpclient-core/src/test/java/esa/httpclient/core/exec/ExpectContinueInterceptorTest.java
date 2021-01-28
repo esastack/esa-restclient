@@ -57,6 +57,7 @@ class ExpectContinueInterceptorTest {
 
         // Case 2: enable expect-continue
         ctx.expectContinueEnabled(true);
+        request0.headers().set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request0, next);
         then(request0.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
@@ -65,6 +66,7 @@ class ExpectContinueInterceptorTest {
         ctx.expectContinueEnabled(true);
 
         // Case 3: enable expect-continue but body is empty
+        request1.headers().set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request1, next);
         then(request1.getHeader(HttpHeaderNames.EXPECT)).isNull();
 

@@ -21,6 +21,7 @@ import esa.httpclient.core.HttpClient;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
@@ -79,8 +80,8 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final esa.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
-        final MockNettyContext ctx = new MockNettyContext();
-        ctx.expectContinueEnabled(true);
+        request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
+        final NettyContext ctx = new NettyContext();
 
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
@@ -155,9 +156,9 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final esa.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
+        request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-        final MockNettyContext ctx = new MockNettyContext();
-        ctx.expectContinueEnabled(true);
+        final NettyContext ctx = new NettyContext();
 
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 

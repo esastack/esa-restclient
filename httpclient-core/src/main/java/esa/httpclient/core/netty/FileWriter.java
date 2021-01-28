@@ -81,7 +81,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
 
         final ChannelPromise endPromise = channel.newPromise();
         // Write content
-        if (writeContentNow(context)) {
+        if (writeContentNow(context, request)) {
             doWriteContent1(request, channel, endPromise);
         } else {
             channel.flush();
@@ -144,7 +144,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
         final ChannelPromise endPromise = channel.newPromise();
 
         // Writes http2 content
-        if (writeContentNow(context)) {
+        if (writeContentNow(context, request)) {
             Utils.runInChannel(channel, () -> {
                 try {
                     doWriteContent2(request.file(),

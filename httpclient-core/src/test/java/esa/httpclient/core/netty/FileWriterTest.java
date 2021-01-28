@@ -111,9 +111,9 @@ class FileWriterTest extends Http2ConnectionHelper {
             final esa.httpclient.core.FileRequest request = client
                     .post("http://127.0.0.1/abc")
                     .body(file);
-            final MockNettyContext ctx = new MockNettyContext();
-            ctx.expectContinueEnabled(true);
 
+            request.addHeader(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
+            final NettyContext ctx = new NettyContext();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -271,11 +271,10 @@ class FileWriterTest extends Http2ConnectionHelper {
             final esa.httpclient.core.FileRequest request = client
                     .post("http://127.0.0.1/abc")
                     .body(file);
-            final MockNettyContext ctx = new MockNettyContext();
-            ctx.expectContinueEnabled(true);
-
+            request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
+            final NettyContext ctx = new NettyContext();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,

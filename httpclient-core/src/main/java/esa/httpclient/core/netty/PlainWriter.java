@@ -82,7 +82,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
                     (Http1HeadersImpl) request.headers()), headFuture);
 
             final ChannelPromise endPromise = channel.newPromise();
-            if (writeContentNow(context)) {
+            if (writeContentNow(context, request)) {
                 Utils.runInChannel(channel, () -> doWriteContent1(channel, request.buffer(), endPromise));
             } else {
                 channel.flush();
@@ -133,7 +133,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
         final ByteBuf data = request.buffer() == null
                 ? Unpooled.EMPTY_BUFFER : request.buffer().getByteBuf().retainedSlice();
         final ChannelPromise endPromise = channel.newPromise();
-        if (writeContentNow(context)) {
+        if (writeContentNow(context, request)) {
             doWriteContent2(channel,
                     data,
                     handler,

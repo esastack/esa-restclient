@@ -338,91 +338,87 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
     }
 
     @Override
-    public synchronized SegmentRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
+    public SegmentRequest enableUriEncode() {
         checkStarted();
-        super.uriEncodeEnabled(uriEncodeEnabled);
+        super.enableUriEncode();
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest expectContinueEnabled(Boolean expectContinueEnabled) {
+    public SegmentRequest disableExpectContinue() {
         checkStarted();
-        super.expectContinueEnabled(expectContinueEnabled);
+        super.disableExpectContinue();
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest maxRedirects(int maxRedirects) {
+    public SegmentRequest maxRedirects(int maxRedirects) {
         checkStarted();
         super.maxRedirects(maxRedirects);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest maxRetries(int maxRetries) {
+    public SegmentRequest maxRetries(int maxRetries) {
         checkStarted();
         super.maxRetries(maxRetries);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest readTimeout(int readTimeout) {
+    public SegmentRequest readTimeout(int readTimeout) {
         checkStarted();
         super.readTimeout(readTimeout);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
-        checkStarted();
+    public SegmentRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
         super.addHeaders(headers);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest addHeader(CharSequence name, CharSequence value) {
-        checkStarted();
+    public SegmentRequest addHeader(CharSequence name, CharSequence value) {
         super.addHeader(name, value);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest setHeader(CharSequence name, CharSequence value) {
-        checkStarted();
+    public SegmentRequest setHeader(CharSequence name, CharSequence value) {
         super.setHeader(name, value);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest removeHeader(CharSequence name) {
-        checkStarted();
+    public SegmentRequest removeHeader(CharSequence name) {
         super.removeHeader(name);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest addParams(Map<String, String> params) {
+    public SegmentRequest addParams(Map<String, String> params) {
         checkStarted();
         super.addParams(params);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest addParam(String name, String value) {
+    public SegmentRequest addParam(String name, String value) {
         checkStarted();
         super.addParam(name, value);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest handle(Consumer<Handle> handle) {
+    public SegmentRequest handle(Consumer<Handle> handle) {
         checkStarted();
         super.handle(handle);
         return this;
     }
 
     @Override
-    public synchronized SegmentRequest handler(Handler handler) {
+    public SegmentRequest handler(Handler handler) {
         checkStarted();
         super.handler(handler);
         return this;

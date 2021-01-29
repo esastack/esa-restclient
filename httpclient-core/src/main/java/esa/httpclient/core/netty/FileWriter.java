@@ -53,13 +53,13 @@ class FileWriter extends RequestWriterImpl {
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
-                                       boolean uriEncodeEnabled,
+                                       boolean useUriEncode,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         addContentLengthIfAbsent(request, v -> request.file() == null ? 0L : request.file().length());
         addContentTypeIfAbsent(request, () -> HttpHeaderValues.APPLICATION_OCTET_STREAM);
 
-        return super.writeAndFlush(request, channel, ctx, headFuture, uriEncodeEnabled, version, http2);
+        return super.writeAndFlush(request, channel, ctx, headFuture, useUriEncode, version, http2);
     }
 
     @Override

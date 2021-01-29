@@ -30,13 +30,13 @@ public class MockContext extends Context {
     }
 
     @Override
-    public void expectContinueEnabled(boolean expectContinueEnabled) {
-        this.expectContinueEnabled = expectContinueEnabled;
+    public void useExpectContinue(boolean useExpectContinue) {
+        this.useExpectContinue = useExpectContinue;
     }
 
     public void clear() {
         super.attributes.clear();
-        expectContinueEnabled = true;
+        useExpectContinue = true;
         maxRedirects = 0;
         maxRetries = 0;
     }

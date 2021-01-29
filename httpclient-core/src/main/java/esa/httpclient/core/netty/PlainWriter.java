@@ -47,12 +47,12 @@ class PlainWriter extends RequestWriterImpl {
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
-                                       boolean uriEncodeEnabled,
+                                       boolean useUriEncode,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
 
-        return super.writeAndFlush(request, channel, ctx, headFuture, uriEncodeEnabled, version, http2);
+        return super.writeAndFlush(request, channel, ctx, headFuture, useUriEncode, version, http2);
     }
 
     @Override

@@ -119,8 +119,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     private Http2Options http2Options;
 
     private RetryOptions retryOptions = RetryOptions.ofDefault();
-    private boolean expectContinueEnabled = false;
-    private boolean uriEncodeEnabled = false;
+    private boolean useExpectContinue = false;
 
     /**
      * This map is helpful for configuring {@link ChannelPoolOptions}s for every {@link SocketAddress}.
@@ -201,22 +200,13 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
         return self();
     }
 
-    public HttpClientBuilder expectContinueEnabled(boolean expectContinueEnabled) {
-        this.expectContinueEnabled = expectContinueEnabled;
+    public HttpClientBuilder useExpectContinue(boolean useExpectContinue) {
+        this.useExpectContinue = useExpectContinue;
         return self();
     }
 
-    public HttpClientBuilder uriEncodeEnabled(boolean uriEncodeEnabled) {
-        this.uriEncodeEnabled = uriEncodeEnabled;
-        return self();
-    }
-
-    public boolean isExpectContinueEnabled() {
-        return this.expectContinueEnabled;
-    }
-
-    public boolean isUriEncodeEnabled() {
-        return uriEncodeEnabled;
+    public boolean isUseExpectContinue() {
+        return this.useExpectContinue;
     }
 
     public HttpClientBuilder addInterceptor(Interceptor interceptor) {
@@ -346,8 +336,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
                 .decompression(decompression)
                 .resolver(resolver)
                 .h2ClearTextUpgrade(h2ClearTextUpgrade)
-                .expectContinueEnabled(expectContinueEnabled)
-                .uriEncodeEnabled(uriEncodeEnabled)
+                .useExpectContinue(useExpectContinue)
                 .connectTimeout(connectTimeout)
                 .idleTimeoutSeconds(idleTimeoutSeconds)
                 .readTimeout(readTimeout)

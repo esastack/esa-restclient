@@ -187,10 +187,8 @@ class CompositeRequestTest {
                 .thenReturn(Futures.completed(mock(HttpResponse.class)));
 
         // Before writing
-        request.expectContinueEnabled(true);
-
-        request.uriEncodeEnabled(true);
-        then(request.uriEncodeEnabled()).isTrue();
+        request.enableUriEncode();
+        then(request.uriEncode()).isTrue();
 
         request.maxRedirects(10);
         request.maxRetries(10);
@@ -240,8 +238,8 @@ class CompositeRequestTest {
         request.setHeader("a", "bb");
         request.removeHeader("a");
 
-        assertThrows(IllegalStateException.class, () -> request.expectContinueEnabled(true));
-        assertThrows(IllegalStateException.class, () -> request.uriEncodeEnabled(true));
+        assertThrows(IllegalStateException.class, request::disableExpectContinue);
+        assertThrows(IllegalStateException.class, request::enableUriEncode);
         assertThrows(IllegalStateException.class, () -> request.maxRedirects(10));
         assertThrows(IllegalStateException.class, () -> request.maxRetries(10));
         assertThrows(IllegalStateException.class, () -> request.readTimeout(100));

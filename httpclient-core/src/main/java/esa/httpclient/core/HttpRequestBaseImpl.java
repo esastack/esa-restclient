@@ -38,7 +38,7 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     protected volatile Consumer<Handle> handle;
     protected volatile Handler handler;
     private volatile int readTimeout;
-    private volatile boolean uriEncodeEnabled;
+    private volatile boolean useUriEncode;
 
     protected HttpRequestBaseImpl(HttpClientBuilder builder,
                                   HttpMethod method,
@@ -50,24 +50,23 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
         this.method = method;
         this.uri = new HttpUri(uri);
         this.ctx = new NettyContext();
-        this.uriEncodeEnabled = builder.isUriEncodeEnabled();
         this.readTimeout = builder.readTimeout();
         if (builder.retryOptions() != null) {
             this.ctx.maxRetries(builder.retryOptions().maxRetries());
         }
         this.ctx.maxRedirects(builder.maxRedirects());
-        this.ctx.expectContinueEnabled(builder.isExpectContinueEnabled());
+        this.ctx.useExpectContinue(builder.isUseExpectContinue());
     }
 
     @Override
-    public HttpRequestBase uriEncodeEnabled(Boolean uriEncodeEnabled) {
-        this.uriEncodeEnabled = getValue(uriEncodeEnabled, builder.isUriEncodeEnabled());
+    public HttpRequestBase enableUriEncode() {
+        this.useUriEncode = true;
         return self();
     }
 
     @Override
-    public HttpRequestBase expectContinueEnabled(Boolean expectContinueEnabled) {
-        ctx.expectContinueEnabled(getValue(expectContinueEnabled, builder.isExpectContinueEnabled()));
+    public HttpRequestBase disableExpectContinue() {
+        ctx.useExpectContinue(false);
         return self();
     }
 
@@ -213,8 +212,8 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     }
 
     @Override
-    public boolean uriEncodeEnabled() {
-        return uriEncodeEnabled;
+    public boolean uriEncode() {
+        return useUriEncode;
     }
 
     @Override
@@ -234,7 +233,7 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
             }
         }
 
-        dest.ctx.expectContinueEnabled(source.ctx.expectContinueEnabled());
+        dest.ctx.useExpectContinue(source.ctx.isUseExpectContinue());
         dest.ctx.maxRedirects(source.ctx.maxRedirects());
         dest.ctx.maxRetries(source.ctx.maxRetries());
 
@@ -242,7 +241,9 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
         dest.handle(source.handle);
         dest.handler(source.handler);
         dest.readTimeout(source.readTimeout);
-        dest.uriEncodeEnabled(source.uriEncodeEnabled);
+        if (source.useUriEncode) {
+            dest.enableUriEncode();
+        }
     }
 
     private HttpRequestBaseImpl self() {
@@ -252,10 +253,6 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     private void reset() {
         this.handler = null;
         this.handle = null;
-    }
-
-    private static boolean getValue(Boolean value, boolean defaultValue) {
-        return value != null ? value : defaultValue;
     }
 
     private static boolean illegalArgs(Object obj1, Object obj2) {

@@ -60,13 +60,13 @@ class SegmentWriter extends RequestWriterImpl {
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
-                                       boolean uriEncodeEnabled,
+                                       boolean useUriEncode,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         this.endPromise = channel.newPromise();
         this.channel = channel;
 
-        return super.writeAndFlush(request, channel, ctx, headFuture, uriEncodeEnabled, version, http2);
+        return super.writeAndFlush(request, channel, ctx, headFuture, useUriEncode, version, http2);
     }
 
     @Override

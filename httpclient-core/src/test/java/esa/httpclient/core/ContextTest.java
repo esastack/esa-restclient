@@ -24,14 +24,14 @@ class ContextTest {
     @Test
     void testBasic() {
         final Context ctx = new Context();
-        then(ctx.expectContinueEnabled()).isFalse();
+        then(ctx.isUseExpectContinue()).isFalse();
         then(ctx.maxRedirects()).isEqualTo(0);
         then(ctx.maxRetries()).isEqualTo(0);
 
-        ctx.expectContinueEnabled(true);
+        ctx.useExpectContinue(true);
         ctx.maxRetries(10);
         ctx.maxRedirects(100);
-        then(ctx.expectContinueEnabled()).isTrue();
+        then(ctx.isUseExpectContinue()).isTrue();
         then(ctx.maxRedirects()).isEqualTo(100);
         then(ctx.maxRetries()).isEqualTo(10);
     }

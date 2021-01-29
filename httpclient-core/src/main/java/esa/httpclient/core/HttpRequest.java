@@ -68,7 +68,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
      *
      * @return true or false
      */
-    boolean uriEncodeEnabled();
+    boolean uriEncode();
 
     /**
      * The readTimeout of current request

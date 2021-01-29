@@ -44,7 +44,6 @@ class RequestWriterImplTest {
 
     private final HttpClient client = HttpClient.ofDefault();
 
-    @SuppressWarnings("unchecked")
     @Test
     void testWriteAndFlush() throws IOException {
         final RequestWriterImpl writer = new FakeRequestWriterImpl();
@@ -125,17 +124,17 @@ class RequestWriterImplTest {
         when(request.headers()).thenReturn(headers);
 
         final Context ctx = mock(Context.class);
-        when(ctx.expectContinueEnabled()).thenReturn(false);
+        when(ctx.isUseExpectContinue()).thenReturn(false);
 
         headers.set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
         then(RequestWriterImpl.writeContentNow(ctx, request)).isFalse();
 
         headers.clear();
         headers.set(HttpHeaderNames.EXPECT, "");
-        when(ctx.expectContinueEnabled()).thenReturn(true);
+        when(ctx.isUseExpectContinue()).thenReturn(true);
         then(RequestWriterImpl.writeContentNow(ctx, request)).isTrue();
 
-        when(ctx.expectContinueEnabled()).thenReturn(false);
+        when(ctx.isUseExpectContinue()).thenReturn(false);
         headers.clear();
         then(RequestWriterImpl.writeContentNow(ctx, request)).isTrue();
     }

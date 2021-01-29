@@ -62,7 +62,6 @@ import java.util.function.BiFunction;
 
 import static esa.httpclient.core.netty.Utils.CONNECT_INACTIVE;
 import static esa.httpclient.core.netty.Utils.WRITE_BUF_IS_FULL;
-import static esa.httpclient.core.netty.Utils.getValue;
 
 class NettyTransceiver implements HttpTransceiver {
 
@@ -325,7 +324,7 @@ class NettyTransceiver implements HttpTransceiver {
                 channel,
                 ctx,
                 headFuture,
-                getValue(request.uriEncodeEnabled(), builder.isUriEncodeEnabled()),
+                request.uriEncode(),
                 esa.commons.http.HttpVersion.HTTP_1_1 == version
                         ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,
                 http2);

@@ -100,8 +100,8 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
-    public boolean uriEncodeEnabled() {
-        return underlying.uriEncodeEnabled();
+    public boolean uriEncode() {
+        return underlying.uriEncode();
     }
 
     @Override

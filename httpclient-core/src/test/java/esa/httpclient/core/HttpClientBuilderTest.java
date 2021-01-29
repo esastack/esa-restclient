@@ -55,8 +55,7 @@ class HttpClientBuilderTest {
         final int connectionPoolWaitQueueSize = ThreadLocalRandom.current().nextInt(1, 1000);
         final boolean useDecompress = ThreadLocalRandom.current().nextBoolean();
         final Decompression decompression = Decompression.GZIP_DEFLATE;
-        final boolean expectContinueEnabled = ThreadLocalRandom.current().nextBoolean();
-        final boolean uriEncodeEnabled = ThreadLocalRandom.current().nextBoolean();
+        final boolean useExpectContinue = ThreadLocalRandom.current().nextBoolean();
         final ChannelPoolOptionsProvider channelPoolOptionsProvider = key -> null;
         final NetOptions netOptions = NetOptions.ofDefault();
         final Http1Options http1Options = Http1Options.ofDefault();
@@ -77,8 +76,7 @@ class HttpClientBuilderTest {
         builder.connectionPoolWaitingQueueLength(connectionPoolWaitQueueSize);
         builder.useDecompress(useDecompress);
         builder.decompression(decompression);
-        builder.expectContinueEnabled(expectContinueEnabled);
-        builder.uriEncodeEnabled(uriEncodeEnabled);
+        builder.useExpectContinue(useExpectContinue);
         builder.channelPoolOptionsProvider(channelPoolOptionsProvider);
         builder.netOptions(netOptions);
         builder.http1Options(http1Options);
@@ -98,8 +96,7 @@ class HttpClientBuilderTest {
         then(builder.connectionPoolWaitingQueueLength()).isEqualTo(connectionPoolWaitQueueSize);
         then(builder.isUseDecompress()).isEqualTo(useDecompress);
         then(builder.decompression()).isSameAs(decompression);
-        then(builder.isExpectContinueEnabled()).isEqualTo(expectContinueEnabled);
-        then(builder.isUriEncodeEnabled()).isEqualTo(uriEncodeEnabled);
+        then(builder.isUseExpectContinue()).isEqualTo(useExpectContinue);
         then(builder.channelPoolOptionsProvider()).isSameAs(channelPoolOptionsProvider);
         then(builder.netOptions()).isSameAs(netOptions);
         then(builder.http1Options()).isSameAs(http1Options);
@@ -122,8 +119,7 @@ class HttpClientBuilderTest {
         final int connectionPoolWaitQueueSize = ThreadLocalRandom.current().nextInt(1, 1000);
         final boolean useDecompress = ThreadLocalRandom.current().nextBoolean();
         final Decompression decompression = Decompression.GZIP_DEFLATE;
-        final boolean expectContinueEnabled = ThreadLocalRandom.current().nextBoolean();
-        final boolean uriEncodeEnabled = ThreadLocalRandom.current().nextBoolean();
+        final boolean useExpectContinue = ThreadLocalRandom.current().nextBoolean();
         final ChannelPoolOptionsProvider channelPoolOptionsProvider = key -> null;
         final NetOptions netOptions = NetOptions.ofDefault();
         final Http1Options http1Options = Http1Options.ofDefault();
@@ -144,8 +140,7 @@ class HttpClientBuilderTest {
         builder.connectionPoolWaitingQueueLength(connectionPoolWaitQueueSize);
         builder.useDecompress(useDecompress);
         builder.decompression(decompression);
-        builder.expectContinueEnabled(expectContinueEnabled);
-        builder.uriEncodeEnabled(uriEncodeEnabled);
+        builder.useExpectContinue(useExpectContinue);
         builder.channelPoolOptionsProvider(channelPoolOptionsProvider);
         builder.netOptions(netOptions);
         builder.http1Options(http1Options);
@@ -167,8 +162,7 @@ class HttpClientBuilderTest {
         then(builder1.connectionPoolWaitingQueueLength()).isEqualTo(connectionPoolWaitQueueSize);
         then(builder1.isUseDecompress()).isEqualTo(useDecompress);
         then(builder1.decompression()).isSameAs(decompression);
-        then(builder1.isExpectContinueEnabled()).isEqualTo(expectContinueEnabled);
-        then(builder1.isUriEncodeEnabled()).isEqualTo(uriEncodeEnabled);
+        then(builder1.isUseExpectContinue()).isEqualTo(useExpectContinue);
         then(builder1.channelPoolOptionsProvider()).isSameAs(channelPoolOptionsProvider);
         then(builder1.netOptions()).isNotSameAs(netOptions);
         then(builder1.http1Options()).isNotSameAs(http1Options);

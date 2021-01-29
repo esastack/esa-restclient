@@ -50,20 +50,20 @@ class ExpectContinueInterceptorTest {
         final SegmentRequest request0 = client.get("http://127.0.0.1:8080/abc").segment();
         when(next.proceed(request0)).thenReturn(Futures.completed(new MockHttpResponse()));
 
-        ctx.expectContinueEnabled(false);
+        ctx.useExpectContinue(false);
         // Case 1: disable expect-continue
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request0, next);
         then(request0.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
         // Case 2: enable expect-continue
-        ctx.expectContinueEnabled(true);
+        ctx.useExpectContinue(true);
         request0.headers().set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request0, next);
         then(request0.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
         ctx.clear();
         final HttpRequest request1 = client.get("http://127.0.0.1:8080/abc");
-        ctx.expectContinueEnabled(true);
+        ctx.useExpectContinue(true);
 
         // Case 3: enable expect-continue but body is empty
         request1.headers().set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
@@ -72,7 +72,7 @@ class ExpectContinueInterceptorTest {
 
         final HttpRequest request2 = client.post("http://127.0.0.1:8080/abc")
                 .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
-        ctx.expectContinueEnabled(true);
+        ctx.useExpectContinue(true);
         // Case 4: enable expect-continue but body isn't empty
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request2, next);
         then(HttpHeaderValues.CONTINUE.toString()).isEqualTo(request2.getHeader(HttpHeaderNames.EXPECT));
@@ -80,7 +80,7 @@ class ExpectContinueInterceptorTest {
         // Case 5: disable expect-continue and body isn't empty
         final HttpRequest request3 = client.post("http://127.0.0.1:8080/abc")
                 .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
-        ctx.expectContinueEnabled(false);
+        ctx.useExpectContinue(false);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request3, next);
         then(request3.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
@@ -88,7 +88,7 @@ class ExpectContinueInterceptorTest {
         final HttpRequest request4 = client.post("http://127.0.0.1:8080/abc")
                 .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
         ctx.clear();
-        ctx.expectContinueEnabled(false);
+        ctx.useExpectContinue(false);
         request4.setHeader(HttpHeaderNames.EXPECT, "100-continue0");
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request4, next);
         then("100-continue0").isEqualTo(request4.getHeader(HttpHeaderNames.EXPECT));

@@ -79,10 +79,10 @@ public interface HttpRequestFacade extends ExecutableRequest {
     SegmentRequest segment();
 
     @Override
-    HttpRequestFacade uriEncodeEnabled(Boolean uriEncodeEnabled);
+    HttpRequestFacade enableUriEncode();
 
     @Override
-    HttpRequestFacade expectContinueEnabled(Boolean expectContinueEnabled);
+    HttpRequestFacade disableExpectContinue();
 
     @Override
     HttpRequestFacade maxRedirects(int maxRedirects);

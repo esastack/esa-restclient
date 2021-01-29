@@ -21,10 +21,10 @@ import java.util.function.Consumer;
 public interface PlainRequest extends ExecutableRequest {
 
     @Override
-    PlainRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+    PlainRequest enableUriEncode();
 
     @Override
-    PlainRequest expectContinueEnabled(Boolean expectContinueEnabled);
+    PlainRequest disableExpectContinue();
 
     @Override
     PlainRequest maxRedirects(int maxRedirects);

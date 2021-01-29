@@ -42,8 +42,6 @@ class HttpRequestBaseImplTest {
         headers.put("Cookie", "xxxxxxxxxx");
         headers.put("Session", "xxxxxx===");
 
-        final boolean uriEncodeEnabled = ThreadLocalRandom.current().nextBoolean();
-        final boolean expectContinueEnabled = ThreadLocalRandom.current().nextBoolean();
         final int readTimeout = ThreadLocalRandom.current().nextInt(1, 3000);
         final int maxRetries = ThreadLocalRandom.current().nextInt();
         final int maxRedirects = ThreadLocalRandom.current().nextInt();
@@ -53,14 +51,14 @@ class HttpRequestBaseImplTest {
 
         final HttpRequestBaseImpl request = new HttpRequestBaseImpl(builder,
                 HttpMethod.PUT, "http://127.0.0.1:8080/abc");
-        then(request.uriEncodeEnabled()).isEqualTo(builder.isUriEncodeEnabled());
-        then(request.ctx.expectContinueEnabled()).isEqualTo(builder.isExpectContinueEnabled());
+        then(request.ctx.isUseExpectContinue()).isEqualTo(builder.isUseExpectContinue());
         then(request.ctx.maxRetries()).isEqualTo(builder.retryOptions().maxRetries());
         then(request.ctx.maxRedirects()).isEqualTo(builder.maxRedirects());
         then(request.readTimeout()).isEqualTo(builder.readTimeout());
+        then(request.uriEncode()).isFalse();
 
-        request.uriEncodeEnabled(uriEncodeEnabled)
-                .expectContinueEnabled(expectContinueEnabled)
+        request.disableExpectContinue()
+                .enableUriEncode()
                 .maxRedirects(maxRedirects)
                 .maxRetries(maxRetries)
                 .readTimeout(readTimeout)
@@ -82,12 +80,12 @@ class HttpRequestBaseImplTest {
         then(request.uri().toString()).isEqualTo("http://127.0.0.1:8080/abc");
         then(request.scheme()).isEqualTo(Scheme.HTTP.name0());
 
-        then(request.uriEncodeEnabled()).isEqualTo(uriEncodeEnabled);
+        then(request.uriEncode()).isTrue();
         then(request.readTimeout()).isEqualTo(readTimeout);
 
         then(request.ctx.maxRetries()).isEqualTo(maxRetries);
         then(request.ctx.maxRedirects()).isEqualTo(maxRedirects);
-        then(request.ctx.expectContinueEnabled()).isEqualTo(expectContinueEnabled);
+        then(request.ctx.isUseExpectContinue()).isFalse();
 
         final HttpHeaders headers0 = request.headers();
         then(headers0.size()).isEqualTo(5);
@@ -103,12 +101,6 @@ class HttpRequestBaseImplTest {
         then(params0.getFirst("m")).isEqualTo("n");
         then(params0.getFirst("a")).isEqualTo("b");
         then(params0.getFirst("mmmmm")).isEqualTo("nnnn");
-
-        // use default boolean
-        request.uriEncodeEnabled(null)
-                .expectContinueEnabled(null);
-        then(request.uriEncodeEnabled()).isEqualTo(builder.isUriEncodeEnabled());
-        then(request.ctx.expectContinueEnabled()).isEqualTo(builder.isExpectContinueEnabled());
     }
 
     @Test
@@ -124,8 +116,6 @@ class HttpRequestBaseImplTest {
         final HttpMethod method = HttpMethod.POST;
         final HttpUri uri = new HttpUri("http://127.0.0.1:8080/abc");
         final int readTimeout = ThreadLocalRandom.current().nextInt();
-        final boolean uriEncodeEnabled = ThreadLocalRandom.current().nextBoolean();
-        final boolean expectContinueEnabled = ThreadLocalRandom.current().nextBoolean();
         final int maxRetries = ThreadLocalRandom.current().nextInt();
         final int maxRedirects = ThreadLocalRandom.current().nextInt();
         final Handler handler = mock(Handler.class);
@@ -134,8 +124,6 @@ class HttpRequestBaseImplTest {
         final HttpClientBuilder builder = HttpClient.create();
 
         final HttpRequestBase request1 = new HttpRequestBaseImpl(builder, method, uri.toString())
-                .uriEncodeEnabled(uriEncodeEnabled)
-                .expectContinueEnabled(expectContinueEnabled)
                 .maxRetries(maxRetries)
                 .maxRedirects(maxRedirects)
                 .readTimeout(readTimeout)
@@ -144,12 +132,19 @@ class HttpRequestBaseImplTest {
                 .handle(handle)
                 .handler(handler);
 
+        final boolean useUriEncode = ThreadLocalRandom.current().nextBoolean();
+        final boolean useExpectContinue = ThreadLocalRandom.current().nextBoolean();
+        if (useUriEncode) {
+            request1.enableUriEncode();
+        }
+        if (!useExpectContinue) {
+            request1.disableExpectContinue();
+        }
+
         // Test isolation
         final HttpRequestBaseImpl copied = (HttpRequestBaseImpl) request1.copy();
 
-        request1.expectContinueEnabled(!uriEncodeEnabled)
-                .uriEncodeEnabled(!uriEncodeEnabled)
-                .maxRetries(maxRetries - 1)
+        request1.maxRetries(maxRetries - 1)
                 .maxRedirects(maxRedirects - 1)
                 .readTimeout(readTimeout - 1)
                 .handler(null)
@@ -159,12 +154,18 @@ class HttpRequestBaseImplTest {
         then(copied.uri()).isNotSameAs(uri);
         then(copied.uri().toString()).isEqualTo(uri.toString());
         then(copied.readTimeout()).isEqualTo(readTimeout);
-        then(copied.uriEncodeEnabled()).isEqualTo(uriEncodeEnabled);
+        then(copied.uriEncode()).isEqualTo(useUriEncode);
         then(copied.ctx.maxRetries()).isEqualTo(maxRetries);
         then(copied.ctx.maxRedirects()).isEqualTo(maxRedirects);
         then(copied.headers().size()).isEqualTo(2);
         then(copied.paramNames().size()).isEqualTo(2);
-        then(copied.ctx.expectContinueEnabled()).isEqualTo(expectContinueEnabled);
+
+        if (useExpectContinue) {
+            // default to HttpClientBuilder#isEnableExpectContinue()
+            then(copied.ctx.isUseExpectContinue()).isEqualTo(builder.isUseExpectContinue());
+        } else {
+            then(copied.ctx.isUseExpectContinue()).isFalse();
+        }
         then(copied.handle).isNull();
         then(copied.handler).isNotNull();
 

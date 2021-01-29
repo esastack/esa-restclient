@@ -38,7 +38,7 @@ interface RequestWriter {
      * @param channel channel
      * @param ctx     ctx
      * @param headFuture headFuture
-     * @param uriEncodeEnabled enabled uriEncodeEnabled or not
+     * @param useUriEncode enable uriEncode or not
      * @param version version
      * @param http2   http2 or not
      * @return future
@@ -48,7 +48,7 @@ interface RequestWriter {
                                 Channel channel,
                                 Context ctx,
                                 ChannelPromise headFuture,
-                                boolean uriEncodeEnabled,
+                                boolean useUriEncode,
                                 HttpVersion version,
                                 boolean http2) throws IOException;
 }

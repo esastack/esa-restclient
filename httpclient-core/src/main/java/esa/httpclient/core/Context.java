@@ -19,7 +19,7 @@ public class Context extends AttributeMap {
 
     protected volatile int maxRedirects;
     protected volatile int maxRetries;
-    protected volatile boolean expectContinueEnabled;
+    protected volatile boolean useExpectContinue;
 
     public int maxRedirects() {
         return maxRedirects;
@@ -29,8 +29,8 @@ public class Context extends AttributeMap {
         return maxRetries;
     }
 
-    public boolean expectContinueEnabled() {
-        return expectContinueEnabled;
+    public boolean isUseExpectContinue() {
+        return useExpectContinue;
     }
 
     protected void maxRedirects(int maxRedirects) {
@@ -41,7 +41,7 @@ public class Context extends AttributeMap {
         this.maxRetries = maxRetries;
     }
 
-    protected void expectContinueEnabled(boolean expectContinueEnabled) {
-        this.expectContinueEnabled = expectContinueEnabled;
+    protected void useExpectContinue(boolean useExpectContinue) {
+        this.useExpectContinue = useExpectContinue;
     }
 }

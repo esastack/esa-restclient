@@ -23,9 +23,9 @@ import java.util.function.Consumer;
  */
 public interface HttpRequestBase extends HttpRequest {
 
-    HttpRequestBase uriEncodeEnabled(Boolean uriEncodeEnabled);
+    HttpRequestBase enableUriEncode();
 
-    HttpRequestBase expectContinueEnabled(Boolean expectContinueEnabled);
+    HttpRequestBase disableExpectContinue();
 
     HttpRequestBase maxRedirects(int maxRedirects);
 

@@ -21,10 +21,10 @@ import java.util.function.Consumer;
 public interface FileRequest extends ExecutableRequest {
 
     @Override
-    FileRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+    FileRequest enableUriEncode();
 
     @Override
-    FileRequest expectContinueEnabled(Boolean expectContinueEnabled);
+    FileRequest disableExpectContinue();
 
     @Override
     FileRequest maxRedirects(int maxRedirects);

@@ -60,7 +60,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     private Buffer buffer;
     private File file;
-    private boolean multipartEncode = true;
+    private boolean useMultipartEncode = true;
 
     /**
      * A bitmask where the bits are defined as
@@ -135,15 +135,15 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public MultipartRequest multipartEncode(boolean multipartEncode) {
+    public MultipartRequest multipartEncode(boolean useMultipartEncode) {
         checkStarted();
-        this.multipartEncode = multipartEncode;
+        this.useMultipartEncode = useMultipartEncode;
         return self();
     }
 
     @Override
     public boolean multipartEncode() {
-        return isMultipart() && multipartEncode;
+        return isMultipart() && useMultipartEncode;
     }
 
     @Override
@@ -220,16 +220,16 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     ////////**********************COMMON SETTER************************////////
 
     @Override
-    public CompositeRequest uriEncodeEnabled(Boolean uriEncodeEnabled) {
+    public CompositeRequest enableUriEncode() {
         checkStarted();
-        super.uriEncodeEnabled(uriEncodeEnabled);
+        super.enableUriEncode();
         return self();
     }
 
     @Override
-    public CompositeRequest expectContinueEnabled(Boolean expectContinueEnabled) {
+    public CompositeRequest disableExpectContinue() {
         checkStarted();
-        super.expectContinueEnabled(expectContinueEnabled);
+        super.disableExpectContinue();
         return self();
     }
 
@@ -329,7 +329,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
         copied.attrs.putAll(attrs);
         copied.files.addAll(files);
-        copied.multipartEncode(multipartEncode);
+        copied.multipartEncode(useMultipartEncode);
         if (buffer != null) {
             copied.body(buffer.copy());
         }
@@ -354,7 +354,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     private void checkMultipartFile() {
-        if (!multipartEncode) {
+        if (!useMultipartEncode) {
             throw new IllegalArgumentException("File is not allowed to be added, maybe multipart is false?");
         }
     }

@@ -252,10 +252,10 @@ public interface SegmentRequest extends HttpRequestBase {
     boolean isWritable();
 
     @Override
-    SegmentRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+    SegmentRequest enableUriEncode();
 
     @Override
-    SegmentRequest expectContinueEnabled(Boolean expectContinueEnabled);
+    SegmentRequest disableExpectContinue();
 
     @Override
     SegmentRequest maxRedirects(int maxRedirects);

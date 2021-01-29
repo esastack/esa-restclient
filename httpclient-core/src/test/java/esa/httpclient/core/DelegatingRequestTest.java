@@ -81,9 +81,9 @@ class DelegatingRequestTest {
         request.removeHeader("");
         verify(underlying).removeHeader(anyString());
 
-        verify(underlying, never()).uriEncodeEnabled();
-        request.uriEncodeEnabled();
-        verify(underlying).uriEncodeEnabled();
+        verify(underlying, never()).uriEncode();
+        request.uriEncode();
+        verify(underlying).uriEncode();
 
         verify(underlying, never()).readTimeout();
         request.readTimeout();

@@ -143,8 +143,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
-                    .attr("key1", "value1")
-                    .expectContinueEnabled(true);
+                    .attr("key1", "value1");
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
             final NettyContext ctx = new NettyContext();

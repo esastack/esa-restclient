@@ -59,7 +59,7 @@ abstract class RequestWriterImpl implements RequestWriter {
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
-                                       boolean uriEncodeEnabled,
+                                       boolean useUriEncode,
                                        io.netty.handler.codec.http.HttpVersion version,
                                        boolean http2) throws IOException {
         addHostIfAbsent(request, () -> computeHost(request.uri().netURI()));
@@ -73,14 +73,14 @@ abstract class RequestWriterImpl implements RequestWriter {
                     headFuture,
                     handler,
                     streamId,
-                    uriEncodeEnabled);
+                    useUriEncode);
         } else {
             return writeAndFlush1(request,
                     channel,
                     ctx,
                     headFuture,
                     version,
-                    uriEncodeEnabled);
+                    useUriEncode);
         }
     }
 
@@ -149,7 +149,7 @@ abstract class RequestWriterImpl implements RequestWriter {
      * @param context context
      * @param headFuture headFuture
      * @param version version
-     * @param uriEncodeEnabled enabled uriEncodeEnabled or not
+     * @param uriEncodeEnabled enable uriEncode or not
      * @return future
      * @throws IOException ex
      */

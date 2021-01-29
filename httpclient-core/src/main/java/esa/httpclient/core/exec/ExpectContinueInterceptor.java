@@ -26,14 +26,14 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The interceptor designed to handle {@link HttpRequest} which needs 100-continue negotiation with remote peer.
- * When the {@link Context#expectContinueEnabled()} returns {@code true}, current interceptor will
+ * When the {@link Context#isUseExpectContinue()} returns {@code true}, current interceptor will
  * take effect to the corresponding {@link HttpRequest}.
  */
 public class ExpectContinueInterceptor implements Interceptor {
 
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
-        if (!Boolean.TRUE.equals(next.ctx().expectContinueEnabled())) {
+        if (!Boolean.TRUE.equals(next.ctx().isUseExpectContinue())) {
             if (LoggerUtils.logger().isDebugEnabled()) {
                 LoggerUtils.logger().debug("100-Continue is disabled, uri: {}",
                         request.uri().toString());

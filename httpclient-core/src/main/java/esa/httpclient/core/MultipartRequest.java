@@ -34,10 +34,10 @@ public interface MultipartRequest extends ExecutableRequest {
     MultipartRequest file(String name, String filename, File file, String contentType, boolean isText);
 
     @Override
-    MultipartRequest uriEncodeEnabled(Boolean uriEncodeEnabled);
+    MultipartRequest enableUriEncode();
 
     @Override
-    MultipartRequest expectContinueEnabled(Boolean expectContinueEnabled);
+    MultipartRequest disableExpectContinue();
 
     @Override
     MultipartRequest maxRedirects(int maxRedirects);

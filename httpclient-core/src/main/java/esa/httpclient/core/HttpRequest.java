@@ -81,7 +81,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
      * Whether use multipart encode for {@link MultipartRequest}.
      *
      * @return {@code true} if current request using multipart encode, otherwise {@code false}.
-     * the return value will be always {@link false} when {@link #isMultipart()}
+     * the return value will be always {@code false} when {@link #isMultipart()}
      * is false.
      */
     default boolean multipartEncode() {

@@ -116,6 +116,10 @@ class DelegatingRequestTest {
         verify(underlying, never()).isFile();
         request.isFile();
         verify(underlying).isFile();
+
+        verify(underlying, never()).multipartEncode();
+        request.multipartEncode();
+        verify(underlying).multipartEncode();
     }
 
 }

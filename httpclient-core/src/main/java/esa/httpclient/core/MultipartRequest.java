@@ -23,8 +23,6 @@ public interface MultipartRequest extends ExecutableRequest {
 
     MultipartRequest multipartEncode(boolean multipartEncode);
 
-    boolean multipartEncode();
-
     MultipartRequest attr(String name, String value);
 
     MultipartRequest file(String name, File file);

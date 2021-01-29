@@ -29,7 +29,7 @@ import java.io.IOException;
  * The writer can convert, write and flush given {@link HttpRequest} and {@link HttpHeaders} to the
  * specified {@link Channel}.
  */
-interface RequestWriter<Request extends HttpRequest> {
+interface RequestWriter {
 
     /**
      * Convert, write and flush the given request to the specified channel.
@@ -44,7 +44,7 @@ interface RequestWriter<Request extends HttpRequest> {
      * @return future
      * @throws IOException ex
      */
-    ChannelFuture writeAndFlush(Request request,
+    ChannelFuture writeAndFlush(HttpRequest request,
                                 Channel channel,
                                 Context ctx,
                                 ChannelPromise headFuture,

@@ -18,7 +18,7 @@ package esa.httpclient.core.netty;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.PlainRequest;
+import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -35,7 +35,7 @@ import io.netty.handler.codec.http.HttpVersion;
 
 import java.io.IOException;
 
-class PlainWriter extends RequestWriterImpl<PlainRequest> {
+class PlainWriter extends RequestWriterImpl {
 
     private static final PlainWriter INSTANCE = new PlainWriter();
 
@@ -43,7 +43,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     }
 
     @Override
-    public ChannelFuture writeAndFlush(PlainRequest request,
+    public ChannelFuture writeAndFlush(HttpRequest request,
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
@@ -56,7 +56,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush1(PlainRequest request,
+    ChannelFuture writeAndFlush1(HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,
@@ -108,7 +108,7 @@ class PlainWriter extends RequestWriterImpl<PlainRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush2(PlainRequest request,
+    ChannelFuture writeAndFlush2(HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,

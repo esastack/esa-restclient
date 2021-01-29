@@ -150,6 +150,11 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
+    public boolean multipartEncode() {
+        return underlying.multipartEncode();
+    }
+
+    @Override
     public String toString() {
         return underlying.toString();
     }

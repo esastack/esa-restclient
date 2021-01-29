@@ -21,7 +21,6 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.SegmentRequest;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -48,7 +47,7 @@ import static esa.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 /**
  * This class is designed as thread-safe, so we need't worry about a serial of conflicts.
  */
-class SegmentWriter extends RequestWriterImpl<SegmentRequest> {
+class SegmentWriter extends RequestWriterImpl {
 
     private volatile ChannelPromise endPromise;
     private volatile Channel channel;
@@ -57,7 +56,7 @@ class SegmentWriter extends RequestWriterImpl<SegmentRequest> {
     private volatile int streamId;
 
     @Override
-    public ChannelFuture writeAndFlush(SegmentRequest request,
+    public ChannelFuture writeAndFlush(esa.httpclient.core.HttpRequest request,
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
@@ -71,7 +70,7 @@ class SegmentWriter extends RequestWriterImpl<SegmentRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush2(SegmentRequest request,
+    ChannelFuture writeAndFlush2(esa.httpclient.core.HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,
@@ -96,7 +95,7 @@ class SegmentWriter extends RequestWriterImpl<SegmentRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush1(SegmentRequest request,
+    ChannelFuture writeAndFlush1(esa.httpclient.core.HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,

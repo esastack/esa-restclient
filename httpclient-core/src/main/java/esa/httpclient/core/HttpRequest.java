@@ -78,6 +78,17 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     int readTimeout();
 
     /**
+     * Whether use multipart encode for {@link MultipartRequest}.
+     *
+     * @return {@code true} if current request using multipart encode, otherwise {@code false}.
+     * the return value will be always {@code false} when {@link #isMultipart()}
+     * is false.
+     */
+    default boolean multipartEncode() {
+        return false;
+    }
+
+    /**
      * Whether segment write or not.
      *
      * @return {@code true} if current request is segment write, otherwise {@code false}.
@@ -89,7 +100,7 @@ public interface HttpRequest extends Reusable<HttpRequest> {
     /**
      * Whether multipart or not.
      *
-     * @return {@code true} if current request using multipart encode, otherwise {@code false}.
+     * @return {@code true} if current request is {@link MultipartRequest}, otherwise {@code false}.
      */
     default boolean isMultipart() {
         return false;

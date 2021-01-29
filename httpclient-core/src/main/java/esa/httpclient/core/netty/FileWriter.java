@@ -18,7 +18,7 @@ package esa.httpclient.core.netty;
 import esa.commons.io.IOUtils;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.FileRequest;
+import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -40,7 +40,7 @@ import java.io.RandomAccessFile;
 
 import static esa.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 
-class FileWriter extends RequestWriterImpl<FileRequest> {
+class FileWriter extends RequestWriterImpl {
 
     private static final String MODE_READ = "r";
     private static final FileWriter INSTANCE = new FileWriter();
@@ -49,7 +49,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
     }
 
     @Override
-    public ChannelFuture writeAndFlush(FileRequest request,
+    public ChannelFuture writeAndFlush(HttpRequest request,
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
@@ -63,7 +63,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush1(FileRequest request,
+    ChannelFuture writeAndFlush1(HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,
@@ -92,7 +92,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
         return endPromise;
     }
 
-    private static void doWriteContent1(FileRequest request, Channel channel, ChannelPromise endPromise) {
+    private static void doWriteContent1(HttpRequest request, Channel channel, ChannelPromise endPromise) {
         // Write content
         long length;
         RandomAccessFile rFile = null;
@@ -123,7 +123,7 @@ class FileWriter extends RequestWriterImpl<FileRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush2(FileRequest request,
+    ChannelFuture writeAndFlush2(HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,

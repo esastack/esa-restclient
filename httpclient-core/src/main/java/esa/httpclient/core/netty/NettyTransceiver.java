@@ -321,7 +321,7 @@ class NettyTransceiver implements HttpTransceiver {
                 registry,
                 response);
         final ChannelPromise headFuture = channel.newPromise();
-        @SuppressWarnings("unchecked") final ChannelFuture endFuture = writer.writeAndFlush(request,
+        final ChannelFuture endFuture = writer.writeAndFlush(request,
                 channel,
                 ctx,
                 headFuture,

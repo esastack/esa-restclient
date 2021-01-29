@@ -19,7 +19,6 @@ import esa.commons.collection.MultiValueMap;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.MultipartFileItem;
-import esa.httpclient.core.MultipartRequest;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -50,7 +49,7 @@ import java.util.Map;
 
 import static esa.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 
-class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
+class MultipartWriter extends RequestWriterImpl {
 
     private static final String MEMORY_THRESHOLD_KEY = "esa.httpclient.multipart.memoryThreshold";
     private static final String TEMP_DIR_KEY = "esa.httpclient.multipart.tempDir";
@@ -83,7 +82,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush1(MultipartRequest request,
+    ChannelFuture writeAndFlush1(esa.httpclient.core.HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,
@@ -108,7 +107,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
         return endPromise;
     }
 
-    private static void encodeAndWrite1(MultipartRequest request,
+    private static void encodeAndWrite1(esa.httpclient.core.HttpRequest request,
                                         HttpRequest request0,
                                         Channel channel,
                                         Context ctx,
@@ -153,7 +152,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
     }
 
     @Override
-    ChannelFuture writeAndFlush2(MultipartRequest request,
+    ChannelFuture writeAndFlush2(esa.httpclient.core.HttpRequest request,
                                  Channel channel,
                                  Context context,
                                  ChannelPromise headFuture,
@@ -186,7 +185,7 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
         return endPromise;
     }
 
-    private void encodeAndWrite2(MultipartRequest request,
+    private void encodeAndWrite2(esa.httpclient.core.HttpRequest request,
                                  Channel channel,
                                  Http2ConnectionHandler handler,
                                  int streamId,
@@ -261,7 +260,8 @@ class MultipartWriter extends RequestWriterImpl<MultipartRequest> {
         }
     }
 
-    private static HttpPostRequestEncoder buildEncoder(HttpRequest request0, MultipartRequest request)
+    private static HttpPostRequestEncoder buildEncoder(HttpRequest request0,
+                                                       esa.httpclient.core.HttpRequest request)
             throws HttpPostRequestEncoder.ErrorDataEncoderException {
         final HttpPostRequestEncoder encoder = new HttpPostRequestEncoder(FACTORY,
                 request0,

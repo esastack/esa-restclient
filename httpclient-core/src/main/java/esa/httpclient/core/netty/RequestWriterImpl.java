@@ -40,7 +40,7 @@ import java.util.function.ToLongFunction;
 
 import static esa.httpclient.core.netty.Utils.CONNECT_INACTIVE;
 
-abstract class RequestWriterImpl<Request extends HttpRequest> implements RequestWriter<Request> {
+abstract class RequestWriterImpl implements RequestWriter {
 
     private static final Predicate<HttpRequest> CONTENT_LENGTH_ABSENT = request -> {
         HttpHeaders headers0 = request.headers();
@@ -55,7 +55,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
             -> !request.headers().contains(HttpHeaderNames.HOST);
 
     @Override
-    public ChannelFuture writeAndFlush(Request request,
+    public ChannelFuture writeAndFlush(HttpRequest request,
                                        Channel channel,
                                        Context ctx,
                                        ChannelPromise headFuture,
@@ -133,7 +133,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
      * @return future
      * @throws IOException ex
      */
-    abstract ChannelFuture writeAndFlush2(Request request,
+    abstract ChannelFuture writeAndFlush2(HttpRequest request,
                                           Channel channel,
                                           Context context,
                                           ChannelPromise headFuture,
@@ -153,7 +153,7 @@ abstract class RequestWriterImpl<Request extends HttpRequest> implements Request
      * @return future
      * @throws IOException ex
      */
-    abstract ChannelFuture writeAndFlush1(Request request,
+    abstract ChannelFuture writeAndFlush1(HttpRequest request,
                                           Channel channel,
                                           Context context,
                                           ChannelPromise headFuture,

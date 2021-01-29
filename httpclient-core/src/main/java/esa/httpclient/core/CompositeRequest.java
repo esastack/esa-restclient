@@ -143,7 +143,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public boolean multipartEncode() {
-        return multipartEncode;
+        return isMultipart() && multipartEncode;
     }
 
     @Override

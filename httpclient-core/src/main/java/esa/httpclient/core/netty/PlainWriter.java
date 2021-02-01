@@ -33,26 +33,11 @@ import io.netty.handler.codec.http.EmptyHttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 
-import java.io.IOException;
-
 class PlainWriter extends RequestWriterImpl {
 
     private static final PlainWriter INSTANCE = new PlainWriter();
 
     private PlainWriter() {
-    }
-
-    @Override
-    public ChannelFuture writeAndFlush(HttpRequest request,
-                                       Channel channel,
-                                       Context ctx,
-                                       ChannelPromise headFuture,
-                                       boolean useUriEncode,
-                                       HttpVersion version,
-                                       boolean http2) throws IOException {
-        addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
-
-        return super.writeAndFlush(request, channel, ctx, headFuture, useUriEncode, version, http2);
     }
 
     @Override
@@ -62,6 +47,8 @@ class PlainWriter extends RequestWriterImpl {
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
+        addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
+
         if (request.buffer() == null || !request.buffer().isReadable()) {
             final DefaultFullHttpRequest req = new DefaultFullHttpRequest(version,
                     HttpMethod.valueOf(request.method().name()),

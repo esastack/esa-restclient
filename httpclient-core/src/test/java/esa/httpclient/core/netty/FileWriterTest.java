@@ -236,7 +236,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             then(header).isNotNull();
             then(header.streamId).isEqualTo(STREAM_ID);
             then(header.headers.method()).isEqualTo(HttpMethod.POST.asciiName());
-            then(header.headers.getInt(HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(file.length());
+            then(header.headers.getInt(HttpHeaderNames.CONTENT_LENGTH)).isNull();
             then(header.headers.get(HttpHeaderNames.CONTENT_TYPE)).isEqualTo(HttpHeaderValues.APPLICATION_OCTET_STREAM);
             then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
@@ -290,7 +290,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             then(header).isNotNull();
             then(header.streamId).isEqualTo(STREAM_ID);
             then(header.headers.method()).isEqualTo(HttpMethod.POST.asciiName());
-            then(header.headers.getInt(HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(file.length());
+            then(header.headers.getInt(HttpHeaderNames.CONTENT_LENGTH)).isNull();
             then(header.headers.get(HttpHeaderNames.CONTENT_TYPE)).isEqualTo(HttpHeaderValues.APPLICATION_OCTET_STREAM);
             then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
@@ -351,7 +351,7 @@ class FileWriterTest extends Http2ConnectionHelper {
             then(header).isNotNull();
             then(header.streamId).isEqualTo(STREAM_ID);
             then(header.headers.method()).isEqualTo(HttpMethod.POST.asciiName());
-            then(header.headers.getInt(HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(file.length());
+            then(header.headers.getInt(HttpHeaderNames.CONTENT_LENGTH)).isNull();
             then(header.headers.get(HttpHeaderNames.CONTENT_TYPE)).isEqualTo(HttpHeaderValues.APPLICATION_OCTET_STREAM);
             then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 

@@ -201,14 +201,18 @@ final class ChannelInitializer {
                 protected void configurePipeline(ChannelHandlerContext ctx, String protocol) {
                     if (esa.commons.http.HttpVersion.HTTP_2 == version
                             && ApplicationProtocolNames.HTTP_2.equals(protocol)) {
-                        LoggerUtils.logger().info("Negotiated to use http2 successfully, connection: {}",
-                                channel);
+                        if (LoggerUtils.logger().isDebugEnabled()) {
+                            LoggerUtils.logger().debug("Negotiated to use http2 successfully, connection: {}",
+                                    channel);
+                        }
                         addH2Handlers(ctx.pipeline(), http2Options, decompression);
                         initializeFuture.setSuccess();
                     } else if (esa.commons.http.HttpVersion.HTTP_2 != (version) &&
                             ApplicationProtocolNames.HTTP_1_1.equals(protocol)) {
-                        LoggerUtils.logger().info("Negotiated to use http1.1 successfully, connection: {}",
-                                channel);
+                        if (LoggerUtils.logger().isDebugEnabled()) {
+                            LoggerUtils.logger().debug("Negotiated to use http1.1 successfully, connection: {}",
+                                    channel);
+                        }
                         addH1Handlers(ctx.pipeline(), http1Options, decompression);
                         initializeFuture.setSuccess();
                     } else {

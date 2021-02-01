@@ -35,10 +35,10 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     private final HttpMethod method;
     private final HttpHeaders headers = new Http1HeadersImpl();
 
-    protected volatile Consumer<Handle> handle;
-    protected volatile Handler handler;
-    private volatile int readTimeout;
-    private volatile boolean useUriEncode;
+    protected Consumer<Handle> handle;
+    protected Handler handler;
+    private int readTimeout;
+    private boolean useUriEncode;
 
     protected HttpRequestBaseImpl(HttpClientBuilder builder,
                                   HttpMethod method,

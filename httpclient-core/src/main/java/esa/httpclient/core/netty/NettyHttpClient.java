@@ -399,7 +399,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     @Override
-    public NettyHttpClient applyChannelPoolOptions(Map<SocketAddress, ChannelPoolOptions> options) {
+    public synchronized NettyHttpClient applyChannelPoolOptions(Map<SocketAddress, ChannelPoolOptions> options) {
         if (options == null || options.isEmpty()) {
             return this;
         }

@@ -19,7 +19,7 @@ import esa.commons.Checks;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http2HeadersAdaptor;
 import esa.httpclient.core.Context;
-import esa.httpclient.core.exception.ClosedConnectionException;
+import esa.httpclient.core.exception.ClosedStreamException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
@@ -30,7 +30,6 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.netty.handler.codec.http2.Http2CodecUtil;
 import io.netty.handler.codec.http2.Http2Connection;
-import io.netty.handler.codec.http2.Http2Error;
 import io.netty.handler.codec.http2.Http2EventAdapter;
 import io.netty.handler.codec.http2.Http2Exception;
 import io.netty.handler.codec.http2.Http2Headers;
@@ -155,8 +154,11 @@ class Http2FrameHandler extends Http2EventAdapter {
                                 long errorCode) {
         final Http2Stream stream = connection.stream(streamId);
         if (stream != null) {
-            onError(Http2Exception.streamError(streamId, Http2Error.valueOf(errorCode),
-                    "Received reset stream"), stream, streamId, true);
+            final Throwable ex = ClosedStreamException.CAUSED_BY_RST;
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger().debug(ex.getMessage());
+            }
+            onError(ex, stream, streamId, false);
         }
     }
 
@@ -165,12 +167,12 @@ class Http2FrameHandler extends Http2EventAdapter {
                              long errorCode, ByteBuf debugData) throws Http2Exception {
         final String errMsg = debugData.toString(StandardCharsets.UTF_8);
 
-        final ClosedConnectionException ex;
+        final ClosedStreamException ex;
         if (NO_ERROR.code() == errorCode) {
-            ex = new ClosedConnectionException("Received goAway stream in connection: " + ctx.channel()
+            ex = new ClosedStreamException("Received goAway stream in connection: " + ctx.channel()
                     + ", maybe server has closed the connection");
         } else {
-            ex = new ClosedConnectionException("Received goAway stream in connection: " +
+            ex = new ClosedStreamException("Received goAway stream in connection: " +
                     ctx.channel() + ", msg: " + errMsg);
         }
 
@@ -221,8 +223,8 @@ class Http2FrameHandler extends Http2EventAdapter {
         try {
             super.onStreamRemoved(stream);
         } finally {
-            onError(Http2Exception.streamError(stream.id(), Http2Error.STREAM_CLOSED, "Stream removed"),
-                    stream, -1, false);
+            final Throwable ex = ClosedStreamException.CAUSED_BY_REMOVED;
+            onError(ex, stream, -1, false);
         }
     }
 

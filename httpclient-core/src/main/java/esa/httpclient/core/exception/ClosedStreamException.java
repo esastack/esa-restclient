@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,18 @@ package esa.httpclient.core.exception;
 
 import java.io.IOException;
 
-public class ClosedConnectionException extends IOException {
+public class ClosedStreamException extends IOException {
+
+    public static final ClosedStreamException CAUSED_BY_RST =
+            new ClosedStreamException("Received reset stream and current stream will be discarded");
+
+    public static final ClosedStreamException CAUSED_BY_REMOVED =
+            new ClosedStreamException("Stream has been removed");
 
     private static final long serialVersionUID = -7491330351921922628L;
 
-    public ClosedConnectionException(String msg) {
+    public ClosedStreamException(String msg) {
         super(msg);
     }
 }
+

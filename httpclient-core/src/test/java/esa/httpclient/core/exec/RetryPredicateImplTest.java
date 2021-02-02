@@ -19,6 +19,7 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.exception.ClosedConnectionException;
+import esa.httpclient.core.exception.ClosedStreamException;
 import org.junit.jupiter.api.Test;
 
 import java.net.ConnectException;
@@ -36,7 +37,9 @@ class RetryPredicateImplTest {
         then(predicate.canRetry(mock(HttpRequest.class), mock(HttpResponse.class), mock(Context.class),
                 new ConnectException())).isTrue();
         then(predicate.canRetry(mock(HttpRequest.class), mock(HttpResponse.class), mock(Context.class),
-                ClosedConnectionException.INSTANCE)).isTrue();
+                new ClosedConnectionException(""))).isTrue();
+        then(predicate.canRetry(mock(HttpRequest.class), mock(HttpResponse.class), mock(Context.class),
+                new ClosedStreamException(""))).isTrue();
         then(predicate.canRetry(mock(HttpRequest.class), mock(HttpResponse.class), mock(Context.class),
                 new RuntimeException())).isFalse();
     }

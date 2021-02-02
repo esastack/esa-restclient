@@ -19,6 +19,7 @@ import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.exception.ClosedConnectionException;
+import esa.httpclient.core.exception.ClosedStreamException;
 import esa.httpclient.core.util.Futures;
 
 import java.net.ConnectException;
@@ -40,7 +41,9 @@ public class RetryPredicateImpl implements RetryPredicate {
         }
 
         final Throwable unwrapped = Futures.unwrapped(cause);
-        if (unwrapped instanceof ConnectException || unwrapped instanceof ClosedConnectionException) {
+        if (unwrapped instanceof ConnectException
+                || unwrapped instanceof ClosedConnectionException
+                || unwrapped instanceof ClosedStreamException) {
             return true;
         }
 

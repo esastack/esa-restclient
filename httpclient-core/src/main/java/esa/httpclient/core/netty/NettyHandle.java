@@ -139,7 +139,7 @@ class NettyHandle {
 
             listener.onError(request, ctx, cause);
         } catch (Throwable ex) {
-            LoggerUtils.logger().warn("Unexpected exception occurred on handle#onError0", cause);
+            LoggerUtils.logger().error("Unexpected exception occurred on handle#onError0", cause);
         }
     }
 

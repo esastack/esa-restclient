@@ -17,14 +17,13 @@ package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
-import esa.httpclient.core.exception.ClosedConnectionException;
+import esa.httpclient.core.exception.ClosedStreamException;
 import esa.httpclient.core.exception.ContentOverSizedException;
 import esa.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
@@ -43,7 +42,6 @@ import io.netty.handler.codec.http2.Http2Connection;
 import io.netty.handler.codec.http2.Http2ConnectionDecoder;
 import io.netty.handler.codec.http2.Http2ConnectionEncoder;
 import io.netty.handler.codec.http2.Http2Error;
-import io.netty.handler.codec.http2.Http2Exception;
 import io.netty.handler.codec.http2.Http2FrameReader;
 import io.netty.handler.codec.http2.Http2FrameWriter;
 import io.netty.handler.codec.http2.Http2Headers;
@@ -572,7 +570,7 @@ class Http2FrameHandlerTest {
         frameInboundWriter.writeInboundRstStream(requestId, Http2Error.INTERNAL_ERROR.code());
 
         then(response.isDone() && response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(Http2Exception.class);
+        then(Futures.getCause(response)).isInstanceOf(ClosedStreamException.class);
         channel.flush();
 
         then(registry.get(requestId)).isNull();
@@ -635,7 +633,7 @@ class Http2FrameHandlerTest {
                         new DefaultHttp2Headers(), 0, true));
 
         then(response.isDone() && response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(Http2Exception.class);
+        then(Futures.getCause(response)).isInstanceOf(ClosedStreamException.class);
         channel.flush();
 
         then(registry.get(requestId)).isNull();
@@ -668,216 +666,9 @@ class Http2FrameHandlerTest {
         channel.flushInbound();
 
         then(response.isDone() && response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(ClosedConnectionException.class);
+        then(Futures.getCause(response)).isInstanceOf(ClosedStreamException.class);
 
         then(registry.get(requestId)).isNull();
         channel.finishAndReleaseAll();
     }
-
-    @Test
-    void testErrorWhileHandlingOnMessage() {
-        final HandleRegistry registry = new HandleRegistry(2, 0);
-        final long maxContentLength = -1L;
-
-        setUp(registry, maxContentLength);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response) {
-            @Override
-            public void onMessage(esa.httpclient.core.HttpMessage message) {
-                throw new IllegalArgumentException();
-            }
-        };
-
-        final int requestId = registry.put(handle);
-
-        final Http2Headers headers = new DefaultHttp2Headers();
-        headers.add("a", "b");
-        headers.add("x", "y");
-        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, true);
-
-        then(response.isDone()).isTrue();
-        then(registry.get(requestId)).isNull();
-        then(response.isDone()).isTrue();
-        then(response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(Http2Exception.StreamException.class);
-
-        then(registry.get(requestId)).isNull();
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testErrorWhileHandlingOnData() {
-        final HandleRegistry registry = new HandleRegistry(2, 0);
-        final long maxContentLength = -1L;
-
-        setUp(registry, maxContentLength);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response) {
-            @Override
-            public void onData(Buffer content) {
-                throw new IllegalArgumentException();
-            }
-        };
-
-        final int requestId = registry.put(handle);
-
-        final Http2Headers headers = new DefaultHttp2Headers();
-        headers.add("a", "b");
-        headers.add("x", "y");
-        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, false);
-        frameInboundWriter.writeInboundData(requestId, Unpooled.buffer().writeBytes(DATA),
-                0, true);
-
-        then(response.isDone()).isTrue();
-        then(registry.get(requestId)).isNull();
-        then(response.isDone()).isTrue();
-        then(response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(Http2Exception.StreamException.class);
-
-        then(registry.get(requestId)).isNull();
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testErrorWhileHandingOnTrailers() {
-        final HandleRegistry registry = new HandleRegistry(2, 0);
-        final long maxContentLength = -1L;
-
-        setUp(registry, maxContentLength);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response) {
-
-            @Override
-            public void onTrailers(esa.commons.http.HttpHeaders trailers) {
-                throw new RuntimeException();
-            }
-        };
-
-        final int requestId = registry.put(handle);
-
-        final Http2Headers headers = new DefaultHttp2Headers();
-        headers.add("a", "b");
-        headers.add("x", "y");
-        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, false);
-        frameInboundWriter.writeInboundData(requestId, Unpooled.EMPTY_BUFFER, 0, false);
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, true);
-
-        then(response.isDone()).isTrue();
-        then(registry.get(requestId)).isNull();
-        then(response.isDone()).isTrue();
-        then(response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(Http2Exception.StreamException.class);
-
-        then(registry.get(requestId)).isNull();
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testErrorWhileHandingOnEnd() {
-        final HandleRegistry registry = new HandleRegistry(2, 0);
-        final long maxContentLength = -1L;
-
-        setUp(registry, maxContentLength);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response) {
-            @Override
-            public void onEnd() {
-                throw new IllegalStateException();
-            }
-        };
-
-        final int requestId = registry.put(handle);
-
-        final Http2Headers headers = new DefaultHttp2Headers();
-        headers.add("a", "b");
-        headers.add("x", "y");
-        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, false);
-        frameInboundWriter.writeInboundData(requestId, Unpooled.EMPTY_BUFFER, 0, false);
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, true);
-
-        then(response.isDone()).isTrue();
-        then(registry.get(requestId)).isNull();
-        then(response.isDone()).isTrue();
-        then(response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(Http2Exception.StreamException.class);
-
-        then(registry.get(requestId)).isNull();
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testErrorWhileHandingOnError() {
-        final HandleRegistry registry = new HandleRegistry(2, 0);
-
-        final long maxContentLength = 1L;
-
-        setUp(registry, maxContentLength);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response) {
-
-            @Override
-            public void onError(Throwable cause) {
-                throw new IllegalArgumentException();
-            }
-        };
-
-        final int requestId = registry.put(handle);
-
-        final Http2Headers headers = new DefaultHttp2Headers();
-        headers.add("a", "b");
-        headers.add("x", "y");
-        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, false);
-        frameInboundWriter.writeInboundData(requestId, Unpooled.buffer().writeBytes(DATA), 0,
-                false);
-
-        assertThrows(ClosedChannelException.class,
-                () -> frameInboundWriter.writeInboundHeaders(requestId, headers, 0, true));
-
-        then(response.isDone()).isFalse();
-        then(registry.get(requestId)).isNull();
-        channel.finishAndReleaseAll();
-    }
-
 }

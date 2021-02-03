@@ -173,6 +173,11 @@ public class RedirectInterceptor implements Interceptor {
             public List<MultipartFileItem> files() {
                 return cleanBody ? null : super.files();
             }
+
+            @Override
+            public String toString() {
+                return uri0.toString();
+            }
         };
 
         standardHeaders(request0.headers(), cleanBody);

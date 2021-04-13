@@ -2,7 +2,7 @@
 sort: 9
 ---
 
-# 指标
+# 指标统计
 
 `HttpClient`提供了IO线程池及连接池的Metric指标统计，使用时通过`HttpClient`实例便可直接获取，具体使用如下：
 ```java

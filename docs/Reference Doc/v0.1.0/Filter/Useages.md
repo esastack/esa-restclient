@@ -3,8 +3,9 @@ sort: 1
 ---
 
 # 使用方式
+`HttpClient`支持通过builder配置和SPI加载两种方式配置`Filter`。
 
-## 主动配置
+## Builder配置
 
 ```java
 final HttpClient client = HttpClient.create().addRequestFilter((request, ctx) -> {  // 仅处理Request

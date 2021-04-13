@@ -3,8 +3,9 @@ sort: 1
 ---
 
 # 使用方式
+`HttpClient`支持通过builder配置和SPI加载两种方式配置`Interceptor`。
 
-## 主动配置
+## Builder配置
 
 在构造`HttpClient`时传入自定义的`Interceptor`实例，如：
 ```java

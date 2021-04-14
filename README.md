@@ -44,4 +44,4 @@ logger.info(response.body().string(StandardCharsets.UTF_8));
 client.close();
 ```
 
-See more details in [Reference Doc](https://github.com/esastack/esa-httpclient/wiki)
+See more details in [Reference Doc](https://www.esastack.io/esa-httpclient)

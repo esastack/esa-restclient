@@ -35,5 +35,5 @@ System.out.println(response.body().string(StandardCharsets.UTF_8));
 如上所示，`HttpClient`将添加的文件和表单参数进行Multipart Encode的结果作为请求的body内容，对应的Content-Type为**multipart/form-data。** 该情形适用于需要进行multipart encode或者存在表单参数的情形。**特别地，如果只上传表单参数，不存在文件时，可以设置multipart值为false，后续上传时请求的Content-Type将设置为application/x-www-form-urlencoded。**
 
 ```tip
-当下载文件内容较大时，建议使用[自定义响应处理](../Customize%20Handle/)功能，分块读取响应body内容并将其直接写入文件，避免产生OOM。
+当下载文件内容较大时，建议使用[自定义响应处理](../customize_handle/)功能，分块读取响应body内容并将其直接写入文件，避免产生OOM。
 ```

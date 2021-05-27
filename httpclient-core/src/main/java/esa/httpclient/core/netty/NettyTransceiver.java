@@ -525,6 +525,8 @@ class NettyTransceiver implements HttpTransceiver {
         if (headFuture.isDone() && !headFuture.isSuccess()) {
             // Note: we instantiate a ConnectException if have failed to write header, so
             // that we can retry current request soon without worrying server idempotent.
+            LoggerUtils.logger().warn("Failed to write request: " + request + " to connection: "
+                    + endFuture.channel(), endFuture.cause());
             cause = new ConnectException(endFuture.cause().getMessage());
         } else {
             cause = new IOException("Failed to write request: " + request + " to connection: "

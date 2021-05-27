@@ -21,6 +21,9 @@ ESA HttpClient is an asynchronous event-driven http client based on netty.
 - more features...
 
 ## Maven Dependency
+> **Note：`netty` 4.1.52.Final and `tcnative` 2.0.34.Final are directly dependent on.**
+
+> **Note: Please make sure the version of `tcnative` matches the version of `netty`.**
 
 ```xml
 <dependency>

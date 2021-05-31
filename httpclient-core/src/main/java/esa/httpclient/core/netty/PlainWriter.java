@@ -91,6 +91,7 @@ class PlainWriter extends RequestWriterImpl {
         // slice the buffer so that we can reRead the original buffer for
         // retrying\redirecting and other purpose.
 
+        // See https://github.com/esastack/esa-httpclient/issues/80
         if (!channel.isActive()) {
             endPromise.tryFailure(new ClosedConnectionException("Connection: " + channel + " inactive"));
             return;

@@ -40,7 +40,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private final HandleRegistry registry;
     private final long maxContentLength;
-    private ChannelHandlerContext ctx;
+    private volatile ChannelHandlerContext ctx;
 
     private int reusableRequestId;
     private boolean continue100Received;

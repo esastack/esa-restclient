@@ -19,6 +19,7 @@ import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.exception.ClosedConnectionException;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -89,6 +90,11 @@ class PlainWriter extends RequestWriterImpl {
         //
         // slice the buffer so that we can reRead the original buffer for
         // retrying\redirecting and other purpose.
+
+        if (!channel.isActive()) {
+            endPromise.tryFailure(new ClosedConnectionException("Connection: " + channel + " inactive"));
+            return;
+        }
 
         final ByteBuf buf = content.getByteBuf().retainedSlice();
         channel.writeAndFlush(new DefaultLastHttpContent(buf), endPromise);

@@ -36,10 +36,7 @@ ESA HttpClient is an asynchronous event-driven http client based on netty.
 ## Quick Start
 
 ```java
-final HttpClient client = HttpClient.create()
-        .version(HttpVersion.HTTP_2)
-        .h2ClearTextUpgrade(true)
-        .build();
+final HttpClient client = HttpClient.ofDefault();
 
 final HttpResponse response = client.get("http://127.0.0.1:8081/").execute().get();
 logger.info(response.body().string(StandardCharsets.UTF_8));

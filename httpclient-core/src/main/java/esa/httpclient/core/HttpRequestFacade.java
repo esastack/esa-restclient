@@ -45,9 +45,7 @@ public interface HttpRequestFacade extends ExecutableRequest {
         if (data == null || data.length == 0) {
             return body(new BufferImpl(Unpooled.EMPTY_BUFFER));
         } else {
-            final Buffer buffer = new BufferImpl(data.length);
-            buffer.writeBytes(data);
-            return body(buffer);
+            return body(new BufferImpl(Unpooled.wrappedBuffer(data)));
         }
     }
 

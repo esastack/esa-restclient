@@ -92,25 +92,6 @@ import static esa.httpclient.core.netty.ChannelPoolFactory.PREFER_NATIVE;
 @Internal
 public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpClient> {
 
-    /**
-     * Shared callback executor
-     */
-    private static final IdentityFactory.Identified<ThreadPoolExecutor> SHARED_CALLBACK_EXECUTOR =
-            IdentityFactoryProvider.callbackExecutorIdentityFactory()
-                    .generate(newCallbackExecutor(CallbackThreadPoolOptions.ofDefault()));
-
-    /**
-     * Shared io threads pool
-     */
-    private static final IdentityFactory.Identified<EventLoopGroup> SHARED_IO_THREADS = IdentityFactoryProvider
-            .ioThreadsIdentityFactory().generate(sharedIoThreads());
-
-    private static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
-            new ScheduledThreadPoolExecutor(1,
-                    new ThreadFactoryImpl("HttpClient-CloseConnectionPool-Scheduler", true),
-                    (r, executor) -> LoggerUtils.logger().error(
-                            "HttpClient-CloseConnectionPool-Scheduler-Pool has full, a task has been rejected"));
-
     private static final String IOTHREADS_KYE = "esa.httpclient.ioThreads";
     private static final int IOTHREADS = SystemPropertyUtil.getInt(IOTHREADS_KYE,
             Math.min(Platforms.cpuNum() << 1, 16));
@@ -133,6 +114,25 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     private static final String IDENTITY_PREFIX = "NettyHttpClient-";
     private static final AtomicInteger IDENTITY = new AtomicInteger();
     private static final AtomicInteger ACTIVE_CLIENTS = new AtomicInteger();
+
+    /**
+     * Shared callback executor
+     */
+    private static final IdentityFactory.Identified<ThreadPoolExecutor> SHARED_CALLBACK_EXECUTOR =
+            IdentityFactoryProvider.callbackExecutorIdentityFactory()
+                    .generate(newCallbackExecutor(CallbackThreadPoolOptions.ofDefault()));
+
+    /**
+     * Shared io threads pool
+     */
+    private static final IdentityFactory.Identified<EventLoopGroup> SHARED_IO_THREADS = IdentityFactoryProvider
+            .ioThreadsIdentityFactory().generate(sharedIoThreads());
+
+    private static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
+            new ScheduledThreadPoolExecutor(1,
+                    new ThreadFactoryImpl("HttpClient-CloseConnectionPool-Scheduler", true),
+                    (r, executor) -> LoggerUtils.logger().error(
+                            "HttpClient-CloseConnectionPool-Scheduler-Pool has full, a task has been rejected"));
 
     protected volatile HttpClientBuilder builder;
 

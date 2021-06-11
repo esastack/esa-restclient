@@ -20,10 +20,11 @@ import esa.commons.collection.MultiValueMap;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpUriTest {
 
@@ -45,29 +46,33 @@ class HttpUriTest {
     @Test
     void testRelative0() {
         assertThrows(IllegalArgumentException.class, () ->
-                new HttpUri("http://127.0.0.1:8080/abc/def?a=b&c=d").relative(StandardCharsets.UTF_8));
+                new HttpUri("http://127.0.0.1:8080/abc/def?a=b&c=d").relative(true));
     }
 
     @Test
     void testRelative() {
         // Case1: with query
         assertThrows(IllegalArgumentException.class,
-                () -> new HttpUri("http://127.0.0.1:8080/abc/def?a=b&c=d").relative(StandardCharsets.UTF_8));
+                () -> new HttpUri("http://127.0.0.1:8080/abc/def?a=b&c=d").relative(true));
 
         // Case2: without query
         final HttpUri uri2 = new HttpUri("http://127.0.0.1:9999/def?");
+        assertNull(uri2.getParam("x"));
+        assertNull(uri2.getParam("y"));
+        assertTrue(uri2.paramNames().isEmpty());
+
         uri2.addParam("a", "b");
         uri2.addParam("x", "y");
-        then(uri2.relative(StandardCharsets.UTF_8)).isEqualTo("/def?a=b&x=y");
+        then(uri2.relative(true)).isEqualTo("/def?a=b&x=y");
 
         final HttpUri uri3 = new HttpUri("http://127.0.0.1:9999/def?");
-        then(uri3.relative(StandardCharsets.UTF_8)).isEqualTo("/def");
+        then(uri3.relative(true)).isEqualTo("/def");
 
         final HttpUri uri4 = new HttpUri("http://127.0.0.1:9999/def");
         uri4.addParam("session", "xxx=");
         uri4.addParam("name", "???");
         uri4.addParam("a", "b=c");
-        then(uri4.relative(StandardCharsets.UTF_8))
+        then(uri4.relative(true))
                 .isEqualTo("/def?a=b%3Dc&session=xxx%3D&name=%3F%3F%3F");
     }
 
@@ -75,36 +80,36 @@ class HttpUriTest {
     void testSpliceRelativeDirectly() {
         // Case1: with query
         final HttpUri uri1 = new HttpUri("http://127.0.0.1:8080/abc/def?a=b&c=d");
-        then(uri1.spliceRelativeRefDirectly()).isEqualTo("/abc/def?a=b&c=d");
+        then(uri1.relative(false)).isEqualTo("/abc/def?a=b&c=d");
 
         // Case2: with query and params
         final HttpUri uri2 = new HttpUri("http://127.0.0.1:8080/abc/def?a=b&c=d");
         uri2.addParam("a", "b=c");
-        then(uri2.spliceRelativeRefDirectly()).isEqualTo("/abc/def?a=b&c=d&a=b=c");
+        then(uri2.relative(false)).isEqualTo("/abc/def?a=b&c=d&a=b=c");
 
         final HttpUri uri3 = new HttpUri("http://127.0.0.1:8080/?a=b&c=d");
         uri3.addParam("a", "b=c");
-        then(uri3.spliceRelativeRefDirectly()).isEqualTo("/?a=b&c=d&a=b=c");
+        then(uri3.relative(false)).isEqualTo("/?a=b&c=d&a=b=c");
 
         final HttpUri uri4 = new HttpUri("http://127.0.0.1:8080?a=b&c=d");
         uri4.addParam("a", "b=c");
-        then(uri4.spliceRelativeRefDirectly()).isEqualTo("?a=b&c=d&a=b=c");
+        then(uri4.relative(false)).isEqualTo("?a=b&c=d&a=b=c");
 
         // Case5: without query
         final HttpUri uri5 = new HttpUri("http://127.0.0.1:8080/abc/def?");
-        then(uri5.spliceRelativeRefDirectly()).isEqualTo("/abc/def");
+        then(uri5.relative(false)).isEqualTo("/abc/def");
 
         final HttpUri uri6 = new HttpUri("http://127.0.0.1:8080/abc/def?");
         uri6.addParam("a", "b=c");
-        then(uri6.spliceRelativeRefDirectly()).isEqualTo("/abc/def?a=b=c");
+        then(uri6.relative(false)).isEqualTo("/abc/def?a=b=c");
 
         final HttpUri uri7 = new HttpUri("http://127.0.0.1:8080/?");
         uri7.addParam("a", "b=c");
-        then(uri7.spliceRelativeRefDirectly()).isEqualTo("/?a=b=c");
+        then(uri7.relative(false)).isEqualTo("/?a=b=c");
 
         final HttpUri uri8 = new HttpUri("http://127.0.0.1:8080?");
         uri8.addParam("a", "b=c");
-        then(uri8.spliceRelativeRefDirectly()).isEqualTo("?a=b=c");
+        then(uri8.relative(false)).isEqualTo("?a=b=c");
     }
 
     @Test

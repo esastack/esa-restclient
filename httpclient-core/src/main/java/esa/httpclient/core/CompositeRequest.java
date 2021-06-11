@@ -23,7 +23,6 @@ import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.netty.NettyHttpClient;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,10 +52,10 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     private final Supplier<SegmentRequest> request;
 
     /**
-     * Body data
+     * Body data which isn't always exists, so it's good to be instantiate lazily.
      */
-    private final MultiValueMap<String, String> attrs = new HashMultiValueMap<>();
-    private final List<MultipartFileItem> files = new LinkedList<>();
+    private MultiValueMap<String, String> attrs;
+    private List<MultipartFileItem> files;
 
     private Buffer buffer;
     private File file;
@@ -152,6 +151,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
             return self();
         }
         checkStarted();
+        checkAttrsStatus();
         attrs.add(name, value);
         return self();
     }
@@ -195,13 +195,14 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
         checkStarted();
         checkMultipartFile();
+        checkFilesStatus();
         files.add(new MultipartFileItem(name, filename, file, contentType, isText));
         return self();
     }
 
     @Override
     public MultiValueMap<String, String> attrs() {
-        if (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED) {
+        if (attrs != null && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
             return new HashMultiValueMap<>(attrs);
         } else {
             return new HashMultiValueMap<>();
@@ -210,8 +211,8 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public List<MultipartFileItem> files() {
-        if (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED) {
-            return new ArrayList<>(files);
+        if (files != null && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
+            return Collections.unmodifiableList(files);
         } else {
             return Collections.emptyList();
         }
@@ -327,8 +328,24 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
                 request, method(), uri().toString());
         copyTo(this, copied);
 
-        copied.attrs.putAll(attrs);
-        copied.files.addAll(files);
+        if (attrs != null) {
+            List<String> values;
+            for (Map.Entry<String, List<String>> entry : attrs.entrySet()) {
+                values = entry.getValue();
+                if (values != null && !values.isEmpty()) {
+                    for (String value : values) {
+                        copied.attr(entry.getKey(), value);
+                    }
+                }
+            }
+        }
+
+        if (files != null) {
+            for (MultipartFileItem item : files) {
+                copied.file(item.name(), item.fileName(), item.file(), item.contentType(), item.isText());
+            }
+        }
+
         copied.multipartEncode(useMultipartEncode);
         if (buffer != null) {
             copied.body(buffer.copy());
@@ -370,10 +387,28 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
     }
 
+    private void checkAttrsStatus() {
+        if (attrs == null) {
+            synchronized (monitor) {
+                if (attrs == null) {
+                    attrs = new HashMultiValueMap<>();
+                }
+            }
+        }
+    }
+
+    private void checkFilesStatus() {
+        if (files == null) {
+            synchronized (monitor) {
+                if (files == null) {
+                    files = new LinkedList<>();
+                }
+            }
+        }
+    }
+
     private String decideType() {
         switch (status) {
-            case STATE_PLAIN_PREPARING:
-                return "PLAIN";
             case STATE_MULTIPART_PREPARING:
                 return "MULTIPART";
             case STATE_SEGMENT_PREPARING:

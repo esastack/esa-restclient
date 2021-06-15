@@ -188,7 +188,8 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
 
     @Override
     public List<String> getParams(String name) {
-        return Collections.unmodifiableList(uri.params(name));
+        List<String> values = uri.params(name);
+        return values == null ? null : Collections.unmodifiableList(values);
     }
 
     @Override

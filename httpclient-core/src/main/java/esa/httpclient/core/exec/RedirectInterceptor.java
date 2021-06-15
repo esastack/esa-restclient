@@ -120,7 +120,7 @@ public class RedirectInterceptor implements Interceptor {
 
     protected HttpRequest newRequest(HttpRequest request, URI uri, int status) {
         final HttpMethod method0 = switchToGet(request, status) ? HttpMethod.GET : request.method();
-        final HttpUri uri0 = new HttpUri(uri, request.uri().params());
+        final HttpUri uri0 = new HttpUri(uri, request.uri().unmodifiableParams());
         boolean cleanBody = cleanBody(status);
 
         final HttpRequest request0 = new DelegatingRequest(request.copy()) {

@@ -19,12 +19,11 @@ import esa.commons.Checks;
 import esa.commons.StringUtils;
 import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiValueMap;
+import esa.httpclient.core.util.MultiValueMapUtils;
 import io.netty.handler.codec.http.QueryStringEncoder;
 
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +31,14 @@ import java.util.Set;
 
 public final class HttpUri {
 
+    /**
+     * The uri specified by {@link HttpClient}, such as {@link HttpClient#get(String)} and so on.
+     */
     private final String rawUri;
+
+    /**
+     * The uri created by {@link URI#create(String)}
+     */
     private final URI uri;
     private final MultiValueMap<String, String> params;
 
@@ -57,21 +63,33 @@ public final class HttpUri {
         this.params = params == null ? new HashMultiValueMap<>() : new HashMultiValueMap<>(params);
     }
 
-    public void addParam(String key, String value) {
-        params.add(key, value);
+    public void addParam(String name, String value) {
+        Checks.checkNotNull(name, "name");
+        Checks.checkNotNull(value, "value");
+        params.add(name, value);
     }
 
-    public void addParams(String key, List<String> values) {
-        params.addAll(key, values);
+    public void addParams(String name, List<String> values) {
+        Checks.checkNotNull(name, "name");
+        Checks.checkNotNull(values, "values");
+        params.addAll(name, values);
     }
 
-    public List<String> params(String key) {
-        final List<String> values = params.get(key);
-        return values == null ? Collections.emptyList() : values;
+    /**
+     * Gets values of given {@code name} which is unmodifiable.
+     *
+     * @param name  name
+     * @return  unmodifiable values, may be null
+     */
+    public List<String> params(String name) {
+        Checks.checkNotNull(name, "name");
+        return params.get(name);
     }
 
     public String getParam(String name) {
-        return params.getFirst(name);
+        Checks.checkNotNull(name, "name");
+        final List<String> values = params.get(name);
+        return values == null || values.isEmpty() ? null : values.get(0);
     }
 
     public Set<String> paramNames() {
@@ -79,7 +97,12 @@ public final class HttpUri {
     }
 
     public MultiValueMap<String, String> params() {
+        // the user may be operate the params directly.
         return params;
+    }
+
+    public MultiValueMap<String, String> unmodifiableParams() {
+        return MultiValueMapUtils.unmodifiableMap(params());
     }
 
     public URI netURI() {
@@ -98,24 +121,35 @@ public final class HttpUri {
         return uri.getPort();
     }
 
-    public String relative(boolean uriEncoding) {
-        return uriEncoding ? relative(StandardCharsets.UTF_8) : spliceRelativeRefDirectly();
+    /**
+     * Obtains relative path of the fully uri and query parameters. eg:
+     *
+     * uri is http://127.0.0.1:8080/abc/def and
+     * params are: a=b,c=d,x=y then
+     *
+     * relative result is: "/abc/def?a=b%26c=d%26x=y"
+     *
+     * @param encode encode
+     * @return  relative uri
+     */
+    public String relative(boolean encode) {
+        return encode ? encodeRelative() : spliceRelativeDirectly();
     }
 
-    public String relative(Charset charset) {
+    private String encodeRelative() {
         if (StringUtils.isNotEmpty(uri.getQuery())) {
             throw new IllegalArgumentException("query: " + uri.getRawQuery() + " is not allowed if you want to " +
-                    "encode uri correctly, target uri: " + uri.toString() + ", please use addParam()!");
+                    "encode uri correctly, target uri: " + uri + ", please use addParam()!");
         }
 
-        if (params.isEmpty()) {
+        if (params().isEmpty()) {
             if (StringUtils.isEmpty(uri.getQuery())) {
                 return uri.getPath();
             }
         }
 
-        final QueryStringEncoder encoder = new QueryStringEncoder(uri.getRawPath(), charset);
-        for (Map.Entry<String, List<String>> item : params.entrySet()) {
+        final QueryStringEncoder encoder = new QueryStringEncoder(uri.getRawPath(), StandardCharsets.UTF_8);
+        for (Map.Entry<String, List<String>> item : params().entrySet()) {
             if (item.getValue().isEmpty()) {
                 continue;
             }
@@ -128,8 +162,8 @@ public final class HttpUri {
         return encoder.toString();
     }
 
-    public String spliceRelativeRefDirectly() {
-        if (params.isEmpty()) {
+    private String spliceRelativeDirectly() {
+        if (params().isEmpty()) {
             if (StringUtils.isEmpty(uri.getRawQuery())) {
                 return uri.getPath();
             }
@@ -143,7 +177,7 @@ public final class HttpUri {
             target.append(uri.getRawQuery()).append("&");
         }
 
-        for (Map.Entry<String, List<String>> item : params.entrySet()) {
+        for (Map.Entry<String, List<String>> item : params().entrySet()) {
             if (item.getValue().isEmpty()) {
                 continue;
             }

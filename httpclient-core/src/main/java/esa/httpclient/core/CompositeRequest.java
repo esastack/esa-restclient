@@ -17,10 +17,12 @@ package esa.httpclient.core;
 
 import esa.commons.Checks;
 import esa.commons.collection.HashMultiValueMap;
+import esa.commons.collection.MultiMaps;
 import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.netty.NettyHttpClient;
+import esa.httpclient.core.util.MultiValueMapUtils;
 
 import java.io.File;
 import java.util.Collections;
@@ -151,7 +153,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
             return self();
         }
         checkStarted();
-        checkAttrsStatus();
+        checkAttrsNotNull();
         attrs.add(name, value);
         return self();
     }
@@ -195,7 +197,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
         checkStarted();
         checkMultipartFile();
-        checkFilesStatus();
+        checkFilesNotNull();
         files.add(new MultipartFileItem(name, filename, file, contentType, isText));
         return self();
     }
@@ -203,9 +205,9 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     @Override
     public MultiValueMap<String, String> attrs() {
         if (attrs != null && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
-            return new HashMultiValueMap<>(attrs);
+            return MultiValueMapUtils.unmodifiableMap(attrs);
         } else {
-            return new HashMultiValueMap<>();
+            return MultiMaps.emptyMultiMap();
         }
     }
 
@@ -387,7 +389,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
     }
 
-    private void checkAttrsStatus() {
+    private void checkAttrsNotNull() {
         if (attrs == null) {
             synchronized (monitor) {
                 if (attrs == null) {
@@ -397,7 +399,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
     }
 
-    private void checkFilesStatus() {
+    private void checkFilesNotNull() {
         if (files == null) {
             synchronized (monitor) {
                 if (files == null) {

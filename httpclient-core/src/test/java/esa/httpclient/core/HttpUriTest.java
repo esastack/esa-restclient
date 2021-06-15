@@ -20,6 +20,9 @@ import esa.commons.collection.MultiValueMap;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -41,6 +44,60 @@ class HttpUriTest {
         final MultiValueMap<String, String> params = new HashMultiValueMap<>();
         final HttpUri uri = new HttpUri("/abc", params);
         then(params).isNotSameAs(uri.params());
+        params.add("a", "b");
+        params.add("c", "d");
+        then(params.size()).isEqualTo(2);
+        then(uri.params().isEmpty()).isTrue();
+    }
+
+    @Test
+    void testOperateParam() {
+        final MultiValueMap<String, String> params = new HashMultiValueMap<>();
+        params.add("a", "b");
+        params.add("c", "d");
+        final HttpUri uri = new HttpUri("/abc", params);
+        then(uri.params().size()).isEqualTo(2);
+        then(uri.getParam("a")).isEqualTo("b");
+        then(uri.getParam("c")).isEqualTo("d");
+
+        then(uri.getParam("xx")).isNull();
+        uri.addParam("x", "y");
+        uri.addParam("y", "z");
+        final List<String> qValues = new LinkedList<>();
+        qValues.add("a");
+        qValues.add("b");
+        qValues.add("c");
+        uri.addParams("q", qValues);
+        then(uri.params().size()).isEqualTo(5);
+        then(uri.getParam("q")).isEqualTo("a");
+        then(uri.params("a").size()).isEqualTo(1);
+        then(uri.params("a").get(0)).isEqualTo("b");
+        then(uri.params("c").size()).isEqualTo(1);
+        then(uri.params("c").get(0)).isEqualTo("d");
+        then(uri.params("x").size()).isEqualTo(1);
+        then(uri.params("x").get(0)).isEqualTo("y");
+        then(uri.params("y").size()).isEqualTo(1);
+        then(uri.params("y").get(0)).isEqualTo("z");
+        then(uri.params("q").size()).isEqualTo(3);
+        then(uri.params("q").get(0)).isEqualTo("a");
+        then(uri.params("q").get(1)).isEqualTo("b");
+        then(uri.params("q").get(2)).isEqualTo("c");
+
+        then(uri.paramNames().size()).isEqualTo(5);
+        then(uri.paramNames().contains("a")).isTrue();
+        then(uri.paramNames().contains("c")).isTrue();
+        then(uri.paramNames().contains("x")).isTrue();
+        then(uri.paramNames().contains("y")).isTrue();
+        then(uri.paramNames().contains("q")).isTrue();
+
+        assertThrows(NullPointerException.class, () -> uri.addParam(null, "xx"));
+        assertThrows(NullPointerException.class, () -> uri.addParam("xx", null));
+        assertThrows(NullPointerException.class, () -> uri.addParams(null, Collections.singletonList("xx")));
+        assertThrows(NullPointerException.class, () -> uri.addParams("xx", null));
+        assertThrows(NullPointerException.class, () -> uri.params(null));
+        assertThrows(NullPointerException.class, () -> uri.getParam(null));
+
+        assertThrows(UnsupportedOperationException.class, () -> uri.unmodifiableParams().add("m", "n"));
     }
 
     @Test

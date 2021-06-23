@@ -6,7 +6,7 @@ public class DefaultFileRequest extends DefaultExecutableRequest implements File
     private volatile File file;
 
 
-    DefaultFileRequest(ExecutableRequest executableRequest, File file) {
+    DefaultFileRequest(DefaultExecutableRequest executableRequest, File file) {
         super(executableRequest);
         this.file = file;
     }

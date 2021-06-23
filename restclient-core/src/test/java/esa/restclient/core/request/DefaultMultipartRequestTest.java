@@ -20,7 +20,7 @@ class DefaultMultipartRequestTest {
     void testBasicFunction() {
         RestClientBuilder builder = RestClient.create();
         builder.version(HttpVersion.HTTP_1_0);
-        MultipartRequest multipartRequest = new DefaultFacadeRequest(httpUrl, method, builder, builder.build()).multipart();
+        MultipartRequest multipartRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build()).multipart();
         DefaultHttpRequestTest.testHeaderOperate(multipartRequest);
         DefaultHttpRequestTest.testHeadersOperate(multipartRequest);
         DefaultHttpRequestTest.testContentTypeOperate(multipartRequest);
@@ -56,7 +56,7 @@ class DefaultMultipartRequestTest {
         String value3 = "value3";
         RestClientBuilder builder = RestClient.create();
         builder.version(HttpVersion.HTTP_1_0);
-        MultipartRequest multipartRequest = new DefaultFacadeRequest(httpUrl, method, builder, builder.build()).multipart();
+        MultipartRequest multipartRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build()).multipart();
         multipartRequest.attr(name3, null);
         multipartRequest.attr(null, value3);
         assertEquals(0, multipartRequest.multipartItems().size());
@@ -121,7 +121,7 @@ class DefaultMultipartRequestTest {
     static MultipartRequest createMultiRequest() {
         RestClientBuilder builder = RestClient.create();
         builder.version(HttpVersion.HTTP_1_0);
-        return new DefaultFacadeRequest(httpUrl, method, builder, builder.build())
+        return new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build())
                 .multipart()
                 .addHeader("aaa", "bbb")
                 .setHeader("aaa", "ccc")

@@ -16,7 +16,7 @@ public class DefaultMultipartRequest extends DefaultExecutableRequest implements
      */
     private final List<MultipartItem> multipartItems = new LinkedList<>();
 
-    DefaultMultipartRequest(ExecutableRequest executableRequest) {
+    DefaultMultipartRequest(DefaultExecutableRequest executableRequest) {
         super(executableRequest);
     }
 

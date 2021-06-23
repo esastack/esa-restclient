@@ -2,9 +2,9 @@ package esa.restclient.core.request;
 
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
+import esa.commons.http.HttpVersion;
 import esa.restclient.core.MediaType;
 import esa.restclient.core.RestClient;
-import esa.restclient.core.RestClientBuilder;
 import esa.restclient.core.response.RestHttpResponse;
 
 import java.io.File;
@@ -14,8 +14,8 @@ import java.util.concurrent.CompletionStage;
 public class DefaultFacadeRequest extends DefaultExecutableRequest implements FacadeRequest {
 
 
-    public DefaultFacadeRequest(String url, HttpMethod httpMethod, RestClientBuilder builder, RestClient client) {
-        super(url, httpMethod, builder, client);
+    public DefaultFacadeRequest(String url, HttpMethod httpMethod, HttpVersion version, RestClient client) {
+        super(url, httpMethod, version, client);
     }
 
     @Override

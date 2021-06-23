@@ -54,6 +54,8 @@ public interface RestClient {
      */
     ExecutableRequest options(String uri);
 
+    RestClientConfig clientConfig();
+
     /**
      * An easy way to obtain a {@link RestClient} conveniently
      *

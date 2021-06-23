@@ -24,7 +24,7 @@ class DefaultFacadeRequestTest {
     @Test
     void testBasicFunction() {
         RestClientBuilder builder = RestClient.create().version(HttpVersion.HTTP_1_0);
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder, builder.build());
+        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
         DefaultHttpRequestTest.testHeaderOperate(defaultFacadeRequest);
         DefaultHttpRequestTest.testHeadersOperate(defaultFacadeRequest);
         DefaultHttpRequestTest.testContentTypeOperate(defaultFacadeRequest);
@@ -64,7 +64,7 @@ class DefaultFacadeRequestTest {
     static FacadeRequest createFacadeRequest() {
         RestClientBuilder builder = RestClient.create();
         builder.version(HttpVersion.HTTP_1_0);
-        return new DefaultFacadeRequest(httpUrl, method, builder, builder.build())
+        return new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build())
                 .addHeader("aaa", "bbb")
                 .setHeader("aaa", "ccc")
                 .addHeaders(null)
@@ -140,7 +140,7 @@ class DefaultFacadeRequestTest {
         int builderReadTimeout = 5;
         builder.readTimeout(builderReadTimeout);
         assertEquals(builderReadTimeout, builder.readTimeout());
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder, builder.build());
+        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
         assertEquals(builderReadTimeout, defaultFacadeRequest.readTimeout());
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.readTimeout(0));
@@ -168,7 +168,7 @@ class DefaultFacadeRequestTest {
         int builderMaxRedirects = 5;
         builder.maxRedirects(builderMaxRedirects);
         assertEquals(builderMaxRedirects, builder.maxRedirects());
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder, builder.build());
+        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
         assertEquals(builderMaxRedirects, defaultFacadeRequest.maxRedirects());
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.maxRedirects(-1));
@@ -188,11 +188,11 @@ class DefaultFacadeRequestTest {
         RestClientBuilder builder = RestClient.create();
         builder.version(HttpVersion.HTTP_1_0);
         builder.retryOptions(null);
-        DefaultFacadeRequest defaultFacadeRequestWithoutRetry = new DefaultFacadeRequest(httpUrl, method, builder, builder.build());
+        DefaultFacadeRequest defaultFacadeRequestWithoutRetry = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
         assertEquals(0, defaultFacadeRequestWithoutRetry.maxRetries());
 
         builder.retryOptions(RetryOptions.ofDefault());
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder, builder.build());
+        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
         assertEquals(RetryOptions.ofDefault().maxRetries(), defaultFacadeRequest.maxRetries());
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.maxRetries(-1));

@@ -3,10 +3,12 @@ package esa.restclient.core.request;
 import esa.commons.Checks;
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
+import esa.commons.http.HttpVersion;
 import esa.httpclient.core.config.RetryOptions;
 import esa.restclient.core.MediaType;
 import esa.restclient.core.RestClient;
 import esa.restclient.core.RestClientBuilder;
+import esa.restclient.core.RestClientConfig;
 import esa.restclient.core.response.RestHttpResponse;
 
 import java.util.Map;
@@ -20,21 +22,23 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     private final RestClient client;
     private boolean useExpectContinue;
 
-    DefaultExecutableRequest(String url, HttpMethod httpMethod, RestClientBuilder builder, RestClient client) {
-        super(url, httpMethod, builder.version());
-        Checks.checkNotNull(builder, "RestClientBuilder must not be null");
-        Checks.checkNotNull(client, "Client must not be null");
-        readTimeout(builder.readTimeout());
-        maxRedirects(builder.maxRedirects());
-        RetryOptions retryOptions = builder.retryOptions();
+
+    DefaultExecutableRequest(String url, HttpMethod httpMethod, HttpVersion version, RestClient client) {
+        super(url, httpMethod, version);
+        RestClientConfig clientConfig = client.clientConfig();
+        Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
+
+        readTimeout(clientConfig.readTimeout());
+        maxRedirects(clientConfig.maxRedirects());
+        RetryOptions retryOptions = clientConfig.retryOptions();
         if (retryOptions != null) {
-            maxRetries(builder.retryOptions().maxRetries());
+            maxRetries(clientConfig.retryOptions().maxRetries());
         }
-        this.useExpectContinue = builder.isUseExpectContinue();
+        this.useExpectContinue = clientConfig.isUseExpectContinue();
         this.client = client;
     }
 
-    DefaultExecutableRequest(ExecutableRequest executableRequest) {
+    DefaultExecutableRequest(DefaultExecutableRequest executableRequest) {
         super(executableRequest);
         readTimeout(executableRequest.readTimeout());
         maxRedirects(executableRequest.maxRedirects());
@@ -42,8 +46,9 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
         if (executableRequest.uriEncode()) {
             enableUriEncode();
         }
-        this.client = executableRequest.client();
-        Checks.checkNotNull(this.client, "Client must not be null");
+        this.useExpectContinue = executableRequest.isUseExpectContinue();
+        Checks.checkNotNull(executableRequest.client, "Client must not be null");
+        this.client = executableRequest.client;
     }
 
     @Override
@@ -141,11 +146,6 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     public ExecutableRequest setHeader(CharSequence name, CharSequence value) {
         super.setHeader(name, value);
         return self();
-    }
-
-    @Override
-    public RestClient client() {
-        return client;
     }
 
     @Override

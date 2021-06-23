@@ -68,6 +68,4 @@ public interface ExecutableRequest extends HttpRequest {
 
     @Override
     ExecutableRequest setHeader(CharSequence name, CharSequence value);
-
-    RestClient client();
 }

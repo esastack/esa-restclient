@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RestClientBuilder implements Reusable<RestClientBuilder> {
+public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientConfig {
 
 
     private final HttpClientBuilder httpClientBuilder;
@@ -166,7 +166,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder> {
     }
 
     public RestClientBuilder maxRedirects(int maxRedirects) {
-        Checks.checkArg(maxRedirects >= 0,"MaxRedirects must be >= 0!");
+        Checks.checkArg(maxRedirects >= 0, "MaxRedirects must be >= 0!");
         httpClientBuilder.maxRedirects(maxRedirects);
         return self();
     }
@@ -174,98 +174,121 @@ public class RestClientBuilder implements Reusable<RestClientBuilder> {
 
     //***********************************       GET METHODS        ***************************************//
 
+    @Override
     public HostResolver resolver() {
         return httpClientBuilder.resolver();
     }
 
+    @Override
     public boolean ish2ClearTextUpgrade() {
         return httpClientBuilder.ish2ClearTextUpgrade();
     }
 
+    @Override
     public int connectTimeout() {
         return httpClientBuilder.connectTimeout();
     }
 
+    @Override
     public long readTimeout() {
         return httpClientBuilder.readTimeout();
     }
 
+    @Override
     public long maxContentLength() {
         return httpClientBuilder.maxContentLength();
     }
 
+    @Override
     public int idleTimeoutSeconds() {
         return httpClientBuilder.idleTimeoutSeconds();
     }
 
+    @Override
     public boolean isKeepAlive() {
         return httpClientBuilder.isKeepAlive();
     }
 
+    @Override
     public HttpVersion version() {
         return httpClientBuilder.version();
     }
 
+    @Override
     public int connectionPoolSize() {
         return httpClientBuilder.connectionPoolSize();
     }
 
+    @Override
     public int connectionPoolWaitingQueueLength() {
         return httpClientBuilder.connectionPoolWaitingQueueLength();
     }
 
+    @Override
     public boolean isUseDecompress() {
         return httpClientBuilder.isUseDecompress();
     }
 
+    @Override
     public Decompression decompression() {
         return httpClientBuilder.decompression();
     }
 
+    @Override
     public boolean isUseExpectContinue() {
         return httpClientBuilder.isUseExpectContinue();
     }
 
+    @Override
     public SslOptions sslOptions() {
         return httpClientBuilder.sslOptions();
     }
 
+    @Override
     public NetOptions netOptions() {
         return httpClientBuilder.netOptions();
     }
 
+    @Override
     public Http1Options http1Options() {
         return httpClientBuilder.http1Options();
     }
 
+    @Override
     public Http2Options http2Options() {
         return httpClientBuilder.http2Options();
     }
 
+    @Override
     public List<Interceptor> interceptors() {
         return Collections.unmodifiableList(interceptors);
     }
 
+    @Override
     public List<Decoder> decoders() {
         return Collections.unmodifiableList(decoders);
     }
 
+    @Override
     public List<Encoder> encoders() {
         return Collections.unmodifiableList(encoders);
     }
 
+    @Override
     public RetryOptions retryOptions() {
         return httpClientBuilder.retryOptions();
     }
 
+    @Override
     public int maxRedirects() {
         return httpClientBuilder.maxRedirects();
     }
 
-
+    @Override
     public ChannelPoolOptionsProvider channelPoolOptionsProvider() {
         return httpClientBuilder.channelPoolOptionsProvider();
     }
+
 
     private RestClientBuilder self() {
         return this;

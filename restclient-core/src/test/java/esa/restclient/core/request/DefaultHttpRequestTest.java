@@ -240,7 +240,6 @@ class DefaultHttpRequestTest {
 
     static void testPropertyOperate(HttpRequest defaultHttpRequest) {
         assertEquals(0, defaultHttpRequest.propertyNames().size());
-        String noValueName = "noValueName";
         String name = "name";
         String value = "value";
         String otherValue = "otherValue";

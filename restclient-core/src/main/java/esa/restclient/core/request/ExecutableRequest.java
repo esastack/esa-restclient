@@ -5,23 +5,13 @@ import esa.restclient.core.MediaType;
 import esa.restclient.core.RestClient;
 import esa.restclient.core.response.RestHttpResponse;
 
+import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-public interface ExecutableRequest extends HttpRequest {
+public interface ExecutableRequest extends RestHttpRequest {
 
     CompletionStage<RestHttpResponse> execute();
-
-    int maxRetries();
-
-    int maxRedirects();
-
-    /**
-     * The readTimeout of current request
-     *
-     * @return readTimeout
-     */
-    long readTimeout();
 
     ExecutableRequest readTimeout(long readTimeout);
 
@@ -31,16 +21,7 @@ public interface ExecutableRequest extends HttpRequest {
 
     ExecutableRequest disableExpectContinue();
 
-    boolean isUseExpectContinue();
-
     ExecutableRequest enableUriEncode();
-
-    /**
-     * Whether allow uri encode or not
-     *
-     * @return true or false
-     */
-    boolean uriEncode();
 
     @Override
     ExecutableRequest addParams(Map<String, String> params);

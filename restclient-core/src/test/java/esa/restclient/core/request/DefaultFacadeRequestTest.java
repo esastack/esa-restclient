@@ -1,7 +1,6 @@
 package esa.restclient.core.request;
 
 import esa.commons.http.Cookie;
-import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.config.RetryOptions;
@@ -18,22 +17,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultFacadeRequestTest {
 
-    private final static HttpMethod method = HttpMethod.GET;
+    private final static HttpVersion httpVersion = HttpVersion.HTTP_1_0;
     private final static String httpUrl = "http://localhost:8080";
 
     @Test
     void testBasicFunction() {
-        RestClientBuilder builder = RestClient.create().version(HttpVersion.HTTP_1_0);
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
-        DefaultHttpRequestTest.testHeaderOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testHeadersOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testContentTypeOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testAcceptOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testHttpVersion(defaultFacadeRequest, builder.version());
-        DefaultHttpRequestTest.testPropertyOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testCookieOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testParamOperate(defaultFacadeRequest);
-        DefaultHttpRequestTest.testParamsOperate(defaultFacadeRequest);
+        FacadeRequest facadeRequest = RestClient.create().version(httpVersion).build().post(httpUrl);
+        DefaultHttpRequestTest.testHeaderOperate(facadeRequest);
+        DefaultHttpRequestTest.testHeadersOperate(facadeRequest);
+        DefaultHttpRequestTest.testContentTypeOperate(facadeRequest);
+        DefaultHttpRequestTest.testAcceptOperate(facadeRequest);
+        DefaultHttpRequestTest.testHttpVersion(facadeRequest, httpVersion);
+        DefaultHttpRequestTest.testPropertyOperate(facadeRequest);
+        DefaultHttpRequestTest.testCookieOperate(facadeRequest);
+        DefaultHttpRequestTest.testParamOperate(facadeRequest);
+        DefaultHttpRequestTest.testParamsOperate(facadeRequest);
     }
 
     @Test
@@ -62,9 +60,7 @@ class DefaultFacadeRequestTest {
     }
 
     static FacadeRequest createFacadeRequest() {
-        RestClientBuilder builder = RestClient.create();
-        builder.version(HttpVersion.HTTP_1_0);
-        return new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build())
+        return RestClient.create().version(httpVersion).build().post(httpUrl)
                 .addHeader("aaa", "bbb")
                 .setHeader("aaa", "ccc")
                 .addHeaders(null)
@@ -140,7 +136,7 @@ class DefaultFacadeRequestTest {
         int builderReadTimeout = 5;
         builder.readTimeout(builderReadTimeout);
         assertEquals(builderReadTimeout, builder.readTimeout());
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
+        FacadeRequest defaultFacadeRequest = RestClient.create().readTimeout(builderReadTimeout).version(httpVersion).build().post(httpUrl);
         assertEquals(builderReadTimeout, defaultFacadeRequest.readTimeout());
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.readTimeout(0));
@@ -168,7 +164,7 @@ class DefaultFacadeRequestTest {
         int builderMaxRedirects = 5;
         builder.maxRedirects(builderMaxRedirects);
         assertEquals(builderMaxRedirects, builder.maxRedirects());
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
+        FacadeRequest defaultFacadeRequest = RestClient.create().version(httpVersion).build().post(httpUrl);
         assertEquals(builderMaxRedirects, defaultFacadeRequest.maxRedirects());
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.maxRedirects(-1));
@@ -185,14 +181,10 @@ class DefaultFacadeRequestTest {
 
     @Test
     void testMaxRetries() {
-        RestClientBuilder builder = RestClient.create();
-        builder.version(HttpVersion.HTTP_1_0);
-        builder.retryOptions(null);
-        DefaultFacadeRequest defaultFacadeRequestWithoutRetry = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
+        FacadeRequest defaultFacadeRequestWithoutRetry = RestClient.create().retryOptions(null).version(httpVersion).build().post(httpUrl);
         assertEquals(0, defaultFacadeRequestWithoutRetry.maxRetries());
 
-        builder.retryOptions(RetryOptions.ofDefault());
-        DefaultFacadeRequest defaultFacadeRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build());
+        FacadeRequest defaultFacadeRequest = RestClient.create().retryOptions(RetryOptions.ofDefault()).version(httpVersion).build().post(httpUrl);
         assertEquals(RetryOptions.ofDefault().maxRetries(), defaultFacadeRequest.maxRetries());
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.maxRetries(-1));
@@ -206,7 +198,7 @@ class DefaultFacadeRequestTest {
         assertEquals(requestMaxRetries, defaultFacadeRequest.maxRetries());
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.maxRetries(-1));
         assertEquals(requestMaxRetries, defaultFacadeRequest.maxRetries());
-        assertEquals(RetryOptions.ofDefault().maxRetries(), builder.retryOptions().maxRetries());
+        assertEquals(RetryOptions.ofDefault().maxRetries(), RetryOptions.ofDefault().maxRetries());
     }
 
 

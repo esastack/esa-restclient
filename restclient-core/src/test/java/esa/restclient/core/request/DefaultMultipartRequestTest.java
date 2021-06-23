@@ -1,6 +1,5 @@
 package esa.restclient.core.request;
 
-import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.http.CookieImpl;
 import esa.restclient.core.MediaType;
@@ -13,19 +12,16 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultMultipartRequestTest {
-    private final static HttpMethod method = HttpMethod.GET;
     private final static String httpUrl = "http://localhost:8080";
 
     @Test
     void testBasicFunction() {
-        RestClientBuilder builder = RestClient.create();
-        builder.version(HttpVersion.HTTP_1_0);
-        MultipartRequest multipartRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build()).multipart();
+        MultipartRequest multipartRequest = RestClient.ofDefault().post(httpUrl).multipart();
         DefaultHttpRequestTest.testHeaderOperate(multipartRequest);
         DefaultHttpRequestTest.testHeadersOperate(multipartRequest);
         DefaultHttpRequestTest.testContentTypeOperate(multipartRequest);
         DefaultHttpRequestTest.testAcceptOperate(multipartRequest);
-        DefaultHttpRequestTest.testHttpVersion(multipartRequest, builder.version());
+        DefaultHttpRequestTest.testHttpVersion(multipartRequest, multipartRequest.version());
         DefaultHttpRequestTest.testPropertyOperate(multipartRequest);
         DefaultHttpRequestTest.testCookieOperate(multipartRequest);
         DefaultHttpRequestTest.testParamOperate(multipartRequest);
@@ -56,7 +52,7 @@ class DefaultMultipartRequestTest {
         String value3 = "value3";
         RestClientBuilder builder = RestClient.create();
         builder.version(HttpVersion.HTTP_1_0);
-        MultipartRequest multipartRequest = new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build()).multipart();
+        MultipartRequest multipartRequest = RestClient.ofDefault().post(httpUrl).multipart();
         multipartRequest.attr(name3, null);
         multipartRequest.attr(null, value3);
         assertEquals(0, multipartRequest.multipartItems().size());
@@ -115,30 +111,6 @@ class DefaultMultipartRequestTest {
         expectMultipartItem = new DefaultMultipartItem(new ContentDisposition.MultipartContentDisposition(name2, "bbb"),
                 MediaType.APPLICATION_JSON, null, file);
         isMultipartItemEqual(expectMultipartItem, multipartRequest.multipartItems().get(7));
-    }
-
-
-    static MultipartRequest createMultiRequest() {
-        RestClientBuilder builder = RestClient.create();
-        builder.version(HttpVersion.HTTP_1_0);
-        return new DefaultFacadeRequest(httpUrl, method, builder.version(), builder.build())
-                .multipart()
-                .addHeader("aaa", "bbb")
-                .setHeader("aaa", "ccc")
-                .addHeaders(null)
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .accept(MediaType.MULTIPART_FORM_DATA)
-                .addParam("aaa", "aaa")
-                .addParams(null)
-                .cookie("aaa", "bbb")
-                .cookie(new CookieImpl("aaa", "aaa"))
-                .disableExpectContinue()
-                .enableUriEncode()
-                .maxRedirects(1)
-                .maxRetries(1)
-                .readTimeout(1)
-                .enableUriEncode()
-                .property("aaa", "aaaaaa");
     }
 
 

@@ -1,10 +1,7 @@
 package esa.restclient.core;
 
 import esa.commons.http.HttpMethod;
-import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.Scheme;
-import esa.restclient.core.DefaultRestClient;
-import esa.restclient.core.RestClient;
 import esa.restclient.core.request.HttpRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,9 +25,7 @@ class DefaultRestClientTest {
         assertEquals(request.method(), HttpMethod.GET);
         assertEquals(request.scheme().name(), Scheme.HTTP.name());
         assertEquals(request.uri().toString(), httpUrl);
-        assertThrows(IllegalArgumentException.class, () -> {
-            restClient.get(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> restClient.get(null));
     }
 
     @Test
@@ -39,9 +34,7 @@ class DefaultRestClientTest {
         assertEquals(request.method(), HttpMethod.POST);
         assertEquals(request.scheme().name(), Scheme.HTTP.name());
         assertEquals(request.uri().toString(), httpUrl);
-        assertThrows(IllegalArgumentException.class, () -> {
-            restClient.post(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> restClient.post(null));
     }
 
     @Test
@@ -50,9 +43,7 @@ class DefaultRestClientTest {
         assertEquals(request.method(), HttpMethod.DELETE);
         assertEquals(request.scheme().name(), Scheme.HTTP.name());
         assertEquals(request.uri().toString(), httpUrl);
-        assertThrows(IllegalArgumentException.class, () -> {
-            restClient.delete(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> restClient.delete(null));
     }
 
     @Test
@@ -61,9 +52,7 @@ class DefaultRestClientTest {
         assertEquals(request.method(), HttpMethod.PUT);
         assertEquals(request.scheme().name(), Scheme.HTTP.name());
         assertEquals(request.uri().toString(), httpUrl);
-        assertThrows(IllegalArgumentException.class, () -> {
-            restClient.put(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> restClient.put(null));
     }
 
     @Test
@@ -72,9 +61,7 @@ class DefaultRestClientTest {
         assertEquals(request.method(), HttpMethod.HEAD);
         assertEquals(request.scheme().name(), Scheme.HTTP.name());
         assertEquals(request.uri().toString(), httpUrl);
-        assertThrows(IllegalArgumentException.class, () -> {
-            restClient.head(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> restClient.head(null));
     }
 
     @Test
@@ -83,9 +70,7 @@ class DefaultRestClientTest {
         assertEquals(request.method(), HttpMethod.OPTIONS);
         assertEquals(request.scheme().name(), Scheme.HTTP.name());
         assertEquals(request.uri().toString(), httpUrl);
-        assertThrows(IllegalArgumentException.class, () -> {
-            restClient.options(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> restClient.options(null));
     }
 
     @Test

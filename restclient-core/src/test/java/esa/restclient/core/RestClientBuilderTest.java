@@ -9,10 +9,10 @@ import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.restclient.core.codec.Decoder;
 import esa.restclient.core.codec.Encoder;
+import esa.restclient.core.exec.InvokeChain;
 import esa.restclient.core.interceptor.Interceptor;
-import esa.restclient.core.interceptor.InvokeChain;
-import esa.restclient.core.request.HttpRequest;
-import esa.restclient.core.response.HttpResponse;
+import esa.restclient.core.request.RestHttpRequest;
+import esa.restclient.core.response.RestHttpResponse;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
@@ -22,29 +22,30 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RestClientBuilderTest {
-    final static HostResolver resolver = inetHost -> null;
-    final static boolean h2ClearTextUpgrade = ThreadLocalRandom.current().nextBoolean();
-    final static int connectTimeout = ThreadLocalRandom.current().nextInt(10, 10000);
-    final static int readTimeout = ThreadLocalRandom.current().nextInt(10, 10000);
-    final static boolean keepAlive = ThreadLocalRandom.current().nextBoolean();
-    final static HttpVersion version = HttpVersion.HTTP_2;
-    final static int connectionPoolSize = ThreadLocalRandom.current().nextInt(1, 1000);
-    final static int connectionPoolWaitQueueSize = ThreadLocalRandom.current().nextInt(1, 1000);
-    final static boolean useDecompress = ThreadLocalRandom.current().nextBoolean();
-    final static Decompression decompression = Decompression.GZIP_DEFLATE;
-    final static boolean useExpectContinue = ThreadLocalRandom.current().nextBoolean();
-    final static ChannelPoolOptionsProvider channelPoolOptionsProvider = key -> null;
-    final static NetOptions netOptions = NetOptions.ofDefault();
-    final static Http1Options http1Options = Http1Options.ofDefault();
-    final static Http2Options http2Options = Http2Options.ofDefault();
-    final static RetryOptions retryOptions = RetryOptions.ofDefault();
-    final static SslOptions sslOptions = SslOptions.options().build();
-    final static int maxRedirects = ThreadLocalRandom.current().nextInt(10, 1000);
-    final static long maxContentLength = ThreadLocalRandom.current().nextLong(10000);
-    final static int idleTimeoutSeconds = ThreadLocalRandom.current().nextInt(1000);
+    private final static HostResolver resolver = inetHost -> null;
+    private final static boolean h2ClearTextUpgrade = ThreadLocalRandom.current().nextBoolean();
+    private final static int connectTimeout = ThreadLocalRandom.current().nextInt(10, 10000);
+    private final static int readTimeout = ThreadLocalRandom.current().nextInt(10, 10000);
+    private final static boolean keepAlive = ThreadLocalRandom.current().nextBoolean();
+    private final static HttpVersion version = HttpVersion.HTTP_2;
+    private final static int connectionPoolSize = ThreadLocalRandom.current().nextInt(1, 1000);
+    private final static int connectionPoolWaitQueueSize = ThreadLocalRandom.current().nextInt(1, 1000);
+    private final static boolean useDecompress = ThreadLocalRandom.current().nextBoolean();
+    private final static Decompression decompression = Decompression.GZIP_DEFLATE;
+    private final static boolean useExpectContinue = ThreadLocalRandom.current().nextBoolean();
+    private final static ChannelPoolOptionsProvider channelPoolOptionsProvider = key -> null;
+    private final static NetOptions netOptions = NetOptions.ofDefault();
+    private final static Http1Options http1Options = Http1Options.ofDefault();
+    private final static Http2Options http2Options = Http2Options.ofDefault();
+    private final static RetryOptions retryOptions = RetryOptions.ofDefault();
+    private final static SslOptions sslOptions = SslOptions.options().build();
+    private final static int maxRedirects = ThreadLocalRandom.current().nextInt(10, 1000);
+    private final static long maxContentLength = ThreadLocalRandom.current().nextLong(10000);
+    private final static int idleTimeoutSeconds = ThreadLocalRandom.current().nextInt(1000);
 
     @Test
     void testBasic() {
@@ -258,7 +259,7 @@ class RestClientBuilderTest {
 
     static class TestInterceptor implements Interceptor {
         @Override
-        public CompletionStage<HttpResponse> proceed(HttpRequest request, InvokeChain next) {
+        public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request, InvokeChain next) {
             return null;
         }
     }

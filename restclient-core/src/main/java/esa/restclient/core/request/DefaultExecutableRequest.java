@@ -3,14 +3,13 @@ package esa.restclient.core.request;
 import esa.commons.Checks;
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
-import esa.commons.http.HttpVersion;
 import esa.httpclient.core.config.RetryOptions;
 import esa.restclient.core.MediaType;
-import esa.restclient.core.RestClient;
-import esa.restclient.core.RestClientBuilder;
 import esa.restclient.core.RestClientConfig;
+import esa.restclient.core.exec.RestRequestExecutor;
 import esa.restclient.core.response.RestHttpResponse;
 
+import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
@@ -19,15 +18,13 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     private volatile int maxRetries = 0;
     private long readTimeout;
     private boolean useUriEncode;
-    private final RestClient client;
+    private final RestRequestExecutor requestExecutor;
     private boolean useExpectContinue;
 
-
-    DefaultExecutableRequest(String url, HttpMethod httpMethod, HttpVersion version, RestClient client) {
-        super(url, httpMethod, version);
-        RestClientConfig clientConfig = client.clientConfig();
-        Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
-
+    DefaultExecutableRequest(String url, HttpMethod httpMethod, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
+        super(url, httpMethod, clientConfig.version());
+        Checks.checkNotNull(requestExecutor, "RequestExecutor must not be null");
+        this.requestExecutor = requestExecutor;
         readTimeout(clientConfig.readTimeout());
         maxRedirects(clientConfig.maxRedirects());
         RetryOptions retryOptions = clientConfig.retryOptions();
@@ -35,7 +32,6 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
             maxRetries(clientConfig.retryOptions().maxRetries());
         }
         this.useExpectContinue = clientConfig.isUseExpectContinue();
-        this.client = client;
     }
 
     DefaultExecutableRequest(DefaultExecutableRequest executableRequest) {
@@ -47,14 +43,13 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
             enableUriEncode();
         }
         this.useExpectContinue = executableRequest.isUseExpectContinue();
-        Checks.checkNotNull(executableRequest.client, "Client must not be null");
-        this.client = executableRequest.client;
+        Checks.checkNotNull(executableRequest.requestExecutor, "RequestExecutor must not be null");
+        this.requestExecutor = executableRequest.requestExecutor;
     }
 
     @Override
     public CompletionStage<RestHttpResponse> execute() {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return requestExecutor.execute(this);
     }
 
     @Override
@@ -146,6 +141,12 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     public ExecutableRequest setHeader(CharSequence name, CharSequence value) {
         super.setHeader(name, value);
         return self();
+    }
+
+    @Override
+    public InputStream getBodyStream() {
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override

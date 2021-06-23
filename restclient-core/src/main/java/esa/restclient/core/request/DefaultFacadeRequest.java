@@ -5,14 +5,11 @@ import esa.commons.http.HttpMethod;
 import esa.restclient.core.MediaType;
 import esa.restclient.core.RestClientConfig;
 import esa.restclient.core.exec.RestRequestExecutor;
-import esa.restclient.core.response.RestHttpResponse;
 
 import java.io.File;
 import java.util.Map;
-import java.util.concurrent.CompletionStage;
 
 public class DefaultFacadeRequest extends DefaultExecutableRequest implements FacadeRequest {
-
 
     public DefaultFacadeRequest(String url, HttpMethod httpMethod, RestClientConfig clientConfig, RestRequestExecutor restRequestExecutor) {
         super(url, httpMethod, clientConfig, restRequestExecutor);
@@ -45,13 +42,6 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
         contentType(MediaType.MULTIPART_FORM_DATA);
         return new DefaultMultipartRequest(this);
     }
-
-    @Override
-    public CompletionStage<RestHttpResponse> execute() {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
-    }
-
 
     @Override
     public FacadeRequest readTimeout(long readTimeout) {

@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultHttpRequest implements HttpRequest {
 
     private final HttpHeaders headers;
-    private final Map<String, Object> properties;
     private final HttpMethod method;
     private final HttpUri uri;
     private final HttpVersion httpVersion;
@@ -34,7 +33,6 @@ public class DefaultHttpRequest implements HttpRequest {
         this.uri = new HttpUri(uri);
         this.httpVersion = httpVersion;
         this.headers = new Http1HeadersImpl();
-        this.properties = new ConcurrentHashMap<>(8);
     }
 
 
@@ -44,12 +42,10 @@ public class DefaultHttpRequest implements HttpRequest {
         this.uri = httpRequest.uri();
         this.httpVersion = httpRequest.version();
         this.headers = httpRequest.headers();
-        this.properties = new ConcurrentHashMap<>(httpRequest.properties());
         Checks.checkNotNull(this.uri, "Request's uri must not be null");
         Checks.checkNotNull(this.method, "HttpMethod must not be null");
         Checks.checkNotNull(this.httpVersion, "HttpVersion must not be null");
         Checks.checkNotNull(this.headers, "Headers must not be null");
-        Checks.checkNotNull(this.properties, "Properties must not be null");
     }
 
 
@@ -296,43 +292,7 @@ public class DefaultHttpRequest implements HttpRequest {
         return Collections.unmodifiableList(mediaTypes);
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getProperty(String name) {
-        Checks.checkNotNull(name, "name must not be null");
-        return (T) properties.get(name);
-    }
 
-    @Override
-    public <T> T getProperty(String name, T defaultValue) {
-        final T value = getProperty(name);
-        return value == null ? defaultValue : value;
-    }
-
-    @Override
-    public HttpRequest property(String name, Object value) {
-        Checks.checkNotNull(name, "Name must be not null!");
-        Checks.checkNotNull(value, "Value must be not null!");
-        properties.put(name, value);
-        return self();
-    }
-
-    @Override
-    public Set<String> propertyNames() {
-        return Collections.unmodifiableSet(properties.keySet());
-    }
-
-    @Override
-    public Map<String, Object> properties() {
-        return Collections.unmodifiableMap(properties);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T removeProperty(String name) {
-        Checks.checkNotNull(name, "name must not be null");
-        return (T) properties.remove(name);
-    }
 
     @Override
     public HttpVersion version() {

@@ -22,7 +22,7 @@ class DefaultMultipartRequestTest {
         DefaultHttpRequestTest.testContentTypeOperate(multipartRequest);
         DefaultHttpRequestTest.testAcceptOperate(multipartRequest);
         DefaultHttpRequestTest.testHttpVersion(multipartRequest, multipartRequest.version());
-        DefaultHttpRequestTest.testPropertyOperate(multipartRequest);
+        DefaultExecutableRequestTest.testPropertyOperate(multipartRequest);
         DefaultHttpRequestTest.testCookieOperate(multipartRequest);
         DefaultHttpRequestTest.testParamOperate(multipartRequest);
         DefaultHttpRequestTest.testParamsOperate(multipartRequest);

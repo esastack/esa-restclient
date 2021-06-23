@@ -90,25 +90,4 @@ public interface HttpRequest extends HttpMessage {
     HttpRequest accept(MediaType... mediaTypes);
 
     List<MediaType> acceptTypes();
-
-    /**
-     * Return the request attribute value if present.
-     *
-     * @param name the attribute name
-     * @return the attribute value
-     */
-    <T> T getProperty(String name);
-
-    <T> T getProperty(String name, T defaultValue);
-
-    HttpRequest property(String name, Object value);
-
-    Set<String> propertyNames();
-
-    Map<String, Object> properties();
-
-    /**
-     * Return the attributes of this request.
-     */
-    <T> T removeProperty(String name);
 }

@@ -10,8 +10,11 @@ import esa.restclient.core.exec.RestRequestExecutor;
 import esa.restclient.core.response.RestHttpResponse;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultExecutableRequest extends DefaultHttpRequest implements ExecutableRequest {
     private volatile int maxRedirects;
@@ -20,6 +23,7 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     private boolean useUriEncode;
     private final RestRequestExecutor requestExecutor;
     private boolean useExpectContinue;
+    private final Map<String, Object> properties;
 
     DefaultExecutableRequest(String url, HttpMethod httpMethod, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
         super(url, httpMethod, clientConfig.version());
@@ -32,6 +36,7 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
             maxRetries(clientConfig.retryOptions().maxRetries());
         }
         this.useExpectContinue = clientConfig.isUseExpectContinue();
+        this.properties = new ConcurrentHashMap<>(8);
     }
 
     DefaultExecutableRequest(DefaultExecutableRequest executableRequest) {
@@ -45,6 +50,8 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
         this.useExpectContinue = executableRequest.isUseExpectContinue();
         Checks.checkNotNull(executableRequest.requestExecutor, "RequestExecutor must not be null");
         this.requestExecutor = executableRequest.requestExecutor;
+        Checks.checkNotNull(executableRequest.properties, "Properties must not be null");
+        this.properties = executableRequest.properties;
     }
 
     @Override
@@ -173,6 +180,43 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
         return self();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getProperty(String name) {
+        Checks.checkNotNull(name, "name must not be null");
+        return (T) properties.get(name);
+    }
+
+    @Override
+    public <T> T getProperty(String name, T defaultValue) {
+        final T value = getProperty(name);
+        return value == null ? defaultValue : value;
+    }
+
+    @Override
+    public ExecutableRequest property(String name, Object value) {
+        Checks.checkNotNull(name, "Name must be not null!");
+        Checks.checkNotNull(value, "Value must be not null!");
+        properties.put(name, value);
+        return self();
+    }
+
+    @Override
+    public Set<String> propertyNames() {
+        return Collections.unmodifiableSet(properties.keySet());
+    }
+
+    @Override
+    public Map<String, Object> properties() {
+        return Collections.unmodifiableMap(properties);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T removeProperty(String name) {
+        Checks.checkNotNull(name, "name must not be null");
+        return (T) properties.remove(name);
+    }
 
     private ExecutableRequest self() {
         return this;

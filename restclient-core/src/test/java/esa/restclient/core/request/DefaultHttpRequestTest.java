@@ -43,13 +43,11 @@ class DefaultHttpRequestTest {
         assertEquals(Scheme.HTTPS, defaultHttpRequest.scheme());
         assertEquals(path, defaultHttpRequest.path());
 
-        Map<String, Object> pros = defaultHttpRequest.properties();
         defaultHttpRequest = new DefaultHttpRequest(defaultHttpRequest);
         assertEquals(method, defaultHttpRequest.method());
         assertEquals(httpsUrl + path, defaultHttpRequest.uri().toString());
         assertEquals(Scheme.HTTPS, defaultHttpRequest.scheme());
         assertEquals(path, defaultHttpRequest.path());
-        assertEquals(pros, defaultHttpRequest.properties());
     }
 
     @Test
@@ -96,10 +94,6 @@ class DefaultHttpRequestTest {
         testCookieOperate(new DefaultHttpRequest(httpUrl, method, httpVersion));
     }
 
-    @Test
-    void testPropertyOperate() {
-        testPropertyOperate(new DefaultHttpRequest(httpUrl, method, httpVersion));
-    }
 
     static void testParamOperate(HttpRequest defaultHttpRequest) {
         String name = "name";
@@ -238,41 +232,6 @@ class DefaultHttpRequestTest {
         assertEquals(defaultHttpRequest.version(), httpVersion);
     }
 
-    static void testPropertyOperate(HttpRequest defaultHttpRequest) {
-        assertEquals(0, defaultHttpRequest.propertyNames().size());
-        String name = "name";
-        String value = "value";
-        String otherValue = "otherValue";
-        assertThrows(NullPointerException.class, () -> defaultHttpRequest.property(null, null));
-        assertThrows(NullPointerException.class, () -> defaultHttpRequest.property(null, value));
-        assertThrows(NullPointerException.class, () -> defaultHttpRequest.property(name, null));
-        String valueGet = defaultHttpRequest.getProperty(name);
-        assertNull(valueGet);
-        assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.propertyNames().add("aaa"));
-        assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.properties().put("aaa", "aaa"));
-        assertEquals(0, defaultHttpRequest.propertyNames().size());
-        defaultHttpRequest.property(name, value);
-        assertNotNull(defaultHttpRequest.getProperty(name));
-        assertEquals(value, defaultHttpRequest.getProperty(name));
-        assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.propertyNames().add("aaa"));
-        assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.properties().put("aaa", "aaa"));
-        assertEquals(1, defaultHttpRequest.propertyNames().size());
-        assertEquals(1, defaultHttpRequest.properties().size());
-        assertEquals(name, defaultHttpRequest.propertyNames().iterator().next());
-        defaultHttpRequest.property(name, otherValue);
-
-        assertNotNull(defaultHttpRequest.getProperty(name));
-        assertEquals(otherValue, defaultHttpRequest.getProperty(name));
-        assertEquals(1, defaultHttpRequest.propertyNames().size());
-        assertEquals(1, defaultHttpRequest.properties().size());
-        assertEquals(name, defaultHttpRequest.propertyNames().iterator().next());
-        assertEquals(otherValue, defaultHttpRequest.removeProperty(name));
-        assertEquals(0, defaultHttpRequest.propertyNames().size());
-        assertEquals(0, defaultHttpRequest.properties().size());
-
-        assertEquals("aaa", defaultHttpRequest.getProperty("aaa", "aaa"));
-        assertEquals(0, defaultHttpRequest.propertyNames().size());
-    }
 
 
     static void testCookieOperate(HttpRequest defaultHttpRequest) {

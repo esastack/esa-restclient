@@ -28,7 +28,7 @@ class DefaultFacadeRequestTest {
         DefaultHttpRequestTest.testContentTypeOperate(facadeRequest);
         DefaultHttpRequestTest.testAcceptOperate(facadeRequest);
         DefaultHttpRequestTest.testHttpVersion(facadeRequest, httpVersion);
-        DefaultHttpRequestTest.testPropertyOperate(facadeRequest);
+        DefaultExecutableRequestTest.testPropertyOperate(facadeRequest);
         DefaultHttpRequestTest.testCookieOperate(facadeRequest);
         DefaultHttpRequestTest.testParamOperate(facadeRequest);
         DefaultHttpRequestTest.testParamsOperate(facadeRequest);
@@ -94,6 +94,7 @@ class DefaultFacadeRequestTest {
         }
 
         //Header相关
+        assertEquals(executableRequest.headers(), otherExecutableRequest.headers());
         assertTrue(CollectionUtils.isEqualCollection(executableRequest.headers().names(), otherExecutableRequest.headers().names()));
         for (String name : executableRequest.headers().names()) {
             assertTrue(CollectionUtils.isEqualCollection(executableRequest.getHeaders(name), otherExecutableRequest.getHeaders(name)));
@@ -119,6 +120,7 @@ class DefaultFacadeRequestTest {
         }
 
         //properties相关
+        assertEquals(executableRequest.properties(), otherExecutableRequest.properties());
         assertTrue(CollectionUtils.isEqualCollection(executableRequest.properties().entrySet(), otherExecutableRequest.properties().entrySet()));
 
         //超时等执行参数

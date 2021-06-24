@@ -14,7 +14,7 @@ public class DefaultEntityRequest extends DefaultExecutableRequest implements En
     }
 
     @Override
-    protected Object getBodyObj() {
+    public Object bodyEntity() {
         return entity;
     }
 }

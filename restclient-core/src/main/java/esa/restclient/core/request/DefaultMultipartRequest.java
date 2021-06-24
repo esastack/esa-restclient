@@ -159,7 +159,7 @@ public class DefaultMultipartRequest extends DefaultExecutableRequest implements
     }
 
     @Override
-    protected Object getBodyObj() {
+    public Object bodyEntity() {
         return multipartItems;
     }
 

@@ -92,7 +92,5 @@ public interface HttpRequest extends HttpMessage {
 
     List<MediaType> acceptTypes();
 
-    default InputStream getBodyStream() {
-        return null;
-    }
+    Object bodyEntity();
 }

@@ -13,7 +13,6 @@ import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultHttpRequest implements HttpRequest {
 
@@ -292,6 +291,10 @@ public class DefaultHttpRequest implements HttpRequest {
         return Collections.unmodifiableList(mediaTypes);
     }
 
+    @Override
+    public Object bodyEntity() {
+        return null;
+    }
 
 
     @Override

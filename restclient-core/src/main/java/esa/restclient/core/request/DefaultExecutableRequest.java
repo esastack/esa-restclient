@@ -9,14 +9,13 @@ import esa.restclient.core.RestClientConfig;
 import esa.restclient.core.exec.RestRequestExecutor;
 import esa.restclient.core.response.RestHttpResponse;
 
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
-abstract public class DefaultExecutableRequest extends DefaultHttpRequest implements ExecutableRequest {
+public class DefaultExecutableRequest extends DefaultHttpRequest implements ExecutableRequest {
     private volatile int maxRedirects;
     private volatile int maxRetries = 0;
     private long readTimeout;
@@ -149,15 +148,6 @@ abstract public class DefaultExecutableRequest extends DefaultHttpRequest implem
         super.setHeader(name, value);
         return self();
     }
-
-    @Override
-    public InputStream getBodyStream() {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
-    }
-
-
-    abstract protected Object getBodyObj();
 
     @Override
     public ExecutableRequest cookie(Cookie cookie) {

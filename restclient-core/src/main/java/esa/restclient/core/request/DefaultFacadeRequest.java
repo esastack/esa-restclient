@@ -103,10 +103,6 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
         return self();
     }
 
-    @Override
-    protected Object getBodyObj() {
-        return null;
-    }
 
     @Override
     public FacadeRequest cookie(Cookie cookie) {
@@ -124,6 +120,11 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
     public FacadeRequest accept(MediaType... mediaTypes) {
         super.accept(mediaTypes);
         return self();
+    }
+
+    @Override
+    public Object bodyEntity() {
+        return null;
     }
 
     @Override

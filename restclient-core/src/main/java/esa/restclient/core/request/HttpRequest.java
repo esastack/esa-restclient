@@ -7,6 +7,7 @@ import esa.httpclient.core.Scheme;
 import esa.restclient.core.HttpMessage;
 import esa.restclient.core.MediaType;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,4 +91,10 @@ public interface HttpRequest extends HttpMessage {
     HttpRequest accept(MediaType... mediaTypes);
 
     List<MediaType> acceptTypes();
+
+    default InputStream getBodyStream() {
+        return null;
+    }
+
+    ;
 }

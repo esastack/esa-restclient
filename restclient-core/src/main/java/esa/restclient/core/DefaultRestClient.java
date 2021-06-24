@@ -3,6 +3,8 @@ package esa.restclient.core;
 import esa.commons.Checks;
 import esa.commons.http.HttpMethod;
 import esa.httpclient.core.HttpClient;
+import esa.restclient.core.codec.CodecManager;
+import esa.restclient.core.codec.DefaultCodecManager;
 import esa.restclient.core.exec.DefaultRestRequestExecutor;
 import esa.restclient.core.exec.RestRequestExecutor;
 import esa.restclient.core.request.DefaultFacadeRequest;
@@ -13,20 +15,16 @@ import esa.restclient.core.request.FacadeRequest;
 public class DefaultRestClient implements RestClient {
 
     private final RestClientConfig clientConfig;
-    private final HttpClient httpClient;
     private final RestRequestExecutor requestExecutor;
 
     DefaultRestClient(RestClientConfig clientConfig, HttpClient httpClient) {
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null!");
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
         this.clientConfig = clientConfig;
-        this.httpClient = httpClient;
-        this.requestExecutor = buildExecutor();
+        this.requestExecutor = new DefaultRestRequestExecutor(httpClient, clientConfig,
+                new DefaultCodecManager(clientConfig.decoders(), clientConfig.encoders()));
     }
 
-    private RestRequestExecutor buildExecutor() {
-        return new DefaultRestRequestExecutor(httpClient, clientConfig);
-    }
 
     @Override
     public ExecutableRequest get(String uri) {

@@ -104,6 +104,11 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
     }
 
     @Override
+    protected Object getBodyObj() {
+        return null;
+    }
+
+    @Override
     public FacadeRequest cookie(Cookie cookie) {
         super.cookie(cookie);
         return self();

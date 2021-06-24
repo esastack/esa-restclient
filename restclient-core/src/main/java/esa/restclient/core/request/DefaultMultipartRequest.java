@@ -159,6 +159,11 @@ public class DefaultMultipartRequest extends DefaultExecutableRequest implements
     }
 
     @Override
+    protected Object getBodyObj() {
+        return multipartItems;
+    }
+
+    @Override
     public MultipartRequest cookie(Cookie cookie) {
         super.cookie(cookie);
         return self();
@@ -187,7 +192,7 @@ public class DefaultMultipartRequest extends DefaultExecutableRequest implements
         super.property(name, value);
         return self();
     }
-    
+
     private MultipartRequest self() {
         return this;
     }

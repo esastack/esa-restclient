@@ -15,6 +15,7 @@ import esa.restclient.core.request.RestHttpRequest;
 import esa.restclient.core.response.RestHttpResponse;
 import org.junit.jupiter.api.Test;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
@@ -234,26 +235,31 @@ class RestClientBuilderTest {
     static class TestDecoder implements Decoder {
 
         @Override
-        public boolean canDecode(Class type, Type genericType, MediaType mediaType) {
-            return false;
+        public boolean canDecode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+            //TODO implement the method!
+            throw new UnsupportedOperationException("The method need to be implemented!");
         }
 
         @Override
-        public Object decode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, Buffer buffer) {
-            return null;
+        public Object decode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream entityStream) {
+            //TODO implement the method!
+            throw new UnsupportedOperationException("The method need to be implemented!");
         }
     }
 
     static class TestEncoder implements Encoder {
 
+
         @Override
-        public boolean canEncode(Class type, Type genericType, MediaType mediaType) {
-            return false;
+        public boolean canEncode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+            //TODO implement the method!
+            throw new UnsupportedOperationException("The method need to be implemented!");
         }
 
         @Override
-        public Buffer encode(Object entity, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
-            return null;
+        public InputStream encode(Object entity, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+            //TODO implement the method!
+            throw new UnsupportedOperationException("The method need to be implemented!");
         }
     }
 

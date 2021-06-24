@@ -15,4 +15,9 @@ public class DefaultFileRequest extends DefaultExecutableRequest implements File
     public File file() {
         return file;
     }
+
+    @Override
+    protected Object getBodyObj() {
+        return file;
+    }
 }

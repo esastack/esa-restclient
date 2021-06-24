@@ -12,4 +12,9 @@ public class DefaultEntityRequest extends DefaultExecutableRequest implements En
     public Object entity() {
         return entity;
     }
+
+    @Override
+    protected Object getBodyObj() {
+        return entity;
+    }
 }

@@ -26,8 +26,6 @@ public interface RestHttpRequest extends HttpRequest{
 
     boolean isUseExpectContinue();
 
-    InputStream getBodyStream();
-
     /**
      * Return the request attribute value if present.
      *

@@ -6,7 +6,7 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.core.MediaType;
-import esa.restclient.core.codec.CodecManager;
+import esa.restclient.core.codec.BodyProcessor;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -21,21 +21,21 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
     private final HttpHeaders headers;
     private final HttpHeaders trailers;
     private final InputStream bodyStream;
-    private final CodecManager codecManager;
+    private final BodyProcessor bodyProcessor;
 
 
     DefaultRestHttpResponse(
             HttpResponse response,
             InputStream bodyStream,
-            CodecManager codecManager) {
+            BodyProcessor bodyProcessor) {
         Checks.checkNotNull(response, "Response must be not null!");
-        Checks.checkNotNull(codecManager, "CodecManager must be not null!");
+        Checks.checkNotNull(bodyProcessor, "CodecManager must be not null!");
         this.httpVersion = response.version();
         this.status = response.status();
         this.headers = response.headers();
         this.bodyStream = bodyStream;
         this.trailers = response.trailers();
-        this.codecManager = codecManager;
+        this.bodyProcessor = bodyProcessor;
     }
 
 
@@ -44,7 +44,7 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
         if (entityClass == null) {
             return null;
         }
-        return (T) codecManager.decode(entityClass, entityClass, contentType(), headers, bodyStream);
+        return (T) bodyProcessor.read(entityClass, entityClass, contentType(), headers, bodyStream);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
         if (type == null) {
             return null;
         }
-        return (T) codecManager.decode(type.getClass(), getClass(type), contentType(), headers, bodyStream);
+        return (T) bodyProcessor.read(type.getClass(), getClass(type), contentType(), headers, bodyStream);
     }
 
     @Override

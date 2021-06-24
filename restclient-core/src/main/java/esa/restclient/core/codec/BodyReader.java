@@ -4,17 +4,18 @@ import esa.commons.http.HttpHeaders;
 import esa.httpclient.core.util.Ordered;
 import esa.restclient.core.MediaType;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-public interface Decoder extends Ordered {
+public interface BodyReader<T> extends Ordered {
 
-    boolean canDecode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders);
+    boolean canRead(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders);
 
-    Object decode(
+    T read(
             Class type,
             Type genericType,
             MediaType mediaType,
             HttpHeaders httpHeaders,
-            InputStream entityStream);
+            InputStream bodyStream) throws IOException;
 }

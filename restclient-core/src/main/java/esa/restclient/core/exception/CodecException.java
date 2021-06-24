@@ -7,4 +7,8 @@ public class CodecException extends RuntimeException {
     public CodecException(String msg) {
         super(msg);
     }
+
+    public CodecException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

@@ -1,13 +1,8 @@
 package esa.restclient.core;
 
 import esa.commons.http.HttpHeaders;
-import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.CookieImpl;
 import esa.commons.netty.http.Http1HeadersAdaptor;
-import esa.restclient.core.codec.Decoder;
-import esa.restclient.core.codec.Encoder;
-
-import java.lang.reflect.Type;
 
 public class QuickStart {
 

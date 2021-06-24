@@ -3,8 +3,7 @@ package esa.restclient.core;
 import esa.commons.Checks;
 import esa.commons.http.HttpMethod;
 import esa.httpclient.core.HttpClient;
-import esa.restclient.core.codec.CodecManager;
-import esa.restclient.core.codec.DefaultCodecManager;
+import esa.restclient.core.codec.DefaultBodyProcessor;
 import esa.restclient.core.exec.DefaultRestRequestExecutor;
 import esa.restclient.core.exec.RestRequestExecutor;
 import esa.restclient.core.request.DefaultFacadeRequest;
@@ -22,7 +21,7 @@ public class DefaultRestClient implements RestClient {
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
         this.clientConfig = clientConfig;
         this.requestExecutor = new DefaultRestRequestExecutor(httpClient, clientConfig,
-                new DefaultCodecManager(clientConfig.decoders(), clientConfig.encoders()));
+                new DefaultBodyProcessor(clientConfig.decoders(), clientConfig.encoders()));
     }
 
 

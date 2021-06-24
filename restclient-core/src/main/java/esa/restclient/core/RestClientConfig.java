@@ -4,8 +4,8 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.restclient.core.codec.Decoder;
-import esa.restclient.core.codec.Encoder;
+import esa.restclient.core.codec.BodyReader;
+import esa.restclient.core.codec.BodyWriter;
 import esa.restclient.core.interceptor.Interceptor;
 
 import java.util.List;
@@ -47,9 +47,9 @@ public interface RestClientConfig {
 
     List<Interceptor> interceptors();
 
-    List<Decoder> decoders();
+    List<BodyReader> decoders();
 
-    List<Encoder> encoders();
+    List<BodyWriter> encoders();
 
     RetryOptions retryOptions();
 

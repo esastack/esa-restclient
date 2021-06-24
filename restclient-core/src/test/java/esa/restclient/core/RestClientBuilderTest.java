@@ -2,20 +2,21 @@ package esa.restclient.core;
 
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.restclient.core.codec.Decoder;
-import esa.restclient.core.codec.Encoder;
+import esa.restclient.core.codec.BodyReader;
+import esa.restclient.core.codec.BodyWriter;
 import esa.restclient.core.exec.InvokeChain;
 import esa.restclient.core.interceptor.Interceptor;
 import esa.restclient.core.request.RestHttpRequest;
 import esa.restclient.core.response.RestHttpResponse;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
@@ -61,25 +62,25 @@ class RestClientBuilderTest {
         assertThrows(NullPointerException.class, () -> builder.addDecoders(null));
         assertThrows(NullPointerException.class, () -> builder.addEncoder(null));
         assertThrows(NullPointerException.class, () -> builder.addEncoders(null));
-        assertThrows(UnsupportedOperationException.class, () -> builder.decoders().add(new TestDecoder()));
-        builder.addDecoder(new TestDecoder());
+        assertThrows(UnsupportedOperationException.class, () -> builder.decoders().add(new TestBodyReader()));
+        builder.addDecoder(new TestBodyReader());
         assertEquals(1, builder.decoders().size());
-        builder.addDecoder(new TestDecoder());
+        builder.addDecoder(new TestBodyReader());
         assertEquals(2, builder.decoders().size());
-        List<Decoder> decoders = Arrays.asList(new TestDecoder[]{new TestDecoder(), new TestDecoder()});
-        builder.addDecoders(decoders);
+        List<BodyReader> bodyReaders = Arrays.asList(new TestBodyReader[]{new TestBodyReader(), new TestBodyReader()});
+        builder.addDecoders(bodyReaders);
         assertEquals(4, builder.decoders().size());
-        assertThrows(UnsupportedOperationException.class, () -> builder.decoders().add(new TestDecoder()));
+        assertThrows(UnsupportedOperationException.class, () -> builder.decoders().add(new TestBodyReader()));
 
-        assertThrows(UnsupportedOperationException.class, () -> builder.encoders().add(new TestEncoder()));
-        builder.addEncoder(new TestEncoder());
+        assertThrows(UnsupportedOperationException.class, () -> builder.encoders().add(new TestBodyWriter()));
+        builder.addEncoder(new TestBodyWriter());
         assertEquals(1, builder.encoders().size());
-        builder.addEncoder(new TestEncoder());
+        builder.addEncoder(new TestBodyWriter());
         assertEquals(2, builder.encoders().size());
-        List<Encoder> encoders = Arrays.asList(new TestEncoder[]{new TestEncoder(), new TestEncoder()});
-        builder.addEncoders(encoders);
+        List<BodyWriter> bodyWriters = Arrays.asList(new TestBodyWriter[]{new TestBodyWriter(), new TestBodyWriter()});
+        builder.addEncoders(bodyWriters);
         assertEquals(4, builder.encoders().size());
-        assertThrows(UnsupportedOperationException.class, () -> builder.encoders().add(new TestEncoder()));
+        assertThrows(UnsupportedOperationException.class, () -> builder.encoders().add(new TestBodyWriter()));
     }
 
 
@@ -103,8 +104,8 @@ class RestClientBuilderTest {
     @Test
     void testBuild() {
         RestClientBuilder builder = wrapWithBasicData(new RestClientBuilder());
-        builder.addEncoder(new TestEncoder());
-        builder.addDecoder(new TestDecoder());
+        builder.addEncoder(new TestBodyWriter());
+        builder.addDecoder(new TestBodyReader());
         builder.addInterceptor(new TestInterceptor());
         builder.build();
     }
@@ -112,10 +113,10 @@ class RestClientBuilderTest {
     @Test
     void testCopy() {
         RestClientBuilder builder = wrapWithBasicData(new RestClientBuilder());
-        Encoder encoder = new TestEncoder();
-        builder.addEncoder(encoder);
-        Decoder decoder = new TestDecoder();
-        builder.addDecoder(decoder);
+        BodyWriter bodyWriter = new TestBodyWriter();
+        builder.addEncoder(bodyWriter);
+        BodyReader bodyReader = new TestBodyReader();
+        builder.addDecoder(bodyReader);
         Interceptor interceptor = new TestInterceptor();
         builder.addInterceptor(interceptor);
         testCopied(builder, builder.copy());
@@ -232,32 +233,30 @@ class RestClientBuilderTest {
                 .idleTimeoutSeconds(idleTimeoutSeconds);
     }
 
-    static class TestDecoder implements Decoder {
-
+    static class TestBodyReader implements BodyReader {
         @Override
-        public boolean canDecode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+        public boolean canRead(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
             //TODO implement the method!
             throw new UnsupportedOperationException("The method need to be implemented!");
         }
 
         @Override
-        public Object decode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream entityStream) {
+        public Object read(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) throws IOException {
             //TODO implement the method!
             throw new UnsupportedOperationException("The method need to be implemented!");
         }
     }
 
-    static class TestEncoder implements Encoder {
-
+    static class TestBodyWriter implements BodyWriter {
 
         @Override
-        public boolean canEncode(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+        public boolean canWrite(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
             //TODO implement the method!
             throw new UnsupportedOperationException("The method need to be implemented!");
         }
 
         @Override
-        public InputStream encode(Object entity, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+        public void write(Object entity, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, OutputStream bodyStream) throws IOException {
             //TODO implement the method!
             throw new UnsupportedOperationException("The method need to be implemented!");
         }

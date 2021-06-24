@@ -95,6 +95,4 @@ public interface HttpRequest extends HttpMessage {
     default InputStream getBodyStream() {
         return null;
     }
-
-    ;
 }

@@ -7,8 +7,8 @@ import esa.httpclient.core.Reusable;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.restclient.core.codec.Decoder;
-import esa.restclient.core.codec.Encoder;
+import esa.restclient.core.codec.BodyReader;
+import esa.restclient.core.codec.BodyWriter;
 import esa.restclient.core.interceptor.Interceptor;
 
 import java.util.Collections;
@@ -21,8 +21,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private final HttpClientBuilder httpClientBuilder;
 
     private final List<Interceptor> interceptors = new LinkedList<>();
-    private final List<Encoder> encoders = new LinkedList<>();
-    private final List<Decoder> decoders = new LinkedList<>();
+    private final List<BodyWriter> bodyWriters = new LinkedList<>();
+    private final List<BodyReader> bodyReaders = new LinkedList<>();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -99,27 +99,27 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addDecoder(Decoder decoder) {
-        Checks.checkNotNull(decoder, "Decoder must not be null");
-        this.decoders.add(decoder);
+    public RestClientBuilder addDecoder(BodyReader bodyReader) {
+        Checks.checkNotNull(bodyReader, "Decoder must not be null");
+        this.bodyReaders.add(bodyReader);
         return self();
     }
 
-    public RestClientBuilder addDecoders(List<Decoder> decoders) {
-        Checks.checkNotNull(decoders, "Decoders must not be null");
-        this.decoders.addAll(decoders);
+    public RestClientBuilder addDecoders(List<BodyReader> bodyReaders) {
+        Checks.checkNotNull(bodyReaders, "Decoders must not be null");
+        this.bodyReaders.addAll(bodyReaders);
         return self();
     }
 
-    public RestClientBuilder addEncoder(Encoder encoder) {
-        Checks.checkNotNull(encoder, "Encoder must not be null");
-        this.encoders.add(encoder);
+    public RestClientBuilder addEncoder(BodyWriter bodyWriter) {
+        Checks.checkNotNull(bodyWriter, "Encoder must not be null");
+        this.bodyWriters.add(bodyWriter);
         return self();
     }
 
-    public RestClientBuilder addEncoders(List<Encoder> encoders) {
-        Checks.checkNotNull(encoders, "Encoders must not be null");
-        this.encoders.addAll(encoders);
+    public RestClientBuilder addEncoders(List<BodyWriter> bodyWriters) {
+        Checks.checkNotNull(bodyWriters, "Encoders must not be null");
+        this.bodyWriters.addAll(bodyWriters);
         return self();
     }
 
@@ -265,13 +265,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<Decoder> decoders() {
-        return Collections.unmodifiableList(decoders);
+    public List<BodyReader> decoders() {
+        return Collections.unmodifiableList(bodyReaders);
     }
 
     @Override
-    public List<Encoder> encoders() {
-        return Collections.unmodifiableList(encoders);
+    public List<BodyWriter> encoders() {
+        return Collections.unmodifiableList(bodyWriters);
     }
 
     @Override
@@ -309,7 +309,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public RestClientBuilder copy() {
         return new RestClientBuilder(httpClientBuilder)
                 .addInterceptors(interceptors)
-                .addEncoders(encoders)
-                .addDecoders(decoders);
+                .addEncoders(bodyWriters)
+                .addDecoders(bodyReaders);
     }
 }

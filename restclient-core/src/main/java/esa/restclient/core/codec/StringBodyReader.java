@@ -14,7 +14,7 @@ public class StringBodyReader implements BodyReader<String> {
 
     @Override
     public boolean canRead(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
-        return true;
+        return String.class.equals(type);
     }
 
     @Override

@@ -6,6 +6,8 @@ import esa.restclient.core.codec.JsonBodyWriter;
 import esa.restclient.core.codec.StringBodyReader;
 import esa.restclient.core.codec.StringBodyWriter;
 
+import java.util.concurrent.CompletableFuture;
+
 public class QuickStart {
 
     private static final String url = "http://localhost:8080/hello";
@@ -32,7 +34,6 @@ public class QuickStart {
                 .maxRetries(3)
                 .readTimeout(100)
                 .execute()
-                .toCompletableFuture()
                 .thenAccept(response -> System.out.println(response.bodyToEntity(String.class)));
         try {
             Thread.sleep(1000000);
@@ -44,8 +45,37 @@ public class QuickStart {
     private static RestClient createClient() {
         return RestClient.create()
                 .addInterceptor((request, next) -> {
-                    System.out.println("----------Intercept----------");
-                    return next.proceed(request);
+                    System.out.println("----------Intercept1 begin----------");
+                    System.out.println(request.headers());
+                    return next.proceed(request).thenApply((response) -> {
+                                System.out.println("----------Intercept1 end----------");
+                                System.out.println(response.headers());
+                                return response;
+                            }
+
+                    );
+                })
+                .addInterceptor((request, next) -> {
+                    System.out.println("----------Intercept2 begin----------");
+                    System.out.println(request.headers());
+                    return next.proceed(request).thenApply((response) -> {
+                                System.out.println("----------Intercept2 end----------");
+                                System.out.println(response.headers());
+                                return response;
+                            }
+
+                    );
+                })
+                .addInterceptor((request, next) -> {
+                    System.out.println("----------Intercept3 begin----------");
+                    System.out.println(request.headers());
+                    return next.proceed(request).thenApply((response) -> {
+                                System.out.println("----------Intercept3 end----------");
+                                System.out.println(response.headers());
+                                return response;
+                            }
+
+                    );
                 })
                 .addBodyReader(new JsonBodyReader())
                 .addBodyWriter(new JsonBodyWriter())

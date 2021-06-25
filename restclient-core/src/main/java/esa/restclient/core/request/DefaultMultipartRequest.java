@@ -99,7 +99,7 @@ public class DefaultMultipartRequest extends DefaultExecutableRequest implements
 
 
     @Override
-    public MultipartRequest readTimeout(long readTimeout) {
+    public MultipartRequest readTimeout(int readTimeout) {
         super.readTimeout(readTimeout);
         return self();
     }

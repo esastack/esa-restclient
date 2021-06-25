@@ -143,7 +143,7 @@ class DefaultFacadeRequestTest {
 
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.readTimeout(0));
         assertThrows(IllegalArgumentException.class, () -> defaultFacadeRequest.readTimeout(-1));
-        long requestReadTimeout = 3;
+        int requestReadTimeout = 3;
         defaultFacadeRequest.readTimeout(requestReadTimeout);
         assertEquals(requestReadTimeout, defaultFacadeRequest.readTimeout());
         requestReadTimeout = 1;

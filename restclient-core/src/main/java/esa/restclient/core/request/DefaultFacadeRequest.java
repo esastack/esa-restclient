@@ -44,7 +44,7 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
     }
 
     @Override
-    public FacadeRequest readTimeout(long readTimeout) {
+    public FacadeRequest readTimeout(int readTimeout) {
         super.readTimeout(readTimeout);
         return self();
     }

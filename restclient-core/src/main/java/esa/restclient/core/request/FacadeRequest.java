@@ -49,7 +49,7 @@ public interface FacadeRequest extends ExecutableRequest {
     FacadeRequest enableUriEncode();
 
     @Override
-    FacadeRequest readTimeout(long readTimeout);
+    FacadeRequest readTimeout(int readTimeout);
 
     @Override
     FacadeRequest disableExpectContinue();

@@ -1,6 +1,5 @@
 package esa.restclient.core.request;
 
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ public interface RestHttpRequest extends HttpRequest{
      *
      * @return readTimeout
      */
-    long readTimeout();
+    int readTimeout();
 
     /**
      * Whether allow uri encode or not

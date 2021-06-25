@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultExecutableRequest extends DefaultHttpRequest implements ExecutableRequest {
     private volatile int maxRedirects;
     private volatile int maxRetries = 0;
-    private long readTimeout;
+    private int readTimeout;
     private boolean useUriEncode;
     private final RestRequestExecutor requestExecutor;
     private boolean useExpectContinue;
@@ -69,12 +69,12 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     }
 
     @Override
-    public long readTimeout() {
+    public int readTimeout() {
         return readTimeout;
     }
 
     @Override
-    public ExecutableRequest readTimeout(long readTimeout) {
+    public ExecutableRequest readTimeout(int readTimeout) {
         Checks.checkArg(readTimeout > 0, "ReadTimeout is " + readTimeout +
                 " (expected > 0)");
         this.readTimeout = readTimeout;

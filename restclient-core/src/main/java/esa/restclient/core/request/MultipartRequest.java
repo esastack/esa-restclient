@@ -57,7 +57,7 @@ public interface MultipartRequest extends ExecutableRequest {
     MultipartRequest enableUriEncode();
 
     @Override
-    MultipartRequest readTimeout(long readTimeout);
+    MultipartRequest readTimeout(int readTimeout);
 
     @Override
     MultipartRequest disableExpectContinue();

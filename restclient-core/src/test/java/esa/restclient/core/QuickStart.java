@@ -5,12 +5,6 @@ import esa.restclient.core.codec.JsonBodyReader;
 import esa.restclient.core.codec.JsonBodyWriter;
 import esa.restclient.core.codec.StringBodyReader;
 import esa.restclient.core.codec.StringBodyWriter;
-import esa.restclient.core.exec.InvokeChain;
-import esa.restclient.core.interceptor.Interceptor;
-import esa.restclient.core.request.RestHttpRequest;
-import esa.restclient.core.response.RestHttpResponse;
-
-import java.util.concurrent.CompletionStage;
 
 public class QuickStart {
 
@@ -38,7 +32,13 @@ public class QuickStart {
                 .maxRetries(3)
                 .readTimeout(100)
                 .execute()
-                .thenAccept(response -> System.out.println(response.bodyToEntity(QuickStart.class)));
+                .toCompletableFuture()
+                .thenAccept(response -> System.out.println(response.bodyToEntity(String.class)));
+        try {
+            Thread.sleep(1000000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private static RestClient createClient() {
@@ -48,8 +48,8 @@ public class QuickStart {
                     return next.proceed(request);
                 })
                 .addBodyReader(new JsonBodyReader())
-                .addBodyReader(new StringBodyReader())
                 .addBodyWriter(new JsonBodyWriter())
+                .addBodyReader(new StringBodyReader())
                 .addBodyWriter(new StringBodyWriter())
                 .build();
     }

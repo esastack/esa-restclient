@@ -4,6 +4,7 @@ import esa.commons.Checks;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
+import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.core.MediaType;
 import esa.restclient.core.codec.BodyProcessor;
@@ -23,21 +24,42 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
     private final InputStream bodyStream;
     private final BodyProcessor bodyProcessor;
 
-
-    DefaultRestHttpResponse(
+    public DefaultRestHttpResponse(
             HttpResponse response,
-            InputStream bodyStream,
             BodyProcessor bodyProcessor) {
         Checks.checkNotNull(response, "Response must be not null!");
         Checks.checkNotNull(bodyProcessor, "CodecManager must be not null!");
         this.httpVersion = response.version();
         this.status = response.status();
         this.headers = response.headers();
-        this.bodyStream = bodyStream;
         this.trailers = response.trailers();
         this.bodyProcessor = bodyProcessor;
-    }
 
+        Buffer buffer = response.body();
+        if (buffer != null) {
+            this.bodyStream = new InputStream() {
+                @Override
+                public int read() {
+                    return buffer.readInt();
+                }
+
+                @Override
+                public int read(byte[] b, int off, int len) {
+                    int readableBytes = buffer.readableBytes();
+                    if (readableBytes >= len) {
+                        buffer.readBytes(b, off, len);
+                        return len;
+                    } else if (readableBytes > 0) {
+                        buffer.readBytes(b, off, readableBytes);
+                        return readableBytes;
+                    }
+                    return -1;
+                }
+            };
+        } else {
+            this.bodyStream = null;
+        }
+    }
 
     @Override
     public <T> T bodyToEntity(Class<T> entityClass) {
@@ -64,7 +86,6 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
     public InputStream bodyStream() {
         return bodyStream;
     }
-
 
     @Override
     public HttpHeaders trailers() {
@@ -113,7 +134,6 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
         throw new IllegalArgumentException("Type parameter " + type.toString() + " not a class or " +
                 "parameterized type whose raw type is a class");
     }
-
 
     /**
      * Get Array class of component class.

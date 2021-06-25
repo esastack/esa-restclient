@@ -190,7 +190,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public long readTimeout() {
+    public int readTimeout() {
         return httpClientBuilder.readTimeout();
     }
 

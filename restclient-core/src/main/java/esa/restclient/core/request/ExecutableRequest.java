@@ -13,7 +13,7 @@ public interface ExecutableRequest extends RestHttpRequest {
 
     CompletionStage<RestHttpResponse> execute();
 
-    ExecutableRequest readTimeout(long readTimeout);
+    ExecutableRequest readTimeout(int readTimeout);
 
     ExecutableRequest maxRedirects(int maxRedirects);
 

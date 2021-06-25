@@ -4,13 +4,11 @@ import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.core.MediaType;
-import esa.restclient.core.exception.CodecException;
+import esa.restclient.core.exception.BodyProcessException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.rmi.server.ExportException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class DefaultBodyProcessor implements BodyProcessor {
     public Object read(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) {
         BodyReader bodyReader = lookForReader(type, genericType, mediaType, httpHeaders);
         if (bodyReader == null) {
-            throw new CodecException("No decoder!Type:" + type.getCanonicalName() +
+            throw new BodyProcessException("No decoder!Type:" + type.getCanonicalName() +
                     ",genericType:" + genericType +
                     ",mediaType:" + mediaType +
                     ",httpHeaders:" + httpHeaders.toString());
@@ -40,7 +38,7 @@ public class DefaultBodyProcessor implements BodyProcessor {
         try {
             return bodyReader.read(type, genericType, mediaType, httpHeaders, bodyStream);
         } catch (Throwable e) {
-            throw new CodecException("Read error!cause:" + e.getMessage(), e);
+            throw new BodyProcessException("Read error!cause:" + e.getMessage(), e);
         }
     }
 
@@ -50,7 +48,7 @@ public class DefaultBodyProcessor implements BodyProcessor {
         Class type = entity.getClass();
         BodyWriter bodyWriter = lookForWriter(entity.getClass(), genericType, mediaType, httpHeaders);
         if (bodyWriter == null) {
-            throw new CodecException("No Encoder!Type:" + type.getCanonicalName() +
+            throw new BodyProcessException("No Encoder!Type:" + type.getCanonicalName() +
                     ",genericType:" + genericType +
                     ",mediaType:" + mediaType +
                     ",httpHeaders:" + httpHeaders.toString());
@@ -58,7 +56,7 @@ public class DefaultBodyProcessor implements BodyProcessor {
         try {
             bodyWriter.write(entity, genericType, mediaType, httpHeaders, bodyStream);
         } catch (Throwable e) {
-            throw new CodecException("Write error!cause:" + e.getMessage(), e);
+            throw new BodyProcessException("Write error!cause:" + e.getMessage(), e);
         }
     }
 

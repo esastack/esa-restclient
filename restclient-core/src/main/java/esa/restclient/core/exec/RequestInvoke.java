@@ -26,7 +26,7 @@ public class RequestInvoke implements InvokeChain {
 
     @Override
     public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request) {
-
+        bodyProcessor.write(request.bodyEntity(), request.bodyEntity().getClass(), request.contentType(), request.headers(), null);
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }

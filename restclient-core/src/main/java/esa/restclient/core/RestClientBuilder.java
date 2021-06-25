@@ -99,25 +99,25 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addDecoder(BodyReader bodyReader) {
+    public RestClientBuilder addBodyReader(BodyReader bodyReader) {
         Checks.checkNotNull(bodyReader, "Decoder must not be null");
         this.bodyReaders.add(bodyReader);
         return self();
     }
 
-    public RestClientBuilder addDecoders(List<BodyReader> bodyReaders) {
+    public RestClientBuilder addBodyReaders(List<BodyReader> bodyReaders) {
         Checks.checkNotNull(bodyReaders, "Decoders must not be null");
         this.bodyReaders.addAll(bodyReaders);
         return self();
     }
 
-    public RestClientBuilder addEncoder(BodyWriter bodyWriter) {
+    public RestClientBuilder addBodyWriter(BodyWriter bodyWriter) {
         Checks.checkNotNull(bodyWriter, "Encoder must not be null");
         this.bodyWriters.add(bodyWriter);
         return self();
     }
 
-    public RestClientBuilder addEncoders(List<BodyWriter> bodyWriters) {
+    public RestClientBuilder addBodyWriters(List<BodyWriter> bodyWriters) {
         Checks.checkNotNull(bodyWriters, "Encoders must not be null");
         this.bodyWriters.addAll(bodyWriters);
         return self();
@@ -265,12 +265,12 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<BodyReader> decoders() {
+    public List<BodyReader> bodyReaders() {
         return Collections.unmodifiableList(bodyReaders);
     }
 
     @Override
-    public List<BodyWriter> encoders() {
+    public List<BodyWriter> bodyWriters() {
         return Collections.unmodifiableList(bodyWriters);
     }
 
@@ -309,7 +309,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public RestClientBuilder copy() {
         return new RestClientBuilder(httpClientBuilder)
                 .addInterceptors(interceptors)
-                .addEncoders(bodyWriters)
-                .addDecoders(bodyReaders);
+                .addBodyWriters(bodyWriters)
+                .addBodyReaders(bodyReaders);
     }
 }

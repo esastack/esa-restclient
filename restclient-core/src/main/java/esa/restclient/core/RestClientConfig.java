@@ -47,9 +47,9 @@ public interface RestClientConfig {
 
     List<Interceptor> interceptors();
 
-    List<BodyReader> decoders();
+    List<BodyReader> bodyReaders();
 
-    List<BodyWriter> encoders();
+    List<BodyWriter> bodyWriters();
 
     RetryOptions retryOptions();
 

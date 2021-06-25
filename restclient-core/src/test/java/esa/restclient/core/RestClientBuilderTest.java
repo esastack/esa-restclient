@@ -58,29 +58,29 @@ class RestClientBuilderTest {
     @Test
     void testEncoderAndDecoder() {
         RestClientBuilder builder = new RestClientBuilder();
-        assertThrows(NullPointerException.class, () -> builder.addDecoder(null));
-        assertThrows(NullPointerException.class, () -> builder.addDecoders(null));
-        assertThrows(NullPointerException.class, () -> builder.addEncoder(null));
-        assertThrows(NullPointerException.class, () -> builder.addEncoders(null));
-        assertThrows(UnsupportedOperationException.class, () -> builder.decoders().add(new TestBodyReader()));
-        builder.addDecoder(new TestBodyReader());
-        assertEquals(1, builder.decoders().size());
-        builder.addDecoder(new TestBodyReader());
-        assertEquals(2, builder.decoders().size());
+        assertThrows(NullPointerException.class, () -> builder.addBodyReader(null));
+        assertThrows(NullPointerException.class, () -> builder.addBodyReaders(null));
+        assertThrows(NullPointerException.class, () -> builder.addBodyWriter(null));
+        assertThrows(NullPointerException.class, () -> builder.addBodyWriters(null));
+        assertThrows(UnsupportedOperationException.class, () -> builder.bodyReaders().add(new TestBodyReader()));
+        builder.addBodyReader(new TestBodyReader());
+        assertEquals(1, builder.bodyReaders().size());
+        builder.addBodyReader(new TestBodyReader());
+        assertEquals(2, builder.bodyReaders().size());
         List<BodyReader> bodyReaders = Arrays.asList(new TestBodyReader[]{new TestBodyReader(), new TestBodyReader()});
-        builder.addDecoders(bodyReaders);
-        assertEquals(4, builder.decoders().size());
-        assertThrows(UnsupportedOperationException.class, () -> builder.decoders().add(new TestBodyReader()));
+        builder.addBodyReaders(bodyReaders);
+        assertEquals(4, builder.bodyReaders().size());
+        assertThrows(UnsupportedOperationException.class, () -> builder.bodyReaders().add(new TestBodyReader()));
 
-        assertThrows(UnsupportedOperationException.class, () -> builder.encoders().add(new TestBodyWriter()));
-        builder.addEncoder(new TestBodyWriter());
-        assertEquals(1, builder.encoders().size());
-        builder.addEncoder(new TestBodyWriter());
-        assertEquals(2, builder.encoders().size());
+        assertThrows(UnsupportedOperationException.class, () -> builder.bodyWriters().add(new TestBodyWriter()));
+        builder.addBodyWriter(new TestBodyWriter());
+        assertEquals(1, builder.bodyWriters().size());
+        builder.addBodyWriter(new TestBodyWriter());
+        assertEquals(2, builder.bodyWriters().size());
         List<BodyWriter> bodyWriters = Arrays.asList(new TestBodyWriter[]{new TestBodyWriter(), new TestBodyWriter()});
-        builder.addEncoders(bodyWriters);
-        assertEquals(4, builder.encoders().size());
-        assertThrows(UnsupportedOperationException.class, () -> builder.encoders().add(new TestBodyWriter()));
+        builder.addBodyWriters(bodyWriters);
+        assertEquals(4, builder.bodyWriters().size());
+        assertThrows(UnsupportedOperationException.class, () -> builder.bodyWriters().add(new TestBodyWriter()));
     }
 
 
@@ -104,8 +104,8 @@ class RestClientBuilderTest {
     @Test
     void testBuild() {
         RestClientBuilder builder = wrapWithBasicData(new RestClientBuilder());
-        builder.addEncoder(new TestBodyWriter());
-        builder.addDecoder(new TestBodyReader());
+        builder.addBodyWriter(new TestBodyWriter());
+        builder.addBodyReader(new TestBodyReader());
         builder.addInterceptor(new TestInterceptor());
         builder.build();
     }
@@ -114,9 +114,9 @@ class RestClientBuilderTest {
     void testCopy() {
         RestClientBuilder builder = wrapWithBasicData(new RestClientBuilder());
         BodyWriter bodyWriter = new TestBodyWriter();
-        builder.addEncoder(bodyWriter);
+        builder.addBodyWriter(bodyWriter);
         BodyReader bodyReader = new TestBodyReader();
-        builder.addDecoder(bodyReader);
+        builder.addBodyReader(bodyReader);
         Interceptor interceptor = new TestInterceptor();
         builder.addInterceptor(interceptor);
         testCopied(builder, builder.copy());
@@ -142,13 +142,13 @@ class RestClientBuilderTest {
         then(copiedBuilder.maxRedirects()).isEqualTo(builder.maxRedirects());
         then(copiedBuilder.maxContentLength()).isEqualTo(builder.maxContentLength());
         then(copiedBuilder.idleTimeoutSeconds()).isEqualTo(builder.idleTimeoutSeconds());
-        then(builder.encoders()).isNotSameAs(copiedBuilder.encoders());
-        then(builder.decoders()).isNotSameAs(copiedBuilder.decoders());
+        then(builder.bodyWriters()).isNotSameAs(copiedBuilder.bodyWriters());
+        then(builder.bodyReaders()).isNotSameAs(copiedBuilder.bodyReaders());
         then(builder.interceptors()).isNotSameAs(copiedBuilder.interceptors());
-        assertEquals(1, copiedBuilder.encoders().size());
-        assertEquals(builder.encoders().get(0), copiedBuilder.encoders().get(0));
-        assertEquals(1, copiedBuilder.decoders().size());
-        assertEquals(builder.decoders().get(0), copiedBuilder.decoders().get(0));
+        assertEquals(1, copiedBuilder.bodyWriters().size());
+        assertEquals(builder.bodyWriters().get(0), copiedBuilder.bodyWriters().get(0));
+        assertEquals(1, copiedBuilder.bodyReaders().size());
+        assertEquals(builder.bodyReaders().get(0), copiedBuilder.bodyReaders().get(0));
         assertEquals(1, copiedBuilder.interceptors().size());
         assertEquals(builder.interceptors().get(0), copiedBuilder.interceptors().get(0));
     }

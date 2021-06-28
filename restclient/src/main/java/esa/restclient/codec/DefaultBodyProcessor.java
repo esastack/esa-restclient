@@ -27,16 +27,16 @@ public class DefaultBodyProcessor implements BodyProcessor {
     }
 
     @Override
-    public Object read(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) {
-        BodyReader bodyReader = lookForReader(type, genericType, mediaType, httpHeaders);
+    public Object read(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) {
+        BodyReader bodyReader = lookForReader(rawType, type, mediaType, httpHeaders);
         if (bodyReader == null) {
-            throw new BodyProcessException("No decoder!Type:" + type.getCanonicalName() +
-                    ",genericType:" + genericType +
+            throw new BodyProcessException("No decoder!Type:" + rawType.getCanonicalName() +
+                    ",type:" + type +
                     ",mediaType:" + mediaType +
                     ",httpHeaders:" + httpHeaders.toString());
         }
         try {
-            return bodyReader.read(type, genericType, mediaType, httpHeaders, bodyStream);
+            return bodyReader.read(rawType, type, mediaType, httpHeaders, bodyStream);
         } catch (Throwable e) {
             throw new BodyProcessException("Read error!cause:" + e.getMessage(), e);
         }
@@ -44,34 +44,37 @@ public class DefaultBodyProcessor implements BodyProcessor {
 
 
     @Override
-    public void write(Object entity, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, OutputStream bodyStream) {
-        Class type = entity.getClass();
-        BodyWriter bodyWriter = lookForWriter(entity.getClass(), genericType, mediaType, httpHeaders);
+    public void write(Object entity, Type type, MediaType mediaType, HttpHeaders httpHeaders, OutputStream bodyStream) {
+        Class rawType = entity.getClass();
+        if (type == null) {
+            type = rawType;
+        }
+        BodyWriter bodyWriter = lookForWriter(entity.getClass(), type, mediaType, httpHeaders);
         if (bodyWriter == null) {
-            throw new BodyProcessException("No Encoder!Type:" + type.getCanonicalName() +
-                    ",genericType:" + genericType +
+            throw new BodyProcessException("No Encoder!Type:" + rawType.getCanonicalName() +
+                    ",type:" + type +
                     ",mediaType:" + mediaType +
                     ",httpHeaders:" + httpHeaders.toString());
         }
         try {
-            bodyWriter.write(entity, genericType, mediaType, httpHeaders, bodyStream);
+            bodyWriter.write(entity, type, mediaType, httpHeaders, bodyStream);
         } catch (Throwable e) {
             throw new BodyProcessException("Write error!cause:" + e.getMessage(), e);
         }
     }
 
-    private BodyReader lookForReader(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+    private BodyReader lookForReader(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
         for (BodyReader bodyReader : orderedBodyReaders) {
-            if (bodyReader.canRead(type, genericType, mediaType, httpHeaders)) {
+            if (bodyReader.canRead(rawType, type, mediaType, httpHeaders)) {
                 return bodyReader;
             }
         }
         return null;
     }
 
-    private BodyWriter lookForWriter(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+    private BodyWriter lookForWriter(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
         for (BodyWriter bodyWriter : orderedBodyWriters) {
-            if (bodyWriter.canWrite(type, genericType, mediaType, httpHeaders)) {
+            if (bodyWriter.canWrite(rawType, type, mediaType, httpHeaders)) {
                 return bodyWriter;
             }
         }

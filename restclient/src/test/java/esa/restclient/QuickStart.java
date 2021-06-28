@@ -1,10 +1,14 @@
 package esa.restclient;
 
+import com.google.gson.reflect.TypeToken;
 import esa.commons.netty.http.CookieImpl;
-import esa.restclient.codec.JsonBodyReader;
-import esa.restclient.codec.JsonBodyWriter;
-import esa.restclient.codec.StringBodyReader;
-import esa.restclient.codec.StringBodyWriter;
+import esa.restclient.codec.*;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class QuickStart {
 
@@ -26,9 +30,10 @@ public class QuickStart {
 //                .thenAccept(response -> System.out.println(response.bodyToEntity(QuickStart.class)));
 
         restClient.post(url)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.TEXT_HTML)
                 .cookie(new CookieImpl("aaa", "aaa"))
-                .bodyEntity("Test")
+                .bodyEntity(new GenericEntity<List<String>>(Arrays.asList(new String[]{"aaa", "aaa"})) {
+                })
                 .maxRetries(3)
                 .readTimeout(100)
                 .execute()

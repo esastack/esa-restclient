@@ -17,7 +17,7 @@ public class JsonBodyWriter implements BodyWriter {
     private static final Gson gson = new GsonBuilder().create();
 
     @Override
-    public boolean canWrite(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+    public boolean canWrite(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
         if (mediaType == null) {
             return false;
         }
@@ -27,7 +27,7 @@ public class JsonBodyWriter implements BodyWriter {
 
     @Override
     public void write(Object entity,
-                      Type genericType,
+                      Type type,
                       MediaType mediaType,
                       HttpHeaders httpHeaders,
                       OutputStream bodyStream) throws IOException {

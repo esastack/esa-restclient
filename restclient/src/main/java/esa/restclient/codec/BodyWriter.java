@@ -10,10 +10,10 @@ import java.lang.reflect.Type;
 
 public interface BodyWriter<T> extends Ordered {
 
-    boolean canWrite(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders);
+    boolean canWrite(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders);
 
     void write(T entity,
-               Type genericType,
+               Type type,
                MediaType mediaType,
                HttpHeaders httpHeaders,
                OutputStream bodyStream) throws IOException;

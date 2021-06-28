@@ -8,6 +8,7 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.SegmentRequest;
 import esa.restclient.RestClientConfig;
 import esa.restclient.codec.BodyProcessor;
+import esa.restclient.codec.GenericEntity;
 import esa.restclient.request.RestHttpRequest;
 import esa.restclient.response.DefaultRestHttpResponse;
 import esa.restclient.response.RestHttpResponse;
@@ -72,13 +73,15 @@ public class RequestInvoke implements InvokeChain {
 
     private CompletableFuture<HttpResponse> writeBody(RestHttpRequest baseRequest, final HttpRequestFacade targetRequest) {
         Object entity = baseRequest.bodyEntity();
-        Type genericType = null;
+        Type type = null;
         if (entity != null) {
-            //TODO 获取泛型还有点问题
+            if (entity instanceof GenericEntity) {
+                type = ((GenericEntity) entity).getType();
+            }
         }
         SegmentRequest segmentRequest = targetRequest.segment();
         RequestBodyOutputStream requestBodyOutputStream = new RequestBodyOutputStream(segmentRequest);
-        bodyProcessor.write(baseRequest.bodyEntity(), genericType, baseRequest.contentType(), baseRequest.headers(), requestBodyOutputStream);
+        bodyProcessor.write(baseRequest.bodyEntity(), type, baseRequest.contentType(), baseRequest.headers(), requestBodyOutputStream);
         return segmentRequest.end();
     }
 

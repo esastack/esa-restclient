@@ -4,6 +4,7 @@ import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
 import esa.restclient.MediaType;
 import esa.restclient.RestClientConfig;
+import esa.restclient.codec.GenericEntity;
 import esa.restclient.exec.RestRequestExecutor;
 
 import java.io.File;
@@ -22,9 +23,21 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
 
     @Override
     public EntityRequest bodyEntity(Object entity, MediaType mediaType) {
-        contentType(MediaType.APPLICATION_JSON_UTF8);
+        contentType(mediaType);
         return new DefaultEntityRequest(this, entity);
     }
+
+    @Override
+    public EntityRequest bodyGenericEntity(GenericEntity entity) {
+        return bodyGenericEntity(entity, MediaType.APPLICATION_JSON_UTF8);
+    }
+
+    @Override
+    public EntityRequest bodyGenericEntity(GenericEntity entity, MediaType mediaType) {
+        contentType(mediaType);
+        return new DefaultEntityRequest(this, entity);
+    }
+
 
     @Override
     public FileRequest bodyFile(File file) {

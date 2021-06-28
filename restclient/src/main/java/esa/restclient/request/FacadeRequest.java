@@ -2,6 +2,7 @@ package esa.restclient.request;
 
 import esa.commons.http.Cookie;
 import esa.restclient.MediaType;
+import esa.restclient.codec.GenericEntity;
 
 import java.io.File;
 import java.util.Map;
@@ -11,6 +12,10 @@ public interface FacadeRequest extends ExecutableRequest {
     EntityRequest bodyEntity(Object entity);
 
     EntityRequest bodyEntity(Object entity, MediaType mediaType);
+
+    EntityRequest bodyGenericEntity(GenericEntity entity);
+
+    EntityRequest bodyGenericEntity(GenericEntity entity, MediaType mediaType);
 
     FileRequest bodyFile(File file);
 

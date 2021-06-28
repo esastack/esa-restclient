@@ -1,5 +1,6 @@
 package esa.restclient.response;
 
+import com.google.gson.reflect.TypeToken;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
@@ -74,7 +75,7 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
         if (type == null) {
             return null;
         }
-        return (T) bodyProcessor.read(type.getClass(), getClass(type), contentType(), headers, bodyStream);
+        return (T) bodyProcessor.read(getClass(type), type, contentType(), headers, bodyStream);
     }
 
     @Override

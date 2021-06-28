@@ -16,7 +16,7 @@ public class JsonBodyReader implements BodyReader {
     private static final Gson gson = new GsonBuilder().create();
 
     @Override
-    public boolean canRead(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+    public boolean canRead(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
         if (mediaType == null) {
             return false;
         }
@@ -25,7 +25,7 @@ public class JsonBodyReader implements BodyReader {
     }
 
     @Override
-    public Object read(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) throws IOException {
+    public Object read(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) throws IOException {
         Charset charset = null;
         if (mediaType != null) {
             charset = mediaType.charset();

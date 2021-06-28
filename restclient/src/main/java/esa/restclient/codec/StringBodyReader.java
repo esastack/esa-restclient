@@ -13,12 +13,12 @@ import java.nio.charset.StandardCharsets;
 public class StringBodyReader implements BodyReader<String> {
 
     @Override
-    public boolean canRead(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
-        return String.class.equals(type);
+    public boolean canRead(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
+        return String.class.equals(rawType);
     }
 
     @Override
-    public String read(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) throws IOException {
+    public String read(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders, InputStream bodyStream) throws IOException {
         Charset charset = null;
         if (mediaType != null) {
             charset = mediaType.charset();

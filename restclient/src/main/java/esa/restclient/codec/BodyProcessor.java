@@ -10,14 +10,14 @@ import java.lang.reflect.Type;
 public interface BodyProcessor {
 
     Object read(
-            Class type,
-            Type genericType,
+            Class rawType,
+            Type type,
             MediaType mediaType,
             HttpHeaders httpHeaders,
             InputStream bodyStream);
 
     void write(Object entity,
-               Type genericType,
+               Type type,
                MediaType mediaType,
                HttpHeaders httpHeaders,
                OutputStream bodyStream);

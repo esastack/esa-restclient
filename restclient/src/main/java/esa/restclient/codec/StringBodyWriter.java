@@ -12,13 +12,13 @@ import java.nio.charset.StandardCharsets;
 
 public class StringBodyWriter implements BodyWriter<String> {
     @Override
-    public boolean canWrite(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders) {
+    public boolean canWrite(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
         return mediaType == null || MediaType.TEXT_HTML.type().equalsIgnoreCase(mediaType.type());
     }
 
     @Override
     public void write(String entity,
-                      Type genericType,
+                      Type type,
                       MediaType mediaType,
                       HttpHeaders httpHeaders,
                       OutputStream bodyStream) throws IOException {

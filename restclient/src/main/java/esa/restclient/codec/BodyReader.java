@@ -10,11 +10,11 @@ import java.lang.reflect.Type;
 
 public interface BodyReader<T> extends Ordered {
 
-    boolean canRead(Class type, Type genericType, MediaType mediaType, HttpHeaders httpHeaders);
+    boolean canRead(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders);
 
     T read(
-            Class type,
-            Type genericType,
+            Class rawType,
+            Type type,
             MediaType mediaType,
             HttpHeaders httpHeaders,
             InputStream bodyStream) throws IOException;

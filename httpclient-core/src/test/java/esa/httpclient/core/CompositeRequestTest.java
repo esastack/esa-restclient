@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Collections;
 
 import static org.assertj.core.api.Java6BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -265,5 +266,37 @@ class CompositeRequestTest {
         assertThrows(IllegalStateException.class, request::execute);
     }
 
+
+    @Test
+    void testSegmentRequest() {
+        final String key = "key";
+        final String value = "value";
+        final String uri = "http://127.0.0.1:8080/abc";
+        final HttpClient httpClient = HttpClient.ofDefault();
+        final HttpRequestFacade httpRequestFacade = httpClient.post(uri)
+                .addHeader(key, value)
+                .addParam(key, value)
+                .readTimeout(10)
+                .maxRedirects(18)
+                .maxRetries(18)
+                .enableUriEncode();
+        final SegmentRequest segmentRequest = httpRequestFacade.segment();
+
+        assertEquals(httpRequestFacade.uri(), segmentRequest.uri());
+        assertEquals(httpRequestFacade.headers().toString(), segmentRequest.headers().toString());
+        assertEquals(httpRequestFacade.paramNames().toString(), segmentRequest.paramNames().toString());
+        assertEquals(httpRequestFacade.getParam(key), segmentRequest.getParam(key));
+        assertEquals(httpRequestFacade.readTimeout(), segmentRequest.readTimeout());
+        assertEquals(httpRequestFacade.uriEncode(), segmentRequest.uriEncode());
+
+        assertEquals(((HttpRequestBaseImpl) httpRequestFacade).ctx.maxRetries(),
+                ((HttpRequestBaseImpl) segmentRequest).ctx.maxRetries());
+        assertEquals(((HttpRequestBaseImpl) httpRequestFacade).ctx.maxRedirects(),
+                ((HttpRequestBaseImpl) segmentRequest).ctx.maxRedirects());
+        assertEquals(((HttpRequestBaseImpl) httpRequestFacade).handle,
+                ((HttpRequestBaseImpl) segmentRequest).handle);
+        assertEquals(((HttpRequestBaseImpl) httpRequestFacade).handler,
+                ((HttpRequestBaseImpl) segmentRequest).handler);
+    }
 }
 

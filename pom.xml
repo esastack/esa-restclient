@@ -101,7 +101,7 @@
 
     <modules>
         <module>httpclient-core</module>
-        <module>restclient-core</module>
+        <module>restclient</module>
     </modules>
 
     <properties>

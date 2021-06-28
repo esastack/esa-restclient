@@ -6,7 +6,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class GenericEntity<T> {
-    private final Class<?> rawType;
     private final Type type;
     private final T entity;
 
@@ -24,17 +23,12 @@ public class GenericEntity<T> {
         }
         this.entity = entity;
         this.type = getGenericType();
-        this.rawType = entity.getClass();
     }
 
     private Type getGenericType() {
         Type superclass = getClass().getGenericSuperclass();
         Checks.checkArg(superclass instanceof ParameterizedType, "%s isn't parameterized", superclass);
         return ((ParameterizedType) superclass).getActualTypeArguments()[0];
-    }
-
-    public final Class<?> getRawType() {
-        return rawType;
     }
 
     public final Type getType() {

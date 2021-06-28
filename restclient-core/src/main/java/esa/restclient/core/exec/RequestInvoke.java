@@ -19,7 +19,6 @@ import java.util.concurrent.CompletionStage;
 
 public class RequestInvoke implements InvokeChain {
     private final HttpClient httpClient;
-    private final RestClientConfig clientConfig;
     private final BodyProcessor bodyProcessor;
 
     RequestInvoke(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
@@ -27,7 +26,6 @@ public class RequestInvoke implements InvokeChain {
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
         Checks.checkNotNull(bodyProcessor, "CodecManager must not be null");
         this.httpClient = httpClient;
-        this.clientConfig = clientConfig;
         this.bodyProcessor = bodyProcessor;
     }
 
@@ -88,7 +86,7 @@ public class RequestInvoke implements InvokeChain {
     private final static class RequestBodyOutputStream extends OutputStream {
         private final SegmentRequest segmentRequest;
 
-        public RequestBodyOutputStream(SegmentRequest segmentRequest) {
+        RequestBodyOutputStream(SegmentRequest segmentRequest) {
             this.segmentRequest = segmentRequest;
         }
 

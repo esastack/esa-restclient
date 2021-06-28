@@ -6,8 +6,6 @@ import esa.restclient.core.codec.JsonBodyWriter;
 import esa.restclient.core.codec.StringBodyReader;
 import esa.restclient.core.codec.StringBodyWriter;
 
-import java.util.concurrent.CompletableFuture;
-
 public class QuickStart {
 
     private static final String url = "http://localhost:8080/hello";

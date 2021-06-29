@@ -15,6 +15,7 @@ import esa.restclient.response.RestHttpResponse;
 
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -63,6 +64,9 @@ public class RequestInvoke implements InvokeChain {
         targetRequest.maxRetries(baseRequest.maxRetries());
         targetRequest.maxRedirects(baseRequest.maxRedirects());
         targetRequest.readTimeout(baseRequest.readTimeout());
+        baseRequest.paramNames().forEach((name) ->
+                baseRequest.getParams(name).forEach((paramValue) ->
+                        targetRequest.addParam(name, paramValue)));
         if (!baseRequest.isUseExpectContinue()) {
             targetRequest.disableExpectContinue();
         }

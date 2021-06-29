@@ -71,7 +71,6 @@ class CompositeRequestTest {
         then(request.files().size()).isEqualTo(5);
 
         assertThrows(IllegalStateException.class, request::segment);
-        then(new CompositeRequest(builder, client, () -> chunk0, method, uri).segment()).isSameAs(chunk0);
 
         assertThrows(IllegalStateException.class, () -> request.body(new File("")));
         then(new CompositeRequest(builder, client, () -> chunk0, method, uri).body(new File(""))
@@ -109,13 +108,6 @@ class CompositeRequestTest {
         then(request1.isMultipart()).isFalse();
         then(request1.isFile()).isTrue();
         then(request1.isSegmented()).isFalse();
-
-        final CompositeRequest request2 = new CompositeRequest(builder,
-                client, () -> chunk0, method, uri);
-        request2.segment();
-        then(request2.isMultipart()).isFalse();
-        then(request2.isFile()).isFalse();
-        then(request2.isSegmented()).isTrue();
     }
 
     @Test
@@ -299,6 +291,10 @@ class CompositeRequestTest {
                 ((HttpRequestBaseImpl) segmentRequest).handle);
         assertEquals(((HttpRequestBaseImpl) httpRequestFacade).handler,
                 ((HttpRequestBaseImpl) segmentRequest).handler);
+
+        then(segmentRequest.isMultipart()).isFalse();
+        then(segmentRequest.isFile()).isFalse();
+        then(segmentRequest.isSegmented()).isTrue();
     }
 }
 

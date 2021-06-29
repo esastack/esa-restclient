@@ -15,7 +15,6 @@ import esa.restclient.response.RestHttpResponse;
 
 import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 

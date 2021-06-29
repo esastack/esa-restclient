@@ -228,11 +228,8 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
         for (String name : source.ctx.attrNames()) {
             dest.ctx.setAttr(name, source.ctx.getAttr(name));
         }
-        for (String name : source.paramNames()) {
-            for (String value : source.getParams(name)) {
-                dest.addParam(name, value);
-            }
-        }
+
+        source.uri().params().forEach(dest.uri::addParams);
 
         dest.ctx.useExpectContinue(source.ctx.isUseExpectContinue());
         dest.ctx.maxRedirects(source.ctx.maxRedirects());

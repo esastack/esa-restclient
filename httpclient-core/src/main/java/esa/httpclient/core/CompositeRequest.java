@@ -114,22 +114,9 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     @Override
     public SegmentRequest segment() {
         checkNotStartedAndUpdateStatus(STATE_SEGMENT_PREPARING);
-        SegmentRequest segmentRequest = request.get();
-        for (String name : paramNames()) {
-            for (String value : getParams(name)) {
-                segmentRequest.addParam(name, value);
-            }
-        }
-        headers().forEach((header) -> segmentRequest.addHeader(header.getKey(), header.getValue()));
-        segmentRequest.readTimeout(readTimeout());
-        if (uriEncode()) {
-            segmentRequest.enableUriEncode();
-        }
-        segmentRequest.maxRedirects(ctx.maxRedirects);
-        segmentRequest.maxRetries(ctx.maxRetries);
-        segmentRequest.handle(handle);
-        segmentRequest.handler(handler);
-        return segmentRequest;
+        SegmentRequest segment = request.get();
+        HttpRequestBaseImpl.copyTo(this, (HttpRequestBaseImpl) segment);
+        return segment;
     }
 
     @Override

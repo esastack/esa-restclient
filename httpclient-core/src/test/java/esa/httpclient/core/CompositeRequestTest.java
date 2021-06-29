@@ -71,7 +71,6 @@ class CompositeRequestTest {
         then(request.files().size()).isEqualTo(5);
 
         assertThrows(IllegalStateException.class, request::segment);
-        then(new CompositeRequest(builder, client, () -> chunk0, method, uri).segment()).isSameAs(chunk0);
 
         assertThrows(IllegalStateException.class, () -> request.body(new File("")));
         then(new CompositeRequest(builder, client, () -> chunk0, method, uri).body(new File(""))
@@ -109,13 +108,6 @@ class CompositeRequestTest {
         then(request1.isMultipart()).isFalse();
         then(request1.isFile()).isTrue();
         then(request1.isSegmented()).isFalse();
-
-        final CompositeRequest request2 = new CompositeRequest(builder,
-                client, () -> chunk0, method, uri);
-        request2.segment();
-        then(request2.isMultipart()).isFalse();
-        then(request2.isFile()).isFalse();
-        then(request2.isSegmented()).isTrue();
     }
 
     @Test
@@ -271,11 +263,13 @@ class CompositeRequestTest {
     void testSegmentRequest() {
         final String key = "key";
         final String value = "value";
+        final String value1 = "value1";
         final String uri = "http://127.0.0.1:8080/abc";
         final HttpClient httpClient = HttpClient.ofDefault();
         final HttpRequestFacade httpRequestFacade = httpClient.post(uri)
                 .addHeader(key, value)
                 .addParam(key, value)
+                .addParam(key, value1)
                 .readTimeout(10)
                 .maxRedirects(18)
                 .maxRetries(18)
@@ -285,7 +279,7 @@ class CompositeRequestTest {
         assertEquals(httpRequestFacade.uri(), segmentRequest.uri());
         assertEquals(httpRequestFacade.headers().toString(), segmentRequest.headers().toString());
         assertEquals(httpRequestFacade.paramNames().toString(), segmentRequest.paramNames().toString());
-        assertEquals(httpRequestFacade.getParam(key), segmentRequest.getParam(key));
+        assertEquals(httpRequestFacade.getParams(key).toString(), segmentRequest.getParams(key).toString());
         assertEquals(httpRequestFacade.readTimeout(), segmentRequest.readTimeout());
         assertEquals(httpRequestFacade.uriEncode(), segmentRequest.uriEncode());
 
@@ -297,6 +291,10 @@ class CompositeRequestTest {
                 ((HttpRequestBaseImpl) segmentRequest).handle);
         assertEquals(((HttpRequestBaseImpl) httpRequestFacade).handler,
                 ((HttpRequestBaseImpl) segmentRequest).handler);
+
+        then(segmentRequest.isMultipart()).isFalse();
+        then(segmentRequest.isFile()).isFalse();
+        then(segmentRequest.isSegmented()).isTrue();
     }
 }
 

@@ -2,8 +2,6 @@ package esa.restclient;
 
 import esa.commons.http.HttpMethod;
 import esa.httpclient.core.HttpClientBuilder;
-import esa.restclient.request.FacadeRequest;
-import esa.restclient.request.ExecutableRequest;
 
 public interface RestClient {
     /**

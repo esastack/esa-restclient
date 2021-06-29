@@ -2,8 +2,8 @@ package esa.restclient.exec;
 
 import esa.commons.Checks;
 import esa.restclient.interceptor.Interceptor;
-import esa.restclient.request.RestHttpRequest;
-import esa.restclient.response.RestHttpResponse;
+import esa.restclient.RestHttpRequest;
+import esa.restclient.RestHttpResponse;
 
 import java.util.concurrent.CompletionStage;
 

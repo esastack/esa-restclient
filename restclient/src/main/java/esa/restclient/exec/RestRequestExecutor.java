@@ -1,7 +1,7 @@
 package esa.restclient.exec;
 
-import esa.restclient.request.RestHttpRequest;
-import esa.restclient.response.RestHttpResponse;
+import esa.restclient.RestHttpRequest;
+import esa.restclient.RestHttpResponse;
 
 import java.util.concurrent.CompletionStage;
 

@@ -1,11 +1,9 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.Scheme;
-import esa.restclient.HttpMessage;
-import esa.restclient.MediaType;
 
 import java.util.List;
 import java.util.Map;

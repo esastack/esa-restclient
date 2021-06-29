@@ -1,5 +1,7 @@
 package esa.restclient.request;
 
+import esa.restclient.ExecutableRequest;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultExecutableRequestTest {

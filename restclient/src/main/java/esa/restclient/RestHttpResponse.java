@@ -1,4 +1,4 @@
-package esa.restclient.response;
+package esa.restclient;
 
 import java.lang.reflect.Type;
 

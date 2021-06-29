@@ -1,7 +1,6 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.Checks;
-import esa.restclient.MediaType;
 
 public class DefaultMultipartItem implements MultipartItem {
 

@@ -1,8 +1,6 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.http.Cookie;
-import esa.restclient.MediaType;
-import esa.restclient.codec.GenericEntity;
 
 import java.io.File;
 import java.util.Map;

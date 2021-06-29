@@ -1,4 +1,4 @@
-package esa.restclient.response;
+package esa.restclient;
 
 import esa.commons.http.HttpHeaders;
 import esa.restclient.HttpMessage;

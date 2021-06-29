@@ -1,6 +1,4 @@
-package esa.restclient.request;
-
-import esa.restclient.MediaType;
+package esa.restclient;
 
 public interface MultipartItem {
 

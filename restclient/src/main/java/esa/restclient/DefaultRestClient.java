@@ -6,9 +6,6 @@ import esa.httpclient.core.HttpClient;
 import esa.restclient.codec.DefaultBodyProcessor;
 import esa.restclient.exec.DefaultRestRequestExecutor;
 import esa.restclient.exec.RestRequestExecutor;
-import esa.restclient.request.DefaultFacadeRequest;
-import esa.restclient.request.ExecutableRequest;
-import esa.restclient.request.FacadeRequest;
 
 public class DefaultRestClient implements RestClient {
 

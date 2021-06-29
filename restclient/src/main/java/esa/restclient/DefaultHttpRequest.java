@@ -1,4 +1,4 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.Checks;
 import esa.commons.StringUtils;
@@ -7,7 +7,6 @@ import esa.commons.netty.http.CookieImpl;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.Scheme;
-import esa.restclient.MediaType;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;

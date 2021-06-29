@@ -9,9 +9,9 @@ import esa.httpclient.core.SegmentRequest;
 import esa.restclient.RestClientConfig;
 import esa.restclient.codec.BodyProcessor;
 import esa.restclient.codec.GenericEntity;
-import esa.restclient.request.RestHttpRequest;
-import esa.restclient.response.DefaultRestHttpResponse;
-import esa.restclient.response.RestHttpResponse;
+import esa.restclient.RestHttpRequest;
+import esa.restclient.DefaultRestHttpResponse;
+import esa.restclient.RestHttpResponse;
 
 import java.io.OutputStream;
 import java.lang.reflect.Type;

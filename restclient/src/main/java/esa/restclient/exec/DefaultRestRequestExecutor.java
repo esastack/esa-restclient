@@ -5,8 +5,8 @@ import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.RestClientConfig;
 import esa.restclient.codec.BodyProcessor;
 import esa.restclient.interceptor.Interceptor;
-import esa.restclient.request.RestHttpRequest;
-import esa.restclient.response.RestHttpResponse;
+import esa.restclient.RestHttpRequest;
+import esa.restclient.RestHttpResponse;
 
 import java.util.Collections;
 import java.util.LinkedList;

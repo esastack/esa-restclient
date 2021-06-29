@@ -1,10 +1,7 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
-import esa.restclient.MediaType;
-import esa.restclient.RestClientConfig;
-import esa.restclient.codec.GenericEntity;
 import esa.restclient.exec.RestRequestExecutor;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.Checks;
 

@@ -10,8 +10,6 @@ import esa.restclient.codec.BodyReader;
 import esa.restclient.codec.BodyWriter;
 import esa.restclient.exec.InvocationChain;
 import esa.restclient.interceptor.Interceptor;
-import esa.restclient.request.RestHttpRequest;
-import esa.restclient.response.RestHttpResponse;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -1,13 +1,10 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.Checks;
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpMethod;
 import esa.httpclient.core.config.RetryOptions;
-import esa.restclient.MediaType;
-import esa.restclient.RestClientConfig;
 import esa.restclient.exec.RestRequestExecutor;
-import esa.restclient.response.RestHttpResponse;
 
 import java.util.Collections;
 import java.util.Map;

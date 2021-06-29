@@ -1,4 +1,4 @@
-package esa.restclient.response;
+package esa.restclient;
 
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaderNames;
@@ -6,7 +6,6 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
-import esa.restclient.MediaType;
 import esa.restclient.codec.BodyProcessor;
 
 import java.io.InputStream;

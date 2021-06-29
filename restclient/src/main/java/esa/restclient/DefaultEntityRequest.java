@@ -1,4 +1,4 @@
-package esa.restclient.request;
+package esa.restclient;
 
 public class DefaultEntityRequest extends DefaultExecutableRequest implements EntityRequest {
 

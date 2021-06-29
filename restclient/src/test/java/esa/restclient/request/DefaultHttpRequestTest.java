@@ -6,10 +6,11 @@ import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.Scheme;
+import esa.restclient.DefaultHttpRequest;
+import esa.restclient.HttpRequest;
 import esa.restclient.MediaType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

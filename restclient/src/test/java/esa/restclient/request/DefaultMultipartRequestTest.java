@@ -1,9 +1,7 @@
 package esa.restclient.request;
 
 import esa.commons.http.HttpVersion;
-import esa.restclient.MediaType;
-import esa.restclient.RestClient;
-import esa.restclient.RestClientBuilder;
+import esa.restclient.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

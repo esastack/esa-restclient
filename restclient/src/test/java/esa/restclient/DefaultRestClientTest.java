@@ -2,7 +2,6 @@ package esa.restclient;
 
 import esa.commons.http.HttpMethod;
 import esa.httpclient.core.Scheme;
-import esa.restclient.request.HttpRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

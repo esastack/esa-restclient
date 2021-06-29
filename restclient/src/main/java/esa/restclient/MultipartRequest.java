@@ -1,7 +1,6 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.http.Cookie;
-import esa.restclient.MediaType;
 
 import java.io.File;
 import java.util.List;

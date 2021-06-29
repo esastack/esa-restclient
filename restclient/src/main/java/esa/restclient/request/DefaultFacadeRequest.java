@@ -28,18 +28,6 @@ public class DefaultFacadeRequest extends DefaultExecutableRequest implements Fa
     }
 
     @Override
-    public EntityRequest bodyGenericEntity(GenericEntity entity) {
-        return bodyGenericEntity(entity, MediaType.APPLICATION_JSON_UTF8);
-    }
-
-    @Override
-    public EntityRequest bodyGenericEntity(GenericEntity entity, MediaType mediaType) {
-        contentType(mediaType);
-        return new DefaultEntityRequest(this, entity);
-    }
-
-
-    @Override
     public FileRequest bodyFile(File file) {
         return bodyFile(file, MediaType.APPLICATION_OCTET_STREAM);
     }

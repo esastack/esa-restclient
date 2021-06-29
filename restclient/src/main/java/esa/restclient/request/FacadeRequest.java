@@ -13,10 +13,6 @@ public interface FacadeRequest extends ExecutableRequest {
 
     EntityRequest bodyEntity(Object entity, MediaType mediaType);
 
-    EntityRequest bodyGenericEntity(GenericEntity entity);
-
-    EntityRequest bodyGenericEntity(GenericEntity entity, MediaType mediaType);
-
     FileRequest bodyFile(File file);
 
     FileRequest bodyFile(File file, MediaType mediaType);

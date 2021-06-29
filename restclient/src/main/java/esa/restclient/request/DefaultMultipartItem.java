@@ -37,4 +37,5 @@ public class DefaultMultipartItem implements MultipartItem {
     public Object attribute() {
         return attribute;
     }
+
 }

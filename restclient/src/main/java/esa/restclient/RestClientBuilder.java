@@ -17,7 +17,6 @@ import java.util.List;
 
 public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientConfig {
 
-
     private final HttpClientBuilder httpClientBuilder;
 
     private final List<Interceptor> interceptors = new LinkedList<>();
@@ -31,7 +30,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     RestClientBuilder(HttpClientBuilder httpClientBuilder) {
         this.httpClientBuilder = httpClientBuilder.copy();
     }
-
 
     public RestClientBuilder resolver(HostResolver resolver) {
         httpClientBuilder.resolver(resolver);
@@ -171,9 +169,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-
     //***********************************       GET METHODS        ***************************************//
-
     @Override
     public HostResolver resolver() {
         return httpClientBuilder.resolver();
@@ -289,7 +285,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return httpClientBuilder.channelPoolOptionsProvider();
     }
 
-
     private RestClientBuilder self() {
         return this;
     }
@@ -312,4 +307,5 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                 .addBodyWriters(bodyWriters)
                 .addBodyReaders(bodyReaders);
     }
+
 }

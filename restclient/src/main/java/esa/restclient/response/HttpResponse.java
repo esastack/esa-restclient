@@ -7,6 +7,7 @@ import esa.restclient.MediaType;
 import java.io.InputStream;
 
 public interface HttpResponse extends HttpMessage {
+
     int status();
 
     InputStream bodyStream();
@@ -14,4 +15,5 @@ public interface HttpResponse extends HttpMessage {
     HttpHeaders trailers();
 
     MediaType contentType();
+
 }

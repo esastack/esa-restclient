@@ -8,4 +8,5 @@ public interface HttpMessage {
     HttpVersion version();
 
     HttpHeaders headers();
+
 }

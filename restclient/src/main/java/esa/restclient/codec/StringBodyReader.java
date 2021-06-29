@@ -30,4 +30,5 @@ public class StringBodyReader implements BodyReader<String> {
             return IOUtils.toString(bodyStream, charset);
         }
     }
+
 }

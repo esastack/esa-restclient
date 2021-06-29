@@ -42,7 +42,6 @@ public class DefaultBodyProcessor implements BodyProcessor {
         }
     }
 
-
     @Override
     public void write(Object entity, Type type, MediaType mediaType, HttpHeaders httpHeaders, OutputStream bodyStream) {
         Class rawType = entity.getClass();
@@ -80,4 +79,5 @@ public class DefaultBodyProcessor implements BodyProcessor {
         }
         return null;
     }
+
 }

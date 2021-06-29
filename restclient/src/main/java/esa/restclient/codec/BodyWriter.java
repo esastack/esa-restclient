@@ -17,4 +17,5 @@ public interface BodyWriter<T> extends Ordered {
                MediaType mediaType,
                HttpHeaders httpHeaders,
                OutputStream bodyStream) throws IOException;
+
 }

@@ -11,6 +11,7 @@ import esa.restclient.interceptor.Interceptor;
 import java.util.List;
 
 public interface RestClientConfig {
+
     HostResolver resolver();
 
     boolean ish2ClearTextUpgrade();
@@ -56,4 +57,5 @@ public interface RestClientConfig {
     int maxRedirects();
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
+
 }

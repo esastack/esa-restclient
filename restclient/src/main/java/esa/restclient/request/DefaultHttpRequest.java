@@ -34,7 +34,6 @@ public class DefaultHttpRequest implements HttpRequest {
         this.headers = new Http1HeadersImpl();
     }
 
-
     DefaultHttpRequest(HttpRequest httpRequest) {
         Checks.checkNotNull(httpRequest, "HttpRequest must not be null!");
         this.method = httpRequest.method();
@@ -46,7 +45,6 @@ public class DefaultHttpRequest implements HttpRequest {
         Checks.checkNotNull(this.httpVersion, "HttpVersion must not be null");
         Checks.checkNotNull(this.headers, "Headers must not be null");
     }
-
 
     @Override
     public Scheme scheme() {
@@ -88,7 +86,6 @@ public class DefaultHttpRequest implements HttpRequest {
         for (Map.Entry<String, String> row : params.entrySet()) {
             addParam(row.getKey(), row.getValue());
         }
-
         return self();
     }
 
@@ -124,11 +121,9 @@ public class DefaultHttpRequest implements HttpRequest {
         if (headers == null) {
             return self();
         }
-
         for (Map.Entry<? extends CharSequence, ? extends CharSequence> row : headers.entrySet()) {
             addHeader(row.getKey(), row.getValue());
         }
-
         return self();
     }
 
@@ -186,7 +181,6 @@ public class DefaultHttpRequest implements HttpRequest {
         headers.set(HttpHeaderNames.CONTENT_TYPE, mediaType.value());
         return self();
     }
-
 
     @Override
     public HttpRequest cookie(Cookie cookie) {
@@ -265,18 +259,15 @@ public class DefaultHttpRequest implements HttpRequest {
         if (mediaTypes == null) {
             return self();
         }
-
         if (headers.contains(HttpHeaderNames.ACCEPT)) {
             headers.remove(HttpHeaderNames.ACCEPT);
         }
-
         for (MediaType mediaType : mediaTypes) {
             if (mediaType == null) {
                 continue;
             }
             headers.add(HttpHeaderNames.ACCEPT, mediaType.value());
         }
-
         return self();
     }
 

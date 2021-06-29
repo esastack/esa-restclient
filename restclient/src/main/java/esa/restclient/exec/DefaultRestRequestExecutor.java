@@ -14,29 +14,31 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class DefaultRestRequestExecutor implements RestRequestExecutor {
-    private final InvokeChain invokeChain;
+
+    private final InvocationChain invocationChain;
 
     public DefaultRestRequestExecutor(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
-        this.invokeChain = buildInvokeChain(httpClient, clientConfig, bodyProcessor);
+        this.invocationChain = buildInvokeChain(httpClient, clientConfig, bodyProcessor);
     }
 
     @Override
     public CompletionStage<RestHttpResponse> execute(RestHttpRequest request) {
-        return invokeChain.proceed(request);
+        return invocationChain.proceed(request);
     }
 
-    private InvokeChain buildInvokeChain(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
-        InvokeChain invokeChain = new RequestInvoke(httpClient, clientConfig, bodyProcessor);
+    private InvocationChain buildInvokeChain(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
+        InvocationChain invocationChain = new RequestInvocation(httpClient, clientConfig, bodyProcessor);
         List<Interceptor> interceptors = clientConfig.interceptors();
         if (interceptors.size() == 0) {
-            return invokeChain;
+            return invocationChain;
         }
         final List<Interceptor> interceptors0 = new LinkedList<>(clientConfig.interceptors());
         OrderedComparator.sort(interceptors0);
         Interceptor[] orderedInterceptors = Collections.unmodifiableList(interceptors0).toArray(new Interceptor[0]);
         for (int i = orderedInterceptors.length - 1; i >= 0; i--) {
-            invokeChain = new InterceptorInvokeChain(orderedInterceptors[i], invokeChain);
+            invocationChain = new InterceptorInvocationChain(orderedInterceptors[i], invocationChain);
         }
-        return invokeChain;
+        return invocationChain;
     }
+
 }

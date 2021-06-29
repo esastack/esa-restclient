@@ -18,4 +18,5 @@ public interface BodyReader<T> extends Ordered {
             MediaType mediaType,
             HttpHeaders httpHeaders,
             InputStream bodyStream) throws IOException;
+
 }

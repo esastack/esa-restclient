@@ -14,7 +14,6 @@ import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class DefaultFacadeRequestTest {
 
     private final static HttpVersion httpVersion = HttpVersion.HTTP_1_0;
@@ -79,7 +78,6 @@ class DefaultFacadeRequestTest {
                 .enableUriEncode()
                 .property("aaa", "aaaaaa");
     }
-
 
     private void testRequestDataEquals(ExecutableRequest executableRequest, ExecutableRequest otherExecutableRequest) {
         assertNotNull(executableRequest, "ExecutableRequest can,t be null!");
@@ -203,6 +201,5 @@ class DefaultFacadeRequestTest {
         assertEquals(requestMaxRetries, defaultFacadeRequest.maxRetries());
         assertEquals(RetryOptions.ofDefault().maxRetries(), RetryOptions.ofDefault().maxRetries());
     }
-
 
 }

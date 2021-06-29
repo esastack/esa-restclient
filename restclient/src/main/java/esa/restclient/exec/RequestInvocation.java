@@ -18,18 +18,18 @@ import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-public class RequestInvoke implements InvokeChain {
+public class RequestInvocation implements InvocationChain {
+
     private final HttpClient httpClient;
     private final BodyProcessor bodyProcessor;
 
-    RequestInvoke(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
+    RequestInvocation(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
         Checks.checkNotNull(httpClient, "HttpClient must not be null");
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
         Checks.checkNotNull(bodyProcessor, "CodecManager must not be null");
         this.httpClient = httpClient;
         this.bodyProcessor = bodyProcessor;
     }
-
 
     @Override
     public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request) {
@@ -38,7 +38,6 @@ public class RequestInvoke implements InvokeChain {
                         bodyProcessor
                 )));
     }
-
 
     private CompletableFuture<HttpResponse> doRequest(RestHttpRequest baseRequest) {
         HttpMethod method = baseRequest.method();
@@ -54,8 +53,6 @@ public class RequestInvoke implements InvokeChain {
             //TODO implement the method!
             throw new UnsupportedOperationException("The method need to be implemented!");
         }
-
-
     }
 
     private void wrapRequest(RestHttpRequest baseRequest, final HttpRequestFacade targetRequest) {
@@ -88,7 +85,6 @@ public class RequestInvoke implements InvokeChain {
         return segmentRequest.end();
     }
 
-
     private final static class RequestBodyOutputStream extends OutputStream {
         private final SegmentRequest segmentRequest;
 
@@ -107,7 +103,7 @@ public class RequestInvoke implements InvokeChain {
         public void write(byte[] b, int off, int len) {
             segmentRequest.write(b, off, len);
         }
-    }
 
+    }
 
 }

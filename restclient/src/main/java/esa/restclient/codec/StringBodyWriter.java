@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class StringBodyWriter implements BodyWriter<String> {
+
     @Override
     public boolean canWrite(Class rawType, Type type, MediaType mediaType, HttpHeaders httpHeaders) {
         return mediaType == null || MediaType.TEXT_HTML.type().equalsIgnoreCase(mediaType.type());
@@ -36,4 +37,5 @@ public class StringBodyWriter implements BodyWriter<String> {
             IOUtils.write(entity.getBytes(charset), bodyStream);
         }
     }
+
 }

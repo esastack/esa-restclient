@@ -16,6 +16,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultExecutableRequest extends DefaultHttpRequest implements ExecutableRequest {
+
     private volatile int maxRedirects;
     private volatile int maxRetries = 0;
     private int readTimeout;
@@ -214,4 +215,5 @@ public class DefaultExecutableRequest extends DefaultHttpRequest implements Exec
     private ExecutableRequest self() {
         return this;
     }
+
 }

@@ -36,7 +36,6 @@ public class JsonBodyReader implements BodyReader {
         } else {
             return gson.fromJson(IOUtils.toString(bodyStream, charset), type);
         }
-
-
     }
+
 }

@@ -45,4 +45,5 @@ public class JsonBodyWriter implements BodyWriter {
             IOUtils.write(gson.toJson(entity).getBytes(charset), bodyStream);
         }
     }
+
 }

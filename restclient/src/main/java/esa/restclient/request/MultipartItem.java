@@ -3,6 +3,7 @@ package esa.restclient.request;
 import esa.restclient.MediaType;
 
 public interface MultipartItem {
+
     ContentDisposition contentDisposition();
 
     MediaType contentType();
@@ -10,4 +11,5 @@ public interface MultipartItem {
     String contentTransferEncoding();
 
     Object attribute();
+
 }

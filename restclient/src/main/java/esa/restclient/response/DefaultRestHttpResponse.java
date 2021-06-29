@@ -1,6 +1,5 @@
 package esa.restclient.response;
 
-import com.google.gson.reflect.TypeToken;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
@@ -150,4 +149,5 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
             throw new IllegalArgumentException(e);
         }
     }
+
 }

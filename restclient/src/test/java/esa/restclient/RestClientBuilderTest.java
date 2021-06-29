@@ -8,7 +8,7 @@ import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.restclient.codec.BodyReader;
 import esa.restclient.codec.BodyWriter;
-import esa.restclient.exec.InvokeChain;
+import esa.restclient.exec.InvocationChain;
 import esa.restclient.interceptor.Interceptor;
 import esa.restclient.request.RestHttpRequest;
 import esa.restclient.response.RestHttpResponse;
@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RestClientBuilderTest {
+
     private final static HostResolver resolver = inetHost -> null;
     private final static boolean h2ClearTextUpgrade = ThreadLocalRandom.current().nextBoolean();
     private final static int connectTimeout = ThreadLocalRandom.current().nextInt(10, 10000);
@@ -264,7 +265,7 @@ class RestClientBuilderTest {
 
     static class TestInterceptor implements Interceptor {
         @Override
-        public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request, InvokeChain next) {
+        public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request, InvocationChain next) {
             return null;
         }
     }

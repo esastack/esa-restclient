@@ -10,7 +10,6 @@ import esa.restclient.request.DefaultFacadeRequest;
 import esa.restclient.request.ExecutableRequest;
 import esa.restclient.request.FacadeRequest;
 
-
 public class DefaultRestClient implements RestClient {
 
     private final RestClientConfig clientConfig;
@@ -23,7 +22,6 @@ public class DefaultRestClient implements RestClient {
         this.requestExecutor = new DefaultRestRequestExecutor(httpClient, clientConfig,
                 new DefaultBodyProcessor(clientConfig.bodyReaders(), clientConfig.bodyWriters()));
     }
-
 
     @Override
     public ExecutableRequest get(String uri) {
@@ -59,4 +57,5 @@ public class DefaultRestClient implements RestClient {
     public RestClientConfig clientConfig() {
         return clientConfig;
     }
+
 }

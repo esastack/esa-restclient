@@ -15,4 +15,5 @@ class MediaTypeTest {
         assertEquals(MediaType.APPLICATION_JSON_UTF8_VALUE,mediaType.value());
         assertEquals(MediaType.APPLICATION_JSON_UTF8_VALUE,mediaType.toString());
     }
+
 }

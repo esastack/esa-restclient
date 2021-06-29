@@ -43,7 +43,6 @@ class DefaultMultipartRequestTest {
         assertEquals(7, multipartRequest.maxRetries());
     }
 
-
     @Test
     void testMultiAttrsSet() {
         String name1 = "name1";
@@ -75,7 +74,6 @@ class DefaultMultipartRequestTest {
                 MediaType.TEXT_PLAIN, null, value2);
         isMultipartItemEqual(expectMultipartItem, multipartRequest.multipartItems().get(1));
 
-
         multipartRequest.attr(name2, value2, MediaType.APPLICATION_OCTET_STREAM);
         assertEquals(3, multipartRequest.multipartItems().size());
         expectMultipartItem = new DefaultMultipartItem(new ContentDisposition.MultipartContentDisposition(name2, null),
@@ -94,7 +92,6 @@ class DefaultMultipartRequestTest {
         expectMultipartItem = new DefaultMultipartItem(new ContentDisposition.MultipartContentDisposition(name1, file.getName()),
                 MediaType.APPLICATION_OCTET_STREAM, null, file);
         isMultipartItemEqual(expectMultipartItem, multipartRequest.multipartItems().get(4));
-
 
         multipartRequest.file(name2, file, MediaType.APPLICATION_JSON);
         assertEquals(6, multipartRequest.multipartItems().size());
@@ -115,7 +112,6 @@ class DefaultMultipartRequestTest {
         isMultipartItemEqual(expectMultipartItem, multipartRequest.multipartItems().get(7));
     }
 
-
     private void isMultipartItemEqual(MultipartItem expectMultipartItem, MultipartItem actualMultipartItem) {
         if (expectMultipartItem == null) {
             assertNull(actualMultipartItem);
@@ -129,4 +125,5 @@ class DefaultMultipartRequestTest {
         assertEquals(expectMultipartItem.contentDisposition().fileName(), actualMultipartItem.contentDisposition().fileName());
         assertEquals(expectMultipartItem.contentDisposition().type(), actualMultipartItem.contentDisposition().type());
     }
+
 }

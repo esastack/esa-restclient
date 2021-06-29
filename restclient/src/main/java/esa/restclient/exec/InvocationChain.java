@@ -6,7 +6,7 @@ import esa.restclient.response.RestHttpResponse;
 
 import java.util.concurrent.CompletionStage;
 
-public interface InvokeChain {
+public interface InvocationChain {
 
     /**
      * Invoke the registered {@link Interceptor}s.
@@ -15,4 +15,5 @@ public interface InvokeChain {
      * @return future
      */
     CompletionStage<RestHttpResponse> proceed(RestHttpRequest request);
+
 }

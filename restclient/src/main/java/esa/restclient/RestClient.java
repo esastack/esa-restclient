@@ -72,4 +72,5 @@ public interface RestClient {
     static RestClientBuilder create(HttpClientBuilder httpClientBuilder) {
         return new RestClientBuilder(httpClientBuilder);
     }
+
 }

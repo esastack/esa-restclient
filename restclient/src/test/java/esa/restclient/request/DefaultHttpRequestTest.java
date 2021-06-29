@@ -27,7 +27,6 @@ class DefaultHttpRequestTest {
     private final static String path = "/test";
     private final static HttpVersion httpVersion = HttpVersion.HTTP_1_1;
 
-
     @Test
     void testCreate() {
         assertThrows(IllegalArgumentException.class, () -> new DefaultHttpRequest(null, method, httpVersion));
@@ -82,7 +81,6 @@ class DefaultHttpRequestTest {
         testContentTypeOperate(new DefaultHttpRequest(httpUrl, method, httpVersion));
     }
 
-
     @Test
     void testHttpVersionOperate() {
         assertThrows(NullPointerException.class, () -> new DefaultHttpRequest(httpUrl, method, null));
@@ -95,7 +93,6 @@ class DefaultHttpRequestTest {
     void testCookieOperate() {
         testCookieOperate(new DefaultHttpRequest(httpUrl, method, httpVersion));
     }
-
 
     static void testParamOperate(HttpRequest defaultHttpRequest) {
         String name = "name";
@@ -234,7 +231,6 @@ class DefaultHttpRequestTest {
         Assertions.assertEquals(defaultHttpRequest.version(), httpVersion);
     }
 
-
     static void testCookieOperate(HttpRequest defaultHttpRequest) {
         String noValueName = "noValueName";
         String name = "name";
@@ -273,7 +269,6 @@ class DefaultHttpRequestTest {
         assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.getCookiesMap().put(noValueName, new ArrayList<>()));
         assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.removeCookies(noValueName).add(new CookieImpl("aaa", "aaa")));
         assertThrows(UnsupportedOperationException.class, () -> defaultHttpRequest.getCookies(noValueName).add(new CookieImpl("aaa", "aaa")));
-
 
         cookies = defaultHttpRequest.removeCookies(name);
         List<Cookie> finalCookies = cookies;

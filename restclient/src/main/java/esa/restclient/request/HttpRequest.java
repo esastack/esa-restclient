@@ -92,4 +92,5 @@ public interface HttpRequest extends HttpMessage {
     List<MediaType> acceptTypes();
 
     Object bodyEntity();
+
 }

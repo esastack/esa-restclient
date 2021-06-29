@@ -1,6 +1,7 @@
 package esa.restclient.request;
 
 public class DefaultEntityRequest extends DefaultExecutableRequest implements EntityRequest {
+
     private volatile Object entity;
 
     DefaultEntityRequest(DefaultExecutableRequest executableRequest, Object entity) {
@@ -17,4 +18,5 @@ public class DefaultEntityRequest extends DefaultExecutableRequest implements En
     public Object bodyEntity() {
         return entity;
     }
+
 }

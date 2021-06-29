@@ -1,10 +1,9 @@
-package esa.restclient.request;
+package esa.restclient;
 
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.config.RetryOptions;
-import esa.restclient.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

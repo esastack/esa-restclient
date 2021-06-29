@@ -23,7 +23,7 @@ import esa.httpclient.core.ListenerProxy;
 import io.netty.util.Timeout;
 
 /**
- * The class is designed as thread-safe, because the {@code task} will only
+ * This class is designed as thread-safe, because the instance will only
  * be accessed by a fixed IO-Thread.
  */
 class TimeoutHandle extends ListenerProxy {
@@ -41,6 +41,10 @@ class TimeoutHandle extends ListenerProxy {
     @Override
     public void onCompleted(HttpRequest request, Context ctx, HttpResponse response) {
         super.onCompleted(request, ctx, response);
+
+        // Note: Cancel the read timeout task immediately when the request has completed,
+        // so that the GC can reclaim the task as soon as possible. See more details from
+        // Timeout.cancel().
         cancelAndClean();
     }
 

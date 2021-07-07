@@ -20,8 +20,8 @@ public class InterceptorInvocationChain implements InvocationChain {
     }
 
     @Override
-    public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request) {
-        return current.proceed(request, next);
+    public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request, RequestAction requestAction) {
+        return current.proceed(request, requestAction, next);
     }
 
 }

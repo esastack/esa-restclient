@@ -14,8 +14,7 @@ public class DefaultRestClient implements RestClient {
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null!");
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
         this.clientConfig = clientConfig;
-        this.requestExecutor = new DefaultRestRequestExecutor(httpClient, clientConfig,
-                null);
+        this.requestExecutor = new DefaultRestRequestExecutor(clientConfig);
     }
 
 

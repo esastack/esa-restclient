@@ -14,6 +14,6 @@ public interface InvocationChain {
      * @param request  current request
      * @return future
      */
-    CompletionStage<RestHttpResponse> proceed(RestHttpRequest request);
+    CompletionStage<RestHttpResponse> proceed(RestHttpRequest request,RequestAction requestAction);
 
 }

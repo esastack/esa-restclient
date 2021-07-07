@@ -42,21 +42,20 @@ public class QuickStart {
 
     private static RestClient createClient() {
         return RestClient.create()
-                .addInterceptor((request, next) -> {
+                .addInterceptor((request, action, next) -> {
                     System.out.println("----------Intercept1 begin----------");
                     System.out.println(request.headers());
-                    return next.proceed(request).thenApply((response) -> {
+                    return next.proceed(request, action).thenApply((response) -> {
                                 System.out.println("----------Intercept1 end----------");
                                 System.out.println(response.headers());
                                 return response;
                             }
-
                     );
                 })
-                .addInterceptor((request, next) -> {
+                .addInterceptor((request, action, next) -> {
                     System.out.println("----------Intercept2 begin----------");
                     System.out.println(request.headers());
-                    return next.proceed(request).thenApply((response) -> {
+                    return next.proceed(request, action).thenApply((response) -> {
                                 System.out.println("----------Intercept2 end----------");
                                 System.out.println(response.headers());
                                 return response;
@@ -64,10 +63,10 @@ public class QuickStart {
 
                     );
                 })
-                .addInterceptor((request, next) -> {
+                .addInterceptor((request, action, next) -> {
                     System.out.println("----------Intercept3 begin----------");
                     System.out.println(request.headers());
-                    return next.proceed(request).thenApply((response) -> {
+                    return next.proceed(request, action).thenApply((response) -> {
                                 System.out.println("----------Intercept3 end----------");
                                 System.out.println(response.headers());
                                 return response;

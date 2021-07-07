@@ -1,6 +1,5 @@
 package esa.restclient.exec;
 
-import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.RestClientConfig;
 import esa.restclient.RestHttpRequest;
@@ -16,22 +15,25 @@ public class DefaultRestRequestExecutor implements RestRequestExecutor {
 
     private final InvocationChain invocationChain;
 
-    public DefaultRestRequestExecutor(HttpClient httpClient, RestClientConfig clientConfig, RequestAction requestAction) {
-        this.invocationChain = buildInvokeChain(httpClient, clientConfig, requestAction);
+    public DefaultRestRequestExecutor(RestClientConfig clientConfig) {
+        this.invocationChain = buildInvokeChain(clientConfig);
     }
 
     @Override
-    public CompletionStage<RestHttpResponse> execute(RestHttpRequest request) {
-        return invocationChain.proceed(request);
+    public CompletionStage<RestHttpResponse> execute(RestHttpRequest request, RequestAction requestAction) {
+        return invocationChain.proceed(request, requestAction);
     }
 
-    private InvocationChain buildInvokeChain(HttpClient httpClient, RestClientConfig clientConfig, RequestAction requestAction) {
-        InvocationChain invocationChain = new RequestInvocation(httpClient, clientConfig);
+    private InvocationChain buildInvokeChain(RestClientConfig clientConfig) {
+        InvocationChain invocationChain =
+                (request, requestAction) -> requestAction.doRequest(request);
+
         List<Interceptor> interceptors = clientConfig.interceptors();
+
         if (interceptors.size() == 0) {
             return invocationChain;
         }
-        final List<Interceptor> interceptors0 = new LinkedList<>(clientConfig.interceptors());
+        final List<Interceptor> interceptors0 = new LinkedList<>(interceptors);
         OrderedComparator.sort(interceptors0);
         Interceptor[] orderedInterceptors = Collections.unmodifiableList(interceptors0).toArray(new Interceptor[0]);
         for (int i = orderedInterceptors.length - 1; i >= 0; i--) {

@@ -7,6 +7,6 @@ import java.util.concurrent.CompletionStage;
 
 public interface RestRequestExecutor {
 
-    CompletionStage<RestHttpResponse> execute(RestHttpRequest request);
+    CompletionStage<RestHttpResponse> execute(RestHttpRequest request, RequestAction requestAction);
 
 }

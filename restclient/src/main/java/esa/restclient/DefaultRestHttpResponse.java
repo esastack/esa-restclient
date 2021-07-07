@@ -6,7 +6,6 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
-import esa.restclient.codec.BodyProcessor;
 
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -21,18 +20,14 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
     private final HttpHeaders headers;
     private final HttpHeaders trailers;
     private final InputStream bodyStream;
-    private final BodyProcessor bodyProcessor;
 
     public DefaultRestHttpResponse(
-            HttpResponse response,
-            BodyProcessor bodyProcessor) {
+            HttpResponse response) {
         Checks.checkNotNull(response, "Response must be not null!");
-        Checks.checkNotNull(bodyProcessor, "CodecManager must be not null!");
         this.httpVersion = response.version();
         this.status = response.status();
         this.headers = response.headers();
         this.trailers = response.trailers();
-        this.bodyProcessor = bodyProcessor;
 
         Buffer buffer = response.body();
         if (buffer != null) {
@@ -60,21 +55,7 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
         }
     }
 
-    @Override
-    public <T> T bodyToEntity(Class<T> entityClass) {
-        if (entityClass == null) {
-            return null;
-        }
-        return (T) bodyProcessor.read(entityClass, entityClass, contentType(), headers, bodyStream);
-    }
 
-    @Override
-    public <T> T bodyToEntity(Type type) {
-        if (type == null) {
-            return null;
-        }
-        return (T) bodyProcessor.read(getClass(type), type, contentType(), headers, bodyStream);
-    }
 
     @Override
     public int status() {
@@ -149,4 +130,15 @@ public class DefaultRestHttpResponse implements RestHttpResponse {
         }
     }
 
+    @Override
+    public <T> T bodyToEntity(Class<T> entityClass) {
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
+    }
+
+    @Override
+    public <T> T bodyToEntity(Type type) {
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
+    }
 }

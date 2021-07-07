@@ -32,10 +32,16 @@ public interface ExecutableRequest extends RestHttpRequest {
     ExecutableRequest cookie(String name, String value);
 
     @Override
-    ExecutableRequest contentType(MediaType mediaType);
+    ExecutableRequest contentType(ContentType contentType);
 
     @Override
-    ExecutableRequest accept(MediaType... mediaTypes);
+    ExecutableRequest contentType(ContentTypeResolver contentTypeResolver);
+
+    @Override
+    ExecutableRequest accept(AcceptType... acceptTypes);
+
+    @Override
+    ExecutableRequest accept(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     ExecutableRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

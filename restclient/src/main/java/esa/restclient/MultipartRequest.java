@@ -37,10 +37,16 @@ public interface MultipartRequest extends ExecutableRequest {
     MultipartRequest cookie(String name, String value);
 
     @Override
-    MultipartRequest contentType(MediaType mediaType);
+    MultipartRequest contentType(ContentType contentType);
 
     @Override
-    MultipartRequest accept(MediaType... mediaTypes);
+    MultipartRequest contentType(ContentTypeResolver contentTypeResolver);
+
+    @Override
+    MultipartRequest accept(AcceptType... acceptTypes);
+
+    @Override
+    MultipartRequest accept(AcceptTypeResolver acceptTypeResolver);
 
 
     @Override

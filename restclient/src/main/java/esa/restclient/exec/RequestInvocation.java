@@ -7,36 +7,27 @@ import esa.httpclient.core.HttpRequestFacade;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.SegmentRequest;
 import esa.restclient.RestClientConfig;
-import esa.restclient.codec.BodyProcessor;
-import esa.restclient.codec.GenericEntity;
 import esa.restclient.RestHttpRequest;
 import esa.restclient.DefaultRestHttpResponse;
 import esa.restclient.RestHttpResponse;
 
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class RequestInvocation implements InvocationChain {
 
     private final HttpClient httpClient;
-    private final BodyProcessor bodyProcessor;
 
-    RequestInvocation(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
+    RequestInvocation(HttpClient httpClient, RestClientConfig clientConfig) {
         Checks.checkNotNull(httpClient, "HttpClient must not be null");
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
-        Checks.checkNotNull(bodyProcessor, "CodecManager must not be null");
         this.httpClient = httpClient;
-        this.bodyProcessor = bodyProcessor;
     }
 
     @Override
     public CompletionStage<RestHttpResponse> proceed(RestHttpRequest request) {
-        return doRequest(request).thenApply((response ->
-                new DefaultRestHttpResponse(response,
-                        bodyProcessor
-                )));
+        return doRequest(request).thenApply((DefaultRestHttpResponse::new));
     }
 
     private CompletableFuture<HttpResponse> doRequest(RestHttpRequest baseRequest) {
@@ -72,17 +63,18 @@ public class RequestInvocation implements InvocationChain {
     }
 
     private CompletableFuture<HttpResponse> writeBody(RestHttpRequest baseRequest, final HttpRequestFacade targetRequest) {
-        Object entity = baseRequest.bodyEntity();
-        Type type = null;
-        if (entity != null) {
-            if (entity instanceof GenericEntity) {
-                type = ((GenericEntity) entity).getType();
-            }
-        }
-        SegmentRequest segmentRequest = targetRequest.segment();
-        RequestBodyOutputStream requestBodyOutputStream = new RequestBodyOutputStream(segmentRequest);
-        bodyProcessor.write(baseRequest.bodyEntity(), type, baseRequest.contentType(), baseRequest.headers(), requestBodyOutputStream);
-        return segmentRequest.end();
+//        Object entity = baseRequest.bodyEntity();
+//        Type type = null;
+//        if (entity != null) {
+//            if (entity instanceof GenericEntity) {
+//                type = ((GenericEntity) entity).getType();
+//            }
+//        }
+//        SegmentRequest segmentRequest = targetRequest.segment();
+//        RequestBodyOutputStream requestBodyOutputStream = new RequestBodyOutputStream(segmentRequest);
+//        bodyProcessor.write(baseRequest.bodyEntity(), type, baseRequest.contentType(), baseRequest.headers(), requestBodyOutputStream);
+//        return segmentRequest.end();
+        return null;
     }
 
     private final static class RequestBodyOutputStream extends OutputStream {

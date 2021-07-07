@@ -9,11 +9,7 @@ public interface FacadeRequest extends ExecutableRequest {
 
     EntityRequest bodyEntity(Object entity);
 
-    EntityRequest bodyEntity(Object entity, MediaType mediaType);
-
     FileRequest bodyFile(File file);
-
-    FileRequest bodyFile(File file, MediaType mediaType);
 
     MultipartRequest multipart();
 
@@ -30,10 +26,16 @@ public interface FacadeRequest extends ExecutableRequest {
     FacadeRequest cookie(String name, String value);
 
     @Override
-    FacadeRequest accept(MediaType... mediaTypes);
+    FacadeRequest contentType(ContentType contentType);
 
     @Override
-    FacadeRequest contentType(MediaType mediaType);
+    FacadeRequest contentType(ContentTypeResolver contentTypeResolver);
+
+    @Override
+    FacadeRequest accept(AcceptType... acceptTypes);
+
+    @Override
+    FacadeRequest accept(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     FacadeRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

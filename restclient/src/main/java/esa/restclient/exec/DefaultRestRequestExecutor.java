@@ -3,10 +3,9 @@ package esa.restclient.exec;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.RestClientConfig;
-import esa.restclient.codec.BodyProcessor;
-import esa.restclient.interceptor.Interceptor;
 import esa.restclient.RestHttpRequest;
 import esa.restclient.RestHttpResponse;
+import esa.restclient.interceptor.Interceptor;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -17,8 +16,8 @@ public class DefaultRestRequestExecutor implements RestRequestExecutor {
 
     private final InvocationChain invocationChain;
 
-    public DefaultRestRequestExecutor(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
-        this.invocationChain = buildInvokeChain(httpClient, clientConfig, bodyProcessor);
+    public DefaultRestRequestExecutor(HttpClient httpClient, RestClientConfig clientConfig, RequestAction requestAction) {
+        this.invocationChain = buildInvokeChain(httpClient, clientConfig, requestAction);
     }
 
     @Override
@@ -26,8 +25,8 @@ public class DefaultRestRequestExecutor implements RestRequestExecutor {
         return invocationChain.proceed(request);
     }
 
-    private InvocationChain buildInvokeChain(HttpClient httpClient, RestClientConfig clientConfig, BodyProcessor bodyProcessor) {
-        InvocationChain invocationChain = new RequestInvocation(httpClient, clientConfig, bodyProcessor);
+    private InvocationChain buildInvokeChain(HttpClient httpClient, RestClientConfig clientConfig, RequestAction requestAction) {
+        InvocationChain invocationChain = new RequestInvocation(httpClient, clientConfig);
         List<Interceptor> interceptors = clientConfig.interceptors();
         if (interceptors.size() == 0) {
             return invocationChain;

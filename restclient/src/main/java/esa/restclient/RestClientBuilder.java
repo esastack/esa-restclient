@@ -7,8 +7,6 @@ import esa.httpclient.core.Reusable;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.restclient.codec.BodyReader;
-import esa.restclient.codec.BodyWriter;
 import esa.restclient.interceptor.Interceptor;
 
 import java.util.Collections;
@@ -20,8 +18,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private final HttpClientBuilder httpClientBuilder;
 
     private final List<Interceptor> interceptors = new LinkedList<>();
-    private final List<BodyWriter> bodyWriters = new LinkedList<>();
-    private final List<BodyReader> bodyReaders = new LinkedList<>();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -94,30 +90,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     public RestClientBuilder useExpectContinue(boolean useExpectContinue) {
         httpClientBuilder.useExpectContinue(useExpectContinue);
-        return self();
-    }
-
-    public RestClientBuilder addBodyReader(BodyReader bodyReader) {
-        Checks.checkNotNull(bodyReader, "Decoder must not be null");
-        this.bodyReaders.add(bodyReader);
-        return self();
-    }
-
-    public RestClientBuilder addBodyReaders(List<BodyReader> bodyReaders) {
-        Checks.checkNotNull(bodyReaders, "Decoders must not be null");
-        this.bodyReaders.addAll(bodyReaders);
-        return self();
-    }
-
-    public RestClientBuilder addBodyWriter(BodyWriter bodyWriter) {
-        Checks.checkNotNull(bodyWriter, "Encoder must not be null");
-        this.bodyWriters.add(bodyWriter);
-        return self();
-    }
-
-    public RestClientBuilder addBodyWriters(List<BodyWriter> bodyWriters) {
-        Checks.checkNotNull(bodyWriters, "Encoders must not be null");
-        this.bodyWriters.addAll(bodyWriters);
         return self();
     }
 
@@ -261,16 +233,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<BodyReader> bodyReaders() {
-        return Collections.unmodifiableList(bodyReaders);
-    }
-
-    @Override
-    public List<BodyWriter> bodyWriters() {
-        return Collections.unmodifiableList(bodyWriters);
-    }
-
-    @Override
     public RetryOptions retryOptions() {
         return httpClientBuilder.retryOptions();
     }
@@ -284,6 +246,19 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public ChannelPoolOptionsProvider channelPoolOptionsProvider() {
         return httpClientBuilder.channelPoolOptionsProvider();
     }
+
+    @Override
+    public ContentTypeResolver contentTypeResolver() {
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
+    }
+
+    @Override
+    public AcceptTypeResolver acceptTypeResolver() {
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
+    }
+
 
     private RestClientBuilder self() {
         return this;
@@ -302,10 +277,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     @Override
     public RestClientBuilder copy() {
-        return new RestClientBuilder(httpClientBuilder)
-                .addInterceptors(interceptors)
-                .addBodyWriters(bodyWriters)
-                .addBodyReaders(bodyReaders);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
-
 }

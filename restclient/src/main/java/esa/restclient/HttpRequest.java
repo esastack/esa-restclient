@@ -52,9 +52,7 @@ public interface HttpRequest extends HttpMessage {
 
     List<String> removeHeaders(CharSequence name);
 
-    MediaType contentType();
-
-    HttpRequest contentType(MediaType mediaType);
+    ContentType contentType();
 
     /**
      * Add a cookie to be set.
@@ -79,15 +77,7 @@ public interface HttpRequest extends HttpMessage {
 
     Map<String, List<Cookie>> getCookiesMap();
 
-    /**
-     * Add the accepted response media types.
-     *
-     * @param mediaTypes accepted response media types.
-     * @return the updated builder.
-     */
-    HttpRequest accept(MediaType... mediaTypes);
-
-    List<MediaType> acceptTypes();
+    List<AcceptType> acceptTypes();
 
     Object bodyEntity();
 

@@ -117,6 +117,10 @@
         <junit.version>5.4.2</junit.version>
         <assertj.version>3.9.1</assertj.version>
         <mockito.version>3.6.0</mockito.version>
+        <fastjson.version>1.2.73</fastjson.version>
+        <jackson.version>2.10.1</jackson.version>
+        <gson.version>2.8.5</gson.version>
+        <protobuf.version>3.6.1</protobuf.version>
     </properties>
 
     <dependencies>
@@ -196,6 +200,27 @@
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -4,8 +4,6 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.restclient.codec.BodyReader;
-import esa.restclient.codec.BodyWriter;
 import esa.restclient.interceptor.Interceptor;
 
 import java.util.List;
@@ -48,14 +46,15 @@ public interface RestClientConfig {
 
     List<Interceptor> interceptors();
 
-    List<BodyReader> bodyReaders();
-
-    List<BodyWriter> bodyWriters();
-
     RetryOptions retryOptions();
 
     int maxRedirects();
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
+
+    ContentTypeResolver contentTypeResolver();
+
+    AcceptTypeResolver acceptTypeResolver();
+
 
 }

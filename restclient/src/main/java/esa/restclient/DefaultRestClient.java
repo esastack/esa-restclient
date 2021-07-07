@@ -1,9 +1,7 @@
 package esa.restclient;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpMethod;
 import esa.httpclient.core.HttpClient;
-import esa.restclient.codec.DefaultBodyProcessor;
 import esa.restclient.exec.DefaultRestRequestExecutor;
 import esa.restclient.exec.RestRequestExecutor;
 
@@ -17,37 +15,44 @@ public class DefaultRestClient implements RestClient {
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
         this.clientConfig = clientConfig;
         this.requestExecutor = new DefaultRestRequestExecutor(httpClient, clientConfig,
-                new DefaultBodyProcessor(clientConfig.bodyReaders(), clientConfig.bodyWriters()));
+                null);
     }
+
 
     @Override
     public ExecutableRequest get(String uri) {
-        return new DefaultFacadeRequest(uri, HttpMethod.GET, clientConfig, requestExecutor);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
     public FacadeRequest post(String uri) {
-        return new DefaultFacadeRequest(uri, HttpMethod.POST, clientConfig, requestExecutor);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
     public FacadeRequest delete(String uri) {
-        return new DefaultFacadeRequest(uri, HttpMethod.DELETE, clientConfig, requestExecutor);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
     public FacadeRequest put(String uri) {
-        return new DefaultFacadeRequest(uri, HttpMethod.PUT, clientConfig, requestExecutor);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
     public ExecutableRequest head(String uri) {
-        return new DefaultFacadeRequest(uri, HttpMethod.HEAD, clientConfig, requestExecutor);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
     public ExecutableRequest options(String uri) {
-        return new DefaultFacadeRequest(uri, HttpMethod.OPTIONS, clientConfig, requestExecutor);
+        //TODO implement the method!
+        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override

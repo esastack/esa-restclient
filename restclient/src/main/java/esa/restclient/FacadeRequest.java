@@ -29,13 +29,16 @@ public interface FacadeRequest extends ExecutableRequest {
     FacadeRequest contentType(ContentType contentType);
 
     @Override
-    FacadeRequest contentType(ContentTypeResolver contentTypeResolver);
+    FacadeRequest contentType(ContentTypeFactory contentTypeFactory);
 
     @Override
     FacadeRequest accept(AcceptType... acceptTypes);
 
     @Override
-    FacadeRequest accept(AcceptTypeResolver acceptTypeResolver);
+    FacadeRequest accept(AcceptTypeFactory acceptTypeFactory);
+
+    @Override
+    FacadeRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     FacadeRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -60,8 +63,5 @@ public interface FacadeRequest extends ExecutableRequest {
 
     @Override
     FacadeRequest maxRetries(int maxRetries);
-
-    @Override
-    FacadeRequest property(String name, Object value);
 
 }

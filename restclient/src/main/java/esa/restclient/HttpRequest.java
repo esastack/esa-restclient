@@ -77,7 +77,7 @@ public interface HttpRequest extends HttpMessage {
 
     Map<String, List<Cookie>> getCookiesMap();
 
-    List<AcceptType> acceptTypes();
+    List<ContentType> acceptTypes();
 
     Object bodyEntity();
 

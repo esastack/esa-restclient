@@ -40,14 +40,16 @@ public interface MultipartRequest extends ExecutableRequest {
     MultipartRequest contentType(ContentType contentType);
 
     @Override
-    MultipartRequest contentType(ContentTypeResolver contentTypeResolver);
+    MultipartRequest contentType(ContentTypeFactory contentTypeFactory);
 
     @Override
     MultipartRequest accept(AcceptType... acceptTypes);
 
     @Override
-    MultipartRequest accept(AcceptTypeResolver acceptTypeResolver);
+    MultipartRequest accept(AcceptTypeFactory acceptTypeFactory);
 
+    @Override
+    MultipartRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     MultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -72,8 +74,5 @@ public interface MultipartRequest extends ExecutableRequest {
 
     @Override
     MultipartRequest maxRetries(int maxRetries);
-
-    @Override
-    MultipartRequest property(String name, Object value);
 
 }

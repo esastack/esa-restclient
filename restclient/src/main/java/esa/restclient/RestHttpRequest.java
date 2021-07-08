@@ -34,11 +34,13 @@ public interface RestHttpRequest extends HttpRequest {
 
     RestHttpRequest contentType(ContentType contentType);
 
-    RestHttpRequest contentType(ContentTypeResolver contentTypeResolver);
+    RestHttpRequest contentType(ContentTypeFactory contentTypeFactory);
 
     RestHttpRequest accept(AcceptType... acceptTypes);
 
-    RestHttpRequest accept(AcceptTypeResolver acceptTypeResolver);
+    RestHttpRequest accept(AcceptTypeFactory acceptTypeFactory);
+
+    RestHttpRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
     /**
      * The readTimeout of current request
@@ -56,25 +58,6 @@ public interface RestHttpRequest extends HttpRequest {
 
     boolean isUseExpectContinue();
 
-    /**
-     * Return the request attribute value if present.
-     *
-     * @param name the attribute name
-     * @return the attribute value
-     */
-    <T> T getProperty(String name);
-
-    <T> T getProperty(String name, T defaultValue);
-
-    RestHttpRequest property(String name, Object value);
-
-    Set<String> propertyNames();
-
-    Map<String, Object> properties();
-
-    /**
-     * Return the attributes of this request.
-     */
-    <T> T removeProperty(String name);
+    RequestContext context();
 
 }

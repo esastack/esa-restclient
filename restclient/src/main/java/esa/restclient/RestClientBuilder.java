@@ -19,6 +19,12 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private final List<Interceptor> interceptors = new LinkedList<>();
 
+    private ContentTypeFactory contentTypeFactory;
+
+    private AcceptTypeFactory acceptTypeFactory;
+
+    private AcceptTypeResolver acceptTypeResolver;
+
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
     }
@@ -103,6 +109,18 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         Checks.checkNotNull(interceptors, "Interceptors must not be null");
         this.interceptors.addAll(interceptors);
         return self();
+    }
+
+    public void contentTypeFactory(ContentTypeFactory contentTypeFactory) {
+        this.contentTypeFactory = contentTypeFactory;
+    }
+
+    public void acceptTypeFactory(AcceptTypeFactory acceptTypeFactory) {
+        this.acceptTypeFactory = acceptTypeFactory;
+    }
+
+    public void acceptTypeResolver(AcceptTypeResolver acceptTypeResolver) {
+        this.acceptTypeResolver = acceptTypeResolver;
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -248,17 +266,19 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public ContentTypeResolver contentTypeResolver() {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+    public ContentTypeFactory contentTypeFactory() {
+        return contentTypeFactory;
+    }
+
+    @Override
+    public AcceptTypeFactory acceptTypeFactory() {
+        return acceptTypeFactory;
     }
 
     @Override
     public AcceptTypeResolver acceptTypeResolver() {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return acceptTypeResolver;
     }
-
 
     private RestClientBuilder self() {
         return this;

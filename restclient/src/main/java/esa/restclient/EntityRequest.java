@@ -4,7 +4,7 @@ import esa.commons.http.Cookie;
 
 import java.util.Map;
 
-public interface EntityRequest extends ExecutableRequest{
+public interface EntityRequest extends ExecutableRequest {
 
     Object entity();
 
@@ -24,14 +24,16 @@ public interface EntityRequest extends ExecutableRequest{
     EntityRequest contentType(ContentType contentType);
 
     @Override
-    EntityRequest contentType(ContentTypeResolver contentTypeResolver);
+    EntityRequest contentType(ContentTypeFactory contentTypeFactory);
 
     @Override
     EntityRequest accept(AcceptType... acceptTypes);
 
     @Override
-    EntityRequest accept(AcceptTypeResolver acceptTypeResolver);
+    EntityRequest accept(AcceptTypeFactory acceptTypeFactory);
 
+    @Override
+    EntityRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     EntityRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -56,7 +58,4 @@ public interface EntityRequest extends ExecutableRequest{
 
     @Override
     EntityRequest maxRetries(int maxRetries);
-
-    @Override
-    EntityRequest property(String name, Object value);
 }

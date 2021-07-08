@@ -25,14 +25,16 @@ public interface FileRequest extends ExecutableRequest{
     FileRequest contentType(ContentType contentType);
 
     @Override
-    FileRequest contentType(ContentTypeResolver contentTypeResolver);
+    FileRequest contentType(ContentTypeFactory contentTypeFactory);
 
     @Override
     FileRequest accept(AcceptType... acceptTypes);
 
     @Override
-    FileRequest accept(AcceptTypeResolver acceptTypeResolver);
+    FileRequest accept(AcceptTypeFactory acceptTypeFactory);
 
+    @Override
+    FileRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     FileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -57,8 +59,5 @@ public interface FileRequest extends ExecutableRequest{
 
     @Override
     FileRequest maxRetries(int maxRetries);
-
-    @Override
-    FileRequest property(String name, Object value);
 
 }

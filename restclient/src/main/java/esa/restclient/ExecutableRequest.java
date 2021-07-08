@@ -35,13 +35,16 @@ public interface ExecutableRequest extends RestHttpRequest {
     ExecutableRequest contentType(ContentType contentType);
 
     @Override
-    ExecutableRequest contentType(ContentTypeResolver contentTypeResolver);
+    ExecutableRequest contentType(ContentTypeFactory contentTypeFactory);
 
     @Override
     ExecutableRequest accept(AcceptType... acceptTypes);
 
     @Override
-    ExecutableRequest accept(AcceptTypeResolver acceptTypeResolver);
+    ExecutableRequest accept(AcceptTypeFactory acceptTypeFactory);
+
+    @Override
+    ExecutableRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     ExecutableRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

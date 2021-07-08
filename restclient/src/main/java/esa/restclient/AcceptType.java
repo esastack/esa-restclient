@@ -3,7 +3,6 @@ package esa.restclient;
 import esa.restclient.serializer.RxSerializer;
 
 public class AcceptType {
-
     private final MediaType mediaType;
     private final RxSerializer rxSerializer;
 
@@ -20,4 +19,7 @@ public class AcceptType {
         return rxSerializer;
     }
 
+    public static AcceptType of(MediaType mediaType, RxSerializer rxSerializer) {
+        return new AcceptType(mediaType, rxSerializer);
+    }
 }

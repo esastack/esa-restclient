@@ -2,6 +2,9 @@ package esa.restclient;
 
 import esa.commons.http.HttpHeaders;
 
+import java.lang.reflect.Type;
+import java.util.Optional;
+
 public interface AcceptTypeResolver {
-    AcceptType resolve(HttpHeaders responseHeaders);
+    Optional<AcceptType> resolve(HttpRequest request, HttpHeaders responseHeaders, Type type);
 }

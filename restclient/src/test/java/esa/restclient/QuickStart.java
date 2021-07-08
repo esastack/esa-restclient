@@ -28,7 +28,7 @@ public class QuickStart {
         restClient.post(url)
                 .accept(new AcceptType(MediaType.TEXT_HTML, null))
                 .cookie(new CookieImpl("aaa", "aaa"))
-                .bodyEntity("aaa")
+                .entity("aaa")
                 .maxRetries(3)
                 .readTimeout(100)
                 .execute()

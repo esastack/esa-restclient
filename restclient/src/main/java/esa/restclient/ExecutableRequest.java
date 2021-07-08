@@ -5,9 +5,9 @@ import esa.commons.http.Cookie;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-public interface ExecutableRequest extends RestHttpRequest {
+public interface ExecutableRequest extends RestRequest {
 
-    CompletionStage<RestHttpResponse> execute();
+    CompletionStage<RestResponse> execute();
 
     ExecutableRequest readTimeout(int readTimeout);
 

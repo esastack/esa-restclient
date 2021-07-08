@@ -2,8 +2,8 @@ package esa.restclient.exec;
 
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.RestClientConfig;
-import esa.restclient.RestHttpRequest;
-import esa.restclient.RestHttpResponse;
+import esa.restclient.RestRequest;
+import esa.restclient.RestResponse;
 import esa.restclient.interceptor.Interceptor;
 
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class DefaultRestRequestExecutor implements RestRequestExecutor {
     }
 
     @Override
-    public CompletionStage<RestHttpResponse> execute(RestHttpRequest request, RequestAction requestAction) {
+    public CompletionStage<RestResponse> execute(RestRequest request, RequestAction requestAction) {
         return invocationChain.proceed(request, requestAction);
     }
 

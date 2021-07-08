@@ -4,7 +4,7 @@ import esa.httpclient.core.Response;
 
 import java.lang.reflect.Type;
 
-public interface RestHttpResponse extends Response {
+public interface RestResponse extends Response {
 
     <T> T bodyToEntity(Class<T> entityClass);
 

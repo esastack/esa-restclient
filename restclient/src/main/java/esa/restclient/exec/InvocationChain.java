@@ -1,8 +1,8 @@
 package esa.restclient.exec;
 
 import esa.restclient.interceptor.Interceptor;
-import esa.restclient.RestHttpRequest;
-import esa.restclient.RestHttpResponse;
+import esa.restclient.RestRequest;
+import esa.restclient.RestResponse;
 
 import java.util.concurrent.CompletionStage;
 
@@ -14,6 +14,6 @@ public interface InvocationChain {
      * @param request  current request
      * @return future
      */
-    CompletionStage<RestHttpResponse> proceed(RestHttpRequest request,RequestAction requestAction);
+    CompletionStage<RestResponse> proceed(RestRequest request, RequestAction requestAction);
 
 }

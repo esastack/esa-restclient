@@ -1,23 +1,21 @@
 package esa.restclient;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
 
-import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class DefaultRestHttpResponse implements RestHttpResponse {
+public class DefaultRestResponse implements RestResponse {
 
     private final HttpResponse response;
 
-    public DefaultRestHttpResponse(
+    public DefaultRestResponse(
             HttpResponse response) {
         Checks.checkNotNull(response, "Response must be not null!");
         this.response = response;

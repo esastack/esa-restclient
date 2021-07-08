@@ -11,11 +11,11 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class DefaultRestResponse implements RestResponse {
+public class RestResponseImpl implements RestResponse {
 
     private final HttpResponse response;
 
-    public DefaultRestResponse(
+    public RestResponseImpl(
             HttpResponse response) {
         Checks.checkNotNull(response, "Response must be not null!");
         this.response = response;

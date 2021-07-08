@@ -291,7 +291,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
      */
     public RestClient build() {
         RestClientBuilder copiedRestClientBuilder = copy();
-        return new DefaultRestClient(copiedRestClientBuilder,
+        return new RestClientImpl(copiedRestClientBuilder,
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 

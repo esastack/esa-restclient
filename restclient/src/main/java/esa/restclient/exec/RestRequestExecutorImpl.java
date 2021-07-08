@@ -11,11 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class DefaultRestRequestExecutor implements RestRequestExecutor {
+public class RestRequestExecutorImpl implements RestRequestExecutor {
 
     private final InvocationChain invocationChain;
 
-    public DefaultRestRequestExecutor(RestClientConfig clientConfig) {
+    public RestRequestExecutorImpl(RestClientConfig clientConfig) {
         this.invocationChain = buildInvokeChain(clientConfig);
     }
 

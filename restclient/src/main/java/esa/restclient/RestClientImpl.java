@@ -2,54 +2,54 @@ package esa.restclient;
 
 import esa.commons.Checks;
 import esa.httpclient.core.HttpClient;
-import esa.restclient.exec.DefaultRestRequestExecutor;
+import esa.restclient.exec.RestRequestExecutorImpl;
 import esa.restclient.exec.RestRequestExecutor;
 
-public class DefaultRestClient implements RestClient {
+public class RestClientImpl implements RestClient {
 
     private final RestClientConfig clientConfig;
     private final RestRequestExecutor requestExecutor;
 
-    DefaultRestClient(RestClientConfig clientConfig, HttpClient httpClient) {
+    RestClientImpl(RestClientConfig clientConfig, HttpClient httpClient) {
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null!");
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
         this.clientConfig = clientConfig;
-        this.requestExecutor = new DefaultRestRequestExecutor(clientConfig);
+        this.requestExecutor = new RestRequestExecutorImpl(clientConfig);
     }
 
 
     @Override
-    public ExecutableRequest get(String uri) {
+    public ExecutableRestRequest get(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
-    public FacadeRequest post(String uri) {
+    public FacadeRestRequest post(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
-    public FacadeRequest delete(String uri) {
+    public FacadeRestRequest delete(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
-    public FacadeRequest put(String uri) {
+    public FacadeRestRequest put(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
-    public ExecutableRequest head(String uri) {
+    public ExecutableRestRequest head(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
-    public ExecutableRequest options(String uri) {
+    public ExecutableRestRequest options(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }

@@ -9,6 +9,21 @@ import java.util.Map;
 public interface RestRequest extends Request, RequestBaseConfig {
 
     @Override
+    RestRequest readTimeout(int readTimeout);
+
+    @Override
+    RestRequest maxRedirects(int maxRedirects);
+
+    @Override
+    RestRequest maxRetries(int maxRetries);
+
+    @Override
+    RestRequest disableExpectContinue();
+
+    @Override
+    RestRequest enableUriEncode();
+
+    @Override
     RestRequest addParams(Map<String, String> params);
 
     @Override
@@ -22,6 +37,9 @@ public interface RestRequest extends Request, RequestBaseConfig {
 
     @Override
     RestRequest setHeader(CharSequence name, CharSequence value);
+
+    @Override
+    RestRequest removeHeader(CharSequence name);
 
     RestRequest cookie(Cookie cookie);
 
@@ -37,24 +55,7 @@ public interface RestRequest extends Request, RequestBaseConfig {
 
     RestRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 
-    /**
-     * The readTimeout of current request
-     *
-     * @return readTimeout
-     */
-    int readTimeout();
-
-    /**
-     * Whether allow uri encode or not
-     *
-     * @return true or false
-     */
-    boolean uriEncode();
-
-    boolean isUseExpectContinue();
-
     Object body();
 
     RequestContext context();
-
 }

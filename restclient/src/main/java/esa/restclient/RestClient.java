@@ -10,7 +10,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    ExecutableRequest get(String uri);
+    ExecutableRestRequest get(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#POST} request.
@@ -18,7 +18,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    FacadeRequest post(String uri);
+    FacadeRestRequest post(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#DELETE} request.
@@ -26,7 +26,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    FacadeRequest delete(String uri);
+    FacadeRestRequest delete(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#PUT} request.
@@ -34,7 +34,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    FacadeRequest put(String uri);
+    FacadeRestRequest put(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#HEAD} request.
@@ -42,7 +42,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    ExecutableRequest head(String uri);
+    ExecutableRestRequest head(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#OPTIONS} request.
@@ -50,7 +50,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    ExecutableRequest options(String uri);
+    ExecutableRestRequest options(String uri);
 
     RestClientConfig clientConfig();
 

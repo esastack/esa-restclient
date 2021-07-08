@@ -15,80 +15,37 @@ import java.lang.reflect.Type;
 
 public class DefaultRestHttpResponse implements RestHttpResponse {
 
-    private final HttpVersion httpVersion;
-    private final int status;
-    private final HttpHeaders headers;
-    private final HttpHeaders trailers;
-    private final InputStream bodyStream;
+    private final HttpResponse response;
 
     public DefaultRestHttpResponse(
             HttpResponse response) {
         Checks.checkNotNull(response, "Response must be not null!");
-        this.httpVersion = response.version();
-        this.status = response.status();
-        this.headers = response.headers();
-        this.trailers = response.trailers();
-
-        Buffer buffer = response.body();
-        if (buffer != null) {
-            this.bodyStream = new InputStream() {
-                @Override
-                public int read() {
-                    return buffer.readInt();
-                }
-
-                @Override
-                public int read(byte[] b, int off, int len) {
-                    int readableBytes = buffer.readableBytes();
-                    if (readableBytes >= len) {
-                        buffer.readBytes(b, off, len);
-                        return len;
-                    } else if (readableBytes > 0) {
-                        buffer.readBytes(b, off, readableBytes);
-                        return readableBytes;
-                    }
-                    return -1;
-                }
-            };
-        } else {
-            this.bodyStream = null;
-        }
+        this.response = response;
     }
-
-
 
     @Override
     public int status() {
-        return status;
+        return response.status();
     }
 
     @Override
-    public InputStream bodyStream() {
-        return bodyStream;
+    public Buffer body() {
+        return response.body();
     }
 
     @Override
     public HttpHeaders trailers() {
-        return trailers;
-    }
-
-    @Override
-    public MediaType contentType() {
-        String contentTypeHeader = headers.get(HttpHeaderNames.CONTENT_TYPE);
-        if (contentTypeHeader == null) {
-            return null;
-        }
-        return MediaType.parseMediaType(contentTypeHeader);
+        return response.trailers();
     }
 
     @Override
     public HttpVersion version() {
-        return httpVersion;
+        return response.version();
     }
 
     @Override
     public HttpHeaders headers() {
-        return headers;
+        return response.headers();
     }
 
     /**

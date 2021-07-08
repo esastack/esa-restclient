@@ -21,20 +21,27 @@ import java.util.function.Consumer;
 /**
  * The modifiable {@link HttpRequest} which is allowed to be modified.
  */
-public interface HttpRequestBase extends HttpRequest {
+public interface HttpRequestBase extends HttpRequest, RequestBaseConfig, RequestHandleConfig {
 
+    @Override
     HttpRequestBase enableUriEncode();
 
+    @Override
     HttpRequestBase disableExpectContinue();
 
+    @Override
     HttpRequestBase maxRedirects(int maxRedirects);
 
+    @Override
     HttpRequestBase maxRetries(int maxRetries);
 
+    @Override
     HttpRequestBase readTimeout(int readTimeout);
 
+    @Override
     HttpRequestBase addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
 
+    @Override
     HttpRequestBase addParams(Map<String, String> params);
 
     /**
@@ -48,6 +55,7 @@ public interface HttpRequestBase extends HttpRequest {
      * @param handle handle
      * @return this
      */
+    @Override
     HttpRequestBase handle(Consumer<Handle> handle);
 
     /**
@@ -61,6 +69,7 @@ public interface HttpRequestBase extends HttpRequest {
      * @param handler handler
      * @return this
      */
+    @Override
     HttpRequestBase handler(Handler handler);
 
     @Override

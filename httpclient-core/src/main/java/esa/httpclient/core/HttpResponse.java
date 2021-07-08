@@ -15,24 +15,7 @@
  */
 package esa.httpclient.core;
 
-import esa.commons.http.HttpHeaders;
-import esa.commons.netty.core.Buffer;
-
-public interface HttpResponse extends HttpMessage {
-
-    /**
-     * Obtains body as {@link Buffer} format.
-     *
-     * @return body
-     */
-    Buffer body();
-
-    /**
-     * Obtains {@link HttpHeaders} of trailing.
-     *
-     * @return headers
-     */
-    HttpHeaders trailers();
+public interface HttpResponse extends Response {
 
     /**
      * The flag indicates current response should be automatically aggregated or not.

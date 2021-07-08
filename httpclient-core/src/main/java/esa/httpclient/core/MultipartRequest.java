@@ -19,18 +19,24 @@ import java.io.File;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public interface MultipartRequest extends ExecutableRequest {
+public interface MultipartRequest extends ExecutableRequest, MultipartConfig {
 
+    @Override
     MultipartRequest multipartEncode(boolean multipartEncode);
 
+    @Override
     MultipartRequest attr(String name, String value);
 
+    @Override
     MultipartRequest file(String name, File file);
 
+    @Override
     MultipartRequest file(String name, File file, String contentType);
 
+    @Override
     MultipartRequest file(String name, File file, String contentType, boolean isText);
 
+    @Override
     MultipartRequest file(String name, String filename, File file, String contentType, boolean isText);
 
     @Override

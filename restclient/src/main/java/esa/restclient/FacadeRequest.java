@@ -7,9 +7,9 @@ import java.util.Map;
 
 public interface FacadeRequest extends ExecutableRequest {
 
-    EntityRequest bodyEntity(Object entity);
+    EntityRequest entity(Object entity);
 
-    FileRequest bodyFile(File file);
+    FileRequest file(File file);
 
     MultipartRequest multipart();
 

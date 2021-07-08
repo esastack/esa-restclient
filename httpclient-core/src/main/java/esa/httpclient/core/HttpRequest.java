@@ -24,58 +24,19 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-public interface HttpRequest extends Reusable<HttpRequest> {
+public interface HttpRequest extends Reusable<HttpRequest>, Request {
 
-    HttpMethod method();
-
-    String scheme();
-
-    String path();
-
-    HttpUri uri();
-
+    @Override
     HttpRequest addParam(String name, String value);
 
-    String getParam(String name);
-
-    /**
-     * Obtains unmodifiable param values by specified {@code name}.
-     *
-     * @param name name
-     * @return value
-     */
-    List<String> getParams(String name);
-
-    /**
-     * Obtains unmodifiable parameter names.
-     *
-     * @return names
-     */
-    Set<String> paramNames();
-
-    HttpHeaders headers();
-
+    @Override
     HttpRequest addHeader(CharSequence name, CharSequence value);
 
-    CharSequence getHeader(CharSequence name);
-
+    @Override
     HttpRequest setHeader(CharSequence name, CharSequence value);
 
+    @Override
     HttpRequest removeHeader(CharSequence name);
-
-    /**
-     * Whether allow uri encode or not
-     *
-     * @return true or false
-     */
-    boolean uriEncode();
-
-    /**
-     * The readTimeout of current request
-     *
-     * @return readTimeout
-     */
-    int readTimeout();
 
     /**
      * Whether use multipart encode for {@link MultipartRequest}.

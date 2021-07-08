@@ -1,11 +1,13 @@
 package esa.restclient;
 
 import esa.commons.http.Cookie;
+import esa.httpclient.core.Request;
+import esa.httpclient.core.RequestBaseConfig;
 
 import java.util.Map;
 import java.util.Set;
 
-public interface RestHttpRequest extends HttpRequest {
+public interface RestHttpRequest extends Request, RequestBaseConfig {
 
     int maxRetries();
 
@@ -26,10 +28,8 @@ public interface RestHttpRequest extends HttpRequest {
     @Override
     RestHttpRequest setHeader(CharSequence name, CharSequence value);
 
-    @Override
     RestHttpRequest cookie(Cookie cookie);
 
-    @Override
     RestHttpRequest cookie(String name, String value);
 
     RestHttpRequest contentType(ContentType contentType);
@@ -57,6 +57,8 @@ public interface RestHttpRequest extends HttpRequest {
     boolean uriEncode();
 
     boolean isUseExpectContinue();
+
+    Object bodyEntity();
 
     RequestContext context();
 

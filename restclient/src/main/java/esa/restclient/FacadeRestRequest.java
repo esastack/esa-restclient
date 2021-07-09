@@ -3,6 +3,7 @@ package esa.restclient;
 import esa.commons.http.Cookie;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public interface FacadeRestRequest extends ExecutableRestRequest {
@@ -26,6 +27,9 @@ public interface FacadeRestRequest extends ExecutableRestRequest {
     FacadeRestRequest cookie(String name, String value);
 
     @Override
+    FacadeRestRequest cookies(List<Cookie> cookies);
+
+    @Override
     FacadeRestRequest contentType(ContentType contentType);
 
     @Override
@@ -34,8 +38,6 @@ public interface FacadeRestRequest extends ExecutableRestRequest {
     @Override
     FacadeRestRequest accept(AcceptType... acceptTypes);
 
-    @Override
-    FacadeRestRequest accept(AcceptTypeFactory acceptTypeFactory);
 
     @Override
     FacadeRestRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);

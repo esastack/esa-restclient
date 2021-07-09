@@ -2,11 +2,12 @@ package esa.restclient;
 
 import esa.commons.http.Cookie;
 import esa.httpclient.core.Request;
-import esa.httpclient.core.RequestBaseConfig;
+import esa.httpclient.core.RequestConfig;
 
+import java.util.List;
 import java.util.Map;
 
-public interface RestRequest extends Request, RequestBaseConfig {
+public interface RestRequest extends Request, RequestConfig {
 
     @Override
     RestRequest readTimeout(int readTimeout);
@@ -45,13 +46,23 @@ public interface RestRequest extends Request, RequestBaseConfig {
 
     RestRequest cookie(String name, String value);
 
+    RestRequest cookies(List<Cookie> cookies);
+
+    List<Cookie> removeCookies(String name);
+
+    List<Cookie> getCookies(String name);
+
+    Map<String, List<Cookie>> getCookiesMap();
+
     RestRequest contentType(ContentType contentType);
 
     RestRequest contentType(ContentTypeFactory contentTypeFactory);
 
+    ContentType contentType();
+
     RestRequest accept(AcceptType... acceptTypes);
 
-    RestRequest accept(AcceptTypeFactory acceptTypeFactory);
+    List<AcceptType> acceptTypes();
 
     RestRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
 

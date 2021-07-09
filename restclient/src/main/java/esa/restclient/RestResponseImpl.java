@@ -13,11 +13,15 @@ import java.lang.reflect.Type;
 
 public class RestResponseImpl implements RestResponse {
 
+    private final RestRequest request;
     private final HttpResponse response;
 
     public RestResponseImpl(
+            RestRequest request,
             HttpResponse response) {
+        Checks.checkNotNull(request, "Request must be not null!");
         Checks.checkNotNull(response, "Response must be not null!");
+        this.request = request;
         this.response = response;
     }
 

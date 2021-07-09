@@ -2,6 +2,7 @@ package esa.restclient;
 
 import esa.commons.http.Cookie;
 
+import java.util.List;
 import java.util.Map;
 
 public interface RestEntityRequest extends ExecutableRestRequest {
@@ -21,6 +22,9 @@ public interface RestEntityRequest extends ExecutableRestRequest {
     RestEntityRequest cookie(String name, String value);
 
     @Override
+    RestEntityRequest cookies(List<Cookie> cookies);
+
+    @Override
     RestEntityRequest contentType(ContentType contentType);
 
     @Override
@@ -28,9 +32,6 @@ public interface RestEntityRequest extends ExecutableRestRequest {
 
     @Override
     RestEntityRequest accept(AcceptType... acceptTypes);
-
-    @Override
-    RestEntityRequest accept(AcceptTypeFactory acceptTypeFactory);
 
     @Override
     RestEntityRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);

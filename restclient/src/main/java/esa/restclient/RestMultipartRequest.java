@@ -4,6 +4,7 @@ import esa.commons.http.Cookie;
 import esa.httpclient.core.MultipartConfig;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public interface RestMultipartRequest extends ExecutableRestRequest, MultipartConfig {
@@ -39,6 +40,9 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
     RestMultipartRequest cookie(String name, String value);
 
     @Override
+    RestMultipartRequest cookies(List<Cookie> cookies);
+
+    @Override
     RestMultipartRequest contentType(ContentType contentType);
 
     @Override
@@ -46,9 +50,6 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
 
     @Override
     RestMultipartRequest accept(AcceptType... acceptTypes);
-
-    @Override
-    RestMultipartRequest accept(AcceptTypeFactory acceptTypeFactory);
 
     @Override
     RestMultipartRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);

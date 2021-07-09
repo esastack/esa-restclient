@@ -17,7 +17,6 @@ public class RestClientImpl implements RestClient {
         this.requestExecutor = new RestRequestExecutorImpl(clientConfig);
     }
 
-
     @Override
     public ExecutableRestRequest get(String uri) {
         //TODO implement the method!

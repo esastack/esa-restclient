@@ -26,7 +26,7 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
 
     private InvocationChain buildInvokeChain(RestClientConfig clientConfig) {
         InvocationChain invocationChain =
-                (request, requestAction) -> requestAction.doRequest(request);
+                (request, requestAction) -> requestAction.doRequest();
 
         List<Interceptor> interceptors = clientConfig.interceptors();
 

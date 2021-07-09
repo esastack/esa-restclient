@@ -40,7 +40,7 @@ public interface FacadeRestRequest extends ExecutableRestRequest {
 
 
     @Override
-    FacadeRestRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
+    FacadeRestRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     FacadeRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

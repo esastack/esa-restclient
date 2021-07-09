@@ -23,14 +23,13 @@ import java.util.concurrent.CompletionStage;
 public abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     protected final CompositeRequest target;
-    protected final RestClientConfig clientConfig;
+    private final RestClientConfig clientConfig;
     private final RestRequestExecutor requestExecutor;
-    protected final RequestContext context = new RequestContextImpl();
-    protected ContentType contentType;
-    protected ContentTypeFactory contentTypeFactory;
-    protected List<AcceptType> acceptTypes;
-    protected AcceptTypeResolver acceptTypeResolver;
-
+    private final RequestContext context = new RequestContextImpl();
+    private ContentType contentType;
+    private ContentTypeFactory contentTypeFactory;
+    private List<AcceptType> acceptTypes;
+    private AcceptTypeResolver acceptTypeResolver;
 
     protected AbstractExecutableRestRequest(CompositeRequest request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "Request must not be null");
@@ -110,29 +109,26 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     private RequestAction createRequestAction() {
         return () -> {
             try {
-                processByContentType();
+                ContentType contentType = computeContentType();
+                if (contentType == null) {
+                    throw new IllegalStateException("The request has no contentType," +
+                            "Please set the correct contentType or contentTypeFactory");
+                }
+                target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
+
+                TxSerializer txSerializer = contentType.getTxSerializer();
+                if (txSerializer != ContentType.NO_NEED_SERIALIZE) {
+                    target.body(txSerializer.serialize(body()));
+                }
             } catch (Exception e) {
                 return Futures.completed(e);
             }
+
             return target.execute().thenApply(this::processTargetResponse);
         };
     }
 
-    protected void processByContentType() throws Exception {
-        ContentType contentType = computeContentType();
-        if (contentType == null) {
-            throw new IllegalStateException("The request has no contentType," +
-                    " please set the correct contentType or contentTypeFactory");
-        }
-        target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
-        TxSerializer txSerializer = contentType.getTxSerializer();
-        if (txSerializer == ContentType.NO_NEED_SERIALIZE) {
-            return;
-        }
-        target.body(txSerializer.serialize(body()));
-    }
-
-    protected ContentType computeContentType() {
+    private ContentType computeContentType() {
         if (contentType != null) {
             return contentType;
         }
@@ -154,7 +150,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
 
     abstract protected ContentType defaultContentType();
 
-    protected RestResponse processTargetResponse(HttpResponse response) {
+    private RestResponse processTargetResponse(HttpResponse response) {
         return new RestResponseImpl(this, response);
     }
 
@@ -316,7 +312,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest acceptResolver(AcceptTypeResolver acceptTypeResolver) {
+    public ExecutableRestRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver) {
         this.acceptTypeResolver = acceptTypeResolver;
         return self();
     }

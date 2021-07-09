@@ -2,9 +2,12 @@ package esa.restclient;
 
 import esa.commons.Checks;
 import esa.restclient.serializer.HttpOutputStream;
+import esa.restclient.serializer.JacksonSerializer;
 import esa.restclient.serializer.Serializer;
 import esa.restclient.serializer.TxSerializer;
 import sun.dc.pr.PRError;
+
+import java.nio.charset.StandardCharsets;
 
 public class ContentType {
 
@@ -25,7 +28,6 @@ public class ContentType {
         }
     };
 
-
     public ContentType(MediaType mediaType, TxSerializer txSerializer) {
         Checks.checkNotNull(mediaType, "MediaType must not be null");
         Checks.checkNotNull(txSerializer, "TxSerializer must not be null");
@@ -45,4 +47,9 @@ public class ContentType {
         return new ContentType(mediaType, txSerializer);
     }
 
+    /**
+     * Media type for {@code application/json;charset=utf-8}.
+     */
+    public static final ContentType APPLICATION_JSON_UTF8_JACKSON
+            = of(MediaType.APPLICATION_JSON_UTF8, new JacksonSerializer());
 }

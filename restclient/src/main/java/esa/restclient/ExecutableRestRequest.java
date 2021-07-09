@@ -50,7 +50,7 @@ public interface ExecutableRestRequest extends RestRequest {
     ExecutableRestRequest accept(AcceptType... acceptTypes);
 
     @Override
-    ExecutableRestRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
+    ExecutableRestRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     ExecutableRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

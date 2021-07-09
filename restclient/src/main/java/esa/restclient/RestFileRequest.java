@@ -35,7 +35,7 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest accept(AcceptType... acceptTypes);
 
     @Override
-    RestFileRequest acceptResolver(AcceptTypeResolver acceptTypeResolver);
+    RestFileRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver);
 
     @Override
     RestFileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

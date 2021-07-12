@@ -33,14 +33,14 @@ public interface FacadeRestRequest extends ExecutableRestRequest {
     FacadeRestRequest contentType(ContentType contentType);
 
     @Override
-    FacadeRestRequest contentType(ContentTypeFactory contentTypeFactory);
+    FacadeRestRequest contentType(RequestContentTypeFactory requestContentTypeFactory);
 
     @Override
-    FacadeRestRequest accept(AcceptType... acceptTypes);
+    FacadeRestRequest accept(ContentType... contentTypes);
 
 
     @Override
-    FacadeRestRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver);
+    FacadeRestRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
 
     @Override
     FacadeRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

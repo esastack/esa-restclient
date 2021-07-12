@@ -27,9 +27,9 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     private final RestRequestExecutor requestExecutor;
     private final RequestContext context = new RequestContextImpl();
     private ContentType contentType;
-    private ContentTypeFactory contentTypeFactory;
-    private List<AcceptType> acceptTypes;
-    private AcceptTypeResolver acceptTypeResolver;
+    private RequestContentTypeFactory requestContentTypeFactory;
+    private List<ContentType> acceptTypes;
+    private ResponseContentTypeResolver responseContentTypeResolver;
 
     protected AbstractExecutableRestRequest(CompositeRequest request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "Request must not be null");
@@ -117,7 +117,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
                 target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
 
                 TxSerializer txSerializer = contentType.getTxSerializer();
-                if (txSerializer != ContentType.NO_NEED_SERIALIZE) {
+                if (txSerializer != ContentType.NO_SERIALIZE) {
                     target.body(txSerializer.serialize(body()));
                 }
             } catch (Exception e) {
@@ -132,15 +132,15 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         if (contentType != null) {
             return contentType;
         }
-        if (contentTypeFactory != null) {
-            Optional<ContentType> optionalContentType = contentTypeFactory.create(headers(), context, body());
+        if (requestContentTypeFactory != null) {
+            Optional<ContentType> optionalContentType = requestContentTypeFactory.create(headers(), context, body());
             if (optionalContentType.isPresent()) {
                 return optionalContentType.get();
             }
         }
-        ContentTypeFactory contentTypeFactoryOfClient = clientConfig.contentTypeFactory();
-        if (contentTypeFactoryOfClient != null) {
-            Optional<ContentType> optionalContentType = contentTypeFactoryOfClient.create(headers(), context, body());
+        RequestContentTypeFactory requestContentTypeFactoryOfClient = clientConfig.requestContentTypeFactory();
+        if (requestContentTypeFactoryOfClient != null) {
+            Optional<ContentType> optionalContentType = requestContentTypeFactoryOfClient.create(headers(), context, body());
             if (optionalContentType.isPresent()) {
                 return optionalContentType.get();
             }
@@ -284,8 +284,8 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest contentType(ContentTypeFactory contentTypeFactory) {
-        this.contentTypeFactory = contentTypeFactory;
+    public ExecutableRestRequest contentType(RequestContentTypeFactory requestContentTypeFactory) {
+        this.requestContentTypeFactory = requestContentTypeFactory;
         return self();
     }
 
@@ -295,25 +295,25 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest accept(AcceptType... acceptTypes) {
-        if (acceptTypes == null) {
+    public ExecutableRestRequest accept(ContentType... contentTypes) {
+        if (contentTypes == null) {
             return self();
         }
-        for (AcceptType acceptType : acceptTypes) {
-            headers().add(HttpHeaderNames.ACCEPT, acceptType.getMediaType().toString());
+        for (ContentType contentType : contentTypes) {
+            headers().add(HttpHeaderNames.ACCEPT, contentType.getMediaType().toString());
         }
-        this.acceptTypes = Arrays.asList(acceptTypes);
+        this.acceptTypes = Arrays.asList(contentTypes);
         return self();
     }
 
     @Override
-    public List<AcceptType> acceptTypes() {
+    public List<ContentType> acceptTypes() {
         return acceptTypes;
     }
 
     @Override
-    public ExecutableRestRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver) {
-        this.acceptTypeResolver = acceptTypeResolver;
+    public ExecutableRestRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
+        this.responseContentTypeResolver = responseContentTypeResolver;
         return self();
     }
 

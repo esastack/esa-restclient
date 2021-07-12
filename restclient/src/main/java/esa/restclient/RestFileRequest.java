@@ -29,13 +29,13 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest contentType(ContentType contentType);
 
     @Override
-    RestFileRequest contentType(ContentTypeFactory contentTypeFactory);
+    RestFileRequest contentType(RequestContentTypeFactory requestContentTypeFactory);
 
     @Override
-    RestFileRequest accept(AcceptType... acceptTypes);
+    RestFileRequest accept(ContentType... contentTypes);
 
     @Override
-    RestFileRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver);
+    RestFileRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
 
     @Override
     RestFileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

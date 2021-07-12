@@ -83,20 +83,20 @@ public class RestEntityRequestImpl extends AbstractExecutableRestRequest impleme
     }
 
     @Override
-    public RestEntityRequest contentType(ContentTypeFactory contentTypeFactory) {
-        super.contentType(contentTypeFactory);
+    public RestEntityRequest contentType(RequestContentTypeFactory requestContentTypeFactory) {
+        super.contentType(requestContentTypeFactory);
         return self();
     }
 
     @Override
-    public RestEntityRequest accept(AcceptType... acceptTypes) {
-        super.accept(acceptTypes);
+    public RestEntityRequest accept(ContentType... contentTypes) {
+        super.accept(contentTypes);
         return self();
     }
 
     @Override
-    public RestEntityRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver) {
-        super.acceptTypeResolver(acceptTypeResolver);
+    public RestEntityRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
+        super.acceptTypeResolver(responseContentTypeResolver);
         return self();
     }
 

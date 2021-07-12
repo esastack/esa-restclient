@@ -44,13 +44,13 @@ public interface ExecutableRestRequest extends RestRequest {
     ExecutableRestRequest contentType(ContentType contentType);
 
     @Override
-    ExecutableRestRequest contentType(ContentTypeFactory contentTypeFactory);
+    ExecutableRestRequest contentType(RequestContentTypeFactory requestContentTypeFactory);
 
     @Override
-    ExecutableRestRequest accept(AcceptType... acceptTypes);
+    ExecutableRestRequest accept(ContentType... contentTypes);
 
     @Override
-    ExecutableRestRequest acceptTypeResolver(AcceptTypeResolver acceptTypeResolver);
+    ExecutableRestRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
 
     @Override
     ExecutableRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

@@ -19,11 +19,9 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private final List<Interceptor> interceptors = new LinkedList<>();
 
-    private ContentTypeFactory contentTypeFactory;
+    private RequestContentTypeFactory requestContentTypeFactory = new DefaultContentTypeFactory();
 
-    private AcceptTypeFactory acceptTypeFactory;
-
-    private AcceptTypeResolver acceptTypeResolver;
+    private ResponseContentTypeResolver responseContentTypeResolver = new DefaultContentTypeResolver();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -111,16 +109,12 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public void contentTypeFactory(ContentTypeFactory contentTypeFactory) {
-        this.contentTypeFactory = contentTypeFactory;
+    public void requestContentTypeFactory(RequestContentTypeFactory requestContentTypeFactory) {
+        this.requestContentTypeFactory = requestContentTypeFactory;
     }
 
-    public void acceptTypeFactory(AcceptTypeFactory acceptTypeFactory) {
-        this.acceptTypeFactory = acceptTypeFactory;
-    }
-
-    public void acceptTypeResolver(AcceptTypeResolver acceptTypeResolver) {
-        this.acceptTypeResolver = acceptTypeResolver;
+    public void responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
+        this.responseContentTypeResolver = responseContentTypeResolver;
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -266,18 +260,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public ContentTypeFactory contentTypeFactory() {
-        return contentTypeFactory;
+    public RequestContentTypeFactory requestContentTypeFactory() {
+        return requestContentTypeFactory;
     }
 
     @Override
-    public AcceptTypeFactory acceptTypeFactory() {
-        return acceptTypeFactory;
-    }
-
-    @Override
-    public AcceptTypeResolver acceptTypeResolver() {
-        return acceptTypeResolver;
+    public ResponseContentTypeResolver responseContentTypeResolver() {
+        return responseContentTypeResolver;
     }
 
     private RestClientBuilder self() {

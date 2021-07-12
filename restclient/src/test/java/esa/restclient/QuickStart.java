@@ -26,7 +26,7 @@ public class QuickStart {
 //                .thenAccept(response -> System.out.println(response.bodyToEntity(QuickStart.class)));
 
         restClient.post(url)
-                .accept(new AcceptType(MediaType.TEXT_HTML, null))
+                .accept(ContentType.of(MediaType.TEXT_HTML, null))
                 .cookie(new CookieImpl("aaa", "aaa"))
                 .entity("aaa")
                 .maxRetries(3)

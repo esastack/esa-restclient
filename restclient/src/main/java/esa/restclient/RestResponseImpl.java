@@ -10,6 +10,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 public class RestResponseImpl implements RestResponse {
 
@@ -50,54 +51,33 @@ public class RestResponseImpl implements RestResponse {
         return response.headers();
     }
 
-    /**
-     * Returns the object representing the class or interface that declared
-     * the supplied {@code type}.
-     *
-     * @param type {@code Type} to inspect.
-     * @return the class or interface that declared the supplied {@code type}.
-     */
-    private static Class getClass(Type type) {
-        if (type instanceof Class) {
-            return (Class) type;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            if (parameterizedType.getRawType() instanceof Class) {
-                return (Class) parameterizedType.getRawType();
-            }
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType array = (GenericArrayType) type;
-            final Class<?> componentRawType = getClass(array.getGenericComponentType());
-            return getArrayClass(componentRawType);
-        }
-        throw new IllegalArgumentException("Type parameter " + type.toString() + " not a class or " +
-                "parameterized type whose raw type is a class");
-    }
-
-    /**
-     * Get Array class of component class.
-     *
-     * @param c the component class of the array
-     * @return the array class.
-     */
-    private static Class getArrayClass(Class c) {
-        try {
-            Object o = Array.newInstance(c, 0);
-            return o.getClass();
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
+    @Override
+    public <T> T bodyToEntity(Class<T> entityClass) throws Exception {
+        return resolveContentType(request, response, entityClass)
+                .rxSerializer()
+                .deSerialize(response.body().getByteBuf().array(), entityClass);
     }
 
     @Override
-    public <T> T bodyToEntity(Class<T> entityClass) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+    public <T> T bodyToEntity(Type type) throws Exception {
+        return resolveContentType(request, response, type)
+                .rxSerializer()
+                .deSerialize(response.body().getByteBuf().array(), type);
     }
 
-    @Override
-    public <T> T bodyToEntity(Type type) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+    private ContentType resolveContentType(RestRequest request, HttpResponse response, Type type) {
+        ResponseContentTypeResolver contentTypeResolver = request.responseContentTypeResolver();
+        if (contentTypeResolver == null) {
+            throw new IllegalStateException("ResponseContentTypeResolver must not be null!" +
+                    "Please set correct contentTypeResolver to request or client!");
+        }
+        Optional<ContentType> contentType = contentTypeResolver.resolve(request, response.headers(), type);
+        if (contentType.isPresent()) {
+            return contentType.get();
+        }
+        throw new IllegalStateException("Can,t resolve contentType of response!" +
+                "response.status: " + response.status() +
+                ",response.headers: " + response.headers());
     }
+
 }

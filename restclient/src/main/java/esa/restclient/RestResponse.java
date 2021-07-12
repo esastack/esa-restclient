@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 
 public interface RestResponse extends Response {
 
-    <T> T bodyToEntity(Class<T> entityClass);
+    <T> T bodyToEntity(Class<T> entityClass) throws Exception;
 
-    <T> T bodyToEntity(Type type);
+    <T> T bodyToEntity(Type type) throws Exception;
 }

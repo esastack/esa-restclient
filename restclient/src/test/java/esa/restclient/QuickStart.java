@@ -3,6 +3,7 @@ package esa.restclient;
 import esa.commons.netty.http.CookieImpl;
 import esa.restclient.serializer.*;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,13 +27,31 @@ public class QuickStart {
 //                .thenAccept(response -> System.out.println(response.bodyToEntity(QuickStart.class)));
 
         restClient.post(url)
-                .accept(ContentType.of(MediaType.TEXT_HTML, null))
+                .contentType(ContentType.APPLICATION_JSON_UTF8_JACKSON)
+                .accept(ContentType.of(MediaType.TEXT_HTML, new RxSerializer() {
+                    @Override
+                    public String deSerialize(byte[] data, Type type) throws Exception {
+                        return new String(data);
+                    }
+
+                    @Override
+                    public String deSerialize(HttpInputStream inputStream, Type type) throws Exception {
+                        //TODO implement the method!
+                        throw new UnsupportedOperationException("The method need to be implemented!");
+                    }
+                }))
                 .cookie(new CookieImpl("aaa", "aaa"))
                 .entity("aaa")
                 .maxRetries(3)
                 .readTimeout(100)
                 .execute()
-                .thenAccept(response -> System.out.println(response.bodyToEntity(String.class)));
+                .thenAccept(response -> {
+                    try {
+                        System.out.println(response.bodyToEntity(String.class));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).whenComplete((result, e) -> e.printStackTrace());
         try {
             Thread.sleep(1000000);
         } catch (InterruptedException e) {

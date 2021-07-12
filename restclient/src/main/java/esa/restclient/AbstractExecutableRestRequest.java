@@ -6,7 +6,7 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.CookieImpl;
-import esa.httpclient.core.CompositeRequest;
+import esa.httpclient.core.HttpRequestFacade;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.util.Futures;
@@ -22,16 +22,16 @@ import java.util.concurrent.CompletionStage;
 
 public abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
-    protected final CompositeRequest target;
-    private final RestClientConfig clientConfig;
-    private final RestRequestExecutor requestExecutor;
+    protected final HttpRequestFacade target;
+    protected final RestClientConfig clientConfig;
+    protected final RestRequestExecutor requestExecutor;
     private final RequestContext context = new RequestContextImpl();
     private ContentType contentType;
     private RequestContentTypeFactory requestContentTypeFactory;
     private List<ContentType> acceptTypes;
     private ResponseContentTypeResolver responseContentTypeResolver;
 
-    protected AbstractExecutableRestRequest(CompositeRequest request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
+    protected AbstractExecutableRestRequest(HttpRequestFacade request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "Request must not be null");
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
         Checks.checkNotNull(requestExecutor, "RequestExecutor must not be null");
@@ -116,7 +116,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
                 }
                 target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
 
-                TxSerializer txSerializer = contentType.getTxSerializer();
+                TxSerializer txSerializer = contentType.txSerializer();
                 if (txSerializer != ContentType.NO_SERIALIZE) {
                     target.body(txSerializer.serialize(body()));
                 }
@@ -145,10 +145,8 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
                 return optionalContentType.get();
             }
         }
-        return defaultContentType();
+        return null;
     }
-
-    abstract protected ContentType defaultContentType();
 
     private RestResponse processTargetResponse(HttpResponse response) {
         return new RestResponseImpl(this, response);
@@ -296,12 +294,18 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
 
     @Override
     public ExecutableRestRequest accept(ContentType... contentTypes) {
-        if (contentTypes == null) {
+        if (contentTypes == null || contentTypes.length == 0) {
             return self();
         }
-        for (ContentType contentType : contentTypes) {
-            headers().add(HttpHeaderNames.ACCEPT, contentType.getMediaType().toString());
+        StringBuilder acceptBuilder = new StringBuilder();
+
+        for (int i = 0; i < contentTypes.length; i++) {
+            if (i > 0) {
+                acceptBuilder.append(",");
+            }
+            acceptBuilder.append(contentType.getMediaType().toString());
         }
+        headers().add(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
         this.acceptTypes = Arrays.asList(contentTypes);
         return self();
     }
@@ -312,9 +316,18 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
+    public ExecutableRestRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
         this.responseContentTypeResolver = responseContentTypeResolver;
         return self();
+    }
+
+    @Override
+    public ResponseContentTypeResolver responseContentTypeResolver() {
+        if (responseContentTypeResolver != null) {
+            return responseContentTypeResolver;
+        }
+
+        return clientConfig.responseContentTypeResolver();
     }
 
     @Override

@@ -18,7 +18,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    FacadeRestRequest post(String uri);
+    RestRequestFacade post(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#DELETE} request.
@@ -26,7 +26,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    FacadeRestRequest delete(String uri);
+    RestRequestFacade delete(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#PUT} request.
@@ -34,7 +34,7 @@ public interface RestClient {
      * @param uri request uri
      * @return builder
      */
-    FacadeRestRequest put(String uri);
+    RestRequestFacade put(String uri);
 
     /**
      * An easy way to build {@link HttpMethod#HEAD} request.

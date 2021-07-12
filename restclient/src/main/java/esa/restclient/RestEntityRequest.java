@@ -34,7 +34,7 @@ public interface RestEntityRequest extends ExecutableRestRequest {
     RestEntityRequest accept(ContentType... contentTypes);
 
     @Override
-    RestEntityRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
+    RestEntityRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
 
     @Override
     RestEntityRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

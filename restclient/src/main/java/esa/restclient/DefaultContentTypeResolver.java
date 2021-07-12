@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public class DefaultContentTypeResolver implements ResponseContentTypeResolver {
     @Override
-    public Optional<ContentType> resolve(RestRequest request, RequestContext context, HttpHeaders responseHeaders, Type type) {
+    public Optional<ContentType> resolve(RestRequest request, HttpHeaders responseHeaders, Type type) {
         //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return Optional.ofNullable(request.acceptTypes().get(0));
     }
 }

@@ -64,7 +64,9 @@ public interface RestRequest extends Request, RequestConfig {
 
     List<ContentType> acceptTypes();
 
-    RestRequest acceptTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
+    RestRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
+
+    ResponseContentTypeResolver responseContentTypeResolver();
 
     Object body();
 

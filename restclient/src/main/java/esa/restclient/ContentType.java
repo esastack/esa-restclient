@@ -55,11 +55,11 @@ public class ContentType {
         return mediaType;
     }
 
-    public TxSerializer getTxSerializer() {
+    public TxSerializer txSerializer() {
         return txSerializer;
     }
 
-    public RxSerializer getRxSerializer() {
+    public RxSerializer rxSerializer() {
         return rxSerializer;
     }
 

@@ -9,12 +9,14 @@ public class RestClientImpl implements RestClient {
 
     private final RestClientConfig clientConfig;
     private final RestRequestExecutor requestExecutor;
+    private final HttpClient target;
 
     RestClientImpl(RestClientConfig clientConfig, HttpClient httpClient) {
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null!");
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
         this.clientConfig = clientConfig;
         this.requestExecutor = new RestRequestExecutorImpl(clientConfig);
+        this.target = httpClient;
     }
 
     @Override
@@ -24,19 +26,18 @@ public class RestClientImpl implements RestClient {
     }
 
     @Override
-    public FacadeRestRequest post(String uri) {
+    public RestRequestFacade post(String uri) {
+        return new CompositeRestRequest(target.post(uri), clientConfig, requestExecutor);
+    }
+
+    @Override
+    public RestRequestFacade delete(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }
 
     @Override
-    public FacadeRestRequest delete(String uri) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
-    }
-
-    @Override
-    public FacadeRestRequest put(String uri) {
+    public RestRequestFacade put(String uri) {
         //TODO implement the method!
         throw new UnsupportedOperationException("The method need to be implemented!");
     }

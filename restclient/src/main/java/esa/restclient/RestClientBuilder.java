@@ -286,7 +286,10 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     @Override
     public RestClientBuilder copy() {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
+        restClientBuilder.addInterceptors(interceptors);
+        restClientBuilder.requestContentTypeFactory(requestContentTypeFactory);
+        restClientBuilder.responseContentTypeResolver(responseContentTypeResolver);
+        return restClientBuilder;
     }
 }

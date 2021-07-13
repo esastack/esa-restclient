@@ -133,17 +133,14 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
             return contentType;
         }
         if (requestContentTypeFactory != null) {
-            Optional<ContentType> optionalContentType = requestContentTypeFactory.create(headers(), context, body());
-            if (optionalContentType.isPresent()) {
-                return optionalContentType.get();
+            ContentType contentType = requestContentTypeFactory.create(headers(), context, body());
+            if (contentType != null) {
+                return contentType;
             }
         }
-        RequestContentTypeFactory requestContentTypeFactoryOfClient = clientConfig.requestContentTypeFactory();
-        if (requestContentTypeFactoryOfClient != null) {
-            Optional<ContentType> optionalContentType = requestContentTypeFactoryOfClient.create(headers(), context, body());
-            if (optionalContentType.isPresent()) {
-                return optionalContentType.get();
-            }
+        RequestContentTypeFactory contentTypeFactory = clientConfig.requestContentTypeFactory();
+        if (contentTypeFactory != null) {
+            return contentTypeFactory.create(headers(), context, body());
         }
         return null;
     }

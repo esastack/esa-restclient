@@ -7,5 +7,5 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 
 public interface ResponseContentTypeResolver extends Ordered {
-    Optional<ContentType> resolve(RestRequest request, MediaType mediaType, HttpHeaders responseHeaders, Type type);
+    ContentType resolve(RestRequest request, MediaType mediaType, HttpHeaders responseHeaders, Type type);
 }

@@ -90,9 +90,9 @@ public class RestResponseImpl implements RestResponse {
 
         ResponseContentTypeResolver contentTypeResolver = request.responseContentTypeResolver();
         if (contentTypeResolver != null) {
-            Optional<ContentType> contentType = contentTypeResolver.resolve(request, mediaType, response.headers(), type);
-            if (contentType.isPresent()) {
-                return contentType.get();
+            ContentType contentType = contentTypeResolver.resolve(request, mediaType, response.headers(), type);
+            if (contentType != null) {
+                return contentType;
             }
             throw new IllegalStateException("Can,t resolve contentType of response by responseContentTypeResolver of request!" +
                     "request.uri" + request.uri() +
@@ -102,9 +102,9 @@ public class RestResponseImpl implements RestResponse {
 
         ResponseContentTypeResolver[] responseContentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
         for (ResponseContentTypeResolver contentTypeResolverTem : responseContentTypeResolvers) {
-            Optional<ContentType> contentType = contentTypeResolverTem.resolve(request, mediaType, response.headers(), type);
-            if (contentType.isPresent()) {
-                return contentType.get();
+            ContentType contentType = contentTypeResolverTem.resolve(request, mediaType, response.headers(), type);
+            if (contentType != null) {
+                return contentType;
             }
         }
         throw new IllegalStateException("Can,t resolve contentType of response!" +

@@ -54,5 +54,5 @@ public interface RestClientConfig {
 
     RequestContentTypeFactory requestContentTypeFactory();
 
-    ResponseContentTypeResolver responseContentTypeResolver();
+    ResponseContentTypeResolver[] unmodifiableContentTypeResolvers();
 }

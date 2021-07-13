@@ -5,8 +5,14 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.Reusable;
 import esa.httpclient.core.config.*;
+import esa.httpclient.core.exec.ExpectContinueInterceptor;
+import esa.httpclient.core.exec.FilteringExec;
+import esa.httpclient.core.exec.RedirectInterceptor;
+import esa.httpclient.core.exec.RetryInterceptor;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
+import esa.httpclient.core.spi.InterceptorFactory;
+import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.interceptor.Interceptor;
 
 import java.util.Collections;
@@ -21,7 +27,9 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private RequestContentTypeFactory requestContentTypeFactory = new DefaultContentTypeFactory();
 
-    private ResponseContentTypeResolver responseContentTypeResolver = new DefaultContentTypeResolver();
+    private final LinkedList<ResponseContentTypeResolver> responseContentTypeResolvers = new LinkedList<>();
+
+    private ResponseContentTypeResolver[] unmodifiableContentTypeResolvers;
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -113,8 +121,14 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         this.requestContentTypeFactory = requestContentTypeFactory;
     }
 
-    public void responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
-        this.responseContentTypeResolver = responseContentTypeResolver;
+    public void addResponseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
+        this.responseContentTypeResolvers.add(responseContentTypeResolver);
+        this.unmodifiableContentTypeResolvers = buildUnmodifiableContentTypeResolver();
+    }
+
+    public void addResponseContentTypeResolvers(List<ResponseContentTypeResolver> responseContentTypeResolvers) {
+        this.responseContentTypeResolvers.addAll(responseContentTypeResolvers);
+        this.unmodifiableContentTypeResolvers = buildUnmodifiableContentTypeResolver();
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -265,8 +279,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public ResponseContentTypeResolver responseContentTypeResolver() {
-        return responseContentTypeResolver;
+    public ResponseContentTypeResolver[] unmodifiableContentTypeResolvers() {
+        return unmodifiableContentTypeResolvers;
     }
 
     private RestClientBuilder self() {
@@ -280,8 +294,17 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
      */
     public RestClient build() {
         RestClientBuilder copiedRestClientBuilder = copy();
+
         return new RestClientImpl(copiedRestClientBuilder,
                 copiedRestClientBuilder.httpClientBuilder.build());
+    }
+
+    private ResponseContentTypeResolver[] buildUnmodifiableContentTypeResolver() {
+        final List<ResponseContentTypeResolver> contentTypeResolvers0 = new LinkedList<>(responseContentTypeResolvers);
+        contentTypeResolvers0.addAll(ContentTypeResolverFactory.DEFAULT.contentTypeResolvers());
+
+        OrderedComparator.sort(contentTypeResolvers0);
+        return Collections.unmodifiableList(contentTypeResolvers0).toArray(new ResponseContentTypeResolver[0]);
     }
 
     @Override
@@ -289,7 +312,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
         restClientBuilder.requestContentTypeFactory(requestContentTypeFactory);
-        restClientBuilder.responseContentTypeResolver(responseContentTypeResolver);
+        restClientBuilder.addResponseContentTypeResolvers(responseContentTypeResolvers);
         return restClientBuilder;
     }
 }

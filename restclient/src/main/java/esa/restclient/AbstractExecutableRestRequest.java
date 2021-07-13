@@ -28,7 +28,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     private final RequestContext context = new RequestContextImpl();
     private ContentType contentType;
     private RequestContentTypeFactory requestContentTypeFactory;
-    private List<ContentType> acceptTypes;
+    private ContentType[] acceptTypes;
     private ResponseContentTypeResolver responseContentTypeResolver;
 
     protected AbstractExecutableRestRequest(HttpRequestFacade request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
@@ -124,7 +124,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
                 return Futures.completed(e);
             }
 
-            return target.execute().thenApply(this::processTargetResponse);
+            return target.execute().thenApply(this::processResponse);
         };
     }
 
@@ -148,8 +148,8 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         return null;
     }
 
-    private RestResponse processTargetResponse(HttpResponse response) {
-        return new RestResponseImpl(this, response);
+    private RestResponse processResponse(HttpResponse response) {
+        return new RestResponseImpl(this, response, clientConfig);
     }
 
     @Override
@@ -293,25 +293,25 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest accept(ContentType... contentTypes) {
-        if (contentTypes == null || contentTypes.length == 0) {
+    public ExecutableRestRequest accept(ContentType... acceptTypes) {
+        if (acceptTypes == null || acceptTypes.length == 0) {
             return self();
         }
         StringBuilder acceptBuilder = new StringBuilder();
 
-        for (int i = 0; i < contentTypes.length; i++) {
+        for (int i = 0; i < acceptTypes.length; i++) {
             if (i > 0) {
                 acceptBuilder.append(",");
             }
-            acceptBuilder.append(contentType.getMediaType().toString());
+            acceptBuilder.append(acceptTypes[i].getMediaType().toString());
         }
-        headers().add(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
-        this.acceptTypes = Arrays.asList(contentTypes);
+        headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
+        this.acceptTypes = acceptTypes;
         return self();
     }
 
     @Override
-    public List<ContentType> acceptTypes() {
+    public ContentType[] acceptTypes() {
         return acceptTypes;
     }
 
@@ -323,11 +323,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
 
     @Override
     public ResponseContentTypeResolver responseContentTypeResolver() {
-        if (responseContentTypeResolver != null) {
-            return responseContentTypeResolver;
-        }
-
-        return clientConfig.responseContentTypeResolver();
+        return responseContentTypeResolver;
     }
 
     @Override

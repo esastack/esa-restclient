@@ -1,29 +1,36 @@
 package esa.restclient;
 
 import esa.commons.Checks;
+import esa.commons.StringUtils;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Optional;
 
 public class RestResponseImpl implements RestResponse {
 
     private final RestRequest request;
     private final HttpResponse response;
+    private final RestClientConfig clientConfig;
 
     public RestResponseImpl(
             RestRequest request,
-            HttpResponse response) {
+            HttpResponse response,
+            RestClientConfig clientConfig) {
         Checks.checkNotNull(request, "Request must be not null!");
         Checks.checkNotNull(response, "Response must be not null!");
+        Checks.checkNotNull(clientConfig, "ClientConfig must be not null!");
         this.request = request;
         this.response = response;
+        this.clientConfig = clientConfig;
     }
 
     @Override
@@ -66,18 +73,43 @@ public class RestResponseImpl implements RestResponse {
     }
 
     private ContentType resolveContentType(RestRequest request, HttpResponse response, Type type) {
-        ResponseContentTypeResolver contentTypeResolver = request.responseContentTypeResolver();
-        if (contentTypeResolver == null) {
-            throw new IllegalStateException("ResponseContentTypeResolver must not be null!" +
-                    "Please set correct contentTypeResolver to request or client!");
+
+        String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
+        MediaType mediaType = null;
+        if (StringUtils.isNotBlank(mediaTypeValue)) {
+            mediaType = MediaType.parseMediaType(mediaTypeValue);
+            ContentType[] acceptTypes = request.acceptTypes();
+            if (acceptTypes != null && acceptTypes.length > 0) {
+                for (ContentType contentType : acceptTypes) {
+                    if (contentType.getMediaType().equals(mediaType)) {
+                        return contentType;
+                    }
+                }
+            }
         }
-        Optional<ContentType> contentType = contentTypeResolver.resolve(request, response.headers(), type);
-        if (contentType.isPresent()) {
-            return contentType.get();
+
+        ResponseContentTypeResolver contentTypeResolver = request.responseContentTypeResolver();
+        if (contentTypeResolver != null) {
+            Optional<ContentType> contentType = contentTypeResolver.resolve(request, mediaType, response.headers(), type);
+            if (contentType.isPresent()) {
+                return contentType.get();
+            }
+            throw new IllegalStateException("Can,t resolve contentType of response by responseContentTypeResolver of request!" +
+                    "request.uri" + request.uri() +
+                    ",response.status: " + response.status() +
+                    ",response.headers: " + response.headers());
+        }
+
+        ResponseContentTypeResolver[] responseContentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
+        for (ResponseContentTypeResolver contentTypeResolverTem : responseContentTypeResolvers) {
+            Optional<ContentType> contentType = contentTypeResolverTem.resolve(request, mediaType, response.headers(), type);
+            if (contentType.isPresent()) {
+                return contentType.get();
+            }
         }
         throw new IllegalStateException("Can,t resolve contentType of response!" +
-                "response.status: " + response.status() +
+                "request.uri" + request.uri() +
+                ",response.status: " + response.status() +
                 ",response.headers: " + response.headers());
     }
-
 }

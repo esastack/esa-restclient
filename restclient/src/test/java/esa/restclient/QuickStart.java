@@ -17,15 +17,6 @@ public class QuickStart {
     }
 
     private static void sendRestRequest(RestClient restClient) {
-//        restClient.get(url)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .cookie(new CookieImpl("aaa", "aaa"))
-//                .cookie("aaa", "aaa")
-//                .maxRetries(3)
-//                .readTimeout(100)
-//                .execute()
-//                .thenAccept(response -> System.out.println(response.bodyToEntity(QuickStart.class)));
-
         restClient.post(url)
                 .contentType(ContentType.APPLICATION_JSON_UTF8_JACKSON)
                 .accept(ContentType.of(MediaType.TEXT_HTML, new RxSerializer() {

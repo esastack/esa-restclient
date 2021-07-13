@@ -108,7 +108,7 @@ public class RestResponseImpl implements RestResponse {
             }
         }
         throw new IllegalStateException("Can,t resolve contentType of response!" +
-                "request.uri" + request.uri() +
+                "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +
                 ",response.headers: " + response.headers());
     }

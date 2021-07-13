@@ -38,7 +38,6 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     @Override
     RestRequestFacade accept(ContentType... contentTypes);
 
-
     @Override
     RestRequestFacade responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
 

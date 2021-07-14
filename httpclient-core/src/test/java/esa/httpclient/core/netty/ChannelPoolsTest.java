@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
+import java.util.StringJoiner;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -123,6 +124,15 @@ class ChannelPoolsTest {
 
         then(metric.maxSize()).isEqualTo(options.poolSize());
         then(metric.options()).isEqualTo(options);
+
+        then(metric.toString()).isEqualTo(
+                new StringJoiner(", ", metric.getClass().getSimpleName() + "[", "]")
+                .add("options=" + options)
+                .add("maxSize=" + options.poolSize())
+                .add("maxPendingAcquires=" + options.waitingQueueLength())
+                .add("active=" + 0)
+                .add("pendingAcquireCount=" + 0)
+                .toString());
 
         then(pools.all().size()).isEqualTo(1);
         then(pools.all().get(address)).isNotNull();

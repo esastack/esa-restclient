@@ -162,7 +162,7 @@ class NettyHttpClientTest {
 
         then(metric.toString()).isEqualTo(new StringJoiner(", ",
                 NettyHttpClient.IoThreadGroupMetricImpl.class.getSimpleName()
-                + "[", "]")
+                        + "[", "]")
                 .add("id='" + id + "'")
                 .add("shutdown=" + false)
                 .add("terminated=" + false)
@@ -263,6 +263,7 @@ class NettyHttpClientTest {
         when(underlying1.closeAsync()).thenAnswer(answer -> closeFuture);
         when(underlying2.closeAsync()).thenAnswer(answer -> closeFuture);
 
+        client.applyChannelPoolOptions(preOptions, true);
         final ChannelPoolOptions newOptions = ChannelPoolOptions.options()
                 .connectTimeout(10000)
                 .readTimeout(10000)
@@ -310,7 +311,7 @@ class NettyHttpClientTest {
     void testLoadSslEngineFactory() {
         final NettyHttpClient client = new NettyHttpClientImpl(HttpClient
                 .create()
-                .version(HttpVersion.HTTP_2));
+                .version(HttpVersion.HTTP_2), true);
 
         final SslOptions options = SslOptions.options()
                 .sessionTimeout(2000L)

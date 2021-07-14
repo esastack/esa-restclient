@@ -22,6 +22,7 @@ import esa.httpclient.core.exec.RetryPredicate;
 import esa.httpclient.core.exec.RetryPredicateImpl;
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
 import java.util.function.IntToLongFunction;
 
 import static org.assertj.core.api.BDDAssertions.then;
@@ -34,6 +35,11 @@ class RetryOptionsTest {
         then(options.maxRetries()).isEqualTo(3);
         then(options.predicate()).isSameAs(RetryPredicateImpl.DEFAULT);
         then(options.intervalMillis()).isNull();
+        then(options.toString()).isEqualTo(new StringJoiner(", ", RetryOptions.class.getSimpleName() + "[", "]")
+                .add("maxRetries=" + 3)
+                .add("predicate=" + RetryPredicateImpl.DEFAULT)
+                .add("intervalMillis=" + null)
+                .toString());
     }
 
     @Test

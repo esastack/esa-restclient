@@ -1,6 +1,7 @@
 package esa.restclient;
 
 import esa.commons.Checks;
+import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpClient;
 import esa.restclient.exec.RestRequestExecutorImpl;
 import esa.restclient.exec.RestRequestExecutor;
@@ -27,7 +28,7 @@ public class RestClientImpl implements RestClient {
 
     @Override
     public RestRequestFacade post(String uri) {
-        return new CompositeRestRequest(target.post(uri), clientConfig, requestExecutor);
+        return new RestCompositeRequest((CompositeRequest) target.post(uri), clientConfig, requestExecutor);
     }
 
     @Override

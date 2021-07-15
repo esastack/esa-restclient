@@ -4,7 +4,6 @@ import esa.commons.http.HttpHeaderNames;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.util.Futures;
 import esa.restclient.exec.InvocationChain;
-import esa.restclient.serializer.TxSerializer;
 
 import java.util.concurrent.CompletionStage;
 
@@ -25,11 +24,7 @@ public class RequestInvocation implements InvocationChain {
                         "Please set the correct contentType or contentTypeFactory");
             }
             executableRequest.target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
-
-            TxSerializer txSerializer = contentType.txSerializer();
-            if (txSerializer != ContentType.NO_SERIALIZE) {
-                executableRequest.target.body(txSerializer.serialize(executableRequest.body()));
-            }
+            executableRequest.fillBody(contentType);
         } catch (Exception e) {
             return Futures.completed(e);
         }

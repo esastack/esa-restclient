@@ -6,7 +6,7 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.CookieImpl;
-import esa.httpclient.core.HttpRequestFacade;
+import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpUri;
 import esa.restclient.exec.RestRequestExecutor;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
@@ -18,15 +18,15 @@ import java.util.concurrent.CompletionStage;
 
 public abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
-    protected final HttpRequestFacade target;
+    protected final CompositeRequest target;
     protected final RestClientConfig clientConfig;
     protected final RestRequestExecutor requestExecutor;
-    private ContentType contentType;
-    private RequestContentTypeFactory requestContentTypeFactory;
+    protected ContentType contentType;
+    protected RequestContentTypeFactory requestContentTypeFactory;
     private ContentType[] acceptTypes;
     private ResponseContentTypeResolver responseContentTypeResolver;
 
-    protected AbstractExecutableRestRequest(HttpRequestFacade request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
+    protected AbstractExecutableRestRequest(CompositeRequest request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "Request must not be null");
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
         Checks.checkNotNull(requestExecutor, "RequestExecutor must not be null");
@@ -101,26 +101,27 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         return requestExecutor.execute(this);
     }
 
-
-    ContentType computeContentType() {
+    final ContentType computeContentType() {
         if (contentType != null) {
             return contentType;
         }
         if (requestContentTypeFactory != null) {
-            ContentType contentType = requestContentTypeFactory.create(headers(), body());
+            ContentType contentType = requestContentTypeFactory.create(headers(), needSerializeEntity());
             if (contentType != null) {
                 return contentType;
             }
         }
         RequestContentTypeFactory[] contentTypeFactories = clientConfig.unmodifiableContentTypeFactory();
         for (RequestContentTypeFactory contentTypeFactory : contentTypeFactories) {
-            ContentType contentType = contentTypeFactory.create(headers(), body());
+            ContentType contentType = contentTypeFactory.create(headers(), needSerializeEntity());
             if (contentType != null) {
                 return contentType;
             }
         }
         return null;
     }
+
+    abstract protected Object needSerializeEntity();
 
     @Override
     public ExecutableRestRequest readTimeout(int readTimeout) {
@@ -307,6 +308,8 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         target.addHeader(name, value);
         return self();
     }
+
+    protected abstract void fillBody(ContentType computedContentType) throws Exception;
 
     @Override
     public ExecutableRestRequest setHeader(CharSequence name, CharSequence value) {

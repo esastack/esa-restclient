@@ -17,6 +17,8 @@ package esa.httpclient.core.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 class Http2OptionsTest {
@@ -27,6 +29,11 @@ class Http2OptionsTest {
         then(options.maxReservedStreams()).isEqualTo(100);
         then(options.maxFrameSize()).isEqualTo(16384);
         then(options.gracefulShutdownTimeoutMillis()).isEqualTo(30_000L);
+        then(options.toString()).isEqualTo(new StringJoiner(", ", Http2Options.class.getSimpleName() + "[", "]")
+                .add("maxReservedStreams=" + 100)
+                .add("maxFrameSize=" + 16384)
+                .add("gracefulShutdownTimeoutMillis=" + 30_000L)
+                .toString());
     }
 
     @Test

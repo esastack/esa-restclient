@@ -17,6 +17,8 @@ package esa.httpclient.core.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 class CallbackThreadPoolOptionsTest {
@@ -37,6 +39,15 @@ class CallbackThreadPoolOptionsTest {
         then(options1.blockingQueueLength()).isEqualTo(3);
         then(options1.keepAliveSeconds()).isEqualTo(4L);
         then(options1.gracefullyShutdownSeconds()).isEqualTo(5L);
+        then(options1.toString()).isEqualTo(
+                new StringJoiner(", ", CallbackThreadPoolOptions.class.getSimpleName() + "[", "]")
+                        .add("coreSize=" + 2)
+                        .add("maxSize=" + 2)
+                        .add("blockingQueueLength=" + 3)
+                        .add("keepAliveSeconds=" + 4L)
+                        .add("gracefullyShutdownSeconds=" + 5L)
+                        .toString()
+        );
 
         // case 2: if maxSize is absent, maxSize = coreSize
         final CallbackThreadPoolOptions options2 = CallbackThreadPoolOptions

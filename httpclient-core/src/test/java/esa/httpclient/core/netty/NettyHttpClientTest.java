@@ -18,17 +18,8 @@ package esa.httpclient.core.netty;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
-import esa.httpclient.core.Context;
-import esa.httpclient.core.HttpClient;
-import esa.httpclient.core.HttpClientBuilder;
-import esa.httpclient.core.HttpRequest;
-import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
-import esa.httpclient.core.config.CacheOptions;
-import esa.httpclient.core.config.CallbackThreadPoolOptions;
-import esa.httpclient.core.config.ChannelPoolOptions;
-import esa.httpclient.core.config.Decompression;
-import esa.httpclient.core.config.SslOptions;
+import esa.httpclient.core.*;
+import esa.httpclient.core.config.*;
 import esa.httpclient.core.exec.RequestExecutor;
 import esa.httpclient.core.metrics.CallbackExecutorMetric;
 import esa.httpclient.core.metrics.IoThreadGroupMetric;
@@ -45,18 +36,17 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class NettyHttpClientTest {
 
@@ -155,6 +145,7 @@ class NettyHttpClientTest {
 
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
         then(client.connectionPoolMetric()).isSameAs(channelPools);
+
     }
 
     @Test
@@ -169,6 +160,15 @@ class NettyHttpClientTest {
         then(metric.groupId()).isEqualTo(id);
         then(metric.childExecutors().size()).isEqualTo(2);
 
+        then(metric.toString()).isEqualTo(new StringJoiner(", ",
+                NettyHttpClient.IoThreadGroupMetricImpl.class.getSimpleName()
+                        + "[", "]")
+                .add("id='" + id + "'")
+                .add("shutdown=" + false)
+                .add("terminated=" + false)
+                .add("childExecutors=" + metric.childExecutors())
+                .toString());
+
         IoThreadMetric childMetric = metric.childExecutors().get(0);
         then(childMetric).isNotNull();
 
@@ -178,6 +178,17 @@ class NettyHttpClientTest {
         then(childMetric.pendingTasks()).isEqualTo(0);
         childMetric.priority();
         then(childMetric.state()).isEqualTo("RUNNABLE");
+
+        then(childMetric.toString()).contains(
+                new StringJoiner(", ", childMetric.getClass().getSimpleName() + "[", "]")
+                        .add("name='" + childMetric.name() + "'")
+                        .add("pendingTasks=" + 0)
+                        .add("maxPendingTasks=" + Integer.MAX_VALUE)
+                        .add("ioRatio=" + 50)
+                        .add("priority=" + childMetric.priority())
+                        .add("state='" + "RUNNABLE" + "'")
+                        .toString());
+
     }
 
     @Test
@@ -198,6 +209,19 @@ class NettyHttpClientTest {
         then(metric.completedTaskCount()).isEqualTo(0);
         then(metric.executorId()).isEqualTo(id);
         then(metric.largestPoolSize()).isEqualTo(0);
+        then(metric.toString()).isEqualTo(new StringJoiner(", ",
+                NettyHttpClient.CallbackExecutorMetricImpl.class.getSimpleName() + "[", "]")
+                .add("id='" + id + "'")
+                .add("coreSize=" + options.coreSize())
+                .add("maxSize=" + options.maxSize())
+                .add("keepAliveSeconds=" + options.keepAliveSeconds())
+                .add("activeCount=" + 0)
+                .add("poolSize=" + 0)
+                .add("largestPoolSize=" + 0)
+                .add("taskCount=" + 0)
+                .add("queueSize=" + 0)
+                .add("completedTaskCount=" + 0)
+                .toString());
     }
 
     @Test
@@ -239,6 +263,7 @@ class NettyHttpClientTest {
         when(underlying1.closeAsync()).thenAnswer(answer -> closeFuture);
         when(underlying2.closeAsync()).thenAnswer(answer -> closeFuture);
 
+        client.applyChannelPoolOptions(preOptions, true);
         final ChannelPoolOptions newOptions = ChannelPoolOptions.options()
                 .connectTimeout(10000)
                 .readTimeout(10000)
@@ -266,13 +291,27 @@ class NettyHttpClientTest {
         then(client.builder.connectTimeout()).isEqualTo(10000);
         then(client.builder.readTimeout()).isEqualTo(10000);
         then(client.builder.connectionPoolWaitingQueueLength()).isEqualTo(2048);
+
+        final ChannelPoolOptions options = ChannelPoolOptions.options()
+                .connectTimeout(1000)
+                .readTimeout(1000)
+                .waitingQueueLength(204)
+                .poolSize(102).build();
+        Map<SocketAddress, ChannelPoolOptions> optionsMap = new HashMap<>();
+        optionsMap.put(address2, options);
+        client.applyChannelPoolOptions(optionsMap);
+        final ChannelPool newChannelPool4 = channelPools.getIfPresent(address2);
+        then(newChannelPool4.options.poolSize()).isEqualTo(102);
+        then(newChannelPool4.options.connectTimeout()).isEqualTo(1000);
+        then(newChannelPool4.options.readTimeout()).isEqualTo(1000);
+        then(newChannelPool4.options.waitingQueueLength()).isEqualTo(204);
     }
 
     @Test
     void testLoadSslEngineFactory() {
         final NettyHttpClient client = new NettyHttpClientImpl(HttpClient
                 .create()
-                .version(HttpVersion.HTTP_2));
+                .version(HttpVersion.HTTP_2), true);
 
         final SslOptions options = SslOptions.options()
                 .sessionTimeout(2000L)

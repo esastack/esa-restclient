@@ -17,6 +17,8 @@ package esa.httpclient.core.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 class NetOptionsTest {
@@ -32,6 +34,16 @@ class NetOptionsTest {
         then(options.soLinger()).isEqualTo(-1);
         then(options.writeBufferHighWaterMark()).isEqualTo(-1);
         then(options.writeBufferLowWaterMark()).isEqualTo(-1);
+        then(options.toString()).isEqualTo(new StringJoiner(", ", NetOptions.class.getSimpleName() + "[", "]")
+                .add("soSndBuf=" + "-1")
+                .add("soRcvBuf=" + "-1")
+                .add("soKeepAlive=" + true)
+                .add("soReuseAddr=" + false)
+                .add("tcpNoDelay=" + true)
+                .add("soLinger=" + "-1")
+                .add("writeBufferHighWaterMark=" + "-1")
+                .add("writeBufferLowWaterMark=" + "-1")
+                .toString());
     }
 
     @Test

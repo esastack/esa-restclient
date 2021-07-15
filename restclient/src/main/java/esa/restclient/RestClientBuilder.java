@@ -5,13 +5,8 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.Reusable;
 import esa.httpclient.core.config.*;
-import esa.httpclient.core.exec.ExpectContinueInterceptor;
-import esa.httpclient.core.exec.FilteringExec;
-import esa.httpclient.core.exec.RedirectInterceptor;
-import esa.httpclient.core.exec.RetryInterceptor;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.httpclient.core.spi.InterceptorFactory;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.interceptor.Interceptor;
 

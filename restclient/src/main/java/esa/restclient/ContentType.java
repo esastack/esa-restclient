@@ -29,16 +29,15 @@ public class ContentType {
         private static final String CAUSE = "The rxSerializer can,t deserialize any object";
 
         @Override
-        public <T> T deSerialize(byte[] data, Type type) throws Exception {
+        public <T> T deSerialize(byte[] data, Type type) {
             throw new UnsupportedOperationException(CAUSE);
         }
 
         @Override
-        public <T> T deSerialize(HttpInputStream inputStream, Type type) throws Exception {
+        public <T> T deSerialize(HttpInputStream inputStream, Type type) {
             throw new UnsupportedOperationException(CAUSE);
         }
     };
-
 
     public ContentType(MediaType mediaType, TxSerializer txSerializer, RxSerializer rxSerializer) {
         Checks.checkNotNull(mediaType, "MediaType must not be null");

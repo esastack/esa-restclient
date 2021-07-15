@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class DelegatingResolverTest {
+class DelegatingResolverTest {
 
     @Test
     void testResolve() throws UnknownHostException {

@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class RequestExecutorImplTest {
+class RequestExecutorImplTest {
 
     @Test
     void testExecute() throws ExecutionException, InterruptedException {

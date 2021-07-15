@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DelegatingResolverTest {
 
     @Test
-    void testResolve() throws UnknownHostException {
+    void testResolve() throws UnknownHostException, ExecutionException, InterruptedException {
         InetAddress inetAddress = InetAddress.getByName("127.0.0.1");
         DelegatingResolver resolver = new DelegatingResolver(
                 GlobalEventExecutor.INSTANCE, inetHost -> CompletableFuture.completedFuture(inetAddress)
         );
         Promise<InetAddress> addressPromise = new DefaultPromise<>(GlobalEventExecutor.INSTANCE);
         resolver.doResolve("111", addressPromise);
-        addressPromise.addListener((address) -> assertEquals(address.getNow(), inetAddress));
+        assertEquals(inetAddress, addressPromise.get());
 
         assertThrows(UnsupportedOperationException.class, () -> resolver.doResolveAll(null, null));
     }

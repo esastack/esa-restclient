@@ -26,7 +26,9 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     private ContentType[] acceptTypes;
     private ResponseContentTypeResolver responseContentTypeResolver;
 
-    protected AbstractExecutableRestRequest(CompositeRequest request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
+    protected AbstractExecutableRestRequest(CompositeRequest request,
+                                            RestClientConfig clientConfig,
+                                            RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "Request must not be null");
         Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
         Checks.checkNotNull(requestExecutor, "RequestExecutor must not be null");
@@ -121,7 +123,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         return null;
     }
 
-    abstract protected Object needSerializeEntity();
+    protected abstract Object needSerializeEntity();
 
     @Override
     public ExecutableRestRequest readTimeout(int readTimeout) {

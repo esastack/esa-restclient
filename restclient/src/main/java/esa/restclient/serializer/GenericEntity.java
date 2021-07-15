@@ -1,4 +1,4 @@
-package esa.restclient.codec;
+package esa.restclient.serializer;
 
 import esa.commons.Checks;
 

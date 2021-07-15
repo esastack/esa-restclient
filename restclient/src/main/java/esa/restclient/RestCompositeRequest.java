@@ -3,7 +3,6 @@ package esa.restclient;
 import esa.commons.Checks;
 import esa.commons.http.Cookie;
 import esa.httpclient.core.CompositeRequest;
-import esa.httpclient.core.HttpRequestFacade;
 import esa.httpclient.core.MultipartRequest;
 import esa.restclient.exec.RestRequestExecutor;
 import esa.restclient.serializer.TxSerializer;
@@ -18,7 +17,9 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
 
     private Object entity;
 
-    public RestCompositeRequest(CompositeRequest request, RestClientConfig clientConfig, RestRequestExecutor requestExecutor) {
+    public RestCompositeRequest(CompositeRequest request,
+                                RestClientConfig clientConfig,
+                                RestRequestExecutor requestExecutor) {
         super(request, clientConfig, requestExecutor);
     }
 
@@ -194,6 +195,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     //TODO 不允许多次设置BODY
     @Override
     public RestFileRequest file(File file) {
+        contentType(ContentType.APPLICATION_OCTET_STREAM);
         target.file();
         return self();
     }
@@ -201,6 +203,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     //TODO 不允许多次设置BODY
     @Override
     public RestMultipartRequest multipart() {
+        contentType(ContentType.MULTIPART_FORM_DATA);
         target.multipart();
         return self();
     }

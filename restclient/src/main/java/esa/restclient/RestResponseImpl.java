@@ -90,10 +90,11 @@ public class RestResponseImpl implements RestResponse {
             if (contentType != null) {
                 return contentType;
             }
-            throw new IllegalStateException("Can,t resolve contentType of response by responseContentTypeResolver of request!" +
-                    "request.uri" + request.uri() +
-                    ",response.status: " + response.status() +
-                    ",response.headers: " + response.headers());
+            throw new IllegalStateException(
+                    "Can,t resolve contentType of response by responseContentTypeResolver of request!" +
+                            "request.uri" + request.uri() +
+                            ",response.status: " + response.status() +
+                            ",response.headers: " + response.headers());
         }
 
         ResponseContentTypeResolver[] responseContentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();

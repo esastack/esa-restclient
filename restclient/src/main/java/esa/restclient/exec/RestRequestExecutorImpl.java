@@ -1,9 +1,7 @@
 package esa.restclient.exec;
 
 import esa.httpclient.core.util.OrderedComparator;
-import esa.restclient.RestClientConfig;
-import esa.restclient.RestRequest;
-import esa.restclient.RestResponse;
+import esa.restclient.*;
 import esa.restclient.interceptor.Interceptor;
 
 import java.util.Collections;
@@ -20,13 +18,12 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
     }
 
     @Override
-    public CompletionStage<RestResponse> execute(RestRequest request, RequestAction requestAction) {
-        return invocationChain.proceed(request, requestAction);
+    public CompletionStage<RestResponse> execute(RestRequest request) {
+        return invocationChain.proceed(request);
     }
 
     private InvocationChain buildInvokeChain(RestClientConfig clientConfig) {
-        InvocationChain invocationChain =
-                (request, requestAction) -> requestAction.doRequest();
+        InvocationChain invocationChain = new RequestInvocation();
 
         List<Interceptor> interceptors = clientConfig.interceptors();
 
@@ -41,5 +38,4 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
         }
         return invocationChain;
     }
-
 }

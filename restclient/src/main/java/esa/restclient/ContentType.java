@@ -2,10 +2,8 @@ package esa.restclient;
 
 import esa.commons.Checks;
 import esa.restclient.serializer.*;
-import sun.dc.pr.PRError;
 
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 
 public class ContentType {
 

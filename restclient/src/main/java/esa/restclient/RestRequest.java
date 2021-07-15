@@ -69,6 +69,4 @@ public interface RestRequest extends Request, RequestConfig {
     ResponseContentTypeResolver responseContentTypeResolver();
 
     Object body();
-
-    RequestContext context();
 }

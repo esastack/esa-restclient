@@ -1,9 +1,9 @@
 package esa.restclient.exec;
 
 import esa.commons.Checks;
-import esa.restclient.interceptor.Interceptor;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponse;
+import esa.restclient.interceptor.Interceptor;
 
 import java.util.concurrent.CompletionStage;
 
@@ -20,8 +20,7 @@ public class InterceptorInvocationChain implements InvocationChain {
     }
 
     @Override
-    public CompletionStage<RestResponse> proceed(RestRequest request, RequestAction requestAction) {
-        return current.proceed(request, requestAction, next);
+    public CompletionStage<RestResponse> proceed(RestRequest request) {
+        return current.proceed(request, next);
     }
-
 }

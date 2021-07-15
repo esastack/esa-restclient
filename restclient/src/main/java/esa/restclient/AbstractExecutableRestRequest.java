@@ -7,12 +7,8 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.HttpRequestFacade;
-import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
-import esa.httpclient.core.util.Futures;
-import esa.restclient.exec.RequestAction;
 import esa.restclient.exec.RestRequestExecutor;
-import esa.restclient.serializer.TxSerializer;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
@@ -25,7 +21,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     protected final HttpRequestFacade target;
     protected final RestClientConfig clientConfig;
     protected final RestRequestExecutor requestExecutor;
-    private final RequestContext context = new RequestContextImpl();
     private ContentType contentType;
     private RequestContentTypeFactory requestContentTypeFactory;
     private ContentType[] acceptTypes;
@@ -103,50 +98,26 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
 
     @Override
     public CompletionStage<RestResponse> execute() {
-        return requestExecutor.execute(this, createRequestAction());
+        return requestExecutor.execute(this);
     }
 
-    private RequestAction createRequestAction() {
-        return () -> {
-            try {
-                ContentType contentType = computeContentType();
-                if (contentType == null) {
-                    throw new IllegalStateException("The request has no contentType," +
-                            "Please set the correct contentType or contentTypeFactory");
-                }
-                target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
 
-                TxSerializer txSerializer = contentType.txSerializer();
-                if (txSerializer != ContentType.NO_SERIALIZE) {
-                    target.body(txSerializer.serialize(body()));
-                }
-            } catch (Exception e) {
-                return Futures.completed(e);
-            }
 
-            return target.execute().thenApply(this::processResponse);
-        };
-    }
-
-    private ContentType computeContentType() {
+    ContentType computeContentType() {
         if (contentType != null) {
             return contentType;
         }
         if (requestContentTypeFactory != null) {
-            ContentType contentType = requestContentTypeFactory.create(headers(), context, body());
+            ContentType contentType = requestContentTypeFactory.create(headers(), body());
             if (contentType != null) {
                 return contentType;
             }
         }
         RequestContentTypeFactory contentTypeFactory = clientConfig.requestContentTypeFactory();
         if (contentTypeFactory != null) {
-            return contentTypeFactory.create(headers(), context, body());
+            return contentTypeFactory.create(headers(), body());
         }
         return null;
-    }
-
-    private RestResponse processResponse(HttpResponse response) {
-        return new RestResponseImpl(this, response, clientConfig);
     }
 
     @Override
@@ -321,11 +292,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     @Override
     public ResponseContentTypeResolver responseContentTypeResolver() {
         return responseContentTypeResolver;
-    }
-
-    @Override
-    public RequestContext context() {
-        return context;
     }
 
     @Override

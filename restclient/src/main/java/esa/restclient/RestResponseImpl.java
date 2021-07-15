@@ -8,12 +8,7 @@ import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Optional;
 
 public class RestResponseImpl implements RestResponse {
 

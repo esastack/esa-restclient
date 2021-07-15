@@ -52,7 +52,7 @@ public interface RestClientConfig {
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
 
-    RequestContentTypeFactory requestContentTypeFactory();
+    RequestContentTypeFactory[] unmodifiableContentTypeFactory();
 
     ResponseContentTypeResolver[] unmodifiableContentTypeResolvers();
 }

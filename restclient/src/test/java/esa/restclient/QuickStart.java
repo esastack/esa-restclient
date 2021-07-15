@@ -1,10 +1,6 @@
 package esa.restclient;
 
 import esa.commons.netty.http.CookieImpl;
-import esa.restclient.serializer.HttpInputStream;
-import esa.restclient.serializer.RxSerializer;
-
-import java.lang.reflect.Type;
 
 public class QuickStart {
 
@@ -17,19 +13,6 @@ public class QuickStart {
 
     private static void sendRestRequest(RestClient restClient) {
         restClient.post(url)
-                .contentType(ContentType.APPLICATION_JSON_UTF8_JACKSON)
-                .accept(ContentType.of(MediaType.TEXT_HTML, new RxSerializer() {
-                    @Override
-                    public String deSerialize(byte[] data, Type type) {
-                        return new String(data);
-                    }
-
-                    @Override
-                    public String deSerialize(HttpInputStream inputStream, Type type) {
-                        //TODO implement the method!
-                        throw new UnsupportedOperationException("The method need to be implemented!");
-                    }
-                }))
                 .cookie(new CookieImpl("aaa", "aaa"))
                 .entity("aaa")
                 .maxRetries(3)

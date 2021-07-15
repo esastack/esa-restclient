@@ -39,7 +39,7 @@ public class ContentType {
         }
     };
 
-    public ContentType(MediaType mediaType, TxSerializer txSerializer, RxSerializer rxSerializer) {
+    private ContentType(MediaType mediaType, TxSerializer txSerializer, RxSerializer rxSerializer) {
         Checks.checkNotNull(mediaType, "MediaType must not be null");
         Checks.checkNotNull(txSerializer, "TxSerializer must not be null");
         Checks.checkNotNull(rxSerializer, "RxSerializer must not be null");
@@ -72,9 +72,23 @@ public class ContentType {
         return new ContentType(mediaType, serializer, serializer);
     }
 
+    public static ContentType of(MediaType mediaType, TxSerializer txSerializer, RxSerializer rxSerializer) {
+        return new ContentType(mediaType, txSerializer, rxSerializer);
+    }
+
     /**
      * Media type for {@code application/json;charset=utf-8}.
      */
-    public static final ContentType APPLICATION_JSON_UTF8_JACKSON
-            = of(MediaType.APPLICATION_JSON_UTF8, new JacksonSerializer());
+    public static final ContentType APPLICATION_JSON
+            = of(MediaType.APPLICATION_JSON, new JacksonSerializer());
+
+    public static final ContentType TEXT_PLAIN =
+            of(MediaType.TEXT_PLAIN, new StringSerializer());
+
+    public static final ContentType APPLICATION_OCTET_STREAM =
+            of(MediaType.APPLICATION_OCTET_STREAM, NO_SERIALIZE, NO_DESERIALIZE);
+
+    public static final ContentType MULTIPART_FORM_DATA =
+            of(MediaType.MULTIPART_FORM_DATA, NO_SERIALIZE, NO_DESERIALIZE);
+
 }

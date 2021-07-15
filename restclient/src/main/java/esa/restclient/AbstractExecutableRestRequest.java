@@ -102,7 +102,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
 
-
     ContentType computeContentType() {
         if (contentType != null) {
             return contentType;
@@ -113,9 +112,12 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
                 return contentType;
             }
         }
-        RequestContentTypeFactory contentTypeFactory = clientConfig.requestContentTypeFactory();
-        if (contentTypeFactory != null) {
-            return contentTypeFactory.create(headers(), body());
+        RequestContentTypeFactory[] contentTypeFactories = clientConfig.unmodifiableContentTypeFactory();
+        for (RequestContentTypeFactory contentTypeFactory : contentTypeFactories) {
+            ContentType contentType = contentTypeFactory.create(headers(), body());
+            if (contentType != null) {
+                return contentType;
+            }
         }
         return null;
     }

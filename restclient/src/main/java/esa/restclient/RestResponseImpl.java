@@ -76,10 +76,11 @@ public class RestResponseImpl implements RestResponse {
             ContentType[] acceptTypes = request.acceptTypes();
             if (acceptTypes != null && acceptTypes.length > 0) {
                 for (ContentType contentType : acceptTypes) {
-                    if (contentType.getMediaType().equals(mediaType)) {
+                    if (contentType.getMediaType().includes(mediaType)) {
                         return contentType;
                     }
                 }
+                throw new IllegalStateException("The contentType of the response is not the expected acceptTypes");
             }
         }
 

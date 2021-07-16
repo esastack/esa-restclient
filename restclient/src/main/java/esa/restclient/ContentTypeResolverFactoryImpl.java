@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ContentTypeResolversFactoryImpl implements ContentTypeResolversFactory {
-    private static final ResponseContentTypeResolver simpleContentTypeResolver
+public class ContentTypeResolverFactoryImpl implements ContentTypeResolverFactory {
+    private static final ContentTypeResolver simpleContentTypeResolver
             = new SimpleContentTypeResolver();
 
     @Override
-    public Collection<ResponseContentTypeResolver> contentTypeResolvers() {
-        List<ResponseContentTypeResolver> resolvers = new ArrayList<>();
+    public Collection<ContentTypeResolver> contentTypeResolvers() {
+        List<ContentTypeResolver> resolvers = new ArrayList<>();
         resolvers.add(simpleContentTypeResolver);
         return resolvers;
     }
 
     //TODO 丰富功能
-    private static final class SimpleContentTypeResolver implements ResponseContentTypeResolver {
+    private static final class SimpleContentTypeResolver implements ContentTypeResolver {
         @Override
         public ContentType resolve(RestRequest request, MediaType mediaType, HttpHeaders responseHeaders, Type type) {
             if (String.class.equals(type)) {

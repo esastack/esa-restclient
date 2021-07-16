@@ -56,7 +56,7 @@ public interface RestRequest extends Request, RequestConfig {
 
     RestRequest contentType(ContentType contentType);
 
-    RestRequest contentType(RequestContentTypeFactory requestContentTypeFactory);
+    RestRequest contentType(ContentTypeProvider contentTypeProvider);
 
     ContentType contentType();
 
@@ -64,7 +64,7 @@ public interface RestRequest extends Request, RequestConfig {
 
     ContentType[] acceptTypes();
 
-    RestRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
+    RestRequest contentTypeResolver(ContentTypeResolver contentTypeResolver);
 
-    ResponseContentTypeResolver responseContentTypeResolver();
+    ContentTypeResolver contentTypeResolver();
 }

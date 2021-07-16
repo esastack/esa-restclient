@@ -147,8 +147,8 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest contentType(RequestContentTypeFactory requestContentTypeFactory) {
-        super.contentType(requestContentTypeFactory);
+    public RestCompositeRequest contentType(ContentTypeProvider contentTypeProvider) {
+        super.contentType(contentTypeProvider);
         return self();
     }
 
@@ -159,8 +159,8 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
-        super.responseContentTypeResolver(responseContentTypeResolver);
+    public RestCompositeRequest contentTypeResolver(ContentTypeResolver contentTypeResolver) {
+        super.contentTypeResolver(contentTypeResolver);
         return self();
     }
 

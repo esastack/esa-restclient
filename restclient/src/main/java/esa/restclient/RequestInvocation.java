@@ -19,10 +19,6 @@ public class RequestInvocation implements InvocationChain {
         AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
         try {
             ContentType contentType = executableRequest.computeContentType();
-            if (contentType == null) {
-                throw new IllegalStateException("The request has no contentType," +
-                        "Please set the correct contentType or contentTypeFactory");
-            }
             executableRequest.target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
             executableRequest.fillBody(contentType);
         } catch (Exception e) {

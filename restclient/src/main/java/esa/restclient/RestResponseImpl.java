@@ -80,30 +80,25 @@ public class RestResponseImpl implements RestResponse {
                         return contentType;
                     }
                 }
-                throw new IllegalStateException("The contentType of the response is not the expected acceptTypes");
             }
         }
 
-        ResponseContentTypeResolver contentTypeResolver = request.responseContentTypeResolver();
+        ContentTypeResolver contentTypeResolver = request.contentTypeResolver();
         if (contentTypeResolver != null) {
             ContentType contentType = contentTypeResolver.resolve(request, mediaType, response.headers(), type);
             if (contentType != null) {
                 return contentType;
             }
-            throw new IllegalStateException(
-                    "Can,t resolve contentType of response by responseContentTypeResolver of request!" +
-                            "request.uri" + request.uri() +
-                            ",response.status: " + response.status() +
-                            ",response.headers: " + response.headers());
         }
 
-        ResponseContentTypeResolver[] responseContentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
-        for (ResponseContentTypeResolver contentTypeResolverTem : responseContentTypeResolvers) {
+        ContentTypeResolver[] contentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
+        for (ContentTypeResolver contentTypeResolverTem : contentTypeResolvers) {
             ContentType contentType = contentTypeResolverTem.resolve(request, mediaType, response.headers(), type);
             if (contentType != null) {
                 return contentType;
             }
         }
+
         throw new IllegalStateException("Can,t resolve contentType of response!" +
                 "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +

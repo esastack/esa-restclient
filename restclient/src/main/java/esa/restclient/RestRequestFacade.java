@@ -33,13 +33,13 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade contentType(ContentType contentType);
 
     @Override
-    RestRequestFacade contentType(RequestContentTypeFactory requestContentTypeFactory);
+    RestRequestFacade contentType(ContentTypeProvider contentTypeProvider);
 
     @Override
     RestRequestFacade accept(ContentType... contentTypes);
 
     @Override
-    RestRequestFacade responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
+    RestRequestFacade contentTypeResolver(ContentTypeResolver contentTypeResolver);
 
     @Override
     RestRequestFacade addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

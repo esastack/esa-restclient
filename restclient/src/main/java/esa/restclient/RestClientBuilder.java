@@ -20,14 +20,14 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private final List<Interceptor> interceptors = new LinkedList<>();
 
-    private final LinkedList<ResponseContentTypeResolver> responseContentTypeResolvers = new LinkedList<>();
+    private final LinkedList<ContentTypeResolver> contentTypeResolvers = new LinkedList<>();
 
-    private final LinkedList<RequestContentTypeFactory> requestContentTypeFactories = new LinkedList<>();
+    private final LinkedList<ContentTypeProvider> contentTypeProviders = new LinkedList<>();
 
-    private RequestContentTypeFactory[] unmodifiableContentTypeFactories
-            = buildUnmodifiableContentTypeFactories();
+    private ContentTypeProvider[] unmodifiableContentTypeProviders
+            = buildUnmodifiableContentTypeProviders();
 
-    private ResponseContentTypeResolver[] unmodifiableContentTypeResolvers
+    private ContentTypeResolver[] unmodifiableContentTypeResolvers
             = buildUnmodifiableContentTypeResolvers();
 
     RestClientBuilder() {
@@ -116,23 +116,23 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public void addRequestContentTypeFactory(RequestContentTypeFactory requestContentTypeFactory) {
-        this.requestContentTypeFactories.add(requestContentTypeFactory);
-        this.unmodifiableContentTypeFactories = buildUnmodifiableContentTypeFactories();
+    public void addContentTypeProvider(ContentTypeProvider contentTypeProvider) {
+        this.contentTypeProviders.add(contentTypeProvider);
+        this.unmodifiableContentTypeProviders = buildUnmodifiableContentTypeProviders();
     }
 
-    public void addRequestContentTypeFactories(List<RequestContentTypeFactory> requestContentTypeFactories) {
-        this.requestContentTypeFactories.addAll(requestContentTypeFactories);
-        this.unmodifiableContentTypeFactories = buildUnmodifiableContentTypeFactories();
+    public void addContentTypeProviders(List<ContentTypeProvider> contentTypeProviders) {
+        this.contentTypeProviders.addAll(contentTypeProviders);
+        this.unmodifiableContentTypeProviders = buildUnmodifiableContentTypeProviders();
     }
 
-    public void addResponseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
-        this.responseContentTypeResolvers.add(responseContentTypeResolver);
+    public void addContentTypeResolver(ContentTypeResolver contentTypeResolver) {
+        this.contentTypeResolvers.add(contentTypeResolver);
         this.unmodifiableContentTypeResolvers = buildUnmodifiableContentTypeResolvers();
     }
 
-    public void addResponseContentTypeResolvers(List<ResponseContentTypeResolver> responseContentTypeResolvers) {
-        this.responseContentTypeResolvers.addAll(responseContentTypeResolvers);
+    public void addContentTypeResolvers(List<ContentTypeResolver> contentTypeResolvers) {
+        this.contentTypeResolvers.addAll(contentTypeResolvers);
         this.unmodifiableContentTypeResolvers = buildUnmodifiableContentTypeResolvers();
     }
 
@@ -279,12 +279,12 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public RequestContentTypeFactory[] unmodifiableContentTypeFactory() {
-        return unmodifiableContentTypeFactories;
+    public ContentTypeProvider[] unmodifiableContentTypeProviders() {
+        return unmodifiableContentTypeProviders;
     }
 
     @Override
-    public ResponseContentTypeResolver[] unmodifiableContentTypeResolvers() {
+    public ContentTypeResolver[] unmodifiableContentTypeResolvers() {
         return unmodifiableContentTypeResolvers;
     }
 
@@ -304,28 +304,28 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
-    private ResponseContentTypeResolver[] buildUnmodifiableContentTypeResolvers() {
-        final List<ResponseContentTypeResolver> contentTypeResolvers0 = new LinkedList<>(responseContentTypeResolvers);
-        contentTypeResolvers0.addAll(ContentTypeResolversFactory.DEFAULT.contentTypeResolvers());
+    private ContentTypeResolver[] buildUnmodifiableContentTypeResolvers() {
+        final List<ContentTypeResolver> contentTypeResolvers0 = new LinkedList<>(contentTypeResolvers);
+        contentTypeResolvers0.addAll(ContentTypeResolverFactory.DEFAULT.contentTypeResolvers());
 
         OrderedComparator.sort(contentTypeResolvers0);
-        return Collections.unmodifiableList(contentTypeResolvers0).toArray(new ResponseContentTypeResolver[0]);
+        return Collections.unmodifiableList(contentTypeResolvers0).toArray(new ContentTypeResolver[0]);
     }
 
-    private RequestContentTypeFactory[] buildUnmodifiableContentTypeFactories() {
-        final List<RequestContentTypeFactory> contentTypeFactories0 = new LinkedList<>(requestContentTypeFactories);
-        contentTypeFactories0.addAll(ContentTypeFactoriesFactory.DEFAULT.contentTypeFactories());
+    private ContentTypeProvider[] buildUnmodifiableContentTypeProviders() {
+        final List<ContentTypeProvider> contentTypeProviders0 = new LinkedList<>(contentTypeProviders);
+        contentTypeProviders0.addAll(ContentTypeProviderFactory.DEFAULT.contentTypeProviders());
 
-        OrderedComparator.sort(contentTypeFactories0);
-        return Collections.unmodifiableList(contentTypeFactories0).toArray(new RequestContentTypeFactory[0]);
+        OrderedComparator.sort(contentTypeProviders0);
+        return Collections.unmodifiableList(contentTypeProviders0).toArray(new ContentTypeProvider[0]);
     }
 
     @Override
     public RestClientBuilder copy() {
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
-        restClientBuilder.addRequestContentTypeFactories(requestContentTypeFactories);
-        restClientBuilder.addResponseContentTypeResolvers(responseContentTypeResolvers);
+        restClientBuilder.addContentTypeProviders(contentTypeProviders);
+        restClientBuilder.addContentTypeResolvers(contentTypeResolvers);
         return restClientBuilder;
     }
 }

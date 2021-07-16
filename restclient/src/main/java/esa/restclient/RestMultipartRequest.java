@@ -46,13 +46,13 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
     RestMultipartRequest contentType(ContentType contentType);
 
     @Override
-    RestMultipartRequest contentType(RequestContentTypeFactory requestContentTypeFactory);
+    RestMultipartRequest contentType(ContentTypeProvider contentTypeProvider);
 
     @Override
     RestMultipartRequest accept(ContentType... contentTypes);
 
     @Override
-    RestMultipartRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver);
+    RestMultipartRequest contentTypeResolver(ContentTypeResolver contentTypeResolver);
 
     @Override
     RestMultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

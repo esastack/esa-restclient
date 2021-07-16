@@ -34,7 +34,7 @@ public class QuickStart {
 
     private static RestClient createClient() {
         return RestClient.create()
-                .addInterceptor((request,  next) -> {
+                .addInterceptor((request, next) -> {
                     System.out.println("----------Intercept1 begin----------");
                     System.out.println(request.headers());
                     return next.proceed(request).thenApply((response) -> {
@@ -44,7 +44,7 @@ public class QuickStart {
                             }
                     );
                 })
-                .addInterceptor((request,  next) -> {
+                .addInterceptor((request, next) -> {
                     System.out.println("----------Intercept2 begin----------");
                     System.out.println(request.headers());
                     return next.proceed(request).thenApply((response) -> {
@@ -55,7 +55,7 @@ public class QuickStart {
 
                     );
                 })
-                .addInterceptor((request,  next) -> {
+                .addInterceptor((request, next) -> {
                     System.out.println("----------Intercept3 begin----------");
                     System.out.println(request.headers());
                     return next.proceed(request).thenApply((response) -> {

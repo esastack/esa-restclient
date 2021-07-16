@@ -22,9 +22,9 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     protected final RestClientConfig clientConfig;
     protected final RestRequestExecutor requestExecutor;
     protected ContentType contentType;
-    protected RequestContentTypeFactory requestContentTypeFactory;
+    protected ContentTypeProvider contentTypeProvider;
     private ContentType[] acceptTypes;
-    private ResponseContentTypeResolver responseContentTypeResolver;
+    private ContentTypeResolver contentTypeResolver;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             RestClientConfig clientConfig,
@@ -107,20 +107,24 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         if (contentType != null) {
             return contentType;
         }
-        if (requestContentTypeFactory != null) {
-            ContentType contentType = requestContentTypeFactory.create(headers(), needSerializeEntity());
+
+        Object entity = needSerializeEntity();
+        if (contentTypeProvider != null) {
+            ContentType contentType = contentTypeProvider.offer(headers(), entity);
             if (contentType != null) {
                 return contentType;
             }
         }
-        RequestContentTypeFactory[] contentTypeFactories = clientConfig.unmodifiableContentTypeFactory();
-        for (RequestContentTypeFactory contentTypeFactory : contentTypeFactories) {
-            ContentType contentType = contentTypeFactory.create(headers(), needSerializeEntity());
+        ContentTypeProvider[] contentTypeProviders = clientConfig.unmodifiableContentTypeProviders();
+        for (ContentTypeProvider contentTypeProvider : contentTypeProviders) {
+            ContentType contentType = contentTypeProvider.offer(headers(), entity);
             if (contentType != null) {
                 return contentType;
             }
         }
-        return null;
+
+        throw new IllegalStateException("The request has no contentType," +
+                "Please set the correct contentType or contentTypeProvider");
     }
 
     protected abstract Object needSerializeEntity();
@@ -255,8 +259,8 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest contentType(RequestContentTypeFactory requestContentTypeFactory) {
-        this.requestContentTypeFactory = requestContentTypeFactory;
+    public ExecutableRestRequest contentType(ContentTypeProvider contentTypeProvider) {
+        this.contentTypeProvider = contentTypeProvider;
         return self();
     }
 
@@ -289,14 +293,14 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest responseContentTypeResolver(ResponseContentTypeResolver responseContentTypeResolver) {
-        this.responseContentTypeResolver = responseContentTypeResolver;
+    public ExecutableRestRequest contentTypeResolver(ContentTypeResolver contentTypeResolver) {
+        this.contentTypeResolver = contentTypeResolver;
         return self();
     }
 
     @Override
-    public ResponseContentTypeResolver responseContentTypeResolver() {
-        return responseContentTypeResolver;
+    public ContentTypeResolver contentTypeResolver() {
+        return contentTypeResolver;
     }
 
     @Override

@@ -28,7 +28,8 @@ public class StringSerializer implements Serializer {
             return new String(data, charset);
         }
 
-        throw new UnsupportedOperationException("StringSerializer only can deSerialize String.class and its parentClass");
+        throw new UnsupportedOperationException("StringSerializer " +
+                "only can deSerialize String.class and its parentClass");
     }
 
     @Override

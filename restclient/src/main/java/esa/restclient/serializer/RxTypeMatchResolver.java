@@ -15,7 +15,8 @@ public class RxTypeMatchResolver implements RxSerializerResolver {
     }
 
     @Override
-    public RxSerializer resolve(RestRequest request, ContentType[] acceptTypes, MediaType mediaType, HttpHeaders responseHeaders, Type type) {
+    public RxSerializer resolve(RestRequest request, ContentType[] acceptTypes,
+                                MediaType mediaType, HttpHeaders responseHeaders, Type type) {
         if (String.class.equals(type)) {
             return StringSerializer.of(mediaType.charset());
         } else if (byte[].class.equals(type)) {

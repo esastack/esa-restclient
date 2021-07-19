@@ -25,7 +25,8 @@ public class DirectlyMatchResolver implements RxSerializerResolver, TxSerializer
     }
 
     @Override
-    public RxSerializer resolve(RestRequest request, ContentType[] acceptTypes, MediaType mediaType, HttpHeaders responseHeaders, Type type) {
+    public RxSerializer resolve(RestRequest request, ContentType[] acceptTypes,
+                                MediaType mediaType, HttpHeaders responseHeaders, Type type) {
         if (acceptTypes != null && acceptTypes.length > 0) {
             for (ContentType contentType : acceptTypes) {
                 if (contentType.getMediaType().includes(mediaType)) {

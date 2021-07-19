@@ -4,6 +4,7 @@ import esa.commons.Checks;
 import esa.restclient.serializer.*;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 public class ContentType {
 
@@ -70,7 +71,7 @@ public class ContentType {
             = of(MediaType.APPLICATION_JSON, new JacksonSerializer());
 
     public static final ContentType TEXT_PLAIN =
-            of(MediaType.TEXT_PLAIN, new StringSerializer());
+            of(MediaType.TEXT_PLAIN, new StringSerializer(StandardCharsets.UTF_8));
 
     public static final ContentType APPLICATION_OCTET_STREAM =
             of(MediaType.APPLICATION_OCTET_STREAM, NO_SERIALIZE, NO_DESERIALIZE);

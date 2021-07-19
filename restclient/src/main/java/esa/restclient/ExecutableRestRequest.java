@@ -1,6 +1,8 @@
 package esa.restclient;
 
 import esa.commons.http.Cookie;
+import esa.restclient.serializer.RxSerializerResolver;
+import esa.restclient.serializer.TxSerializerResolver;
 
 import java.util.List;
 import java.util.Map;
@@ -44,13 +46,7 @@ public interface ExecutableRestRequest extends RestRequest {
     ExecutableRestRequest contentType(ContentType contentType);
 
     @Override
-    ExecutableRestRequest contentType(ContentTypeProvider contentTypeProvider);
-
-    @Override
     ExecutableRestRequest accept(ContentType... contentTypes);
-
-    @Override
-    ExecutableRestRequest contentTypeResolver(ContentTypeResolver contentTypeResolver);
 
     @Override
     ExecutableRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

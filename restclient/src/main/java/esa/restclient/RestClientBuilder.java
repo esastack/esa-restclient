@@ -9,6 +9,10 @@ import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.interceptor.Interceptor;
+import esa.restclient.serializer.RxSerializerResolver;
+import esa.restclient.serializer.RxSerializerResolverFactory;
+import esa.restclient.serializer.TxSerializerResolver;
+import esa.restclient.serializer.TxSerializerResolverFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -20,15 +24,15 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private final List<Interceptor> interceptors = new LinkedList<>();
 
-    private final LinkedList<ContentTypeResolver> contentTypeResolvers = new LinkedList<>();
+    private final LinkedList<RxSerializerResolver> rxSerializerResolvers = new LinkedList<>();
 
-    private final LinkedList<ContentTypeProvider> contentTypeProviders = new LinkedList<>();
+    private final LinkedList<TxSerializerResolver> txSerializerResolvers = new LinkedList<>();
 
-    private ContentTypeProvider[] unmodifiableContentTypeProviders
-            = buildUnmodifiableContentTypeProviders();
+    private TxSerializerResolver[] unmodifiableTxSerializerResolvers
+            = buildUnmodifiableTxSerializerResolvers();
 
-    private ContentTypeResolver[] unmodifiableContentTypeResolvers
-            = buildUnmodifiableContentTypeResolvers();
+    private RxSerializerResolver[] unmodifiableRxSerializerResolvers
+            = buildUnmodifiableRxSerializerResolvers();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -116,24 +120,24 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public void addContentTypeProvider(ContentTypeProvider contentTypeProvider) {
-        this.contentTypeProviders.add(contentTypeProvider);
-        this.unmodifiableContentTypeProviders = buildUnmodifiableContentTypeProviders();
+    public void addTxSerializerResolver(TxSerializerResolver txSerializerResolver) {
+        this.txSerializerResolvers.add(txSerializerResolver);
+        this.unmodifiableTxSerializerResolvers = buildUnmodifiableTxSerializerResolvers();
     }
 
-    public void addContentTypeProviders(List<ContentTypeProvider> contentTypeProviders) {
-        this.contentTypeProviders.addAll(contentTypeProviders);
-        this.unmodifiableContentTypeProviders = buildUnmodifiableContentTypeProviders();
+    public void addTxSerializerResolvers(List<TxSerializerResolver> txSerializerResolvers) {
+        this.txSerializerResolvers.addAll(txSerializerResolvers);
+        this.unmodifiableTxSerializerResolvers = buildUnmodifiableTxSerializerResolvers();
     }
 
-    public void addContentTypeResolver(ContentTypeResolver contentTypeResolver) {
-        this.contentTypeResolvers.add(contentTypeResolver);
-        this.unmodifiableContentTypeResolvers = buildUnmodifiableContentTypeResolvers();
+    public void addRxSerializerResolver(RxSerializerResolver rxSerializerResolver) {
+        this.rxSerializerResolvers.add(rxSerializerResolver);
+        this.unmodifiableRxSerializerResolvers = buildUnmodifiableRxSerializerResolvers();
     }
 
-    public void addContentTypeResolvers(List<ContentTypeResolver> contentTypeResolvers) {
-        this.contentTypeResolvers.addAll(contentTypeResolvers);
-        this.unmodifiableContentTypeResolvers = buildUnmodifiableContentTypeResolvers();
+    public void addRxSerializerResolvers(List<RxSerializerResolver> rxSerializerResolvers) {
+        this.rxSerializerResolvers.addAll(rxSerializerResolvers);
+        this.unmodifiableRxSerializerResolvers = buildUnmodifiableRxSerializerResolvers();
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -279,13 +283,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public ContentTypeProvider[] unmodifiableContentTypeProviders() {
-        return unmodifiableContentTypeProviders;
+    public TxSerializerResolver[] unmodifiableTxSerializerResolvers() {
+        return unmodifiableTxSerializerResolvers;
     }
 
     @Override
-    public ContentTypeResolver[] unmodifiableContentTypeResolvers() {
-        return unmodifiableContentTypeResolvers;
+    public RxSerializerResolver[] unmodifiableRxSerializerResolvers() {
+        return unmodifiableRxSerializerResolvers;
     }
 
     private RestClientBuilder self() {
@@ -304,28 +308,28 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
-    private ContentTypeResolver[] buildUnmodifiableContentTypeResolvers() {
-        final List<ContentTypeResolver> contentTypeResolvers0 = new LinkedList<>(contentTypeResolvers);
-        contentTypeResolvers0.addAll(ContentTypeResolverFactory.DEFAULT.contentTypeResolvers());
+    private RxSerializerResolver[] buildUnmodifiableRxSerializerResolvers() {
+        final List<RxSerializerResolver> contentTypeResolvers0 = new LinkedList<>(rxSerializerResolvers);
+        contentTypeResolvers0.addAll(RxSerializerResolverFactory.DEFAULT.rxSerializerResolvers());
 
         OrderedComparator.sort(contentTypeResolvers0);
-        return Collections.unmodifiableList(contentTypeResolvers0).toArray(new ContentTypeResolver[0]);
+        return Collections.unmodifiableList(contentTypeResolvers0).toArray(new RxSerializerResolver[0]);
     }
 
-    private ContentTypeProvider[] buildUnmodifiableContentTypeProviders() {
-        final List<ContentTypeProvider> contentTypeProviders0 = new LinkedList<>(contentTypeProviders);
-        contentTypeProviders0.addAll(ContentTypeProviderFactory.DEFAULT.contentTypeProviders());
+    private TxSerializerResolver[] buildUnmodifiableTxSerializerResolvers() {
+        final List<TxSerializerResolver> RXSerializerProviders0 = new LinkedList<>(txSerializerResolvers);
+        RXSerializerProviders0.addAll(TxSerializerResolverFactory.DEFAULT.txSerializerResolvers());
 
-        OrderedComparator.sort(contentTypeProviders0);
-        return Collections.unmodifiableList(contentTypeProviders0).toArray(new ContentTypeProvider[0]);
+        OrderedComparator.sort(RXSerializerProviders0);
+        return Collections.unmodifiableList(RXSerializerProviders0).toArray(new TxSerializerResolver[0]);
     }
 
     @Override
     public RestClientBuilder copy() {
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
-        restClientBuilder.addContentTypeProviders(contentTypeProviders);
-        restClientBuilder.addContentTypeResolvers(contentTypeResolvers);
+        restClientBuilder.addTxSerializerResolvers(txSerializerResolvers);
+        restClientBuilder.addRxSerializerResolvers(rxSerializerResolvers);
         return restClientBuilder;
     }
 }

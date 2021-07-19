@@ -28,13 +28,7 @@ public interface RestEntityRequest extends ExecutableRestRequest {
     RestEntityRequest contentType(ContentType contentType);
 
     @Override
-    RestEntityRequest contentType(ContentTypeProvider contentTypeProvider);
-
-    @Override
     RestEntityRequest accept(ContentType... contentTypes);
-
-    @Override
-    RestEntityRequest contentTypeResolver(ContentTypeResolver contentTypeResolver);
 
     @Override
     RestEntityRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

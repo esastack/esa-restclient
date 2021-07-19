@@ -3,6 +3,8 @@ package esa.restclient;
 import esa.commons.http.Cookie;
 import esa.httpclient.core.Request;
 import esa.httpclient.core.RequestConfig;
+import esa.restclient.serializer.RxSerializerResolver;
+import esa.restclient.serializer.TxSerializerResolver;
 
 import java.util.List;
 import java.util.Map;
@@ -56,15 +58,9 @@ public interface RestRequest extends Request, RequestConfig {
 
     RestRequest contentType(ContentType contentType);
 
-    RestRequest contentType(ContentTypeProvider contentTypeProvider);
-
     ContentType contentType();
 
     RestRequest accept(ContentType... contentTypes);
 
     ContentType[] acceptTypes();
-
-    RestRequest contentTypeResolver(ContentTypeResolver contentTypeResolver);
-
-    ContentTypeResolver contentTypeResolver();
 }

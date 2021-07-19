@@ -6,6 +6,9 @@ import java.nio.charset.StandardCharsets;
 
 public class StringSerializer implements Serializer {
 
+    public static final StringSerializer UTF_8_INSTANCE
+            = new StringSerializer(StandardCharsets.UTF_8);
+
     private final Charset charset;
 
     public StringSerializer(Charset charset) {
@@ -35,9 +38,17 @@ public class StringSerializer implements Serializer {
         }
 
         if (target instanceof String) {
-            return ((String) target).getBytes(StandardCharsets.UTF_8);
+            return ((String) target).getBytes(charset);
         }
 
         throw new UnsupportedOperationException("StringSerializer only can serialize String.class and its subClass");
+    }
+
+
+    public static StringSerializer of(Charset charsets) {
+        if (charsets == null || StandardCharsets.UTF_8.equals(charsets)) {
+            return UTF_8_INSTANCE;
+        }
+        return new StringSerializer(charsets);
     }
 }

@@ -147,20 +147,8 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest contentType(ContentTypeProvider contentTypeProvider) {
-        super.contentType(contentTypeProvider);
-        return self();
-    }
-
-    @Override
     public RestCompositeRequest accept(ContentType... contentTypes) {
         super.accept(contentTypes);
-        return self();
-    }
-
-    @Override
-    public RestCompositeRequest contentTypeResolver(ContentTypeResolver contentTypeResolver) {
-        super.contentTypeResolver(contentTypeResolver);
         return self();
     }
 
@@ -189,6 +177,14 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     public RestEntityRequest entity(Object entity) {
         Checks.checkNotNull(entity, "Entity must nor be null");
         this.entity = entity;
+        Class<?> entityClass = entity.getClass();
+        if (String.class.equals(entityClass)) {
+            contentType(ContentType.TEXT_PLAIN);
+        } else if (byte[].class.equals(entityClass)) {
+            contentType(ContentType.APPLICATION_OCTET_STREAM);
+        } else {
+            contentType(ContentType.APPLICATION_JSON);
+        }
         return self();
     }
 
@@ -206,17 +202,6 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         contentType(ContentType.MULTIPART_FORM_DATA);
         target.multipart();
         return self();
-    }
-
-    @Override
-    protected void fillBody(ContentType computedContentType) throws Exception {
-        if (entity == null) {
-            return;
-        }
-        TxSerializer txSerializer = computedContentType.txSerializer();
-        if (txSerializer != ContentType.NO_SERIALIZE) {
-            this.target.body(txSerializer.serialize(entity));
-        }
     }
 
     private RestCompositeRequest self() {

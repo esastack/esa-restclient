@@ -1,6 +1,5 @@
 package esa.restclient;
 
-import esa.commons.http.HttpHeaderNames;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.util.Futures;
 import esa.restclient.exec.InvocationChain;
@@ -19,9 +18,7 @@ public class RequestInvocation implements InvocationChain {
 
         final AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
         try {
-            ContentType contentType = executableRequest.computeContentType();
-            executableRequest.target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());
-            executableRequest.fillBody(contentType);
+            executableRequest.fillBody();
         } catch (Exception e) {
             return Futures.completed(e);
         }

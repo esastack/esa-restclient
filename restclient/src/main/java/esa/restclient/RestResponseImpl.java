@@ -6,6 +6,8 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
+import esa.restclient.serializer.RxSerializer;
+import esa.restclient.serializer.RxSerializerResolver;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
@@ -55,19 +57,17 @@ public class RestResponseImpl implements RestResponse {
 
     @Override
     public <T> T bodyToEntity(Class<T> entityClass) throws Exception {
-        return resolveContentType(request, response, entityClass)
-                .rxSerializer()
+        return computeRxSerializer(request, response, entityClass)
                 .deSerialize(response.body().getByteBuf().array(), entityClass);
     }
 
     @Override
     public <T> T bodyToEntity(Type type) throws Exception {
-        return resolveContentType(request, response, type)
-                .rxSerializer()
+        return computeRxSerializer(request, response, type)
                 .deSerialize(response.body().getByteBuf().array(), type);
     }
 
-    private ContentType resolveContentType(RestRequest request, HttpResponse response, Type type) {
+    private RxSerializer computeRxSerializer(RestRequest request, HttpResponse response, Type type) {
         final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
         MediaType mediaType = null;
         if (StringUtils.isNotBlank(mediaTypeValue)) {
@@ -75,28 +75,13 @@ public class RestResponseImpl implements RestResponse {
         }
 
         final ContentType[] acceptTypes = request.acceptTypes();
-        if (acceptTypes != null && acceptTypes.length > 0) {
-            for (ContentType contentType : acceptTypes) {
-                if (contentType.getMediaType().includes(mediaType)) {
-                    return contentType;
-                }
-            }
-        }
-
         final HttpHeaders headers = response.headers();
-        final ContentTypeResolver contentTypeResolver = request.contentTypeResolver();
-        if (contentTypeResolver != null) {
-            ContentType contentType = contentTypeResolver.resolve(request, mediaType, headers, type);
-            if (contentType != null) {
-                return contentType;
-            }
-        }
 
-        final ContentTypeResolver[] contentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
-        for (ContentTypeResolver contentTypeResolverTem : contentTypeResolvers) {
-            ContentType contentType = contentTypeResolverTem.resolve(request, mediaType, headers, type);
-            if (contentType != null) {
-                return contentType;
+        final RxSerializerResolver[] rxSerializerFactories = clientConfig.unmodifiableRxSerializerResolvers();
+        for (RxSerializerResolver rxSerializerResolverTem : rxSerializerFactories) {
+            RxSerializer rxSerializer = rxSerializerResolverTem.resolve(request, acceptTypes, mediaType, headers, type);
+            if (rxSerializer != null) {
+                return rxSerializer;
             }
         }
 

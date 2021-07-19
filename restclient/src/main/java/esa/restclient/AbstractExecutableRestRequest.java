@@ -9,6 +9,8 @@ import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpUri;
 import esa.restclient.exec.RestRequestExecutor;
+import esa.restclient.serializer.TxSerializer;
+import esa.restclient.serializer.TxSerializerResolver;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
@@ -22,9 +24,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     protected final RestClientConfig clientConfig;
     protected final RestRequestExecutor requestExecutor;
     protected ContentType contentType;
-    protected ContentTypeProvider contentTypeProvider;
     private ContentType[] acceptTypes;
-    private ContentTypeResolver contentTypeResolver;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             RestClientConfig clientConfig,
@@ -103,30 +103,28 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         return requestExecutor.execute(this);
     }
 
-    final ContentType computeContentType() {
-        if (contentType != null) {
-            return contentType;
-        }
+    private TxSerializer computeTxSerializer() {
+
         final HttpHeaders headers = headers();
         final Object entity = needSerializeEntity();
 
-        if (contentTypeProvider != null) {
-            ContentType contentType = contentTypeProvider.offer(headers, entity);
-            if (contentType != null) {
-                return contentType;
+        final TxSerializerResolver[] txSerializerResolvers = clientConfig.unmodifiableTxSerializerResolvers();
+        for (TxSerializerResolver txSerializerResolver : txSerializerResolvers) {
+            TxSerializer txSerializer = txSerializerResolver.resolve(headers, contentType, entity);
+            if (txSerializer != null) {
+                return txSerializer;
             }
         }
 
-        final ContentTypeProvider[] contentTypeProviders = clientConfig.unmodifiableContentTypeProviders();
-        for (ContentTypeProvider contentTypeProvider : contentTypeProviders) {
-            ContentType contentType = contentTypeProvider.offer(headers, entity);
-            if (contentType != null) {
-                return contentType;
-            }
-        }
+        throw new IllegalStateException("The request has no rxSerializer," +
+                "Please set the correct contentType or txSerializerResolver");
+    }
 
-        throw new IllegalStateException("The request has no contentType," +
-                "Please set the correct contentType or contentTypeProvider");
+    final void fillBody() throws Exception {
+        TxSerializer txSerializer = computeTxSerializer();
+        if (txSerializer != ContentType.NO_SERIALIZE) {
+            this.target.body(txSerializer.serialize(needSerializeEntity()));
+        }
     }
 
     protected abstract Object needSerializeEntity();
@@ -257,12 +255,10 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     @Override
     public ExecutableRestRequest contentType(ContentType contentType) {
         this.contentType = contentType;
-        return self();
-    }
-
-    @Override
-    public ExecutableRestRequest contentType(ContentTypeProvider contentTypeProvider) {
-        this.contentTypeProvider = contentTypeProvider;
+        if (contentType != null) {
+            headers().set(HttpHeaderNames.CONTENT_TYPE,
+                    contentType.getMediaType().toString());
+        }
         return self();
     }
 
@@ -295,17 +291,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public ExecutableRestRequest contentTypeResolver(ContentTypeResolver contentTypeResolver) {
-        this.contentTypeResolver = contentTypeResolver;
-        return self();
-    }
-
-    @Override
-    public ContentTypeResolver contentTypeResolver() {
-        return contentTypeResolver;
-    }
-
-    @Override
     public ExecutableRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
         target.addHeaders(headers);
         return self();
@@ -316,8 +301,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         target.addHeader(name, value);
         return self();
     }
-
-    protected abstract void fillBody(ContentType computedContentType) throws Exception;
 
     @Override
     public ExecutableRestRequest setHeader(CharSequence name, CharSequence value) {

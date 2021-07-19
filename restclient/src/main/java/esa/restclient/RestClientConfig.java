@@ -5,6 +5,8 @@ import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.restclient.interceptor.Interceptor;
+import esa.restclient.serializer.RxSerializerResolver;
+import esa.restclient.serializer.TxSerializerResolver;
 
 import java.util.List;
 
@@ -52,7 +54,7 @@ public interface RestClientConfig {
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
 
-    ContentTypeProvider[] unmodifiableContentTypeProviders();
+    TxSerializerResolver[] unmodifiableTxSerializerResolvers();
 
-    ContentTypeResolver[] unmodifiableContentTypeResolvers();
+    RxSerializerResolver[] unmodifiableRxSerializerResolvers();
 }

@@ -68,32 +68,33 @@ public class RestResponseImpl implements RestResponse {
     }
 
     private ContentType resolveContentType(RestRequest request, HttpResponse response, Type type) {
-
-        String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
+        final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
         MediaType mediaType = null;
         if (StringUtils.isNotBlank(mediaTypeValue)) {
             mediaType = MediaType.parseMediaType(mediaTypeValue);
-            ContentType[] acceptTypes = request.acceptTypes();
-            if (acceptTypes != null && acceptTypes.length > 0) {
-                for (ContentType contentType : acceptTypes) {
-                    if (contentType.getMediaType().includes(mediaType)) {
-                        return contentType;
-                    }
+        }
+
+        final ContentType[] acceptTypes = request.acceptTypes();
+        if (acceptTypes != null && acceptTypes.length > 0) {
+            for (ContentType contentType : acceptTypes) {
+                if (contentType.getMediaType().includes(mediaType)) {
+                    return contentType;
                 }
             }
         }
 
-        ContentTypeResolver contentTypeResolver = request.contentTypeResolver();
+        final HttpHeaders headers = response.headers();
+        final ContentTypeResolver contentTypeResolver = request.contentTypeResolver();
         if (contentTypeResolver != null) {
-            ContentType contentType = contentTypeResolver.resolve(request, mediaType, response.headers(), type);
+            ContentType contentType = contentTypeResolver.resolve(request, mediaType, headers, type);
             if (contentType != null) {
                 return contentType;
             }
         }
 
-        ContentTypeResolver[] contentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
+        final ContentTypeResolver[] contentTypeResolvers = clientConfig.unmodifiableContentTypeResolvers();
         for (ContentTypeResolver contentTypeResolverTem : contentTypeResolvers) {
-            ContentType contentType = contentTypeResolverTem.resolve(request, mediaType, response.headers(), type);
+            ContentType contentType = contentTypeResolverTem.resolve(request, mediaType, headers, type);
             if (contentType != null) {
                 return contentType;
             }
@@ -102,6 +103,6 @@ public class RestResponseImpl implements RestResponse {
         throw new IllegalStateException("Can,t resolve contentType of response!" +
                 "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +
-                ",response.headers: " + response.headers());
+                ",response.headers: " + headers);
     }
 }

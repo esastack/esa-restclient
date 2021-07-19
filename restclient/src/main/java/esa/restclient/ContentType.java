@@ -18,11 +18,6 @@ public class ContentType {
         public byte[] serialize(Object target) {
             throw new UnsupportedOperationException(CAUSE);
         }
-
-        @Override
-        public void serialize(Object target, HttpOutputStream outputStream) {
-            throw new UnsupportedOperationException(CAUSE);
-        }
     };
 
     public static final RxSerializer NO_DESERIALIZE = new RxSerializer() {
@@ -30,11 +25,6 @@ public class ContentType {
 
         @Override
         public <T> T deSerialize(byte[] data, Type type) {
-            throw new UnsupportedOperationException(CAUSE);
-        }
-
-        @Override
-        public <T> T deSerialize(HttpInputStream inputStream, Type type) {
             throw new UnsupportedOperationException(CAUSE);
         }
     };
@@ -76,9 +66,6 @@ public class ContentType {
         return new ContentType(mediaType, txSerializer, rxSerializer);
     }
 
-    /**
-     * Media type for {@code application/json;charset=utf-8}.
-     */
     public static final ContentType APPLICATION_JSON
             = of(MediaType.APPLICATION_JSON, new JacksonSerializer());
 

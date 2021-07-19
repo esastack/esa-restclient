@@ -50,33 +50,11 @@ public class ProtoBufSerializer implements Serializer {
                 target.getClass().getName());
     }
 
-    @Override
-    public void serialize(Object target, HttpOutputStream outputStream) throws Exception {
-        if (target == null) {
-            return;
-        }
-        if (target instanceof Message) {
-            Message message = (Message) target;
-            message.writeTo(outputStream);
-            return;
-        }
-        throw new UnsupportedOperationException("Could not serialize class: " +
-                target.getClass().getName());
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> T deSerialize(byte[] data, Type type) throws Exception {
         Message.Builder builder = getMessageBuilder((Class<? extends Message>) type);
         builder.mergeFrom(data, extensionRegistry);
-        return (T) builder.build();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T deSerialize(HttpInputStream inputStream, Type type) throws Exception {
-        Message.Builder builder = getMessageBuilder((Class<? extends Message>) type);
-        builder.mergeFrom(inputStream, extensionRegistry);
         return (T) builder.build();
     }
 

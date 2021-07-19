@@ -7,18 +7,18 @@ import java.util.Collection;
 import java.util.List;
 
 public class ContentTypeProviderFactoryImpl implements ContentTypeProviderFactory {
-    private static final ContentTypeProvider simpleContentTypeProvider
-            = new SimpleContentTypeProvider();
+    private static final ContentTypeProvider defaultContentTypeProvider
+            = new DefaultContentTypeProvider();
 
     @Override
     public Collection<ContentTypeProvider> contentTypeProviders() {
         List<ContentTypeProvider> providers = new ArrayList<>();
-        providers.add(simpleContentTypeProvider);
+        providers.add(defaultContentTypeProvider);
         return providers;
     }
 
     //TODO 丰富功能
-    private static final class SimpleContentTypeProvider implements ContentTypeProvider {
+    private static final class DefaultContentTypeProvider implements ContentTypeProvider {
         @Override
         public ContentType offer(HttpHeaders requestHeaders, Object entity) {
             if (entity == null) {

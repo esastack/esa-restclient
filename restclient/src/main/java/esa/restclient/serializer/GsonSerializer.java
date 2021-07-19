@@ -43,18 +43,7 @@ public class GsonSerializer implements JsonSerializer {
     }
 
     @Override
-    public void serialize(Object target, HttpOutputStream outputStream) throws Exception {
-        outputStream.write(gson.toJson(target).getBytes(StandardCharsets.UTF_8));
-    }
-
-    @Override
     public <T> T deSerialize(byte[] data, Type type) {
         return gson.fromJson(new String(data, StandardCharsets.UTF_8), type);
-    }
-
-    @Override
-    public <T> T deSerialize(HttpInputStream inputStream, Type type) throws Exception {
-
-        return gson.fromJson(inputStream.readString(StandardCharsets.UTF_8), type);
     }
 }

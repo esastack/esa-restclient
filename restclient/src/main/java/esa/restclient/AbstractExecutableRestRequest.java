@@ -107,17 +107,19 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         if (contentType != null) {
             return contentType;
         }
+        final HttpHeaders headers = headers();
+        final Object entity = needSerializeEntity();
 
-        Object entity = needSerializeEntity();
         if (contentTypeProvider != null) {
-            ContentType contentType = contentTypeProvider.offer(headers(), entity);
+            ContentType contentType = contentTypeProvider.offer(headers, entity);
             if (contentType != null) {
                 return contentType;
             }
         }
-        ContentTypeProvider[] contentTypeProviders = clientConfig.unmodifiableContentTypeProviders();
+
+        final ContentTypeProvider[] contentTypeProviders = clientConfig.unmodifiableContentTypeProviders();
         for (ContentTypeProvider contentTypeProvider : contentTypeProviders) {
-            ContentType contentType = contentTypeProvider.offer(headers(), entity);
+            ContentType contentType = contentTypeProvider.offer(headers, entity);
             if (contentType != null) {
                 return contentType;
             }

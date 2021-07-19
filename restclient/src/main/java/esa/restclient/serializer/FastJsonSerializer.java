@@ -34,17 +34,7 @@ public class FastJsonSerializer implements JsonSerializer {
     }
 
     @Override
-    public void serialize(Object target, HttpOutputStream outputStream) throws Exception {
-        JSON.writeJSONString(outputStream, target);
-    }
-
-    @Override
     public <T> T deSerialize(byte[] data, Type type) {
         return JSON.parseObject(data, type);
-    }
-
-    @Override
-    public <T> T deSerialize(HttpInputStream inputStream, Type type) throws Exception {
-        return JSON.parseObject(inputStream, type);
     }
 }

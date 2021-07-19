@@ -30,14 +30,4 @@ public interface TxSerializer {
      */
     byte[] serialize(Object target) throws Exception;
 
-    /**
-     * serialize the object to byte array
-     *
-     * @param target       target
-     * @param outputStream out
-     *
-     * @throws Exception error
-     */
-    void serialize(Object target, HttpOutputStream outputStream) throws Exception;
-
 }

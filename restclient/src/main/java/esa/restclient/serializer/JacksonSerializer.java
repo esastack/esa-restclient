@@ -52,18 +52,8 @@ public class JacksonSerializer implements JsonSerializer {
     }
 
     @Override
-    public void serialize(Object target, HttpOutputStream outputStream) throws Exception {
-        objectMapper.writeValue((OutputStream) outputStream, target);
-    }
-
-    @Override
     public <T> T deSerialize(byte[] data, Type type) throws IOException {
         return objectMapper.readValue(data, getJavaType(type));
-    }
-
-    @Override
-    public <T> T deSerialize(HttpInputStream inputStream, Type type) throws Exception {
-        return objectMapper.readValue((InputStream) inputStream, getJavaType(type));
     }
 
     public static synchronized ObjectMapper getDefaultMapper() {

@@ -12,11 +12,12 @@ public class RequestInvocation implements InvocationChain {
     @Override
     public CompletionStage<RestResponse> proceed(RestRequest request) {
         if (!(request instanceof AbstractExecutableRestRequest)) {
-            throw new IllegalStateException("Request is not of the expected type!" +
+            throw new IllegalStateException("The type of the request is not AbstractExecutableRestRequest!" +
                     "RequestType:" + request.getClass() + "," +
                     "Request:" + request);
         }
-        AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
+
+        final AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
         try {
             ContentType contentType = executableRequest.computeContentType();
             executableRequest.target.setHeader(HttpHeaderNames.CONTENT_TYPE, contentType.getMediaType().toString());

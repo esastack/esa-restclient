@@ -11,12 +11,6 @@ public class StringSerializer implements Serializer {
         return new String(data, StandardCharsets.UTF_8);
     }
 
-    @Override
-    public <T> T deSerialize(HttpInputStream inputStream, Type type) throws Exception {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
-    }
-
     //TODO 丰富功能
     @Override
     public byte[] serialize(Object target) {
@@ -25,11 +19,5 @@ public class StringSerializer implements Serializer {
         }
 
         return ((String) target).getBytes(StandardCharsets.UTF_8);
-    }
-
-    @Override
-    public void serialize(Object target, HttpOutputStream outputStream) throws Exception {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
     }
 }

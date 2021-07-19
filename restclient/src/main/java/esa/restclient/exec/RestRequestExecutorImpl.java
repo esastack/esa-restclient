@@ -1,10 +1,12 @@
 package esa.restclient.exec;
 
 import esa.httpclient.core.util.OrderedComparator;
-import esa.restclient.*;
+import esa.restclient.RequestInvocation;
+import esa.restclient.RestClientConfig;
+import esa.restclient.RestRequest;
+import esa.restclient.RestResponse;
 import esa.restclient.interceptor.Interceptor;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -32,9 +34,8 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
         }
         final List<Interceptor> interceptors0 = new LinkedList<>(interceptors);
         OrderedComparator.sort(interceptors0);
-        Interceptor[] orderedInterceptors = Collections.unmodifiableList(interceptors0).toArray(new Interceptor[0]);
-        for (int i = orderedInterceptors.length - 1; i >= 0; i--) {
-            invocationChain = new InterceptorInvocationChain(orderedInterceptors[i], invocationChain);
+        for (int i = interceptors0.size() - 1; i >= 0; i--) {
+            invocationChain = new InterceptorInvocationChain(interceptors0.get(i), invocationChain);
         }
         return invocationChain;
     }

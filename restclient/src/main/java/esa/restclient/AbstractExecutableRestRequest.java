@@ -10,7 +10,7 @@ import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpUri;
 import esa.restclient.exec.RestRequestExecutor;
 import esa.restclient.serializer.TxSerializer;
-import esa.restclient.serializer.TxSerializerResolver;
+import esa.restclient.serializer.TxSerializerSelector;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
@@ -108,22 +108,27 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         final HttpHeaders headers = headers();
         final Object entity = needSerializeEntity();
 
-        final TxSerializerResolver[] txSerializerResolvers = clientConfig.unmodifiableTxSerializerResolvers();
-        for (TxSerializerResolver txSerializerResolver : txSerializerResolvers) {
-            TxSerializer txSerializer = txSerializerResolver.resolve(headers, contentType, entity);
+        final TxSerializerSelector[] txSerializerSelectors = clientConfig.unmodifiableTxSerializerSelectors();
+        for (TxSerializerSelector txSerializerSelector : txSerializerSelectors) {
+            TxSerializer txSerializer = txSerializerSelector.select(headers, contentType, entity);
             if (txSerializer != null) {
                 return txSerializer;
             }
         }
 
         throw new IllegalStateException("The request has no rxSerializer," +
-                "Please set the correct contentType or txSerializerResolver");
+                "Please set the correct contentType or txSerializerMatcher");
     }
 
     final void fillBody() throws Exception {
         TxSerializer txSerializer = computeTxSerializer();
+        MediaType mediaType = null;
+        if (contentType != null) {
+            mediaType = contentType.mediaType();
+        }
+
         if (txSerializer != ContentType.NO_SERIALIZE) {
-            this.target.body(txSerializer.serialize(needSerializeEntity()));
+            this.target.body(txSerializer.serialize(mediaType, headers(), needSerializeEntity()));
         }
     }
 
@@ -257,7 +262,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         this.contentType = contentType;
         if (contentType != null) {
             headers().set(HttpHeaderNames.CONTENT_TYPE,
-                    contentType.getMediaType().toString());
+                    contentType.mediaType().toString());
         }
         return self();
     }
@@ -278,7 +283,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
             if (i > 0) {
                 acceptBuilder.append(",");
             }
-            acceptBuilder.append(acceptTypes[i].getMediaType().toString());
+            acceptBuilder.append(acceptTypes[i].mediaType().toString());
         }
         headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
         this.acceptTypes = acceptTypes;

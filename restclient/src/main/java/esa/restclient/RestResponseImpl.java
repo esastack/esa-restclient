@@ -7,7 +7,7 @@ import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.serializer.RxSerializer;
-import esa.restclient.serializer.RxSerializerResolver;
+import esa.restclient.serializer.RxSerializerSelector;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
@@ -57,17 +57,11 @@ public class RestResponseImpl implements RestResponse {
 
     @Override
     public <T> T bodyToEntity(Class<T> entityClass) throws Exception {
-        return computeRxSerializer(request, response, entityClass)
-                .deSerialize(response.body().getByteBuf().array(), entityClass);
+        return bodyToEntity((Type) entityClass);
     }
 
     @Override
     public <T> T bodyToEntity(Type type) throws Exception {
-        return computeRxSerializer(request, response, type)
-                .deSerialize(response.body().getByteBuf().array(), type);
-    }
-
-    private RxSerializer computeRxSerializer(RestRequest request, HttpResponse response, Type type) {
         final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
         MediaType mediaType = null;
         if (StringUtils.isNotBlank(mediaTypeValue)) {
@@ -77,17 +71,18 @@ public class RestResponseImpl implements RestResponse {
         final ContentType[] acceptTypes = request.acceptTypes();
         final HttpHeaders headers = response.headers();
 
-        final RxSerializerResolver[] rxSerializerFactories = clientConfig.unmodifiableRxSerializerResolvers();
-        for (RxSerializerResolver rxSerializerResolverTem : rxSerializerFactories) {
-            RxSerializer rxSerializer = rxSerializerResolverTem.resolve(request, acceptTypes, mediaType, headers, type);
+        final RxSerializerSelector[] rxSerializerSelectors = clientConfig.unmodifiableRxSerializerSelectors();
+        for (RxSerializerSelector rxSerializerSelector : rxSerializerSelectors) {
+            RxSerializer rxSerializer = rxSerializerSelector.select(request, acceptTypes, mediaType, headers, type);
             if (rxSerializer != null) {
-                return rxSerializer;
+                return rxSerializer.deSerialize(mediaType, headers, response.body().getByteBuf().array(), type);
             }
         }
-
-        throw new IllegalStateException("Can,t resolve contentType of response!" +
+        throw new IllegalStateException("There is no suitable rxSerializer for this response," +
+                "Please set correct rxSerializerSelector!" +
                 "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +
                 ",response.headers: " + headers);
+
     }
 }

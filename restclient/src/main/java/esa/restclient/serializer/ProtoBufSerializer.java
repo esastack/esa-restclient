@@ -17,6 +17,10 @@ package esa.restclient.serializer;
 
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.util.AsciiString;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -29,6 +33,17 @@ public class ProtoBufSerializer implements Serializer {
 
     private final ExtensionRegistry extensionRegistry;
 
+    /**
+     * The HTTP header containing the protobuf schema.
+     */
+    public static final AsciiString X_PROTOBUF_SCHEMA_HEADER = AsciiString.cached("X-Protobuf-Schema");
+
+    /**
+     * The HTTP header containing the protobuf message.
+     */
+    public static final AsciiString X_PROTOBUF_MESSAGE_HEADER = AsciiString.cached("X-Protobuf-Message");
+
+
     public ProtoBufSerializer() {
         this(ExtensionRegistry.newInstance());
     }
@@ -38,12 +53,15 @@ public class ProtoBufSerializer implements Serializer {
     }
 
     @Override
-    public byte[] serialize(Object target) {
+    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
         if (target == null) {
             return null;
         }
         if (target instanceof Message) {
             Message message = (Message) target;
+            headers.set(HttpHeaderNames.CONTENT_TYPE, MediaType.PROTOBUF.value());
+            headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
+            headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
             return message.toByteArray();
         }
         throw new UnsupportedOperationException("Could not serialize class: " +
@@ -52,7 +70,7 @@ public class ProtoBufSerializer implements Serializer {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T deSerialize(byte[] data, Type type) throws Exception {
+    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
         Message.Builder builder = getMessageBuilder((Class<? extends Message>) type);
         builder.mergeFrom(data, extensionRegistry);
         return (T) builder.build();

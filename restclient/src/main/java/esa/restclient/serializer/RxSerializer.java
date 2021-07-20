@@ -15,22 +15,14 @@
  */
 package esa.restclient.serializer;
 
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
+
 import java.lang.reflect.Type;
 
-/**
- * This serializer is used to deserialize the byte[] from request to data of the given type.
- */
+
 public interface RxSerializer {
 
-    /**
-     * deSerialize the data from byte array to the object
-     *
-     * @param data data
-     * @param type data type
-     * @param <T>  generic type
-     * @return decoded value
-     * @throws Exception error
-     */
-    <T> T deSerialize(byte[] data, Type type) throws Exception;
+    <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception;
 
 }

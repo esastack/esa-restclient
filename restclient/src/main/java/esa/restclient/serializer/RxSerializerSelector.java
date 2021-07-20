@@ -8,7 +8,7 @@ import esa.restclient.RestRequest;
 
 import java.lang.reflect.Type;
 
-public interface RxSerializerResolver extends Ordered {
-    RxSerializer resolve(RestRequest request, ContentType[] acceptTypes,
-                         MediaType mediaType, HttpHeaders responseHeaders, Type type);
+public interface RxSerializerSelector extends Ordered {
+    RxSerializer select(RestRequest request, ContentType[] acceptTypes,
+                        MediaType responseMediaType, HttpHeaders responseHeaders, Type type);
 }

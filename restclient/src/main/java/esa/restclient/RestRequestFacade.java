@@ -10,7 +10,11 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     RestEntityRequest entity(Object entity);
 
-    RestFileRequest file(File file);
+    RestEntityRequest entity(String content);
+
+    RestEntityRequest entity(byte[] data);
+
+    RestFileRequest entity(File file);
 
     RestMultipartRequest multipart();
 

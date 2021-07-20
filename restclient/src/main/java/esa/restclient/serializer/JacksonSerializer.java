@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import esa.commons.Checks;
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 
@@ -47,12 +47,12 @@ public class JacksonSerializer implements JsonSerializer {
     }
 
     @Override
-    public byte[] serialize(Object target) throws JsonProcessingException {
+    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) throws JsonProcessingException {
         return objectMapper.writeValueAsBytes(target);
     }
 
     @Override
-    public <T> T deSerialize(byte[] data, Type type) throws IOException {
+    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
         return objectMapper.readValue(data, getJavaType(type));
     }
 

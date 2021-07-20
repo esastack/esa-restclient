@@ -5,7 +5,6 @@ import esa.commons.http.Cookie;
 import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.MultipartRequest;
 import esa.restclient.exec.RestRequestExecutor;
-import esa.restclient.serializer.TxSerializer;
 
 import java.io.File;
 import java.util.List;
@@ -164,44 +163,60 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         return self();
     }
 
-
     @Override
     public RestCompositeRequest setHeader(CharSequence name, CharSequence value) {
         super.setHeader(name, value);
         return self();
     }
 
-
     //TODO 不允许多次设置BODY
     @Override
     public RestEntityRequest entity(Object entity) {
-        Checks.checkNotNull(entity, "Entity must nor be null");
+        Checks.checkNotNull(entity, "entity");
+        setContentTypeIfAbsent(ContentType.APPLICATION_JSON_UTF8);
         this.entity = entity;
-        Class<?> entityClass = entity.getClass();
-        if (String.class.equals(entityClass)) {
-            contentType(ContentType.TEXT_PLAIN);
-        } else if (byte[].class.equals(entityClass)) {
-            contentType(ContentType.APPLICATION_OCTET_STREAM);
-        } else {
-            contentType(ContentType.APPLICATION_JSON);
-        }
         return self();
     }
 
     //TODO 不允许多次设置BODY
     @Override
-    public RestFileRequest file(File file) {
-        contentType(ContentType.APPLICATION_OCTET_STREAM);
-        target.file();
+    public RestEntityRequest entity(String content) {
+        Checks.checkNotNull(content, "content");
+        setContentTypeIfAbsent(ContentType.TEXT_PLAIN);
+        this.entity = content;
+        return self();
+    }
+
+    //TODO 不允许多次设置BODY
+    @Override
+    public RestEntityRequest entity(byte[] data) {
+        Checks.checkNotNull(data, "data");
+        setContentTypeIfAbsent(ContentType.APPLICATION_OCTET_STREAM);
+        this.entity = data;
+        return self();
+    }
+
+    //TODO 不允许多次设置BODY
+    @Override
+    public RestFileRequest entity(File file) {
+        Checks.checkNotNull(file, "file");
+        setContentTypeIfAbsent(ContentType.APPLICATION_OCTET_STREAM);
+        target.body(file);
         return self();
     }
 
     //TODO 不允许多次设置BODY
     @Override
     public RestMultipartRequest multipart() {
-        contentType(ContentType.MULTIPART_FORM_DATA);
+        setContentTypeIfAbsent(ContentType.MULTIPART_FORM_DATA);
         target.multipart();
         return self();
+    }
+
+    private void setContentTypeIfAbsent(ContentType contentType) {
+        if (this.contentType == null) {
+            contentType(contentType);
+        }
     }
 
     private RestCompositeRequest self() {

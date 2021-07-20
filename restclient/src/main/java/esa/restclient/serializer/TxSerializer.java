@@ -15,6 +15,9 @@
  */
 package esa.restclient.serializer;
 
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
+
 /**
  * This serializer is used to serialize the data to byte[] for http response.
  */
@@ -24,10 +27,9 @@ public interface TxSerializer {
      * serialize the object to byte array
      *
      * @param target target
-     *
      * @return byte array
      * @throws Exception error
      */
-    byte[] serialize(Object target) throws Exception;
+    byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) throws Exception;
 
 }

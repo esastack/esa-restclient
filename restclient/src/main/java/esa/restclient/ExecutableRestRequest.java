@@ -1,8 +1,6 @@
 package esa.restclient;
 
 import esa.commons.http.Cookie;
-import esa.restclient.serializer.RxSerializerResolver;
-import esa.restclient.serializer.TxSerializerResolver;
 
 import java.util.List;
 import java.util.Map;

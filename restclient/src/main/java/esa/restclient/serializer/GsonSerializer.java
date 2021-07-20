@@ -17,6 +17,8 @@ package esa.restclient.serializer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
 
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -38,12 +40,12 @@ public class GsonSerializer implements JsonSerializer {
     }
 
     @Override
-    public byte[] serialize(Object target) {
+    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
         return gson.toJson(target).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
-    public <T> T deSerialize(byte[] data, Type type) {
+    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
         return gson.fromJson(new String(data, StandardCharsets.UTF_8), type);
     }
 }

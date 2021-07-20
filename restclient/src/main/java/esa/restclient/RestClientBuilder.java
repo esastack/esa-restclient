@@ -9,10 +9,10 @@ import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.interceptor.Interceptor;
-import esa.restclient.serializer.RxSerializerResolver;
-import esa.restclient.serializer.RxSerializerResolverFactory;
-import esa.restclient.serializer.TxSerializerResolver;
-import esa.restclient.serializer.TxSerializerResolverFactory;
+import esa.restclient.serializer.RxSerializerSelector;
+import esa.restclient.serializer.RxSerializerSelectorFactory;
+import esa.restclient.serializer.TxSerializerSelector;
+import esa.restclient.serializer.TxSerializerSelectorFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -24,15 +24,15 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private final List<Interceptor> interceptors = new LinkedList<>();
 
-    private final LinkedList<RxSerializerResolver> rxSerializerResolvers = new LinkedList<>();
+    private final LinkedList<RxSerializerSelector> rxSerializerSelectors = new LinkedList<>();
 
-    private final LinkedList<TxSerializerResolver> txSerializerResolvers = new LinkedList<>();
+    private final LinkedList<TxSerializerSelector> txSerializerSelectors = new LinkedList<>();
 
-    private TxSerializerResolver[] unmodifiableTxSerializerResolvers
-            = buildUnmodifiableTxSerializerResolvers();
+    private TxSerializerSelector[] unmodifiableTxSerializerSelectors
+            = buildUnmodifiableTxSerializerSelectors();
 
-    private RxSerializerResolver[] unmodifiableRxSerializerResolvers
-            = buildUnmodifiableRxSerializerResolvers();
+    private RxSerializerSelector[] unmodifiableRxSerializerSelectors
+            = buildUnmodifiableRxSerializerSelectors();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -120,24 +120,24 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public void addTxSerializerResolver(TxSerializerResolver txSerializerResolver) {
-        this.txSerializerResolvers.add(txSerializerResolver);
-        this.unmodifiableTxSerializerResolvers = buildUnmodifiableTxSerializerResolvers();
+    public void addTxSerializerSelector(TxSerializerSelector txSerializerSelector) {
+        this.txSerializerSelectors.add(txSerializerSelector);
+        this.unmodifiableTxSerializerSelectors = buildUnmodifiableTxSerializerSelectors();
     }
 
-    public void addTxSerializerResolvers(List<TxSerializerResolver> txSerializerResolvers) {
-        this.txSerializerResolvers.addAll(txSerializerResolvers);
-        this.unmodifiableTxSerializerResolvers = buildUnmodifiableTxSerializerResolvers();
+    public void addTxSerializerSelectors(List<TxSerializerSelector> txSerializerSelectors) {
+        this.txSerializerSelectors.addAll(txSerializerSelectors);
+        this.unmodifiableTxSerializerSelectors = buildUnmodifiableTxSerializerSelectors();
     }
 
-    public void addRxSerializerResolver(RxSerializerResolver rxSerializerResolver) {
-        this.rxSerializerResolvers.add(rxSerializerResolver);
-        this.unmodifiableRxSerializerResolvers = buildUnmodifiableRxSerializerResolvers();
+    public void addRxSerializerSelector(RxSerializerSelector rxSerializerSelector) {
+        this.rxSerializerSelectors.add(rxSerializerSelector);
+        this.unmodifiableRxSerializerSelectors = buildUnmodifiableRxSerializerSelectors();
     }
 
-    public void addRxSerializerResolvers(List<RxSerializerResolver> rxSerializerResolvers) {
-        this.rxSerializerResolvers.addAll(rxSerializerResolvers);
-        this.unmodifiableRxSerializerResolvers = buildUnmodifiableRxSerializerResolvers();
+    public void addRxSerializerSelectors(List<RxSerializerSelector> rxSerializerSelectors) {
+        this.rxSerializerSelectors.addAll(rxSerializerSelectors);
+        this.unmodifiableRxSerializerSelectors = buildUnmodifiableRxSerializerSelectors();
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -283,13 +283,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public TxSerializerResolver[] unmodifiableTxSerializerResolvers() {
-        return unmodifiableTxSerializerResolvers;
+    public TxSerializerSelector[] unmodifiableTxSerializerSelectors() {
+        return unmodifiableTxSerializerSelectors;
     }
 
     @Override
-    public RxSerializerResolver[] unmodifiableRxSerializerResolvers() {
-        return unmodifiableRxSerializerResolvers;
+    public RxSerializerSelector[] unmodifiableRxSerializerSelectors() {
+        return unmodifiableRxSerializerSelectors;
     }
 
     private RestClientBuilder self() {
@@ -308,28 +308,28 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
-    private RxSerializerResolver[] buildUnmodifiableRxSerializerResolvers() {
-        final List<RxSerializerResolver> contentTypeResolvers0 = new LinkedList<>(rxSerializerResolvers);
-        contentTypeResolvers0.addAll(RxSerializerResolverFactory.DEFAULT.rxSerializerResolvers());
+    private RxSerializerSelector[] buildUnmodifiableRxSerializerSelectors() {
+        final List<RxSerializerSelector> rxSerializerSelectors0 = new LinkedList<>(rxSerializerSelectors);
+        rxSerializerSelectors0.addAll(RxSerializerSelectorFactory.DEFAULT.rxSerializerSelectors());
 
-        OrderedComparator.sort(contentTypeResolvers0);
-        return Collections.unmodifiableList(contentTypeResolvers0).toArray(new RxSerializerResolver[0]);
+        OrderedComparator.sort(rxSerializerSelectors0);
+        return Collections.unmodifiableList(rxSerializerSelectors0).toArray(new RxSerializerSelector[0]);
     }
 
-    private TxSerializerResolver[] buildUnmodifiableTxSerializerResolvers() {
-        final List<TxSerializerResolver> RXSerializerProviders0 = new LinkedList<>(txSerializerResolvers);
-        RXSerializerProviders0.addAll(TxSerializerResolverFactory.DEFAULT.txSerializerResolvers());
+    private TxSerializerSelector[] buildUnmodifiableTxSerializerSelectors() {
+        final List<TxSerializerSelector> tXSerializerSelectors0 = new LinkedList<>(txSerializerSelectors);
+        tXSerializerSelectors0.addAll(TxSerializerSelectorFactory.DEFAULT.txSerializerSelectors());
 
-        OrderedComparator.sort(RXSerializerProviders0);
-        return Collections.unmodifiableList(RXSerializerProviders0).toArray(new TxSerializerResolver[0]);
+        OrderedComparator.sort(tXSerializerSelectors0);
+        return Collections.unmodifiableList(tXSerializerSelectors0).toArray(new TxSerializerSelector[0]);
     }
 
     @Override
     public RestClientBuilder copy() {
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
-        restClientBuilder.addTxSerializerResolvers(txSerializerResolvers);
-        restClientBuilder.addRxSerializerResolvers(rxSerializerResolvers);
+        restClientBuilder.addTxSerializerSelectors(txSerializerSelectors);
+        restClientBuilder.addRxSerializerSelectors(rxSerializerSelectors);
         return restClientBuilder;
     }
 }

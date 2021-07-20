@@ -1,10 +1,6 @@
 package esa.restclient;
 
 import esa.commons.netty.http.CookieImpl;
-import esa.httpclient.core.util.Futures;
-import net.bytebuddy.implementation.bytecode.Throw;
-
-import java.io.IOException;
 
 public class QuickStart {
 

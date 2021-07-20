@@ -110,6 +110,12 @@ public class MediaType extends MimeType {
             = of("multipart", "form-data");
 
     /**
+     * The media-type for protobuf {@code application/x-protobuf}.
+     */
+    public static final MediaType PROTOBUF
+            = of("application", "x-protobuf", StandardCharsets.UTF_8);
+
+    /**
      * String media type for {@code multipart/form-data}.
      */
     public static final String MULTIPART_FORM_DATA_VALUE
@@ -162,7 +168,6 @@ public class MediaType extends MimeType {
      * Parses media type string to instance of {@link MediaType}.
      *
      * @param mediaType media type string
-     *
      * @return parsed
      */
     public static MediaType valueOf(String mediaType) {
@@ -206,7 +211,6 @@ public class MediaType extends MimeType {
      * separated by ',', eg: 'application/json,text/plain'.
      *
      * @param mediaTypes mediaTypes
-     *
      * @return parsed
      */
     public static List<MediaType> parseMediaTypes(String mediaTypes) {

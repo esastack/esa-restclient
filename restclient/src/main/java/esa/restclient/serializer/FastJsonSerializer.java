@@ -17,6 +17,8 @@ package esa.restclient.serializer;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
 
 import java.lang.reflect.Type;
 
@@ -29,12 +31,12 @@ public class FastJsonSerializer implements JsonSerializer {
     }
 
     @Override
-    public byte[] serialize(Object target) {
+    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
         return JSON.toJSONBytes(target);
     }
 
     @Override
-    public <T> T deSerialize(byte[] data, Type type) {
+    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
         return JSON.parseObject(data, type);
     }
 }

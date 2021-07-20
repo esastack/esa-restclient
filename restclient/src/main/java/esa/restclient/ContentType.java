@@ -1,10 +1,10 @@
 package esa.restclient;
 
 import esa.commons.Checks;
+import esa.commons.http.HttpHeaders;
 import esa.restclient.serializer.*;
 
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 
 public class ContentType {
 
@@ -16,7 +16,7 @@ public class ContentType {
         private static final String CAUSE = "The txSerializer can,t serialize any object";
 
         @Override
-        public byte[] serialize(Object target) {
+        public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
             throw new UnsupportedOperationException(CAUSE);
         }
     };
@@ -25,7 +25,7 @@ public class ContentType {
         private static final String CAUSE = "The rxSerializer can,t deserialize any object";
 
         @Override
-        public <T> T deSerialize(byte[] data, Type type) {
+        public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
             throw new UnsupportedOperationException(CAUSE);
         }
     };
@@ -39,7 +39,7 @@ public class ContentType {
         this.rxSerializer = rxSerializer;
     }
 
-    public MediaType getMediaType() {
+    public MediaType mediaType() {
         return mediaType;
     }
 
@@ -67,11 +67,14 @@ public class ContentType {
         return new ContentType(mediaType, txSerializer, rxSerializer);
     }
 
-    public static final ContentType APPLICATION_JSON
-            = of(MediaType.APPLICATION_JSON, new JacksonSerializer());
+    public static final ContentType PROTOBUF
+            = of(MediaType.PROTOBUF, new ProtoBufSerializer());
+
+    public static final ContentType APPLICATION_JSON_UTF8
+            = of(MediaType.APPLICATION_JSON_UTF8, new JacksonSerializer());
 
     public static final ContentType TEXT_PLAIN =
-            of(MediaType.TEXT_PLAIN, new StringSerializer(StandardCharsets.UTF_8));
+            of(MediaType.TEXT_PLAIN, StringSerializer.INSTANCE);
 
     public static final ContentType APPLICATION_OCTET_STREAM =
             of(MediaType.APPLICATION_OCTET_STREAM, NO_SERIALIZE, NO_DESERIALIZE);

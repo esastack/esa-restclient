@@ -1,5 +1,8 @@
 package esa.restclient.serializer;
 
+import esa.commons.http.HttpHeaders;
+import esa.restclient.MediaType;
+
 import java.lang.reflect.Type;
 
 public class ByteArraySerializer implements Serializer {
@@ -8,16 +11,7 @@ public class ByteArraySerializer implements Serializer {
             = new ByteArraySerializer();
 
     @Override
-    public byte[] deSerialize(byte[] data, Type type) {
-        if (byte[].class.equals(type)) {
-            return data;
-        }
-
-        throw new UnsupportedOperationException("ByteArraySerializer only can deSerialize byte[].class");
-    }
-
-    @Override
-    public byte[] serialize(Object target) {
+    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
         if (target == null) {
             return null;
         }
@@ -29,4 +23,15 @@ public class ByteArraySerializer implements Serializer {
         throw new UnsupportedOperationException("StringSerializer only can serialize byte[].class and its subClass");
 
     }
+
+    @Override
+    public byte[] deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
+        if (byte[].class.equals(type)) {
+            return data;
+        }
+
+        throw new UnsupportedOperationException("ByteArraySerializer only can deSerialize byte[].class");
+    }
+
+
 }

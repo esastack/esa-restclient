@@ -12,7 +12,8 @@ public class RxSerializerSelectorFactoryImpl implements RxSerializerSelectorFact
     @Override
     public Collection<RxSerializerSelector> rxSerializerSelectors() {
         List<RxSerializerSelector> rxSerializerSelectors = SpiLoader.getAll(RxSerializerSelector.class);
-        return rxSerializerSelectors == null ? Collections.emptyList() : Collections.unmodifiableList(rxSerializerSelectors);
+        return rxSerializerSelectors == null
+                ? Collections.emptyList() : Collections.unmodifiableList(rxSerializerSelectors);
     }
 
 }

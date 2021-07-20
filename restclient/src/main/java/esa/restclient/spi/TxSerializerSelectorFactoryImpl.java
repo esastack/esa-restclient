@@ -12,7 +12,8 @@ public class TxSerializerSelectorFactoryImpl implements TxSerializerSelectorFact
     @Override
     public Collection<TxSerializerSelector> txSerializerSelectors() {
         List<TxSerializerSelector> txSerializerSelectors = SpiLoader.getAll(TxSerializerSelector.class);
-        return txSerializerSelectors == null ? Collections.emptyList() : Collections.unmodifiableList(txSerializerSelectors);
+        return txSerializerSelectors == null
+                ? Collections.emptyList() : Collections.unmodifiableList(txSerializerSelectors);
     }
 
 }

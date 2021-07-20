@@ -15,22 +15,13 @@ public class ByteArraySerializer implements Serializer {
         if (target == null) {
             return null;
         }
-
-        if (target instanceof byte[]) {
-            return (byte[]) target;
-        }
-
-        throw new UnsupportedOperationException("StringSerializer only can serialize byte[].class and its subClass");
-
+        
+        return (byte[]) target;
     }
 
     @Override
     public byte[] deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
-        if (byte[].class.equals(type)) {
-            return data;
-        }
-
-        throw new UnsupportedOperationException("ByteArraySerializer only can deSerialize byte[].class");
+        return data;
     }
 
 

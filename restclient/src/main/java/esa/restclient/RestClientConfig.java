@@ -5,7 +5,9 @@ import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.restclient.exec.Interceptor;
+import esa.restclient.serializer.RxSerializerAdvice;
 import esa.restclient.serializer.RxSerializerSelector;
+import esa.restclient.serializer.TxSerializerAdvice;
 import esa.restclient.serializer.TxSerializerSelector;
 
 import java.util.List;
@@ -57,4 +59,8 @@ public interface RestClientConfig {
     TxSerializerSelector[] unmodifiableTxSerializerSelectors();
 
     RxSerializerSelector[] unmodifiableRxSerializerSelectors();
+
+    TxSerializerAdvice[] unmodifiableTxSerializeAdvices();
+
+    RxSerializerAdvice[] unmodifiableRxSerializeAdvices();
 }

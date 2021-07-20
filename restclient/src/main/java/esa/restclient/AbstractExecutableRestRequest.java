@@ -10,6 +10,7 @@ import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpUri;
 import esa.restclient.exec.RestRequestExecutor;
 import esa.restclient.serializer.TxSerializer;
+import esa.restclient.serializer.TxSerializerAdvice;
 import esa.restclient.serializer.TxSerializerSelector;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
@@ -127,8 +128,18 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
             mediaType = contentType.mediaType();
         }
 
-        if (txSerializer != ContentType.NO_SERIALIZE) {
-            this.target.body(txSerializer.serialize(mediaType, headers(), needSerializeEntity()));
+        Object entity = needSerializeEntity();
+        for (TxSerializerAdvice txSerializerAdvice : clientConfig.unmodifiableTxSerializeAdvices()) {
+            entity = txSerializerAdvice.beforeSerialize(this, entity);
+        }
+
+        byte[] data = txSerializer.serialize(mediaType, headers(), entity);
+        if (data != TxSerializer.DELAY_SERIALIZE_IN_NETTY) {
+            this.target.body(data);
+        }
+
+        for (TxSerializerAdvice txSerializerAdvice : clientConfig.unmodifiableTxSerializeAdvices()) {
+            txSerializerAdvice.afterSerialize(this, entity, data);
         }
     }
 

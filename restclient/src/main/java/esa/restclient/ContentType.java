@@ -77,9 +77,12 @@ public class ContentType {
             of(MediaType.TEXT_PLAIN, StringSerializer.INSTANCE);
 
     public static final ContentType APPLICATION_OCTET_STREAM =
-            of(MediaType.APPLICATION_OCTET_STREAM, NO_SERIALIZE, NO_DESERIALIZE);
+            of(MediaType.APPLICATION_OCTET_STREAM, ByteArraySerializer.INSTANCE, ByteArraySerializer.INSTANCE);
+
+    public static final ContentType FILE =
+            of(MediaType.APPLICATION_OCTET_STREAM, TxSerializer.DelaySerializeInNetty.INSTANCE);
 
     public static final ContentType MULTIPART_FORM_DATA =
-            of(MediaType.MULTIPART_FORM_DATA, NO_SERIALIZE, NO_DESERIALIZE);
+            of(MediaType.MULTIPART_FORM_DATA, TxSerializer.DelaySerializeInNetty.INSTANCE);
 
 }

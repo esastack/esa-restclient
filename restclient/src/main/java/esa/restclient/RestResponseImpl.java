@@ -7,6 +7,7 @@ import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.serializer.RxSerializer;
+import esa.restclient.serializer.RxSerializerAdvice;
 import esa.restclient.serializer.RxSerializerSelector;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
@@ -75,7 +76,8 @@ public class RestResponseImpl implements RestResponse {
         for (RxSerializerSelector rxSerializerSelector : rxSerializerSelectors) {
             RxSerializer rxSerializer = rxSerializerSelector.select(request, acceptTypes, mediaType, headers, type);
             if (rxSerializer != null) {
-                return rxSerializer.deSerialize(mediaType, headers, response.body().getByteBuf().array(), type);
+                return deSerialize(rxSerializer, mediaType,
+                        headers, response.body().getByteBuf().array(), type);
             }
         }
         throw new IllegalStateException("There is no suitable rxSerializer for this response," +
@@ -84,5 +86,20 @@ public class RestResponseImpl implements RestResponse {
                 ",response.status: " + response.status() +
                 ",response.headers: " + headers);
 
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T deSerialize(RxSerializer rxSerializer, MediaType mediaType,
+                              HttpHeaders headers, byte[] data, Type type) throws Exception {
+        for (RxSerializerAdvice rxSerializerAdvice : clientConfig.unmodifiableRxSerializeAdvices()) {
+            rxSerializerAdvice.beforeDeSerialize(request, this, type);
+        }
+
+        Object entity = rxSerializer.deSerialize(mediaType, headers, response.body().getByteBuf().array(), type);
+        for (RxSerializerAdvice rxSerializerAdvice : clientConfig.unmodifiableRxSerializeAdvices()) {
+            entity = rxSerializerAdvice.afterDeSerialize(request, this, type, entity);
+        }
+
+        return (T) entity;
     }
 }

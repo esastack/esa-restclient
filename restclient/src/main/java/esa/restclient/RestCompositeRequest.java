@@ -200,7 +200,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     @Override
     public RestFileRequest entity(File file) {
         Checks.checkNotNull(file, "file");
-        setContentTypeIfAbsent(ContentType.APPLICATION_OCTET_STREAM);
+        setContentTypeIfAbsent(ContentType.FILE);
         target.body(file);
         return self();
     }

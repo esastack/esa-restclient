@@ -23,6 +23,8 @@ import esa.restclient.MediaType;
  */
 public interface TxSerializer {
 
+    byte[] DELAY_SERIALIZE_IN_NETTY = new byte[0];
+
     /**
      * serialize the object to byte array
      *
@@ -31,5 +33,15 @@ public interface TxSerializer {
      * @throws Exception error
      */
     byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) throws Exception;
+
+    final class DelaySerializeInNetty implements TxSerializer {
+
+        public static final DelaySerializeInNetty INSTANCE = new DelaySerializeInNetty();
+
+        @Override
+        public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) throws Exception {
+            return DELAY_SERIALIZE_IN_NETTY;
+        }
+    }
 
 }

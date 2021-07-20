@@ -117,7 +117,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         }
 
         throw new IllegalStateException("The request has no rxSerializer," +
-                "Please set the correct contentType or txSerializerMatcher");
+                "Please set the correct contentType and txSerializerSelector");
     }
 
     final void fillBody() throws Exception {

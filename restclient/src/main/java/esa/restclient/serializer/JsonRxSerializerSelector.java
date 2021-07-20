@@ -12,6 +12,10 @@ public class JsonRxSerializerSelector implements RxSerializerSelector {
 
     private final JsonSerializer serializer;
 
+    public JsonRxSerializerSelector() {
+        this.serializer = new JacksonSerializer();
+    }
+
     public JsonRxSerializerSelector(JsonSerializer serializer) {
         Checks.checkNotNull(serializer, "Serializer must not be null");
         this.serializer = serializer;
@@ -25,5 +29,10 @@ public class JsonRxSerializerSelector implements RxSerializerSelector {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return LOWER_PRECEDENCE;
     }
 }

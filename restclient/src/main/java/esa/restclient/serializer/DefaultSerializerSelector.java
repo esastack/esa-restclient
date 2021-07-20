@@ -1,5 +1,6 @@
 package esa.restclient.serializer;
 
+import esa.commons.annotation.Internal;
 import esa.commons.http.HttpHeaders;
 import esa.restclient.ContentType;
 import esa.restclient.MediaType;
@@ -7,13 +8,10 @@ import esa.restclient.RestRequest;
 
 import java.lang.reflect.Type;
 
+@Internal
 public class DefaultSerializerSelector implements RxSerializerSelector, TxSerializerSelector {
 
-    public static final DefaultSerializerSelector INSTANCE = new DefaultSerializerSelector();
-
-    public static final int ORDER = 0;
-
-    private DefaultSerializerSelector() {
+    public DefaultSerializerSelector() {
     }
 
     @Override
@@ -43,6 +41,6 @@ public class DefaultSerializerSelector implements RxSerializerSelector, TxSerial
 
     @Override
     public int getOrder() {
-        return ORDER;
+        return HIGHER_PRECEDENCE;
     }
 }

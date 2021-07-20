@@ -79,7 +79,7 @@ public class RestResponseImpl implements RestResponse {
             }
         }
         throw new IllegalStateException("There is no suitable rxSerializer for this response," +
-                "Please set correct rxSerializerSelector!" +
+                "Please set correct acceptType and rxSerializerSelector!" +
                 "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +
                 ",response.headers: " + headers);

@@ -11,6 +11,10 @@ import java.lang.reflect.Type;
 public class ProtoBufRxSerializerSelector implements RxSerializerSelector {
     private final ProtoBufSerializer serializer;
 
+    public ProtoBufRxSerializerSelector() {
+        this.serializer = new ProtoBufSerializer();
+    }
+
     public ProtoBufRxSerializerSelector(ProtoBufSerializer serializer) {
         Checks.checkNotNull(serializer, "serializer");
         this.serializer = serializer;
@@ -23,5 +27,10 @@ public class ProtoBufRxSerializerSelector implements RxSerializerSelector {
             return serializer;
         }
         return null;
+    }
+
+    @Override
+    public int getOrder() {
+        return LOWER_PRECEDENCE;
     }
 }

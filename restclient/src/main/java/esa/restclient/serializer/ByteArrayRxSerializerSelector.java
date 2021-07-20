@@ -8,9 +8,8 @@ import esa.restclient.RestRequest;
 import java.lang.reflect.Type;
 
 public class ByteArrayRxSerializerSelector implements RxSerializerSelector {
-    public static final ByteArrayRxSerializerSelector INSTANCE = new ByteArrayRxSerializerSelector();
 
-    private ByteArrayRxSerializerSelector(){
+    public ByteArrayRxSerializerSelector() {
     }
 
     @Override
@@ -22,5 +21,10 @@ public class ByteArrayRxSerializerSelector implements RxSerializerSelector {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return LOWER_PRECEDENCE;
     }
 }

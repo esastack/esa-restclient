@@ -1,4 +1,6 @@
-package esa.restclient.serializer;
+package esa.restclient.spi;
+
+import esa.restclient.serializer.TxSerializerSelector;
 
 import java.util.Collection;
 

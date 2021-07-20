@@ -10,9 +10,9 @@ import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.interceptor.Interceptor;
 import esa.restclient.serializer.RxSerializerSelector;
-import esa.restclient.serializer.RxSerializerSelectorFactory;
 import esa.restclient.serializer.TxSerializerSelector;
-import esa.restclient.serializer.TxSerializerSelectorFactory;
+import esa.restclient.spi.RxSerializerSelectorFactory;
+import esa.restclient.spi.TxSerializerSelectorFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;

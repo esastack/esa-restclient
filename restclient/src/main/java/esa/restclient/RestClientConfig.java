@@ -4,7 +4,7 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
-import esa.restclient.interceptor.Interceptor;
+import esa.restclient.exec.Interceptor;
 import esa.restclient.serializer.RxSerializerSelector;
 import esa.restclient.serializer.TxSerializerSelector;
 

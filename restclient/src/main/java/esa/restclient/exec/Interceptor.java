@@ -1,9 +1,8 @@
-package esa.restclient.interceptor;
+package esa.restclient.exec;
 
 import esa.httpclient.core.util.Ordered;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponse;
-import esa.restclient.exec.InvocationChain;
 
 import java.util.concurrent.CompletionStage;
 

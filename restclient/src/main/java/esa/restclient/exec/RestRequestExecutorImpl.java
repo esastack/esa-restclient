@@ -5,7 +5,6 @@ import esa.restclient.RequestInvocation;
 import esa.restclient.RestClientConfig;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponse;
-import esa.restclient.interceptor.Interceptor;
 
 import java.util.LinkedList;
 import java.util.List;

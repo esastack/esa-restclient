@@ -1,0 +1,4 @@
+esa.restclient.serializer.ProtoBufRxSerializerSelector
+esa.restclient.serializer.ByteArrayRxSerializerSelector
+esa.restclient.serializer.StringRxSerializerSelector
+esa.restclient.serializer.JsonRxSerializerSelector

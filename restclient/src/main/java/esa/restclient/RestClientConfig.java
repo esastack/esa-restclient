@@ -4,11 +4,11 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
+import esa.restclient.codec.DecodeAdvice;
+import esa.restclient.codec.DecoderSelector;
+import esa.restclient.codec.EncodeAdvice;
+import esa.restclient.codec.EncoderSelector;
 import esa.restclient.exec.Interceptor;
-import esa.restclient.serializer.RxSerializerAdvice;
-import esa.restclient.serializer.RxSerializerSelector;
-import esa.restclient.serializer.TxSerializerAdvice;
-import esa.restclient.serializer.TxSerializerSelector;
 
 import java.util.List;
 
@@ -56,11 +56,11 @@ public interface RestClientConfig {
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
 
-    TxSerializerSelector[] unmodifiableTxSerializerSelectors();
+    EncoderSelector[] unmodifiableEncoderSelectors();
 
-    RxSerializerSelector[] unmodifiableRxSerializerSelectors();
+    DecoderSelector[] unmodifiableDecoderSelectors();
 
-    TxSerializerAdvice[] unmodifiableTxSerializeAdvices();
+    EncodeAdvice[] unmodifiableEncodeAdvices();
 
-    RxSerializerAdvice[] unmodifiableRxSerializeAdvices();
+    DecodeAdvice[] unmodifiableDecodeAdvices();
 }

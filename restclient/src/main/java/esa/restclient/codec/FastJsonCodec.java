@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.restclient.serializer;
+package esa.restclient.codec;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -22,7 +22,7 @@ import esa.restclient.MediaType;
 
 import java.lang.reflect.Type;
 
-public class FastJsonSerializer implements JsonSerializer {
+public class FastJsonCodec implements JsonCodec {
 
     static {
         //global date format
@@ -31,12 +31,12 @@ public class FastJsonSerializer implements JsonSerializer {
     }
 
     @Override
-    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
-        return JSON.toJSONBytes(target);
+    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+        return JSON.toJSONBytes(entity);
     }
 
     @Override
-    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
+    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
         return JSON.parseObject(data, type);
     }
 }

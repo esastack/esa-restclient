@@ -2,87 +2,103 @@ package esa.restclient;
 
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
-import esa.restclient.serializer.*;
+import esa.restclient.codec.*;
 
 import java.lang.reflect.Type;
 
 public class ContentType {
 
     private final MediaType mediaType;
-    private final TxSerializer txSerializer;
-    private final RxSerializer rxSerializer;
+    private final Encoder<?> encoder;
+    private final Decoder<?> decoder;
 
-    public static final TxSerializer NO_SERIALIZE = new TxSerializer() {
-        private static final String CAUSE = "The txSerializer can,t serialize any object";
+    public static final Encoder<?> NULL_ENCODER = new Encoder<Object>() {
+        private static final String CAUSE = "The NULL_ENCODER can,t encode any object";
 
         @Override
-        public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
+        public Object encode(MediaType mediaType, HttpHeaders headers, Object entity) {
             throw new UnsupportedOperationException(CAUSE);
         }
     };
 
-    public static final RxSerializer NO_DESERIALIZE = new RxSerializer() {
-        private static final String CAUSE = "The rxSerializer can,t deserialize any object";
+    public static final Decoder<?> NULL_DECODER = new Decoder<Object>() {
+        private static final String CAUSE = "The NULL_DECODER can,t decode any object";
 
         @Override
-        public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
+        public <U> U decode(MediaType mediaType, HttpHeaders headers, Object data, Type type) {
             throw new UnsupportedOperationException(CAUSE);
         }
     };
 
-    private ContentType(MediaType mediaType, TxSerializer txSerializer, RxSerializer rxSerializer) {
-        Checks.checkNotNull(mediaType, "MediaType must not be null");
-        Checks.checkNotNull(txSerializer, "TxSerializer must not be null");
-        Checks.checkNotNull(rxSerializer, "RxSerializer must not be null");
+    private ContentType(MediaType mediaType, Encoder<?> encoder, Decoder<?> decoder) {
+        Checks.checkNotNull(mediaType, "mediaType");
+        Checks.checkNotNull(encoder, "encoder");
+        Checks.checkNotNull(decoder, "decoder");
         this.mediaType = mediaType;
-        this.txSerializer = txSerializer;
-        this.rxSerializer = rxSerializer;
+        this.encoder = encoder;
+        this.decoder = decoder;
     }
 
     public MediaType mediaType() {
         return mediaType;
     }
 
-    public TxSerializer txSerializer() {
-        return txSerializer;
+    public Encoder<?> encoder() {
+        return encoder;
     }
 
-    public RxSerializer rxSerializer() {
-        return rxSerializer;
+    public Decoder<?> decoder() {
+        return decoder;
     }
 
-    public static ContentType of(MediaType mediaType, TxSerializer txSerializer) {
-        return new ContentType(mediaType, txSerializer, NO_DESERIALIZE);
+    public static ContentType of(MediaType mediaType, ByteEncoder encoder) {
+        return new ContentType(mediaType, encoder, NULL_DECODER);
     }
 
-    public static ContentType of(MediaType mediaType, RxSerializer rxSerializer) {
-        return new ContentType(mediaType, NO_SERIALIZE, rxSerializer);
+    public static ContentType of(MediaType mediaType, ByteDecoder decoder) {
+        return new ContentType(mediaType, NULL_ENCODER, decoder);
     }
 
-    public static ContentType of(MediaType mediaType, Serializer serializer) {
-        return new ContentType(mediaType, serializer, serializer);
+    public static ContentType of(MediaType mediaType, ByteEncoder encoder, ByteDecoder decoder) {
+        return new ContentType(mediaType, encoder, decoder);
     }
 
-    public static ContentType of(MediaType mediaType, TxSerializer txSerializer, RxSerializer rxSerializer) {
-        return new ContentType(mediaType, txSerializer, rxSerializer);
+    public static ContentType of(MediaType mediaType, FileEncoder encoder) {
+        return new ContentType(mediaType, encoder, NULL_DECODER);
+    }
+
+    public static ContentType of(MediaType mediaType, FileEncoder encoder, ByteDecoder decoder) {
+        return new ContentType(mediaType, encoder, decoder);
+    }
+
+    public static ContentType of(MediaType mediaType, MultipartEncoder encoder) {
+        return new ContentType(mediaType, encoder, NULL_DECODER);
+    }
+
+    public static ContentType of(MediaType mediaType, MultipartEncoder encoder, ByteDecoder decoder) {
+        return new ContentType(mediaType, encoder, decoder);
+    }
+
+    public static ContentType of(MediaType mediaType, ByteCodec byteCodec) {
+        return new ContentType(mediaType, byteCodec, byteCodec);
     }
 
     public static final ContentType PROTOBUF
-            = of(MediaType.PROTOBUF, new ProtoBufSerializer());
+            = of(MediaType.PROTOBUF, new ProtoBufCodec());
 
     public static final ContentType APPLICATION_JSON_UTF8
-            = of(MediaType.APPLICATION_JSON_UTF8, new JacksonSerializer());
+            = of(MediaType.APPLICATION_JSON_UTF8, new JacksonCodec());
 
     public static final ContentType TEXT_PLAIN =
-            of(MediaType.TEXT_PLAIN, StringSerializer.INSTANCE);
+            of(MediaType.TEXT_PLAIN, new StringCodec());
 
     public static final ContentType APPLICATION_OCTET_STREAM =
-            of(MediaType.APPLICATION_OCTET_STREAM, ByteArraySerializer.INSTANCE, ByteArraySerializer.INSTANCE);
+            of(MediaType.APPLICATION_OCTET_STREAM, new ByteToByteCodec());
 
     public static final ContentType FILE =
-            of(MediaType.APPLICATION_OCTET_STREAM, TxSerializer.DelaySerializeInNetty.INSTANCE);
+            of(MediaType.APPLICATION_OCTET_STREAM, new FileToFileEncoder());
 
     public static final ContentType MULTIPART_FORM_DATA =
-            of(MediaType.MULTIPART_FORM_DATA, TxSerializer.DelaySerializeInNetty.INSTANCE);
+            of(MediaType.MULTIPART_FORM_DATA, new MultipartToMultipartEncoder());
 
 }

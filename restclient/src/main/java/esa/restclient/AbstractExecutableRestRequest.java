@@ -7,11 +7,10 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.CompositeRequest;
+import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
+import esa.httpclient.core.util.Futures;
 import esa.restclient.exec.RestRequestExecutor;
-import esa.restclient.serializer.TxSerializer;
-import esa.restclient.serializer.TxSerializerAdvice;
-import esa.restclient.serializer.TxSerializerSelector;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
@@ -102,6 +101,15 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     @Override
     public CompletionStage<RestResponse> execute() {
         return requestExecutor.execute(this);
+    }
+
+    CompletionStage<HttpResponse> doRequest() {
+        try {
+            fillBody();
+        } catch (Exception e) {
+            return Futures.completed(e);
+        }
+        return target.execute();
     }
 
     private TxSerializer computeTxSerializer() {

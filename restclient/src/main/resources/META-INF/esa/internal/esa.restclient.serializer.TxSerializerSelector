@@ -1,1 +1,1 @@
-esa.restclient.serializer.DefaultSerializerSelector
+esa.restclient.codec.DefaultCodecSelector

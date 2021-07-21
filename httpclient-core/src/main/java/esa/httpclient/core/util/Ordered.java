@@ -36,6 +36,13 @@ public interface Ordered {
      *
      * @return order
      */
+
+    int HIGHER_PRECEDENCE = -2048;
+
+    int MIDDLE_PRECEDENCE = 0;
+
+    int LOWER_PRECEDENCE = 2048;
+
     default int getOrder() {
         return LOWEST_PRECEDENCE;
     }

@@ -1,19 +1,4 @@
-/*
- * Copyright 2020 OPPO ESA Stack Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package esa.restclient.serializer;
+package esa.restclient.codec;
 
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
@@ -27,7 +12,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ProtoBufSerializer implements Serializer {
+public class ProtoBufCodec implements ByteCodec {
 
     private static final Map<Class<?>, Method> METHOD_CACHE = new ConcurrentHashMap<>();
 
@@ -44,33 +29,33 @@ public class ProtoBufSerializer implements Serializer {
     public static final AsciiString X_PROTOBUF_MESSAGE_HEADER = AsciiString.cached("X-Protobuf-Message");
 
 
-    public ProtoBufSerializer() {
+    public ProtoBufCodec() {
         this(ExtensionRegistry.newInstance());
     }
 
-    public ProtoBufSerializer(ExtensionRegistry extensionRegistry) {
+    public ProtoBufCodec(ExtensionRegistry extensionRegistry) {
         this.extensionRegistry = extensionRegistry;
     }
 
     @Override
-    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
-        if (target == null) {
+    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+        if (entity == null) {
             return null;
         }
-        if (target instanceof Message) {
-            Message message = (Message) target;
+        if (entity instanceof Message) {
+            Message message = (Message) entity;
             headers.set(HttpHeaderNames.CONTENT_TYPE, MediaType.PROTOBUF.value());
             headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
             headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
             return message.toByteArray();
         }
         throw new UnsupportedOperationException("Could not serialize class: " +
-                target.getClass().getName());
+                entity.getClass().getName());
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
+    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
         Message.Builder builder = getMessageBuilder((Class<? extends Message>) type);
         builder.mergeFrom(data, extensionRegistry);
         return (T) builder.build();
@@ -84,4 +69,5 @@ public class ProtoBufSerializer implements Serializer {
         }
         return (Message.Builder) method.invoke(clazz);
     }
+
 }

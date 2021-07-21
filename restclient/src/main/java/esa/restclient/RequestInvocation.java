@@ -1,7 +1,6 @@
 package esa.restclient;
 
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.util.Futures;
 import esa.restclient.exec.InvocationChain;
 
 import java.util.concurrent.CompletionStage;
@@ -17,13 +16,8 @@ public class RequestInvocation implements InvocationChain {
         }
 
         final AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
-        try {
-            executableRequest.fillBody();
-        } catch (Exception e) {
-            return Futures.completed(e);
-        }
 
-        return executableRequest.target.execute()
+        return executableRequest.doRequest()
                 .thenApply((response) -> processResponse(executableRequest, response));
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.restclient.serializer;
+package esa.restclient.codec;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
@@ -31,28 +31,28 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 
-public class JacksonSerializer implements JsonSerializer {
+public class JacksonCodec implements JsonCodec {
 
     private static ObjectMapper DEFAULT_OBJECT_MAPPER;
 
     private final ObjectMapper objectMapper;
 
-    public JacksonSerializer() {
+    public JacksonCodec() {
         this(getDefaultMapper());
     }
 
-    public JacksonSerializer(ObjectMapper objectMapper) {
+    public JacksonCodec(ObjectMapper objectMapper) {
         Checks.checkNotNull(objectMapper, "objectMapper");
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) throws JsonProcessingException {
-        return objectMapper.writeValueAsBytes(target);
+    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) throws JsonProcessingException {
+        return objectMapper.writeValueAsBytes(entity);
     }
 
     @Override
-    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
+    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
         return objectMapper.readValue(data, getJavaType(type));
     }
 

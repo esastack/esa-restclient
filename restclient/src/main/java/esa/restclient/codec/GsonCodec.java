@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.restclient.serializer;
+package esa.restclient.codec;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,17 +21,18 @@ import esa.commons.http.HttpHeaders;
 import esa.restclient.MediaType;
 
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class GsonSerializer implements JsonSerializer {
+public class GsonCodec implements JsonCodec {
 
     private final Gson gson;
 
-    public GsonSerializer() {
+    public GsonCodec() {
         this(null);
     }
 
-    public GsonSerializer(GsonBuilder gsonBuilder) {
+    public GsonCodec(GsonBuilder gsonBuilder) {
         if (gsonBuilder != null) {
             gson = gsonBuilder.create();
         } else {
@@ -40,12 +41,22 @@ public class GsonSerializer implements JsonSerializer {
     }
 
     @Override
-    public byte[] serialize(MediaType mediaType, HttpHeaders headers, Object target) {
-        return gson.toJson(target).getBytes(StandardCharsets.UTF_8);
+    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+        Charset charset = mediaType.charset();
+        if (charset == null) {
+            return gson.toJson(entity).getBytes(StandardCharsets.UTF_8);
+        } else {
+            return gson.toJson(entity).getBytes(charset);
+        }
     }
 
     @Override
-    public <T> T deSerialize(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
-        return gson.fromJson(new String(data, StandardCharsets.UTF_8), type);
+    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
+        Charset charset = mediaType.charset();
+        if (charset == null) {
+            return gson.fromJson(new String(data, StandardCharsets.UTF_8), type);
+        } else {
+            return gson.fromJson(new String(data, charset), type);
+        }
     }
 }

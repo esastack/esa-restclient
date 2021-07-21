@@ -15,7 +15,16 @@
  */
 package esa.httpclient.core;
 
+import esa.commons.netty.core.Buffer;
+
 public interface HttpResponse extends Response {
+
+    /**
+     * Obtains body as {@link Buffer} format.
+     *
+     * @return body
+     */
+    Buffer body();
 
     /**
      * The flag indicates current response should be automatically aggregated or not.
@@ -25,7 +34,7 @@ public interface HttpResponse extends Response {
      * by {@link Handle} or {@link Handler}. On the contrary, if the result is {@code true} which
      * means the {@link #body()} contains the fully response's content.
      *
-     * @return  {@code true} or {@code false}
+     * @return {@code true} or {@code false}
      */
     boolean aggregated();
 

@@ -38,7 +38,7 @@ public class ProtoBufCodec implements ByteCodec {
     }
 
     @Override
-    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) {
         if (entity == null) {
             return null;
         }
@@ -55,7 +55,7 @@ public class ProtoBufCodec implements ByteCodec {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
+    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
         Message.Builder builder = getMessageBuilder((Class<? extends Message>) type);
         builder.mergeFrom(data, extensionRegistry);
         return (T) builder.build();

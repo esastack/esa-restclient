@@ -31,12 +31,12 @@ public class FastJsonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) {
         return JSON.toJSONBytes(entity);
     }
 
     @Override
-    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
+    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
         return JSON.parseObject(data, type);
     }
 }

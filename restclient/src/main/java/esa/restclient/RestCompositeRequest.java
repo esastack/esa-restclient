@@ -23,7 +23,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    protected Object needSerializeEntity() {
+    public Object entity() {
         return entity;
     }
 
@@ -61,11 +61,6 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     public RestCompositeRequest enableUriEncode() {
         super.enableUriEncode();
         return self();
-    }
-
-    @Override
-    public Object entity() {
-        return entity;
     }
 
     @Override

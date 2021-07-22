@@ -11,7 +11,7 @@ public class StringCodec implements ByteCodec {
 
     @SuppressWarnings("unchecked")
     @Override
-    public String decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
+    public String doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
         if (data == null || type == null) {
             return null;
         }
@@ -25,7 +25,7 @@ public class StringCodec implements ByteCodec {
     }
 
     @Override
-    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) {
         if (entity == null) {
             return null;
         }

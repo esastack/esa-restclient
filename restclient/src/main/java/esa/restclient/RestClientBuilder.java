@@ -8,11 +8,13 @@ import esa.httpclient.core.config.*;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.httpclient.core.util.OrderedComparator;
+import esa.restclient.codec.DecodeAdvice;
+import esa.restclient.codec.DecoderSelector;
+import esa.restclient.codec.EncodeAdvice;
 import esa.restclient.exec.Interceptor;
-import esa.restclient.serializer.RxSerializerSelector;
-import esa.restclient.serializer.TxSerializerSelector;
-import esa.restclient.spi.RxSerializerSelectorFactory;
-import esa.restclient.spi.TxSerializerSelectorFactory;
+import esa.restclient.spi.DecodeAdviceFactory;
+import esa.restclient.spi.DecoderSelectorFactory;
+import esa.restclient.spi.EncodeAdviceFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -21,18 +23,16 @@ import java.util.List;
 public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientConfig {
 
     private final HttpClientBuilder httpClientBuilder;
-
     private final List<Interceptor> interceptors = new LinkedList<>();
-
-    private final LinkedList<RxSerializerSelector> rxSerializerSelectors = new LinkedList<>();
-
-    private final LinkedList<TxSerializerSelector> txSerializerSelectors = new LinkedList<>();
-
-    private TxSerializerSelector[] unmodifiableTxSerializerSelectors
-            = buildUnmodifiableTxSerializerSelectors();
-
-    private RxSerializerSelector[] unmodifiableRxSerializerSelectors
-            = buildUnmodifiableRxSerializerSelectors();
+    private final LinkedList<DecoderSelector> decoderSelectors = new LinkedList<>();
+    private final LinkedList<DecodeAdvice> decodeAdvices = new LinkedList<>();
+    private final LinkedList<EncodeAdvice> encodeAdvices = new LinkedList<>();
+    private DecoderSelector[] unmodifiableDecoderSelectors
+            = buildUnmodifiableDecoderSelectors();
+    private DecodeAdvice[] unmodifiableDecodeAdvices
+            = buildUnmodifiableDecodeAdvices();
+    private EncodeAdvice[] unmodifiableEncodeAdvices
+            = buildUnmodifiableEncodeAdvices();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -120,24 +120,14 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public void addTxSerializerSelector(TxSerializerSelector txSerializerSelector) {
-        this.txSerializerSelectors.add(txSerializerSelector);
-        this.unmodifiableTxSerializerSelectors = buildUnmodifiableTxSerializerSelectors();
+    public void addDecoderSelector(DecoderSelector decoderSelector) {
+        this.decoderSelectors.add(decoderSelector);
+        this.unmodifiableDecoderSelectors = buildUnmodifiableDecoderSelectors();
     }
 
-    public void addTxSerializerSelectors(List<TxSerializerSelector> txSerializerSelectors) {
-        this.txSerializerSelectors.addAll(txSerializerSelectors);
-        this.unmodifiableTxSerializerSelectors = buildUnmodifiableTxSerializerSelectors();
-    }
-
-    public void addRxSerializerSelector(RxSerializerSelector rxSerializerSelector) {
-        this.rxSerializerSelectors.add(rxSerializerSelector);
-        this.unmodifiableRxSerializerSelectors = buildUnmodifiableRxSerializerSelectors();
-    }
-
-    public void addRxSerializerSelectors(List<RxSerializerSelector> rxSerializerSelectors) {
-        this.rxSerializerSelectors.addAll(rxSerializerSelectors);
-        this.unmodifiableRxSerializerSelectors = buildUnmodifiableRxSerializerSelectors();
+    public void addDecoderSelectors(List<DecoderSelector> decoderSelectors) {
+        this.decoderSelectors.addAll(decoderSelectors);
+        this.unmodifiableDecoderSelectors = buildUnmodifiableDecoderSelectors();
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -283,13 +273,18 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public TxSerializerSelector[] unmodifiableTxSerializerSelectors() {
-        return unmodifiableTxSerializerSelectors;
+    public DecoderSelector[] unmodifiableDecoderSelectors() {
+        return unmodifiableDecoderSelectors;
     }
 
     @Override
-    public RxSerializerSelector[] unmodifiableRxSerializerSelectors() {
-        return unmodifiableRxSerializerSelectors;
+    public EncodeAdvice[] unmodifiableEncodeAdvices() {
+        return unmodifiableEncodeAdvices;
+    }
+
+    @Override
+    public DecodeAdvice[] unmodifiableDecodeAdvices() {
+        return unmodifiableDecodeAdvices;
     }
 
     private RestClientBuilder self() {
@@ -308,28 +303,33 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
-    private RxSerializerSelector[] buildUnmodifiableRxSerializerSelectors() {
-        final List<RxSerializerSelector> rxSerializerSelectors0 = new LinkedList<>(rxSerializerSelectors);
-        rxSerializerSelectors0.addAll(RxSerializerSelectorFactory.DEFAULT.rxSerializerSelectors());
-
-        OrderedComparator.sort(rxSerializerSelectors0);
-        return Collections.unmodifiableList(rxSerializerSelectors0).toArray(new RxSerializerSelector[0]);
+    private DecoderSelector[] buildUnmodifiableDecoderSelectors() {
+        final List<DecoderSelector> decoderSelectors0 = new LinkedList<>(decoderSelectors);
+        decoderSelectors0.addAll(DecoderSelectorFactory.DEFAULT.decoderSelectors());
+        OrderedComparator.sort(decoderSelectors0);
+        return Collections.unmodifiableList(decoderSelectors0).toArray(new DecoderSelector[0]);
     }
 
-    private TxSerializerSelector[] buildUnmodifiableTxSerializerSelectors() {
-        final List<TxSerializerSelector> tXSerializerSelectors0 = new LinkedList<>(txSerializerSelectors);
-        tXSerializerSelectors0.addAll(TxSerializerSelectorFactory.DEFAULT.txSerializerSelectors());
-
-        OrderedComparator.sort(tXSerializerSelectors0);
-        return Collections.unmodifiableList(tXSerializerSelectors0).toArray(new TxSerializerSelector[0]);
+    private DecodeAdvice[] buildUnmodifiableDecodeAdvices() {
+        final List<DecodeAdvice> decodeAdvices0 = new LinkedList<>(decodeAdvices);
+        decodeAdvices0.addAll(DecodeAdviceFactory.DEFAULT.decodeAdvices());
+        OrderedComparator.sort(decodeAdvices0);
+        return Collections.unmodifiableList(decodeAdvices0).toArray(new DecodeAdvice[0]);
     }
+
+    private EncodeAdvice[] buildUnmodifiableEncodeAdvices() {
+        final List<EncodeAdvice> encodeAdvices0 = new LinkedList<>(encodeAdvices);
+        encodeAdvices0.addAll(EncodeAdviceFactory.DEFAULT.encodeAdvices());
+        OrderedComparator.sort(encodeAdvices0);
+        return Collections.unmodifiableList(encodeAdvices0).toArray(new EncodeAdvice[0]);
+    }
+
 
     @Override
     public RestClientBuilder copy() {
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
-        restClientBuilder.addTxSerializerSelectors(txSerializerSelectors);
-        restClientBuilder.addRxSerializerSelectors(rxSerializerSelectors);
+        restClientBuilder.addDecoderSelectors(decoderSelectors);
         return restClientBuilder;
     }
 }

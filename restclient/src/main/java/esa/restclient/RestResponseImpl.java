@@ -4,11 +4,10 @@ import esa.commons.Checks;
 import esa.commons.StringUtils;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
 import esa.httpclient.core.HttpResponse;
-import esa.restclient.serializer.RxSerializer;
-import esa.restclient.serializer.RxSerializerAdvice;
-import esa.restclient.serializer.RxSerializerSelector;
+import esa.restclient.codec.DecodeAdvice;
+import esa.restclient.codec.Decoder;
+import esa.restclient.codec.DecoderSelector;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
@@ -34,11 +33,6 @@ public class RestResponseImpl implements RestResponse {
     @Override
     public int status() {
         return response.status();
-    }
-
-    @Override
-    public Buffer body() {
-        return response.body();
     }
 
     @Override
@@ -72,15 +66,16 @@ public class RestResponseImpl implements RestResponse {
         final ContentType[] acceptTypes = request.acceptTypes();
         final HttpHeaders headers = response.headers();
 
-        final RxSerializerSelector[] rxSerializerSelectors = clientConfig.unmodifiableRxSerializerSelectors();
-        for (RxSerializerSelector rxSerializerSelector : rxSerializerSelectors) {
-            RxSerializer rxSerializer = rxSerializerSelector.select(request, acceptTypes, mediaType, headers, type);
-            if (rxSerializer != null) {
-                return deSerialize(rxSerializer, mediaType,
-                        headers, response.body().getByteBuf().array(), type);
+        final DecoderSelector[] decoderSelectors = clientConfig.unmodifiableDecoderSelectors();
+        BodyContent<byte[]> content = BodyContent.of(response.body().getByteBuf().array());
+        for (DecoderSelector decoderSelector : decoderSelectors) {
+            Decoder decoder = decoderSelector.select(request, acceptTypes, mediaType, headers, content, type);
+            if (decoder != null) {
+                return decode(decoder, mediaType,
+                        headers, type, content);
             }
         }
-        throw new IllegalStateException("There is no suitable rxSerializer for this response," +
+        throw new IllegalStateException("There is no suitable decoder for this response," +
                 "Please set correct acceptType and rxSerializerSelector!" +
                 "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +
@@ -89,15 +84,15 @@ public class RestResponseImpl implements RestResponse {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T deSerialize(RxSerializer rxSerializer, MediaType mediaType,
-                              HttpHeaders headers, byte[] data, Type type) throws Exception {
-        for (RxSerializerAdvice rxSerializerAdvice : clientConfig.unmodifiableRxSerializeAdvices()) {
-            rxSerializerAdvice.beforeDeSerialize(request, this, type);
+    private <T> T decode(Decoder decoder, MediaType mediaType,
+                         HttpHeaders headers, Type type, BodyContent<byte[]> content) throws Exception {
+        for (DecodeAdvice decodeAdvice : clientConfig.unmodifiableDecodeAdvices()) {
+            decodeAdvice.beforeDecode(request, this, content, type);
         }
 
-        Object entity = rxSerializer.deSerialize(mediaType, headers, response.body().getByteBuf().array(), type);
-        for (RxSerializerAdvice rxSerializerAdvice : clientConfig.unmodifiableRxSerializeAdvices()) {
-            entity = rxSerializerAdvice.afterDeSerialize(request, this, type, entity);
+        Object entity = decoder.decode(mediaType, headers, content, type);
+        for (DecodeAdvice decodeAdvice : clientConfig.unmodifiableDecodeAdvices()) {
+            entity = decodeAdvice.afterDecode(request, this, content, entity, type);
         }
 
         return (T) entity;

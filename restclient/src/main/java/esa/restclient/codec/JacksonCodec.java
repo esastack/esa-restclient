@@ -47,12 +47,12 @@ public class JacksonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) throws JsonProcessingException {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) throws JsonProcessingException {
         return objectMapper.writeValueAsBytes(entity);
     }
 
     @Override
-    public <T> T decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
+    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
         return objectMapper.readValue(data, getJavaType(type));
     }
 

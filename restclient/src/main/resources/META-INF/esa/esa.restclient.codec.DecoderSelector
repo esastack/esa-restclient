@@ -1,4 +1,4 @@
 esa.restclient.codec.ProtoBufDecoderSelector
-esa.restclient.serializer.ByteArrayRxSerializerSelector
+esa.restclient.codec.ByteToByteDecoderSelector
 esa.restclient.codec.StringDecoderSelector
 esa.restclient.codec.JsonDecoderSelector

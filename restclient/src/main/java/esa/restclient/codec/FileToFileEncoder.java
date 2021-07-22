@@ -1,20 +1,21 @@
 package esa.restclient.codec;
 
 import esa.commons.http.HttpHeaders;
+import esa.restclient.BodyContent;
 import esa.restclient.MediaType;
 
 import java.io.File;
 
-public class FileToFileEncoder implements FileEncoder {
+public class FileToFileEncoder implements Encoder {
 
     @Override
-    public File encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+    public BodyContent<File> encode(MediaType mediaType, HttpHeaders headers, Object entity) {
         if (entity == null) {
             return null;
         }
 
         if (entity instanceof File) {
-            return (File) entity;
+            return BodyContent.of((File) entity);
         }
 
         throw new UnsupportedOperationException("FileToFileEncoder " +

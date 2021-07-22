@@ -10,11 +10,14 @@ import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.util.Futures;
+import esa.restclient.codec.EncodeAdvice;
+import esa.restclient.codec.Encoder;
 import esa.restclient.exec.RestRequestExecutor;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 
@@ -105,53 +108,48 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
 
     CompletionStage<HttpResponse> doRequest() {
         try {
-            fillBody();
+            fillBody(encode());
         } catch (Exception e) {
             return Futures.completed(e);
         }
         return target.execute();
     }
 
-    private TxSerializer computeTxSerializer() {
+    private BodyContent<?> encode() throws Exception {
+        Encoder encoder = getEncoder();
+        Object entity = entity();
 
-        final HttpHeaders headers = headers();
-        final Object entity = needSerializeEntity();
-
-        final TxSerializerSelector[] txSerializerSelectors = clientConfig.unmodifiableTxSerializerSelectors();
-        for (TxSerializerSelector txSerializerSelector : txSerializerSelectors) {
-            TxSerializer txSerializer = txSerializerSelector.select(headers, contentType, entity);
-            if (txSerializer != null) {
-                return txSerializer;
-            }
+        for (EncodeAdvice encodeAdvice : clientConfig.unmodifiableEncodeAdvices()) {
+            entity = encodeAdvice.beforeEncode(this, entity);
         }
 
-        throw new IllegalStateException("The request has no rxSerializer," +
-                "Please set the correct contentType and txSerializerSelector");
+        BodyContent<?> bodyContent = encoder.encode(contentType.mediaType(), headers(), entity);
+
+        for (EncodeAdvice encodeAdvice : clientConfig.unmodifiableEncodeAdvices()) {
+            encodeAdvice.afterEncode(this, entity, bodyContent);
+        }
+        return bodyContent;
     }
 
-    final void fillBody() throws Exception {
-        TxSerializer txSerializer = computeTxSerializer();
-        MediaType mediaType = null;
-        if (contentType != null) {
-            mediaType = contentType.mediaType();
-        }
-
-        Object entity = needSerializeEntity();
-        for (TxSerializerAdvice txSerializerAdvice : clientConfig.unmodifiableTxSerializeAdvices()) {
-            entity = txSerializerAdvice.beforeSerialize(this, entity);
-        }
-
-        byte[] data = txSerializer.serialize(mediaType, headers(), entity);
-        if (data != TxSerializer.DELAY_SERIALIZE_IN_NETTY) {
-            this.target.body(data);
-        }
-
-        for (TxSerializerAdvice txSerializerAdvice : clientConfig.unmodifiableTxSerializeAdvices()) {
-            txSerializerAdvice.afterSerialize(this, entity, data);
+    private void fillBody(BodyContent<?> content) {
+        int type = content.type();
+        if (type == BodyContent.TYPE.BYTES) {
+            target.body((byte[]) content.content());
+        } else if (type == BodyContent.TYPE.FILE) {
+            target.body((File) content.content());
+        } else if (type == BodyContent.TYPE.MULTIPART) {
+            //TODO
+        } else {
+            throw new IllegalStateException("Illegal type:" + type + ",Type only supports elements of RequestContent.TYPE");
         }
     }
 
-    protected abstract Object needSerializeEntity();
+    private Encoder getEncoder() {
+        Checks.checkNotNull(contentType, "contentType");
+        return contentType.encoder();
+    }
+
+    protected abstract Object entity();
 
     @Override
     public ExecutableRestRequest readTimeout(int readTimeout) {

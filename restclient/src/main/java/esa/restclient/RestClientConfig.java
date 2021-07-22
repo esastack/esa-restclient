@@ -7,7 +7,6 @@ import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.restclient.codec.DecodeAdvice;
 import esa.restclient.codec.DecoderSelector;
 import esa.restclient.codec.EncodeAdvice;
-import esa.restclient.codec.EncoderSelector;
 import esa.restclient.exec.Interceptor;
 
 import java.util.List;
@@ -55,8 +54,6 @@ public interface RestClientConfig {
     int maxRedirects();
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
-
-    EncoderSelector[] unmodifiableEncoderSelectors();
 
     DecoderSelector[] unmodifiableDecoderSelectors();
 

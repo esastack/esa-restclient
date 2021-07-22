@@ -1,18 +1,19 @@
 package esa.restclient.codec;
 
 import esa.commons.http.HttpHeaders;
+import esa.restclient.BodyContent;
 import esa.restclient.MediaType;
 
-public class MultipartToMultipartEncoder implements MultipartEncoder {
+public class MultipartToMultipartEncoder implements Encoder {
 
     @Override
-    public Multipart encode(MediaType mediaType, HttpHeaders headers, Object entity) {
+    public BodyContent<Multipart> encode(MediaType mediaType, HttpHeaders headers, Object entity) {
         if (entity == null) {
             return null;
         }
 
         if (entity instanceof Multipart) {
-            return (Multipart) entity;
+            return BodyContent.of((Multipart) entity);
         }
 
         throw new UnsupportedOperationException("FileToFileEncoder " +

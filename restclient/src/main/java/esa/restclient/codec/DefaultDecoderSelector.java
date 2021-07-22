@@ -2,6 +2,7 @@ package esa.restclient.codec;
 
 import esa.commons.annotation.Internal;
 import esa.commons.http.HttpHeaders;
+import esa.restclient.BodyContent;
 import esa.restclient.ContentType;
 import esa.restclient.MediaType;
 import esa.restclient.RestRequest;
@@ -9,23 +10,14 @@ import esa.restclient.RestRequest;
 import java.lang.reflect.Type;
 
 @Internal
-public class DefaultCodecSelector implements EncoderSelector, DecoderSelector {
+public class DefaultDecoderSelector implements DecoderSelector {
 
-    public DefaultCodecSelector() {
+    public DefaultDecoderSelector() {
     }
 
     @Override
-    public Encoder<?> select(HttpHeaders requestHeaders, ContentType contentType, Object entity) {
-        if (contentType == null) {
-            return null;
-        }
-
-        return contentType.encoder();
-    }
-
-    @Override
-    public Decoder<?> select(RestRequest request, ContentType[] acceptTypes, Type type,
-                             MediaType responseMediaType, HttpHeaders responseHeaders, Object data) {
+    public Decoder select(RestRequest request, ContentType[] acceptTypes, MediaType responseMediaType,
+                          HttpHeaders responseHeaders, BodyContent<?> data, Type type) {
         if (acceptTypes == null || acceptTypes.length == 0) {
             return null;
         }

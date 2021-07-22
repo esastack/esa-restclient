@@ -1,12 +1,14 @@
 package esa.restclient.codec;
 
+import esa.httpclient.core.util.Ordered;
+import esa.restclient.BodyContent;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponse;
 
 import java.lang.reflect.Type;
 
-public interface DecodeAdvice {
-    void beforeDecode(RestRequest request, RestResponse response, Object data, Type type);
+public interface DecodeAdvice extends Ordered {
+    void beforeDecode(RestRequest request, RestResponse response, BodyContent<?> content, Type type);
 
-    Object afterDecode(RestRequest request, RestResponse response, Object data, Type type, Object decoded);
+    Object afterDecode(RestRequest request, RestResponse response, BodyContent<?> content, Object decoded, Type type);
 }

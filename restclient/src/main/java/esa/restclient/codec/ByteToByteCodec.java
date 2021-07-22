@@ -7,12 +7,12 @@ import java.lang.reflect.Type;
 
 public class ByteToByteCodec implements ByteCodec {
     @Override
-    public byte[] decode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
+    public byte[] doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
         return data;
     }
 
     @Override
-    public byte[] encode(MediaType mediaType, HttpHeaders headers, Object entity) throws Exception {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) {
         if (entity == null) {
             return null;
         }

@@ -10,8 +10,7 @@ import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.util.Futures;
-import esa.restclient.codec.EncodeAdvice;
-import esa.restclient.codec.Encoder;
+import esa.restclient.codec.EncodeContextImpl;
 import esa.restclient.exec.RestRequestExecutor;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
@@ -116,19 +115,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     private RequestBodyContent<?> encode() throws Exception {
-        Encoder encoder = getEncoder();
-        Object entity = entity();
-
-        for (EncodeAdvice encodeAdvice : clientConfig.unmodifiableEncodeAdvices()) {
-            entity = encodeAdvice.beforeEncode(this, entity);
-        }
-
-        RequestBodyContent<?> requestBodyContent = encoder.encode(contentType.mediaType(), headers(), entity);
-
-        for (EncodeAdvice encodeAdvice : clientConfig.unmodifiableEncodeAdvices()) {
-            encodeAdvice.afterEncode(this, entity, requestBodyContent);
-        }
-        return requestBodyContent;
+        return new EncodeContextImpl(this, entity(), clientConfig).proceed();
     }
 
     private void fillBody(RequestBodyContent<?> content) {
@@ -142,11 +129,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         } else {
             throw new IllegalStateException("Illegal type:" + type + ",Type only supports elements of RequestContent.TYPE");
         }
-    }
-
-    private Encoder getEncoder() {
-        Checks.checkNotNull(contentType, "contentType");
-        return contentType.encoder();
     }
 
     protected abstract Object entity();

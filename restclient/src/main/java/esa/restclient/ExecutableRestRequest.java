@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-public interface ExecutableRestRequest extends RestRequest {
+public interface ExecutableRestRequest extends RestRequestBase {
 
-    CompletionStage<RestResponse> execute();
+    CompletionStage<RestResponseBase> execute();
 
     @Override
     ExecutableRestRequest readTimeout(int readTimeout);

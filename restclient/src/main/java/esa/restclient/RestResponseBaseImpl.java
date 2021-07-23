@@ -12,13 +12,13 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
 
-public class RestResponseImpl implements RestResponse {
+public class RestResponseBaseImpl implements RestResponseBase {
 
     private final RestRequest request;
     private final HttpResponse response;
     private final RestClientConfig clientConfig;
 
-    public RestResponseImpl(
+    public RestResponseBaseImpl(
             RestRequest request,
             HttpResponse response,
             RestClientConfig clientConfig) {

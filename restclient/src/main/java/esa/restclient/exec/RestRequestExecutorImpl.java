@@ -4,7 +4,7 @@ import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.RequestInvocation;
 import esa.restclient.RestClientConfig;
 import esa.restclient.RestRequest;
-import esa.restclient.RestResponse;
+import esa.restclient.RestResponseBase;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +19,9 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
     }
 
     @Override
-    public CompletionStage<RestResponse> execute(RestRequest request) {
-        return invocationChain.proceed(request);
+    public CompletionStage<RestResponseBase> execute(RestRequest request) {
+        return invocationChain.proceed(request)
+                .thenApply(response -> (RestResponseBase) response);
     }
 
     private InvocationChain buildInvokeChain(RestClientConfig clientConfig) {

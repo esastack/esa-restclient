@@ -21,7 +21,9 @@ import java.util.function.Consumer;
 /**
  * The modifiable {@link HttpRequest} which is allowed to be modified.
  */
-public interface HttpRequestBase extends HttpRequest, RequestConfig, RequestHandleConfig {
+public interface HttpRequestBase extends HttpRequest,
+        RequestMoreConfig,
+        RequestBaseConfig {
 
     @Override
     HttpRequestBase enableUriEncode();
@@ -55,7 +57,6 @@ public interface HttpRequestBase extends HttpRequest, RequestConfig, RequestHand
      * @param handle handle
      * @return this
      */
-    @Override
     HttpRequestBase handle(Consumer<Handle> handle);
 
     /**
@@ -69,7 +70,6 @@ public interface HttpRequestBase extends HttpRequest, RequestConfig, RequestHand
      * @param handler handler
      * @return this
      */
-    @Override
     HttpRequestBase handler(Handler handler);
 
     @Override

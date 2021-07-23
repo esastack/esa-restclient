@@ -22,6 +22,6 @@ public class RequestInvocation implements InvocationChain {
     }
 
     private RestResponse processResponse(AbstractExecutableRestRequest request, HttpResponse response) {
-        return new RestResponseImpl(request, response, request.clientConfig);
+        return new RestResponseBaseImpl(request, response, request.clientConfig);
     }
 }

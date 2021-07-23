@@ -102,7 +102,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     @Override
-    public CompletionStage<RestResponse> execute() {
+    public CompletionStage<RestResponseBase> execute() {
         return requestExecutor.execute(this);
     }
 

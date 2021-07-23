@@ -67,7 +67,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
         final HttpHeaders headers = response.headers();
 
         final DecoderSelector[] decoderSelectors = clientConfig.unmodifiableDecoderSelectors();
-        BodyContent<byte[]> content = BodyContent.of(response.body().getByteBuf().array());
+        ResponseBodyContent<byte[]> content = ResponseBodyContent.of(response.body().getByteBuf().array());
         for (DecoderSelector decoderSelector : decoderSelectors) {
             Decoder decoder = decoderSelector.select(request, acceptTypes, mediaType, headers, content, type);
             if (decoder != null) {
@@ -76,7 +76,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
             }
         }
         throw new IllegalStateException("There is no suitable decoder for this response," +
-                "Please set correct acceptType and rxSerializerSelector!" +
+                "Please set correct acceptType and decoderSelector!" +
                 "request.uri: " + request.uri() +
                 ",response.status: " + response.status() +
                 ",response.headers: " + headers);
@@ -85,7 +85,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
 
     @SuppressWarnings("unchecked")
     private <T> T decode(Decoder decoder, MediaType mediaType,
-                         HttpHeaders headers, Type type, BodyContent<byte[]> content) throws Exception {
+                         HttpHeaders headers, Type type, ResponseBodyContent<byte[]> content) throws Exception {
         for (DecodeAdvice decodeAdvice : clientConfig.unmodifiableDecodeAdvices()) {
             decodeAdvice.beforeDecode(request, this, content, type);
         }

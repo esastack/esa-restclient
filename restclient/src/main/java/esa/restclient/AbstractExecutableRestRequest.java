@@ -115,7 +115,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         return target.execute();
     }
 
-    private BodyContent<?> encode() throws Exception {
+    private RequestBodyContent<?> encode() throws Exception {
         Encoder encoder = getEncoder();
         Object entity = entity();
 
@@ -123,21 +123,21 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
             entity = encodeAdvice.beforeEncode(this, entity);
         }
 
-        BodyContent<?> bodyContent = encoder.encode(contentType.mediaType(), headers(), entity);
+        RequestBodyContent<?> requestBodyContent = encoder.encode(contentType.mediaType(), headers(), entity);
 
         for (EncodeAdvice encodeAdvice : clientConfig.unmodifiableEncodeAdvices()) {
-            encodeAdvice.afterEncode(this, entity, bodyContent);
+            encodeAdvice.afterEncode(this, entity, requestBodyContent);
         }
-        return bodyContent;
+        return requestBodyContent;
     }
 
-    private void fillBody(BodyContent<?> content) {
+    private void fillBody(RequestBodyContent<?> content) {
         int type = content.type();
-        if (type == BodyContent.TYPE.BYTES) {
+        if (type == RequestBodyContent.TYPE.BYTES) {
             target.body((byte[]) content.content());
-        } else if (type == BodyContent.TYPE.FILE) {
+        } else if (type == RequestBodyContent.TYPE.FILE) {
             target.body((File) content.content());
-        } else if (type == BodyContent.TYPE.MULTIPART) {
+        } else if (type == RequestBodyContent.TYPE.MULTIPART) {
             //TODO
         } else {
             throw new IllegalStateException("Illegal type:" + type + ",Type only supports elements of RequestContent.TYPE");

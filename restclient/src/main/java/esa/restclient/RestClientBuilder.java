@@ -109,14 +109,42 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     public RestClientBuilder addInterceptor(Interceptor interceptor) {
-        Checks.checkNotNull(interceptor, "Interceptor must not be null");
+        Checks.checkNotNull(interceptor, "interceptor");
         this.interceptors.add(interceptor);
         return self();
     }
 
     public RestClientBuilder addInterceptors(List<Interceptor> interceptors) {
-        Checks.checkNotNull(interceptors, "Interceptors must not be null");
+        Checks.checkNotNull(interceptors, "interceptors");
         this.interceptors.addAll(interceptors);
+        return self();
+    }
+
+    public RestClientBuilder addEncodeAdvice(EncodeAdvice encodeAdvice) {
+        Checks.checkNotNull(encodeAdvice, "encodeAdvice");
+        this.encodeAdvices.add(encodeAdvice);
+        this.unmodifiableEncodeAdvices = buildUnmodifiableEncodeAdvices();
+        return self();
+    }
+
+    public RestClientBuilder addEncodeAdvices(List<EncodeAdvice> encodeAdvices) {
+        Checks.checkNotNull(encodeAdvices, "encodeAdvices");
+        this.encodeAdvices.addAll(encodeAdvices);
+        this.unmodifiableEncodeAdvices = buildUnmodifiableEncodeAdvices();
+        return self();
+    }
+
+    public RestClientBuilder addDecodeAdvice(DecodeAdvice decodeAdvice) {
+        Checks.checkNotNull(decodeAdvice, "decodeAdvice");
+        this.decodeAdvices.add(decodeAdvice);
+        this.unmodifiableDecodeAdvices = buildUnmodifiableDecodeAdvices();
+        return self();
+    }
+
+    public RestClientBuilder addDecodeAdvices(List<DecodeAdvice> decodeAdvices) {
+        Checks.checkNotNull(decodeAdvices, "decodeAdvices");
+        this.decodeAdvices.addAll(decodeAdvices);
+        this.unmodifiableDecodeAdvices = buildUnmodifiableDecodeAdvices();
         return self();
     }
 
@@ -330,6 +358,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
         restClientBuilder.addDecoderSelectors(decoderSelectors);
+        restClientBuilder.addEncodeAdvices(encodeAdvices);
+        restClientBuilder.addDecodeAdvices(decodeAdvices);
         return restClientBuilder;
     }
 }

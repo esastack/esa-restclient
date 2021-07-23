@@ -4,5 +4,5 @@ import esa.httpclient.core.util.Ordered;
 
 public interface DecodeAdvice extends Ordered {
 
-    Object aroundDecode(DecodeContext decodeContext);
+    Object aroundDecode(DecodeContext decodeContext) throws Exception;
 }

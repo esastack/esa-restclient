@@ -52,19 +52,31 @@ public class QuickStart {
                                 System.out.println(response.headers());
                                 return response;
                             }
-
                     );
                 })
-                .addInterceptor((request, next) -> {
-                    System.out.println("----------Intercept3 begin----------");
-                    System.out.println(request.headers());
-                    return next.proceed(request).thenApply((response) -> {
-                                System.out.println("----------Intercept3 end----------");
-                                System.out.println(response.headers());
-                                return response;
-                            }
-
-                    );
+                .addEncodeAdvice(encodeContext -> {
+                    System.out.println("--------aroundEncode1 begin---------");
+                    RequestBodyContent<?> content = encodeContext.proceed();
+                    System.out.println("--------aroundEncode1 end---------");
+                    return content;
+                })
+                .addEncodeAdvice(encodeContext -> {
+                    System.out.println("--------aroundEncode2 begin---------");
+                    RequestBodyContent<?> content = encodeContext.proceed();
+                    System.out.println("--------aroundEncode2 end---------");
+                    return content;
+                })
+                .addDecodeAdvice(decodeContext -> {
+                    System.out.println("--------aroundDecode1 begin---------");
+                    Object result = decodeContext.proceed();
+                    System.out.println("--------aroundDecode1 end---------");
+                    return result;
+                })
+                .addDecodeAdvice(decodeContext -> {
+                    System.out.println("--------aroundDecode2 begin---------");
+                    Object result = decodeContext.proceed();
+                    System.out.println("--------aroundDecode2 end---------");
+                    return result;
                 })
                 .build();
     }

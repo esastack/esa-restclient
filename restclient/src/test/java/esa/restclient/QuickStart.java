@@ -33,51 +33,61 @@ public class QuickStart {
     }
 
     private static RestClient createClient() {
-        return RestClient.create()
-                .addInterceptor((request, next) -> {
-                    System.out.println("----------Intercept1 begin----------");
-                    System.out.println(request.headers());
-                    return next.proceed(request).thenApply((response) -> {
-                                System.out.println("----------Intercept1 end----------");
-                                System.out.println(response.headers());
-                                return response;
-                            }
-                    );
-                })
-                .addInterceptor((request, next) -> {
-                    System.out.println("----------Intercept2 begin----------");
-                    System.out.println(request.headers());
-                    return next.proceed(request).thenApply((response) -> {
-                                System.out.println("----------Intercept2 end----------");
-                                System.out.println(response.headers());
-                                return response;
-                            }
-                    );
-                })
-                .addEncodeAdvice(encodeContext -> {
-                    System.out.println("--------aroundEncode1 begin---------");
-                    RequestBodyContent<?> content = encodeContext.proceed();
-                    System.out.println("--------aroundEncode1 end---------");
-                    return content;
-                })
-                .addEncodeAdvice(encodeContext -> {
-                    System.out.println("--------aroundEncode2 begin---------");
-                    RequestBodyContent<?> content = encodeContext.proceed();
-                    System.out.println("--------aroundEncode2 end---------");
-                    return content;
-                })
-                .addDecodeAdvice(decodeContext -> {
-                    System.out.println("--------aroundDecode1 begin---------");
-                    Object result = decodeContext.proceed();
-                    System.out.println("--------aroundDecode1 end---------");
-                    return result;
-                })
-                .addDecodeAdvice(decodeContext -> {
-                    System.out.println("--------aroundDecode2 begin---------");
-                    Object result = decodeContext.proceed();
-                    System.out.println("--------aroundDecode2 end---------");
-                    return result;
-                })
-                .build();
+        RestClientBuilder builder = RestClient.create();
+        addInterceptors(builder);
+        addEncodeAdvices(builder);
+        addDecodeAdvices(builder);
+        return builder.build();
     }
+
+    private static void addInterceptors(RestClientBuilder builder) {
+        builder.addInterceptor((request, next) -> {
+            System.out.println("----------Intercept1 begin----------");
+            System.out.println(request.headers());
+            return next.proceed(request).thenApply((response) -> {
+                        System.out.println("----------Intercept1 end----------");
+                        System.out.println(response.headers());
+                        return response;
+                    }
+            );
+        }).addInterceptor((request, next) -> {
+            System.out.println("----------Intercept2 begin----------");
+            System.out.println(request.headers());
+            return next.proceed(request).thenApply((response) -> {
+                        System.out.println("----------Intercept2 end----------");
+                        System.out.println(response.headers());
+                        return response;
+                    }
+            );
+        });
+    }
+
+    private static void addEncodeAdvices(RestClientBuilder builder) {
+        builder.addEncodeAdvice(encodeContext -> {
+            System.out.println("--------aroundEncode1 begin---------");
+            RequestBodyContent<?> content = encodeContext.proceed();
+            System.out.println("--------aroundEncode1 end---------");
+            return content;
+        }).addEncodeAdvice(encodeContext -> {
+            System.out.println("--------aroundEncode2 begin---------");
+            RequestBodyContent<?> content = encodeContext.proceed();
+            System.out.println("--------aroundEncode2 end---------");
+            return content;
+        });
+    }
+
+    private static void addDecodeAdvices(RestClientBuilder builder) {
+        builder.addDecodeAdvice(decodeContext -> {
+            System.out.println("--------aroundDecode1 begin---------");
+            Object result = decodeContext.proceed();
+            System.out.println("--------aroundDecode1 end---------");
+            return result;
+        }).addDecodeAdvice(decodeContext -> {
+            System.out.println("--------aroundDecode2 begin---------");
+            Object result = decodeContext.proceed();
+            System.out.println("--------aroundDecode2 end---------");
+            return result;
+        });
+    }
+
 }

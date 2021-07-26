@@ -119,7 +119,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     private void fillBody(RequestBodyContent<?> content) {
-        int type = content.type();
+        byte type = content.type();
         if (type == RequestBodyContent.TYPE.BYTES) {
             target.body((byte[]) content.content());
         } else if (type == RequestBodyContent.TYPE.FILE) {

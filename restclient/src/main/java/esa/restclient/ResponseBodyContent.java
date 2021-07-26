@@ -5,21 +5,21 @@ public final class ResponseBodyContent<T> implements BodyContent<T> {
      * Use this flag to represent content type to avoid using Class.equal()
      * to improve performance
      */
-    private final int type;
+    private final byte type;
 
     public static final class TYPE {
-        public static final int BYTES = 1;
+        public static final byte BYTES = 1;
     }
 
     private final T content;
 
-    private ResponseBodyContent(int type, T content) {
+    private ResponseBodyContent(byte type, T content) {
         this.type = type;
         this.content = content;
     }
 
     @Override
-    public int type() {
+    public byte type() {
         return type;
     }
 

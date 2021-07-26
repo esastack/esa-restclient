@@ -258,11 +258,16 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
 
     @Override
     public ExecutableRestRequest contentType(ContentType contentType) {
-        this.contentType = contentType;
-        if (contentType != null) {
-            headers().set(HttpHeaderNames.CONTENT_TYPE,
-                    contentType.mediaType().toString());
+        if (contentType == null) {
+            throw new NullPointerException("contentType");
         }
+        if (contentType.encoder() == null) {
+            throw new NullPointerException("contentType‘s encoder");
+        }
+
+        this.contentType = contentType;
+        headers().set(HttpHeaderNames.CONTENT_TYPE,
+                contentType.mediaType().toString());
         return self();
     }
 
@@ -279,11 +284,19 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         StringBuilder acceptBuilder = new StringBuilder();
 
         for (int i = 0; i < acceptTypes.length; i++) {
+            ContentType acceptType = acceptTypes[i];
+            if (acceptType == null) {
+                throw new NullPointerException("acceptType is null when index is equal to" + i);
+            }
+            if (acceptType.decoder() == null) {
+                throw new NullPointerException("acceptType‘s decoder is null when index is equal to" + i);
+            }
             if (i > 0) {
                 acceptBuilder.append(",");
             }
-            acceptBuilder.append(acceptTypes[i].mediaType().toString());
+            acceptBuilder.append(acceptType.mediaType().toString());
         }
+
         headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
         this.acceptTypes = acceptTypes;
         return self();

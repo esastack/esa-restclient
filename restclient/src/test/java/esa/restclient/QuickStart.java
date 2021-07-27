@@ -17,6 +17,8 @@ public class QuickStart {
                 .entity("aaa")
                 .maxRetries(3)
                 .readTimeout(100)
+                .contentType(ContentType.TEXT_PLAIN)
+                .accept(ContentType.TEXT_PLAIN)
                 .execute()
                 .thenAccept(response -> {
                     try {

@@ -131,8 +131,6 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         }
     }
 
-    protected abstract Object entity();
-
     @Override
     public ExecutableRestRequest readTimeout(int readTimeout) {
         target.readTimeout(readTimeout);

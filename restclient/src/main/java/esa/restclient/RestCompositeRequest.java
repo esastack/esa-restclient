@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RestCompositeRequest extends AbstractExecutableRestRequest
-        implements RestRequestFacade, RestEntityRequest,
-        RestFileRequest, RestMultipartRequest {
+        implements RestRequestFacade, RestFileRequest, RestMultipartRequest {
 
     private Object entity;
 
@@ -65,7 +64,10 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
 
     @Override
     public File file() {
-        return target.file();
+        if (entity instanceof File) {
+            return (File) entity;
+        }
+        throw new IllegalStateException("Entity is not file type");
     }
 
     @Override
@@ -165,33 +167,27 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestEntityRequest entity(Object entity) {
+    public ExecutableRestRequest entity(Object entity) {
         Checks.checkNotNull(entity, "entity");
-        if (this.entity != null) {
-            throw new IllegalStateException("Entity had been set,and it cannot be set repeatedly!");
-        }
+        checkEntityHadSet();
         setContentTypeIfAbsent(ContentType.APPLICATION_JSON_UTF8);
         this.entity = entity;
         return self();
     }
 
     @Override
-    public RestEntityRequest entity(String content) {
+    public ExecutableRestRequest entity(String content) {
         Checks.checkNotNull(content, "content");
-        if (this.entity != null) {
-            throw new IllegalStateException("Entity had been set,and it cannot be set repeatedly!");
-        }
+        checkEntityHadSet();
         setContentTypeIfAbsent(ContentType.TEXT_PLAIN);
         this.entity = content;
         return self();
     }
 
     @Override
-    public RestEntityRequest entity(byte[] data) {
+    public ExecutableRestRequest entity(byte[] data) {
         Checks.checkNotNull(data, "data");
-        if (this.entity != null) {
-            throw new IllegalStateException("Entity had been set,and it cannot be set repeatedly!");
-        }
+        checkEntityHadSet();
         setContentTypeIfAbsent(ContentType.APPLICATION_OCTET_STREAM);
         this.entity = data;
         return self();
@@ -200,20 +196,25 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     @Override
     public RestFileRequest entity(File file) {
         Checks.checkNotNull(file, "file");
-        if (this.entity != null) {
-            throw new IllegalStateException("Entity had been set,and it cannot be set repeatedly!");
-        }
+        checkEntityHadSet();
         setContentTypeIfAbsent(ContentType.FILE);
-        target.body(file);
+        this.entity = file;
         return self();
     }
 
-    //TODO 不允许多次设置BODY
+    //TODO 修改HttpClient的multipart，改完之后将这里也修改一下
     @Override
     public RestMultipartRequest multipart() {
+        checkEntityHadSet();
         setContentTypeIfAbsent(ContentType.MULTIPART_FORM_DATA);
         target.multipart();
         return self();
+    }
+
+    private void checkEntityHadSet() {
+        if (this.entity != null) {
+            throw new IllegalStateException("Entity had been set,and it cannot be set repeatedly!");
+        }
     }
 
     private void setContentTypeIfAbsent(ContentType contentType) {

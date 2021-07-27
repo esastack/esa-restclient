@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface RestRequestBase extends RestRequest, RequestBaseConfig {
+    Object entity();
+
     @Override
     RestRequestBase readTimeout(int readTimeout);
 

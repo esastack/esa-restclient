@@ -8,11 +8,11 @@ import java.util.Map;
 
 public interface RestRequestFacade extends ExecutableRestRequest {
 
-    RestEntityRequest entity(Object entity);
+    ExecutableRestRequest entity(Object entity);
 
-    RestEntityRequest entity(String content);
+    ExecutableRestRequest entity(String content);
 
-    RestEntityRequest entity(byte[] data);
+    ExecutableRestRequest entity(byte[] data);
 
     RestFileRequest entity(File file);
 

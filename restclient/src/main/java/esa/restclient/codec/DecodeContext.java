@@ -7,6 +7,15 @@ import esa.restclient.RestResponse;
 
 import java.lang.reflect.Type;
 
+/**
+ * Context class used by {@link DecodeAdvice} to intercept calls to
+ * {@link Decoder#decode}.
+ * The member variables in this context class correspond to the
+ * parameters of the intercepted method {@link Decoder#decode}
+ *
+ * @see Decoder
+ * @see DecodeAdvice
+ */
 public interface DecodeContext {
 
     RestRequest request();
@@ -28,5 +37,15 @@ public interface DecodeContext {
 
     Type type();
 
+    /**
+     * Proceed to the next advice in the chain.
+     * <p>
+     * Advice MUST explicitly call this method to continue the execution chain;
+     * the call to this method in the last of the chain will invoke
+     * the wrapped {@link Decoder#decode} method.
+     *
+     * @return decoded object
+     * @throws Exception error
+     */
     Object proceed() throws Exception;
 }

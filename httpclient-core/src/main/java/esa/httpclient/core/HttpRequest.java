@@ -16,15 +16,12 @@
 package esa.httpclient.core;
 
 import esa.commons.collection.MultiValueMap;
-import esa.commons.http.HttpHeaders;
-import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
-public interface HttpRequest extends Reusable<HttpRequest>, Request {
+public interface HttpRequest extends Reusable<HttpRequest>, Request, Multipart {
 
     @Override
     HttpRequest addParam(String name, String value);

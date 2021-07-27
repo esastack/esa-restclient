@@ -69,6 +69,15 @@ public interface HttpRequestFacade extends ExecutableRequest {
     MultipartRequest multipart();
 
     /**
+     * Converts to a {@link MultipartRequest} which can be used to handle the body
+     * by multipart encoding.
+     *
+     * @param multipartBody multipartBody
+     * @return request
+     */
+    MultipartRequest multipart(MultipartBody multipartBody);
+
+    /**
      * Converts to a {@link SegmentRequest} which can be used to write the body's content
      * chunk by chunk (not means chunk protocol will be used).
      *

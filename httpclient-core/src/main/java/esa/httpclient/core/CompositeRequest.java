@@ -16,7 +16,6 @@
 package esa.httpclient.core;
 
 import esa.commons.Checks;
-import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiMaps;
 import esa.commons.collection.MultiValueMap;
 import esa.commons.http.HttpMethod;
@@ -26,7 +25,6 @@ import esa.httpclient.core.util.MultiValueMapUtils;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -35,9 +33,6 @@ import java.util.function.Supplier;
 
 public class CompositeRequest extends HttpRequestBaseImpl implements PlainRequest, FileRequest,
         MultipartRequest, HttpRequestFacade {
-
-    private static final String DEFAULT_BINARY_CONTENT_TYPE = "application/octet-stream";
-    private static final String DEFAULT_TEXT_CONTENT_TYPE = "text/plain";
 
     private static final byte STATE_INIT = -1;
     private static final byte STATE_PLAIN_PREPARING = 0;
@@ -56,12 +51,10 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     /**
      * Body data which isn't always exists, so it's good to be instantiate lazily.
      */
-    private MultiValueMap<String, String> attrs;
-    private List<MultipartFileItem> files;
+    private MultipartBody multipartBody;
 
     private Buffer buffer;
     private File file;
-    private boolean useMultipartEncode = true;
 
     /**
      * A bitmask where the bits are defined as
@@ -108,6 +101,14 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     @Override
     public MultipartRequest multipart() {
         checkNotStartedAndUpdateStatus(STATE_MULTIPART_PREPARING);
+        this.multipartBody = new MultipartBodyImpl();
+        return this;
+    }
+
+    @Override
+    public MultipartRequest multipart(MultipartBody multipartBody) {
+        checkNotStartedAndUpdateStatus(STATE_MULTIPART_PREPARING);
+        this.multipartBody = multipartBody;
         return this;
     }
 
@@ -140,13 +141,18 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     @Override
     public MultipartRequest multipartEncode(boolean useMultipartEncode) {
         checkStarted();
-        this.useMultipartEncode = useMultipartEncode;
+        checkMultipartBodyNotNull();
+        multipartBody.multipartEncode(useMultipartEncode);
         return self();
     }
 
     @Override
     public boolean multipartEncode() {
-        return isMultipart() && useMultipartEncode;
+        if (!isMultipart()) {
+            return false;
+        }
+        checkMultipartBodyNotNull();
+        return multipartBody.multipartEncode();
     }
 
     @Override
@@ -155,8 +161,8 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
             return self();
         }
         checkStarted();
-        checkAttrsNotNull();
-        attrs.add(name, value);
+        checkMultipartBodyNotNull();
+        multipartBody.attr(name, value);
         return self();
     }
 
@@ -165,7 +171,10 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         if (illegalArgs(name, file)) {
             return self();
         }
-        return file(name, file.getName(), file, DEFAULT_BINARY_CONTENT_TYPE, false);
+        checkStarted();
+        checkMultipartBodyNotNull();
+        multipartBody.file(name, file);
+        return self();
     }
 
     @Override
@@ -173,8 +182,10 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         if (illegalArgs(name, file)) {
             return self();
         }
-        return file(name, file.getName(), file, contentType,
-                DEFAULT_TEXT_CONTENT_TYPE.equalsIgnoreCase(contentType));
+        checkStarted();
+        checkMultipartBodyNotNull();
+        multipartBody.file(name, file, contentType);
+        return self();
     }
 
     @Override
@@ -185,7 +196,10 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         if (illegalArgs(name, file)) {
             return self();
         }
-        return file(name, file.getName(), file, contentType, isText);
+        checkStarted();
+        checkMultipartBodyNotNull();
+        multipartBody.file(name, file, contentType, isText);
+        return self();
     }
 
     @Override
@@ -198,15 +212,19 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
             return self();
         }
         checkStarted();
-        checkMultipartFile();
-        checkFilesNotNull();
-        files.add(new MultipartFileItem(name, filename, file, contentType, isText));
+        checkMultipartBodyNotNull();
+        multipartBody.file(name, filename, file, contentType, isText);
         return self();
     }
 
     @Override
     public MultiValueMap<String, String> attrs() {
-        if (attrs != null && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
+        if (multipartBody == null) {
+            return MultiMaps.emptyMultiMap();
+        }
+        MultiValueMap<String, String> attrs = multipartBody.attrs();
+        if (attrs != null
+                && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
             return MultiValueMapUtils.unmodifiableMap(attrs);
         } else {
             return MultiMaps.emptyMultiMap();
@@ -215,7 +233,12 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public List<MultipartFileItem> files() {
-        if (files != null && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
+        if (multipartBody == null) {
+            return Collections.emptyList();
+        }
+        List<MultipartFileItem> files = multipartBody.files();
+        if (files != null
+                && (status == STATE_MULTIPART_PREPARING || status == STATE_MULTIPART_EXECUTED)) {
             return Collections.unmodifiableList(files);
         } else {
             return Collections.emptyList();
@@ -331,26 +354,10 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         final CompositeRequest copied = new CompositeRequest(builder, client,
                 request, method(), uri().toString());
         copyTo(this, copied);
-
-        if (attrs != null) {
-            List<String> values;
-            for (Map.Entry<String, List<String>> entry : attrs.entrySet()) {
-                values = entry.getValue();
-                if (values != null && !values.isEmpty()) {
-                    for (String value : values) {
-                        copied.attr(entry.getKey(), value);
-                    }
-                }
-            }
+        if (multipartBody != null) {
+            copied.multipartBody = multipartBody.copy();
         }
 
-        if (files != null) {
-            for (MultipartFileItem item : files) {
-                copied.file(item.name(), item.fileName(), item.file(), item.contentType(), item.isText());
-            }
-        }
-
-        copied.multipartEncode(useMultipartEncode);
         if (buffer != null) {
             copied.body(buffer.copy());
         }
@@ -370,14 +377,15 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
     }
 
-    private CompositeRequest self() {
-        return this;
+    private void checkMultipartBodyNotNull() {
+        if (multipartBody == null) {
+            throw new IllegalStateException("MultipartBody is null," +
+                    "please call multipart() or multipart(multipartBody) firstly");
+        }
     }
 
-    private void checkMultipartFile() {
-        if (!useMultipartEncode) {
-            throw new IllegalArgumentException("File is not allowed to be added, maybe multipart is false?");
-        }
+    private CompositeRequest self() {
+        return this;
     }
 
     private void checkNotStartedAndUpdateStatus(byte newStatus) {
@@ -388,26 +396,6 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
                 throw new IllegalStateException(decideType() + " request has been set before");
             }
             this.status = newStatus;
-        }
-    }
-
-    private void checkAttrsNotNull() {
-        if (attrs == null) {
-            synchronized (monitor) {
-                if (attrs == null) {
-                    attrs = new HashMultiValueMap<>();
-                }
-            }
-        }
-    }
-
-    private void checkFilesNotNull() {
-        if (files == null) {
-            synchronized (monitor) {
-                if (files == null) {
-                    files = new LinkedList<>();
-                }
-            }
         }
     }
 

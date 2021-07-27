@@ -23,18 +23,60 @@ public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfi
 
     MultipartRequest multipartEncode(boolean multipartEncode);
 
+
+    /**
+     * add multipart attribute,this method is not thread-safe.
+     *
+     * @param name  name
+     * @param value value
+     * @return this
+     */
     @Override
     MultipartRequest attr(String name, String value);
 
+    /**
+     * add multipart file,this method is not thread-safe.
+     *
+     * @param name name
+     * @param file value
+     * @return this
+     */
     @Override
     MultipartRequest file(String name, File file);
 
+    /**
+     * add multipart file,this method is not thread-safe.
+     *
+     * @param name        name
+     * @param file        file
+     * @param contentType contentType
+     * @return this
+     */
     @Override
     MultipartRequest file(String name, File file, String contentType);
 
+    /**
+     * add multipart file,this method is not thread-safe.
+     *
+     * @param name        name
+     * @param file        file
+     * @param contentType contentType
+     * @param isText      isText
+     * @return this
+     */
     @Override
     MultipartRequest file(String name, File file, String contentType, boolean isText);
 
+    /**
+     * add multipart file,this method is not thread-safe.
+     *
+     * @param name        name
+     * @param filename    filename
+     * @param file        file
+     * @param contentType contentType
+     * @param isText      isText
+     * @return this
+     */
     @Override
     MultipartRequest file(String name, String filename, File file, String contentType, boolean isText);
 

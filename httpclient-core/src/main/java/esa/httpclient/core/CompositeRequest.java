@@ -85,8 +85,8 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
                             HttpMethod method,
                             String uri) {
         super(builder, method, uri);
-        Checks.checkNotNull(client, "NettyHttpClient must not be null");
-        Checks.checkNotNull(request, "SegmentRequest must not be null");
+        Checks.checkNotNull(client, "client");
+        Checks.checkNotNull(request, "request");
         this.client = client;
         this.request = request;
     }
@@ -121,7 +121,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
 
     @Override
     public FileRequest body(File file) {
-        Checks.checkNotNull(file, "File must not b null");
+        Checks.checkNotNull(file, "file");
         checkNotStartedAndUpdateStatus(STATE_FILE_PREPARING);
         this.file = file;
         return self();

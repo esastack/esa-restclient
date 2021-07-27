@@ -15,16 +15,12 @@
  */
 package esa.httpclient.core.exec;
 
-import esa.httpclient.core.Context;
 import esa.httpclient.core.Handle;
 import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
-import esa.httpclient.core.netty.HandleImpl;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
 /**
  * The core transceiver which can transform and write the given {@link HttpRequest} to network and
@@ -37,14 +33,9 @@ public interface HttpTransceiver {
      * Sends the given {@code request} and obtains the corresponding {@link HttpResponse}.
      *
      * @param request     request
-     * @param ctx         ctx
-     * @param handle      handle
-     * @param listener    listener
+     * @param execCtx     ctx
      * @return response
      */
-    CompletableFuture<HttpResponse> handle(HttpRequest request,
-                                           Context ctx,
-                                           BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                                           Listener listener);
+    CompletableFuture<HttpResponse> handle(HttpRequest request, ExecContext execCtx);
 
 }

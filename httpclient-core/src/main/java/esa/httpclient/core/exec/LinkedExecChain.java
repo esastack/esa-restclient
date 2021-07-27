@@ -19,11 +19,8 @@ import esa.commons.Checks;
 import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
-import esa.httpclient.core.netty.HandleImpl;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
 public class LinkedExecChain implements ExecChain {
 
@@ -31,12 +28,10 @@ public class LinkedExecChain implements ExecChain {
     private final ExecChain next;
     private final Context ctx;
 
-    private LinkedExecChain(Interceptor current,
-                            ExecChain next,
-                            Context ctx) {
-        Checks.checkNotNull(ctx, "Context must not be null");
-        Checks.checkNotNull(next, "ExecChain must not be null");
-        Checks.checkNotNull(current, "Interceptor must not be null");
+    private LinkedExecChain(Interceptor current, ExecChain next, Context ctx) {
+        Checks.checkNotNull(ctx, "ctx");
+        Checks.checkNotNull(next, "next");
+        Checks.checkNotNull(current, "current");
         this.ctx = ctx;
         this.current = current;
         this.next = next;
@@ -54,35 +49,30 @@ public class LinkedExecChain implements ExecChain {
 
     static ExecChain from(Interceptor[] interceptors,
                           HttpTransceiver transceiver,
-                          BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                          Context ctx,
-                          Listener listener) {
+                          ExecContext execContext) {
         if (interceptors.length == 0) {
-            return buildTransceiver(transceiver, handle, ctx, listener);
+            return buildTransceiver(transceiver, execContext);
         }
 
-        ExecChain chain = buildTransceiver(transceiver, handle, ctx, listener);
+        ExecChain chain = buildTransceiver(transceiver, execContext);
         for (int i = interceptors.length - 1; i >= 0; i--) {
-            chain = new LinkedExecChain(interceptors[i], chain, ctx);
+            chain = new LinkedExecChain(interceptors[i], chain, execContext.ctx());
         }
 
         return chain;
     }
 
     private static ExecChain buildTransceiver(HttpTransceiver transceiver,
-                                              BiFunction<Listener,
-                                                      CompletableFuture<HttpResponse>, HandleImpl> handle,
-                                              Context ctx,
-                                              Listener listener) {
+                                              ExecContext execContext) {
         return new ExecChain() {
             @Override
             public Context ctx() {
-                return ctx;
+                return execContext.ctx();
             }
 
             @Override
             public CompletableFuture<HttpResponse> proceed(HttpRequest request) {
-                return transceiver.handle(request, ctx, handle, listener);
+                return transceiver.handle(request, execContext);
             }
         };
 

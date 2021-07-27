@@ -15,8 +15,8 @@
  */
 package esa.httpclient.core.netty;
 
-import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.exec.ExecContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPromise;
@@ -36,7 +36,7 @@ interface RequestWriter {
      *
      * @param request request
      * @param channel channel
-     * @param ctx     ctx
+     * @param execCtx     ctx
      * @param headFuture headFuture
      * @param useUriEncode enable uriEncode or not
      * @param version version
@@ -46,7 +46,7 @@ interface RequestWriter {
      */
     ChannelFuture writeAndFlush(HttpRequest request,
                                 Channel channel,
-                                Context ctx,
+                                ExecContext execCtx,
                                 ChannelPromise headFuture,
                                 boolean useUriEncode,
                                 HttpVersion version,

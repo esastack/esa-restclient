@@ -20,13 +20,13 @@ import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.Context;
+import esa.httpclient.core.ExecContextUtil;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpMessage;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
+import esa.httpclient.core.exec.ExecContext;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.jupiter.api.Test;
 
@@ -63,12 +63,12 @@ class DefaultHandleTest {
     @Test
     void testAggregate() {
         final HttpRequest request = HttpClient.ofDefault().get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle1 = new DefaultHandle(ByteBufAllocator.DEFAULT);
-        final NettyHandle nHandle1 = new NettyHandle(handle1, request, ctx, listener, response);
+        final ResponseHandle nHandle1 = new ResponseHandle(handle1, request, ctx, tHandle, response);
         final HttpMessage message1 = new HttpMessageImpl(202, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
 
         nHandle1.onMessage(message1);
@@ -78,7 +78,7 @@ class DefaultHandleTest {
         then(handle1.status()).isEqualTo(202);
 
         final HandleImpl handle2 = new DefaultHandle(ByteBufAllocator.DEFAULT);
-        final NettyHandle nHandle2 = new NettyHandle(handle2, request, ctx, listener, response);
+        final ResponseHandle nHandle2 = new ResponseHandle(handle2, request, ctx, tHandle, response);
         final HttpMessage message2 = new HttpMessageImpl(302, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
         message2.headers().add("A", "B");
 

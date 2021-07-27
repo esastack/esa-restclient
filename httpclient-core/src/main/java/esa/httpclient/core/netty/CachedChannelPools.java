@@ -20,18 +20,14 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 import esa.commons.Checks;
-import esa.commons.function.ThrowingSupplier;
 import esa.commons.reflect.BeanUtils;
-import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.config.CacheOptions;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.metrics.ConnectionPoolMetric;
 import esa.httpclient.core.metrics.ConnectionPoolMetricProvider;
 import esa.httpclient.core.util.LoggerUtils;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
-import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 
 import java.net.SocketAddress;
@@ -42,16 +38,18 @@ import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
-public class ChannelPools implements ConnectionPoolMetricProvider {
-
-    static final ChannelPoolFactory CHANNEL_POOL_FACTORY = new ChannelPoolFactory();
+/**
+ * This class is designed to cache the given {@link ChannelPool}s.
+ */
+public class CachedChannelPools implements ConnectionPoolMetricProvider {
 
     private final Cache<SocketAddress, ChannelPool> cachedPools;
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    public ChannelPools(CacheOptions options) {
-        Checks.checkNotNull(options, "CacheOptions must not be null");
+    public CachedChannelPools(CacheOptions options) {
+        Checks.checkNotNull(options, "options");
         cachedPools = Caffeine.newBuilder()
                 .initialCapacity(options.initialCapacity())
                 .maximumSize(options.maximumSize())
@@ -66,24 +64,16 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
         return cachedPools.getIfPresent(address);
     }
 
-    ChannelPool getOrCreate(boolean ssl,
-                            boolean keepAlive,
+    ChannelPool getOrCreate(boolean keepAlive,
                             SocketAddress address,
-                            EventLoopGroup ioThreads,
-                            HttpClientBuilder builder,
-                            ThrowingSupplier<SslHandler> sslHandler) {
+                            Function<SocketAddress, ChannelPool> creator) {
         checkClosed();
 
         // Only keepAlive connection will be cached.
         if (keepAlive) {
-            return cachedPools.get(address, addr -> CHANNEL_POOL_FACTORY.create(ssl,
-                    true,
-                    addr,
-                    ioThreads,
-                    builder,
-                    sslHandler));
+            return cachedPools.get(address, creator);
         } else {
-            return CHANNEL_POOL_FACTORY.create(ssl, false, address, ioThreads, builder, sslHandler);
+            return creator.apply(address);
         }
     }
 

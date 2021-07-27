@@ -19,13 +19,12 @@ package esa.httpclient.core.netty;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
-import esa.httpclient.core.Context;
 import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
 import esa.httpclient.core.SegmentRequest;
+import esa.httpclient.core.exec.ExecContext;
 import esa.httpclient.core.exec.RequestExecutor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -63,13 +62,10 @@ class SegmentRequestImplTest {
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 
@@ -131,13 +127,10 @@ class SegmentRequestImplTest {
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 
@@ -182,13 +175,10 @@ class SegmentRequestImplTest {
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 
@@ -231,13 +221,10 @@ class SegmentRequestImplTest {
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 
@@ -285,13 +272,10 @@ class SegmentRequestImplTest {
         final RequestExecutor executor = mock(RequestExecutor.class);
         final EmbeddedChannel channel = new EmbeddedChannel();
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 
@@ -344,13 +328,10 @@ class SegmentRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 
@@ -377,13 +358,10 @@ class SegmentRequestImplTest {
 
         final RequestExecutor executor = mock(RequestExecutor.class);
         when(executor.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> {
-                    final NettyContext ctx = answer.getArgument(1);
-                    ctx.setWriter(writerPromise);
+                    final NettyExecContext ctx = answer.getArgument(1);
+                    ctx.segmentWriter(writerPromise);
                     return response;
                 });
 

@@ -17,9 +17,9 @@ package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.exception.ClosedConnectionException;
+import esa.httpclient.core.exec.ExecContext;
 import esa.httpclient.core.util.HttpHeadersUtils;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -44,7 +44,7 @@ class PlainWriter extends RequestWriterImpl {
     @Override
     ChannelFuture writeAndFlush1(HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
@@ -70,11 +70,11 @@ class PlainWriter extends RequestWriterImpl {
                     (Http1HeadersImpl) request.headers()), headFuture);
 
             final ChannelPromise endPromise = channel.newPromise();
-            if (writeContentNow(context, request)) {
+            if (writeContentNow(execCtx, request)) {
                 Utils.runInChannel(channel, () -> doWriteContent1(channel, request.buffer(), endPromise));
             } else {
                 channel.flush();
-                ((NettyContext) context).set100ContinueCallback(() ->
+                execCtx.set100ContinueCallback(() ->
                         Utils.runInChannel(channel, () -> doWriteContent1(channel, request.buffer(), endPromise)));
             }
 
@@ -104,7 +104,7 @@ class PlainWriter extends RequestWriterImpl {
     @Override
     ChannelFuture writeAndFlush2(HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
@@ -127,7 +127,7 @@ class PlainWriter extends RequestWriterImpl {
         final ByteBuf data = request.buffer() == null
                 ? Unpooled.EMPTY_BUFFER : request.buffer().getByteBuf().retainedSlice();
         final ChannelPromise endPromise = channel.newPromise();
-        if (writeContentNow(context, request)) {
+        if (writeContentNow(execCtx, request)) {
             doWriteContent2(channel,
                     data,
                     handler,
@@ -135,7 +135,7 @@ class PlainWriter extends RequestWriterImpl {
                     endPromise);
         } else {
             channel.flush();
-            ((NettyContext) context).set100ContinueCallback(() ->
+            execCtx.set100ContinueCallback(() ->
                     doWriteContent2(channel, data, handler, streamId, endPromise));
         }
 

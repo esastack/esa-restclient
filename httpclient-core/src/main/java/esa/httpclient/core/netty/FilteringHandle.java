@@ -18,17 +18,16 @@ package esa.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
-import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpMessage;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
+import esa.httpclient.core.exec.ExecContext;
 import esa.httpclient.core.filter.FilterContext;
 import esa.httpclient.core.filter.ResponseFilter;
 
 import java.util.concurrent.CompletableFuture;
 
-class FilteringHandle extends NettyHandle {
+class FilteringHandle extends ResponseHandle {
 
     private final ResponseFilter[] filters;
     private final FilterContext ctx;
@@ -37,14 +36,14 @@ class FilteringHandle extends NettyHandle {
 
     FilteringHandle(HandleImpl handle,
                     HttpRequest request,
-                    Context ctx,
-                    Listener listener,
+                    ExecContext execContext,
+                    TimeoutHandle tHandle,
                     CompletableFuture<HttpResponse> response,
                     ResponseFilter[] filters,
                     FilterContext fCtx) {
-        super(handle, request, ctx, listener, response);
-        Checks.checkNotNull(fCtx, "FilterContext must not be null");
-        Checks.checkNotEmptyArg(filters, "ResponseFilters must not be empty");
+        super(handle, request, execContext, tHandle, response);
+        Checks.checkNotNull(fCtx, "fCtx");
+        Checks.checkNotEmptyArg(filters, "filters");
         this.filters = filters;
         this.ctx = fCtx;
     }

@@ -15,11 +15,10 @@
  */
 package esa.httpclient.core.netty;
 
-import esa.commons.function.ThrowingSupplier;
 import esa.httpclient.core.config.ChannelPoolOptions;
-import io.netty.handler.ssl.SslHandler;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -27,19 +26,12 @@ class ChannelPoolTest {
 
     @Test
     void testConstructor() {
-        final ThrowingSupplier<SslHandler> ssl = () -> null;
         final io.netty.channel.pool.ChannelPool pool = mock(io.netty.channel.pool.ChannelPool.class);
         final ChannelPoolOptions options = mock(ChannelPoolOptions.class);
 
-        assertThrows(NullPointerException.class, () -> new ChannelPool(null,
-                options, true, ssl));
+        assertThrows(NullPointerException.class, () -> new ChannelPool(true, null, options));
+        assertThrows(NullPointerException.class, () -> new ChannelPool(true, pool, null));
 
-        assertThrows(NullPointerException.class, () -> new ChannelPool(
-                pool, null, true, ssl));
-
-        assertThrows(NullPointerException.class, () -> new ChannelPool(
-                pool, options, true, null));
-
-        new ChannelPool(pool, options, true, ssl);
+        assertDoesNotThrow(() -> new ChannelPool(true, pool, options));
     }
 }

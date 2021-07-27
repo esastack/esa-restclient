@@ -16,8 +16,9 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderValues;
-import esa.httpclient.core.Context;
+import esa.httpclient.core.ExecContextUtil;
 import esa.httpclient.core.HttpClient;
+import esa.httpclient.core.exec.ExecContext;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -62,7 +63,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .multipart()
                     .file("file", file, null, true)
                     .attr("key1", "value1");
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -102,7 +103,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 .attr("key1", "value1")
                 .attr("key2", "value2")
                 .multipartEncode(false);
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -146,7 +147,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .attr("key1", "value1");
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-            final NettyContext ctx = new NettyContext();
+            final NettyExecContext ctx = ExecContextUtil.newAsNetty();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -201,7 +202,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .attr("key1", "value1");
 
             file.delete();
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
 
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
@@ -242,7 +243,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true);
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -288,7 +289,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 .attr("key2", "value2")
                 .multipartEncode(false);
 
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -337,7 +338,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .file("file", file, null, true);
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-            final NettyContext ctx = new NettyContext();
+            final NettyExecContext ctx = ExecContextUtil.newAsNetty();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -396,7 +397,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                     .multipart()
                     .file("file", file, null, true);
 
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
             file.delete();
 

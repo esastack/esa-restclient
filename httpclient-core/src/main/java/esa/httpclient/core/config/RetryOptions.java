@@ -35,7 +35,7 @@ public class RetryOptions implements Reusable<RetryOptions>, Serializable {
     private RetryOptions(int maxRetries,
                          RetryPredicate predicate,
                          IntToLongFunction intervalMillis) {
-        Checks.checkNotNull(predicate, "RetryPredicate must not be null");
+        Checks.checkNotNull(predicate, "predicate");
         Checks.checkArg(maxRetries >= 1, "maxRetries is " + maxRetries +
                 " (expected >= 1)");
         this.maxRetries = maxRetries;

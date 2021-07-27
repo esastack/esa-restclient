@@ -24,7 +24,7 @@ public class FilterContext extends AttributeMap {
     private final Context parent;
 
     public FilterContext(Context parent) {
-        Checks.checkNotNull(parent, "Parent context must not be null");
+        Checks.checkNotNull(parent, "parent");
         this.parent = parent;
     }
 

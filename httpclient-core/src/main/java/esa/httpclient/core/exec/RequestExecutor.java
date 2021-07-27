@@ -16,16 +16,15 @@
 package esa.httpclient.core.exec;
 
 import esa.commons.annotation.Internal;
-import esa.httpclient.core.Context;
-import esa.httpclient.core.Handle;
-import esa.httpclient.core.Handler;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
+/**
+ * A {@link RequestExecutor} is used to send a {@link HttpRequest} and get the corresponding {@link HttpResponse}
+ * asynchronously.
+ */
 @Internal
 public interface RequestExecutor {
 
@@ -34,14 +33,7 @@ public interface RequestExecutor {
      *
      * @param request       request
      * @param ctx           ctx
-     * @param listener      listener
-     * @param handle        handle
-     * @param handler       handler
      * @return response
      */
-    CompletableFuture<HttpResponse> execute(HttpRequest request,
-                                            Context ctx,
-                                            Listener listener,
-                                            Consumer<Handle> handle,
-                                            Handler handler);
+    CompletableFuture<HttpResponse> execute(HttpRequest request, ExecContext ctx);
 }

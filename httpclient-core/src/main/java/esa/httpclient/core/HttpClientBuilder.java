@@ -33,7 +33,7 @@ import esa.httpclient.core.exec.RetryInterceptor;
 import esa.httpclient.core.filter.DuplexFilter;
 import esa.httpclient.core.filter.RequestFilter;
 import esa.httpclient.core.filter.ResponseFilter;
-import esa.httpclient.core.netty.ChannelPools;
+import esa.httpclient.core.netty.CachedChannelPools;
 import esa.httpclient.core.netty.NettyHttpClient;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.resolver.SystemDefaultResolver;
@@ -170,7 +170,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     }
 
     public HttpClientBuilder version(HttpVersion version) {
-        Checks.checkNotNull(version, "HttpVersion must not be null");
+        Checks.checkNotNull(version, "version");
         this.version = version;
         return self();
     }
@@ -195,7 +195,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     }
 
     public HttpClientBuilder decompression(Decompression decompression) {
-        Checks.checkNotNull(decompression, "Decompression must not be null");
+        Checks.checkNotNull(decompression, "decompression");
         this.decompression = decompression;
         return self();
     }
@@ -210,49 +210,49 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     }
 
     public HttpClientBuilder addInterceptor(Interceptor interceptor) {
-        Checks.checkNotNull(interceptor, "Interceptor must not be null");
+        Checks.checkNotNull(interceptor, "interceptor");
         this.interceptors.add(interceptor);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public HttpClientBuilder addInterceptors(List<Interceptor> interceptors) {
-        Checks.checkNotNull(interceptors, "Interceptors must not be null");
+        Checks.checkNotNull(interceptors, "interceptors");
         this.interceptors.addAll(interceptors);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public HttpClientBuilder addRequestFilter(RequestFilter filter) {
-        Checks.checkNotNull(filter, "RequestFilter must not be null");
+        Checks.checkNotNull(filter, "filter");
         this.requestFilters.add(filter);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public HttpClientBuilder addRequestFilters(List<RequestFilter> filters) {
-        Checks.checkNotNull(filters, "RequestFilters must not be null");
+        Checks.checkNotNull(filters, "filters");
         this.requestFilters.addAll(filters);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public HttpClientBuilder addResponseFilter(ResponseFilter filter) {
-        Checks.checkNotNull(filter, "ResponseFilter must not be null");
+        Checks.checkNotNull(filter, "filter");
         this.responseFilters.add(filter);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public HttpClientBuilder addResponseFilters(List<ResponseFilter> filters) {
-        Checks.checkNotNull(filters, "ResponseFilters must not be null");
+        Checks.checkNotNull(filters, "filters");
         this.responseFilters.addAll(filters);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public HttpClientBuilder addFilter(DuplexFilter filter) {
-        Checks.checkNotNull(filter, "DuplexFilter must not be null");
+        Checks.checkNotNull(filter, "filter");
         this.requestFilters.add(filter);
         this.responseFilters.add(filter);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
@@ -260,7 +260,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     }
 
     public HttpClientBuilder addFilters(List<DuplexFilter> filters) {
-        Checks.checkNotNull(filters, "DuplexFilters must not be null");
+        Checks.checkNotNull(filters, "filters");
         this.requestFilters.addAll(filters);
         this.responseFilters.addAll(filters);
         this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
@@ -321,7 +321,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
      * @return client
      */
     public HttpClient build() {
-        return new NettyHttpClient(copy(), new ChannelPools(CacheOptions.ofDefault()));
+        return new NettyHttpClient(copy(), new CachedChannelPools(CacheOptions.ofDefault()));
     }
 
     /**

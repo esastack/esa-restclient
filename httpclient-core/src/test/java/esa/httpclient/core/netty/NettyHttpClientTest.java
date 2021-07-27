@@ -18,8 +18,17 @@ package esa.httpclient.core.netty;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpMethod;
 import esa.commons.http.HttpVersion;
-import esa.httpclient.core.*;
-import esa.httpclient.core.config.*;
+import esa.httpclient.core.Context;
+import esa.httpclient.core.HttpClient;
+import esa.httpclient.core.HttpClientBuilder;
+import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.HttpResponse;
+import esa.httpclient.core.config.CacheOptions;
+import esa.httpclient.core.config.CallbackThreadPoolOptions;
+import esa.httpclient.core.config.ChannelPoolOptions;
+import esa.httpclient.core.config.Decompression;
+import esa.httpclient.core.config.SslOptions;
+import esa.httpclient.core.exec.ExecContext;
 import esa.httpclient.core.exec.RequestExecutor;
 import esa.httpclient.core.metrics.CallbackExecutorMetric;
 import esa.httpclient.core.metrics.IoThreadGroupMetric;
@@ -30,9 +39,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.net.ssl.SSLEngine;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -43,26 +52,26 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class NettyHttpClientTest {
 
     private static final RequestExecutor EXECUTOR = mock(RequestExecutor.class);
     private static final SslEngineFactory FACTORY = mock(SslEngineFactory.class);
 
-    @BeforeAll
-    static void setUp() {
-        when(FACTORY.create(any(SslOptions.class), anyString(), anyInt())).thenReturn(null);
-    }
-
     @Test
     void testConstructor() {
-        assertThrows(NullPointerException.class, () -> new NettyHttpClient(null, mock(ChannelPools.class)));
+        assertThrows(NullPointerException.class, () -> new NettyHttpClient(null, mock(CachedChannelPools.class)));
         assertThrows(NullPointerException.class, () -> new NettyHttpClient(HttpClient.create(), null));
-        new NettyHttpClient(HttpClient.create(), mock(ChannelPools.class));
+        assertDoesNotThrow(() -> new NettyHttpClient(HttpClient.create(), mock(CachedChannelPools.class)));
     }
 
     @Test
@@ -91,10 +100,7 @@ class NettyHttpClientTest {
         final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
 
         when(EXECUTOR.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> response);
 
         assertThrows(NullPointerException.class, () -> client.execute(null,
@@ -120,10 +126,7 @@ class NettyHttpClientTest {
         final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
 
         when(EXECUTOR.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> response);
 
         assertThrows(NullPointerException.class, () -> client.execute(null,
@@ -141,7 +144,7 @@ class NettyHttpClientTest {
     @Test
     void testConnectionPoolMetric() {
         final HttpClientBuilder builder = HttpClient.create();
-        final ChannelPools channelPools = mock(ChannelPools.class);
+        final CachedChannelPools channelPools = mock(CachedChannelPools.class);
 
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
         then(client.connectionPoolMetric()).isSameAs(channelPools);
@@ -227,7 +230,7 @@ class NettyHttpClientTest {
     @Test
     void testClose() {
         final HttpClientBuilder builder = HttpClient.create();
-        final ChannelPools channelPools = mock(ChannelPools.class);
+        final CachedChannelPools channelPools = mock(CachedChannelPools.class);
 
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
         client.close();
@@ -237,20 +240,22 @@ class NettyHttpClientTest {
 
     @Test
     void testApplyChannelPoolOptions() {
+        when(FACTORY.create(any(), anyString(), anyInt())).thenReturn(mock(SSLEngine.class));
+
         final ChannelPoolOptions preOptions = ChannelPoolOptions.ofDefault();
         final HttpClientBuilder builder = HttpClient.create().channelPoolOptionsProvider(s -> preOptions);
 
-        final ChannelPools channelPools = new ChannelPools(CacheOptions.ofDefault());
+        final CachedChannelPools channelPools = new CachedChannelPools(CacheOptions.ofDefault());
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
 
         final SocketAddress address1 = InetSocketAddress.createUnresolved("127.0.0.1", 8080);
         final SimpleChannelPool underlying1 = mock(FixedChannelPool.class);
-        final ChannelPool channelPool1 = new ChannelPool(underlying1, preOptions, false, () -> null);
+        final ChannelPool channelPool1 = new ChannelPool(false, underlying1, preOptions);
         channelPools.put(address1, channelPool1);
 
         final SocketAddress address2 = InetSocketAddress.createUnresolved("127.0.0.1", 8989);
         final SimpleChannelPool underlying2 = mock(FixedChannelPool.class);
-        final ChannelPool channelPool2 = new ChannelPool(underlying2, preOptions, false, () -> null);
+        final ChannelPool channelPool2 = new ChannelPool(false, underlying2, preOptions);
         channelPools.put(address2, channelPool2);
 
         assertThrows(NullPointerException.class,
@@ -286,11 +291,6 @@ class NettyHttpClientTest {
         then(newChannelPool2.options.readTimeout()).isEqualTo(10000);
         then(newChannelPool2.options.waitingQueueLength()).isEqualTo(2048);
         then(newChannelPool2.ssl).isEqualTo(false);
-
-        then(client.builder.connectionPoolSize()).isEqualTo(1024);
-        then(client.builder.connectTimeout()).isEqualTo(10000);
-        then(client.builder.readTimeout()).isEqualTo(10000);
-        then(client.builder.connectionPoolWaitingQueueLength()).isEqualTo(2048);
 
         final ChannelPoolOptions options = ChannelPoolOptions.options()
                 .connectTimeout(1000)
@@ -344,23 +344,24 @@ class NettyHttpClientTest {
         private final boolean useSuperLoadSslEngineFactory;
 
         NettyHttpClientImpl(HttpClientBuilder builder, boolean useSuperLoadSslEngineFactory) {
-            super(builder, new ChannelPools(CacheOptions.ofDefault()));
+            super(builder, new CachedChannelPools(CacheOptions.ofDefault()));
             this.useSuperLoadSslEngineFactory = useSuperLoadSslEngineFactory;
         }
 
         private NettyHttpClientImpl(HttpClientBuilder builder) {
-            super(builder, new ChannelPools(CacheOptions.ofDefault()));
+            super(builder, new CachedChannelPools(CacheOptions.ofDefault()));
             this.useSuperLoadSslEngineFactory = false;
         }
 
-        private NettyHttpClientImpl(HttpClientBuilder builder, ChannelPools channelPools) {
+        private NettyHttpClientImpl(HttpClientBuilder builder, CachedChannelPools channelPools) {
             super(builder, channelPools);
             this.useSuperLoadSslEngineFactory = false;
         }
 
         @Override
         protected RequestExecutor build(EventLoopGroup ioThreads,
-                                        ChannelPools channelPools) {
+                                        CachedChannelPools channelPools,
+                                        ChannelPoolOptions channelPoolOptions) {
             return EXECUTOR;
         }
 

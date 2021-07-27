@@ -35,7 +35,7 @@ public class RetryInterceptor implements Interceptor {
     private final IntToLongFunction intervalMs;
 
     public RetryInterceptor(RetryPredicate predicate, IntToLongFunction intervalMs) {
-        Checks.checkNotNull(predicate, "RetryPredicate must not be null");
+        Checks.checkNotNull(predicate, "predicate");
         this.predicate = predicate;
         this.intervalMs = intervalMs;
     }

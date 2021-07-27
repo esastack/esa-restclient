@@ -17,8 +17,8 @@ package esa.httpclient.core.netty;
 
 import esa.commons.io.IOUtils;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.Context;
 import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.exec.ExecContext;
 import esa.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -51,20 +51,20 @@ class FileWriter extends RequestWriterImpl {
     @Override
     public ChannelFuture writeAndFlush(HttpRequest request,
                                        Channel channel,
-                                       Context ctx,
+                                       ExecContext execCtx,
                                        ChannelPromise headFuture,
                                        boolean useUriEncode,
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         addContentTypeIfAbsent(request, () -> HttpHeaderValues.APPLICATION_OCTET_STREAM);
 
-        return super.writeAndFlush(request, channel, ctx, headFuture, useUriEncode, version, http2);
+        return super.writeAndFlush(request, channel, execCtx, headFuture, useUriEncode, version, http2);
     }
 
     @Override
     ChannelFuture writeAndFlush1(HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
@@ -82,11 +82,11 @@ class FileWriter extends RequestWriterImpl {
 
         final ChannelPromise endPromise = channel.newPromise();
         // Write content
-        if (writeContentNow(context, request)) {
+        if (writeContentNow(execCtx, request)) {
             doWriteContent1(request, channel, endPromise);
         } else {
             channel.flush();
-            ((NettyContext) context).set100ContinueCallback(()
+            execCtx.set100ContinueCallback(()
                     -> doWriteContent1(request, channel, endPromise));
         }
 
@@ -126,7 +126,7 @@ class FileWriter extends RequestWriterImpl {
     @Override
     ChannelFuture writeAndFlush2(HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
@@ -145,7 +145,7 @@ class FileWriter extends RequestWriterImpl {
         final ChannelPromise endPromise = channel.newPromise();
 
         // Writes http2 content
-        if (writeContentNow(context, request)) {
+        if (writeContentNow(execCtx, request)) {
             Utils.runInChannel(channel, () -> {
                 try {
                     doWriteContent2(request.file(),
@@ -158,7 +158,7 @@ class FileWriter extends RequestWriterImpl {
             });
         } else {
             channel.flush();
-            ((NettyContext) context).set100ContinueCallback(() -> Utils.runInChannel(channel, () -> {
+            execCtx.set100ContinueCallback(() -> Utils.runInChannel(channel, () -> {
                 try {
                     doWriteContent2(request.file(),
                             channel,

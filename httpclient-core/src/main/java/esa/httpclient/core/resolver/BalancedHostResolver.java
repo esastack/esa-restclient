@@ -34,7 +34,7 @@ public abstract class BalancedHostResolver implements HostResolver {
     }
 
     public BalancedHostResolver(LoadBalancer<InetAddress> loadBalancer) {
-        Checks.checkNotNull(loadBalancer, "LoadBalancer must not be null");
+        Checks.checkNotNull(loadBalancer, "loadBalancer");
         this.loadBalancer = loadBalancer;
     }
 

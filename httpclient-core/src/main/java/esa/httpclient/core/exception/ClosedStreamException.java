@@ -20,10 +20,10 @@ import java.io.IOException;
 public class ClosedStreamException extends IOException {
 
     public static final ClosedStreamException CAUSED_BY_RST =
-            new ClosedStreamException("Received reset stream and current stream will be discarded");
+            new ClosedStreamException("Received reset stream");
 
     public static final ClosedStreamException CAUSED_BY_REMOVED =
-            new ClosedStreamException("Stream has been removed");
+            new ClosedStreamException("Stream has been removed, maybe the server has closed.");
 
     private static final long serialVersionUID = -7491330351921922628L;
 

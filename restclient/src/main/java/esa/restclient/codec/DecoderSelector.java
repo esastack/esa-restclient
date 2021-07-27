@@ -13,8 +13,9 @@ import java.lang.reflect.Type;
 /**
  * The <code>DecoderSelector</code> is designed to dynamically find the appropriate {@link Decoder} for the response.
  * <p>
- * If you want to implement a <code>DecoderSelector</code>, please implement the {@link ByteDecoderSelector} interface inherited from the
- * <code>DecoderSelector</code> instead of directly using the internal interface of the <code>DecoderSelector</code>
+ * If you want to implement a <code>DecoderSelector</code>, please implement the {@link ByteDecoderSelector}
+ * interface inherited from the <code>DecoderSelector</code> instead of directly using the internal interface of
+ * the <code>DecoderSelector</code>
  *
  * @see Decoder
  * @see ByteDecoderSelector

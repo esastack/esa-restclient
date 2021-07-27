@@ -16,7 +16,7 @@ public class StringDecoderSelector extends ByteDecoderSelector {
 
     @Override
     public ByteDecoder doSelect(RestRequest request, ContentType[] acceptTypes, Type type,
-                                MediaType responseMediaType, HttpHeaders responseHeaders){
+                                MediaType responseMediaType, HttpHeaders responseHeaders) {
         if (String.class.equals(type)
         ) {
             return CODEC;

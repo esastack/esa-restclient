@@ -30,7 +30,7 @@ public interface Ordered {
      * @see java.lang.Integer#MAX_VALUE
      */
     int LOWEST_PRECEDENCE = Integer.MAX_VALUE;
-    
+
     int HIGHER_PRECEDENCE = -2048;
 
     int MIDDLE_PRECEDENCE = 0;

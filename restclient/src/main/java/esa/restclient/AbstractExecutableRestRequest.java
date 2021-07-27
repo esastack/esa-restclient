@@ -127,7 +127,8 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         } else if (type == RequestBodyContent.TYPE.MULTIPART) {
             //TODO
         } else {
-            throw new IllegalStateException("Illegal type:" + type + ",Type only supports elements of RequestContent.TYPE");
+            throw new IllegalStateException("Illegal type:" + type
+                    + ",Type only supports elements of RequestContent.TYPE");
         }
     }
 

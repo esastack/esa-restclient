@@ -8,7 +8,7 @@ import esa.restclient.RestRequest;
 import java.lang.reflect.Type;
 
 public class ByteToByteDecoderSelector extends ByteDecoderSelector {
-    private final static ByteToByteCodec CODEC = new ByteToByteCodec();
+    private static final ByteToByteCodec CODEC = new ByteToByteCodec();
 
     public ByteToByteDecoderSelector() {
     }

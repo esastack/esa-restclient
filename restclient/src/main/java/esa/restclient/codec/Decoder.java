@@ -11,8 +11,9 @@ import java.lang.reflect.Type;
  * <code>Decoder</code> is designed for the conversion of a {@link ResponseBodyContent} to a Java type.And it
  * is dynamically bound to the response through the {@link DecoderSelector}.
  * <p>
- * If you want to implement a <code>Decoder</code>, please implement the {@link ByteDecoder} interface inherited from the
- * <code>Decoder</code> instead of directly using the internal interface of the <code>Decoder</code>
+ * If you want to implement a <code>Decoder</code>, please implement the {@link ByteDecoder} interface
+ * inherited from the <code>Decoder</code> instead of directly using the internal interface of the
+ * <code>Decoder</code>
  *
  * @see ResponseBodyContent
  * @see ByteDecoder

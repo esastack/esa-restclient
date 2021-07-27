@@ -7,7 +7,8 @@ import esa.restclient.ResponseBodyContent;
 import java.lang.reflect.Type;
 
 public interface ByteDecoder extends Decoder {
-    default <T> T decode(MediaType mediaType, HttpHeaders headers, ResponseBodyContent<?> content, Type type) throws Exception {
+    default <T> T decode(MediaType mediaType, HttpHeaders headers,
+                         ResponseBodyContent<?> content, Type type) throws Exception {
         if (content.type() == ResponseBodyContent.TYPE.BYTES) {
             return doDecode(mediaType, headers, (byte[]) content.content(), type);
         } else {

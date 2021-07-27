@@ -213,13 +213,17 @@ class CompositeRequestTest {
 
         final File file = new File("/abc");
 
+        assertThrows(IllegalStateException.class, () -> request.file("a1", file));
+        assertThrows(IllegalStateException.class, () -> request.attr("a", "b"));
+
+        request.multipart();
         request.file("a1", file);
         request.file("a2", file, HttpHeaderValues.APPLICATION_OCTET_STREAM);
         request.file("a3", file, "xxx", true);
         request.file("a4", "file1", file, HttpHeaderValues.TEXT_PLAIN, true);
         request.attr("a", "b");
         request.multipartEncode(true);
-        request.body(new BufferImpl().writeBytes(data));
+        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes(data)));
         assertThrows(IllegalStateException.class, () -> request.body(file));
 
         request.execute();

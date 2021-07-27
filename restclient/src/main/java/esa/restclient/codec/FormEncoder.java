@@ -5,7 +5,7 @@ import esa.httpclient.core.MultipartBody;
 import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
 
-public class MultipartToMultipartEncoder implements Encoder {
+public class FormEncoder implements Encoder {
 
     @Override
     public RequestBodyContent<MultipartBody> encode(MediaType mediaType, HttpHeaders headers, Object entity) {
@@ -14,10 +14,12 @@ public class MultipartToMultipartEncoder implements Encoder {
         }
 
         if (entity instanceof MultipartBody) {
-            return RequestBodyContent.of((MultipartBody) entity);
+            MultipartBody formBody = (MultipartBody) entity;
+            formBody.multipartEncode(false);
+            return RequestBodyContent.of(formBody);
         }
 
-        throw new UnsupportedOperationException("MultipartToMultipartEncoder " +
+        throw new UnsupportedOperationException("FormEncoder " +
                 "only support encode multipart to multipart!entityClass:" + entity.getClass());
     }
 }

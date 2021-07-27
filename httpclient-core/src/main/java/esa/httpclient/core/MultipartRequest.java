@@ -19,9 +19,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public interface MultipartRequest extends ExecutableRequest, MultipartConfig {
+public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfig {
 
-    @Override
     MultipartRequest multipartEncode(boolean multipartEncode);
 
     @Override

@@ -31,36 +31,36 @@ public class MultipartBodyImpl implements MultipartBody {
     }
 
     @Override
-    public MultipartConfig multipartEncode(boolean multipartEncode) {
+    public MultipartBody multipartEncode(boolean multipartEncode) {
         this.useMultipartEncode = multipartEncode;
         return self();
     }
 
     @Override
-    public MultipartConfig attr(String name, String value) {
+    public MultipartBody attr(String name, String value) {
         checkAttrsNotNull();
         attrs.add(name, value);
         return self();
     }
 
     @Override
-    public MultipartConfig file(String name, File file) {
+    public MultipartBody file(String name, File file) {
         return file(name, file.getName(), file, DEFAULT_BINARY_CONTENT_TYPE, false);
     }
 
     @Override
-    public MultipartConfig file(String name, File file, String contentType) {
+    public MultipartBody file(String name, File file, String contentType) {
         return file(name, file.getName(), file, contentType,
                 DEFAULT_TEXT_CONTENT_TYPE.equalsIgnoreCase(contentType));
     }
 
     @Override
-    public MultipartConfig file(String name, File file, String contentType, boolean isText) {
+    public MultipartBody file(String name, File file, String contentType, boolean isText) {
         return file(name, file.getName(), file, contentType, isText);
     }
 
     @Override
-    public MultipartConfig file(String name, String filename, File file, String contentType, boolean isText) {
+    public MultipartBody file(String name, String filename, File file, String contentType, boolean isText) {
         checkMultipartFile();
         checkFilesNotNull();
         files.add(new MultipartFileItem(name, filename, file, contentType, isText));

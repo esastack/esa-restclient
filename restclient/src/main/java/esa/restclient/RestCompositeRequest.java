@@ -3,7 +3,8 @@ package esa.restclient;
 import esa.commons.Checks;
 import esa.commons.http.Cookie;
 import esa.httpclient.core.CompositeRequest;
-import esa.httpclient.core.MultipartRequest;
+import esa.httpclient.core.MultipartBody;
+import esa.httpclient.core.MultipartBodyImpl;
 import esa.restclient.exec.RestRequestExecutor;
 
 import java.io.File;
@@ -71,38 +72,67 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestMultipartRequest multipartEncode(boolean multipartEncode) {
-        ((MultipartRequest) target).multipartEncode(multipartEncode);
-        return self();
-    }
-
-    @Override
     public RestMultipartRequest attr(String name, String value) {
-        target.attr(name, value);
+        if (illegalArgs(name, value)) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).attr(name, value);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
         return self();
     }
 
     @Override
     public RestMultipartRequest file(String name, File file) {
-        target.file(name, file);
+        if (illegalArgs(name, file)) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).file(name, file);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
         return self();
     }
 
     @Override
     public RestMultipartRequest file(String name, File file, String contentType) {
-        target.file(name, file, contentType);
+        if (illegalArgs(name, file)) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).file(name, file, contentType);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
         return self();
     }
 
     @Override
     public RestMultipartRequest file(String name, File file, String contentType, boolean isText) {
-        target.file(name, file, contentType, isText);
+        if (illegalArgs(name, file)) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).file(name, file, contentType, isText);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
         return self();
     }
 
     @Override
     public RestMultipartRequest file(String name, String filename, File file, String contentType, boolean isText) {
-        target.file(name, filename, file, contentType, isText);
+        if (illegalArgs(name, file)) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).file(name, filename, file, contentType, isText);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
         return self();
     }
 
@@ -202,12 +232,11 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         return self();
     }
 
-    //TODO 修改HttpClient的multipart，改完之后将这里也修改一下
     @Override
     public RestMultipartRequest multipart() {
         checkEntityHadSet();
         setContentTypeIfAbsent(ContentType.MULTIPART_FORM_DATA);
-        target.multipart();
+        this.entity = new MultipartBodyImpl();
         return self();
     }
 
@@ -225,5 +254,9 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
 
     private RestCompositeRequest self() {
         return this;
+    }
+
+    private static boolean illegalArgs(Object obj1, Object obj2) {
+        return obj1 == null || obj2 == null;
     }
 }

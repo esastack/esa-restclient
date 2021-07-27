@@ -1,4 +1,5 @@
 package esa.httpclient.core;
 
-public interface MultipartBody extends Multipart, MultipartConfig, Reusable<MultipartBody> {
+public interface MultipartBody extends Multipart, MultipartItemsConfig, Reusable<MultipartBody> {
+    MultipartBody multipartEncode(boolean multipartEncode);
 }

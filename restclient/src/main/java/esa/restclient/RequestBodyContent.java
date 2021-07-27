@@ -1,6 +1,6 @@
 package esa.restclient;
 
-import esa.restclient.codec.Multipart;
+import esa.httpclient.core.MultipartBody;
 
 import java.io.File;
 
@@ -43,7 +43,7 @@ public final class RequestBodyContent<T> implements BodyContent<T> {
         return new RequestBodyContent<>(TYPE.FILE, content);
     }
 
-    public static RequestBodyContent<Multipart> of(Multipart content) {
+    public static RequestBodyContent<MultipartBody> of(MultipartBody content) {
         return new RequestBodyContent<>(TYPE.MULTIPART, content);
     }
 

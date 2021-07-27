@@ -21,7 +21,7 @@ import esa.commons.netty.core.Buffer;
 import java.io.File;
 import java.util.List;
 
-public interface HttpRequest extends Reusable<HttpRequest>, Request, Multipart {
+public interface HttpRequest extends Request, Multipart, Reusable<HttpRequest> {
 
     @Override
     HttpRequest addParam(String name, String value);

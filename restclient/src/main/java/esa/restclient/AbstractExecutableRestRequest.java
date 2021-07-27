@@ -9,6 +9,7 @@ import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
+import esa.httpclient.core.MultipartBody;
 import esa.httpclient.core.util.Futures;
 import esa.restclient.codec.EncodeContextImpl;
 import esa.restclient.exec.RestRequestExecutor;
@@ -125,7 +126,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         } else if (type == RequestBodyContent.TYPE.FILE) {
             target.body((File) content.content());
         } else if (type == RequestBodyContent.TYPE.MULTIPART) {
-            //TODO
+            target.multipart((MultipartBody) content.content());
         } else {
             throw new IllegalStateException("Illegal type:" + type
                     + ",Type only supports elements of RequestContent.TYPE");

@@ -317,6 +317,7 @@ class HttpTransceiverImpl implements HttpTransceiver {
                                 CompletableFuture<HttpResponse> response) {
         Timeout timeout = READ_TIMEOUT_TIMER.newTimeout(new ReadTimeoutTask(requestId,
                         request.uri().toString(),
+                        request.readTimeout(),
                         headFuture.channel(),
                         registry),
                 TimeUnit.MILLISECONDS.toNanos(request.readTimeout()),

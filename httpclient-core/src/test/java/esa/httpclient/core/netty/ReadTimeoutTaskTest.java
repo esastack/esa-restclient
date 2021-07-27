@@ -63,6 +63,7 @@ class ReadTimeoutTaskTest {
 
         final ReadTimeoutTask task1 = new ReadTimeoutTask(requestId1,
                 "",
+                -1,
                 channel,
                 registry);
 

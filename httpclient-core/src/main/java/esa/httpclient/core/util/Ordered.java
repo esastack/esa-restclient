@@ -30,19 +30,18 @@ public interface Ordered {
      * @see java.lang.Integer#MAX_VALUE
      */
     int LOWEST_PRECEDENCE = Integer.MAX_VALUE;
-
-    /**
-     * Default to use the {@link #LOWEST_PRECEDENCE}.
-     *
-     * @return order
-     */
-
+    
     int HIGHER_PRECEDENCE = -2048;
 
     int MIDDLE_PRECEDENCE = 0;
 
     int LOWER_PRECEDENCE = 2048;
 
+    /**
+     * Default to use the {@link #LOWEST_PRECEDENCE}.
+     *
+     * @return order
+     */
     default int getOrder() {
         return LOWEST_PRECEDENCE;
     }

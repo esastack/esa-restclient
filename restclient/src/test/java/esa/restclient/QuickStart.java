@@ -9,6 +9,10 @@ public class QuickStart {
     public static void main(String[] args) {
         RestClient restClient = createClient();
         sendRestRequest(restClient);
+        System.out.println("\r\n\r\n========================================\r\n\r\n");
+        sendMultipartRequest(restClient, true);
+        System.out.println("\r\n\r\n========================================\r\n\r\n");
+        sendMultipartRequest(restClient, false);
     }
 
     private static void sendRestRequest(RestClient restClient) {
@@ -28,7 +32,7 @@ public class QuickStart {
                     }
                 }).whenComplete((result, e) -> e.printStackTrace());
         try {
-            Thread.sleep(1000000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -90,6 +94,33 @@ public class QuickStart {
             System.out.println("--------aroundDecode2 end---------");
             return result;
         });
+    }
+
+    private static void sendMultipartRequest(RestClient restClient, boolean useMultipartEncode) {
+        RestMultipartRequest request = restClient.post(url)
+                .cookie(new CookieImpl("aaa", "aaa"))
+                .multipart()
+                .maxRetries(3)
+                .readTimeout(100)
+                .accept(ContentType.TEXT_PLAIN)
+                .attr("aaa", "aaa");
+        if (!useMultipartEncode) {
+            request.contentType(ContentType.APPLICATION_FORM_URLENCODED);
+        }
+        request.execute()
+                .thenAccept(response -> {
+                    try {
+                        System.out.println(response.bodyToEntity(String.class));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).whenComplete((result, e) -> e.printStackTrace());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -63,6 +63,6 @@ public class ContentType {
             of(MediaType.MULTIPART_FORM_DATA, new MultipartToMultipartEncoder());
 
     public static final ContentType APPLICATION_FORM_URLENCODED =
-            of(MediaType.APPLICATION_FORM_URLENCODED, new FormEncoder());
+            of(MediaType.APPLICATION_FORM_URLENCODED, new FormURLEncodedEncoder());
 
 }

@@ -5,7 +5,7 @@ import esa.httpclient.core.MultipartBody;
 import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
 
-public class FormEncoder implements Encoder {
+public class FormURLEncodedEncoder implements Encoder {
 
     @Override
     public RequestBodyContent<MultipartBody> encode(MediaType mediaType, HttpHeaders headers, Object entity) {

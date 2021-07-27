@@ -30,7 +30,7 @@ public class DelegatingRequest implements HttpRequest {
     private final HttpRequest underlying;
 
     public DelegatingRequest(HttpRequest underlying) {
-        Checks.checkNotNull(underlying, "HttpRequest must not be null");
+        Checks.checkNotNull(underlying, "underlying");
         this.underlying = underlying;
     }
 

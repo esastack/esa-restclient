@@ -16,27 +16,19 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.Checks;
-import esa.commons.function.ThrowingSupplier;
 import esa.httpclient.core.config.ChannelPoolOptions;
-import io.netty.handler.ssl.SslHandler;
 
 final class ChannelPool {
 
+    final boolean ssl;
     final io.netty.channel.pool.ChannelPool underlying;
     final ChannelPoolOptions options;
-    final boolean ssl;
-    final ThrowingSupplier<SslHandler> sslHandler;
 
-    ChannelPool(io.netty.channel.pool.ChannelPool underlying,
-                ChannelPoolOptions options,
-                boolean ssl,
-                ThrowingSupplier<SslHandler> sslHandler) {
-        Checks.checkNotNull(underlying, "ChannelPool must not be null");
-        Checks.checkNotNull(options, "ChannelPoolOptions must not be null");
-        Checks.checkNotNull(sslHandler, "SslHandler must not be null");
+    ChannelPool(boolean ssl, io.netty.channel.pool.ChannelPool underlying, ChannelPoolOptions options) {
+        Checks.checkNotNull(underlying, "underlying");
+        Checks.checkNotNull(options, "options");
+        this.ssl = ssl;
         this.underlying = underlying;
         this.options = options;
-        this.ssl = ssl;
-        this.sslHandler = sslHandler;
     }
 }

@@ -28,8 +28,8 @@ public class AttributeMap {
     protected final Map<String, Object> attributes = new ConcurrentHashMap<>(8);
 
     public Object setAttr(String name, Object value) {
-        Checks.checkNotNull(name, "name must not be null");
-        Checks.checkNotNull(value, "value must not be null");
+        Checks.checkNotNull(name, "name");
+        Checks.checkNotNull(value, "value");
         return attributes.put(name, value);
     }
 
@@ -39,7 +39,7 @@ public class AttributeMap {
 
     @SuppressWarnings("unchecked")
     public <T> T removeAttr(String name) {
-        Checks.checkNotNull(name, "name must not be null");
+        Checks.checkNotNull(name, "name");
         return (T) attributes.remove(name);
     }
 
@@ -52,7 +52,7 @@ public class AttributeMap {
      */
     @SuppressWarnings("unchecked")
     public <T> T getAttr(String name) {
-        Checks.checkNotNull(name, "name must not be null");
+        Checks.checkNotNull(name, "name");
         return (T) attributes.get(name);
     }
 

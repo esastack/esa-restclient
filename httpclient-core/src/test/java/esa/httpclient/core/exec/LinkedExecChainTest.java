@@ -15,11 +15,10 @@
  */
 package esa.httpclient.core.exec;
 
+import esa.httpclient.core.ExecContextUtil;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
-import esa.httpclient.core.ListenerProxy;
 import esa.httpclient.core.mock.MockContext;
 import esa.httpclient.core.mock.MockHttpResponse;
 import esa.httpclient.core.util.Futures;
@@ -39,28 +38,21 @@ class LinkedExecChainTest {
     void testFrom1() {
         final HttpTransceiver transceiver = mock(HttpTransceiver.class);
         final HttpRequest request = client.get("http://127.0.0.1:8888/abc/def");
-        final MockContext ctx = new MockContext();
         final HttpResponse response = new MockHttpResponse(200);
-        final Listener listener = ListenerProxy.DEFAULT;
 
-        when(transceiver.handle(request,
-                ctx,
-                null,
-                listener))
+        final ExecContext ctx = ExecContextUtil.from(new MockContext());
+        when(transceiver.handle(request, ctx))
                 .thenReturn(Futures.completed(response));
 
         // interceptors.length == 0
         final ExecChain chain1 = LinkedExecChain.from(new Interceptor[0],
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response11 = chain1.proceed(request);
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
 
         final Interceptor interceptor1 = (request1, next) -> {
             request1.setHeader("requestInterceptor1", "1");
@@ -80,10 +72,7 @@ class LinkedExecChainTest {
 
         // interceptors.length == 2
         final ExecChain chain2 = LinkedExecChain.from(new Interceptor[]{interceptor1, interceptor2},
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response22 = chain2.proceed(request);
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
@@ -93,7 +82,7 @@ class LinkedExecChainTest {
         then(response.headers().get("responseInterceptor2")).isEqualTo("2");
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
 
         final Interceptor interceptor3 = (request12, next) -> Futures.completed(new RuntimeException());
         final Interceptor interceptor4 = (request13, next) ->
@@ -101,24 +90,19 @@ class LinkedExecChainTest {
 
         // throwable in preHandle
         final ExecChain chain3 = LinkedExecChain.from(new Interceptor[]{interceptor1, interceptor3},
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response33 = chain3.proceed(request);
         then(response33.isDone()).isTrue();
         then(response33.isCompletedExceptionally()).isTrue();
         then(request.headers().get("requestInterceptor1")).isEqualTo("1");
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
 
         // throwable in postHandle
         final ExecChain chain4 = LinkedExecChain.from(new Interceptor[]{interceptor4, interceptor1, interceptor2},
                 transceiver,
-                null,
-                ctx,
-                listener);
+                ctx);
         final CompletableFuture<HttpResponse> response44 = chain4.proceed(request);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
@@ -128,35 +112,29 @@ class LinkedExecChainTest {
         then(response.headers().get("responseInterceptor2")).isEqualTo("2");
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
     }
 
     @Test
     void testFrom2() {
         final HttpTransceiver transceiver = mock(HttpTransceiver.class);
         final HttpRequest request = client.get("http://127.0.0.1:8888/abc/def");
-        final MockContext ctx = new MockContext();
-        final HttpResponse response = new MockHttpResponse(200);
-        final Listener listener = ListenerProxy.DEFAULT;
 
-        when(transceiver.handle(request,
-                ctx,
-                null,
-                listener))
+        final ExecContext ctx = ExecContextUtil.from(new MockContext());
+        final HttpResponse response = new MockHttpResponse(200);
+
+        when(transceiver.handle(request, ctx))
                 .thenReturn(Futures.completed(response));
 
         // interceptors.length == 0
         final ExecChain chain1 = LinkedExecChain.from(new Interceptor[0],
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response11 = chain1.proceed(request);
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
 
         final Interceptor interceptor1 = (request1, next) -> {
             request1.setHeader("requestInterceptor1", "1");
@@ -176,10 +154,7 @@ class LinkedExecChainTest {
 
         // interceptors.length == 2
         final ExecChain chain2 = LinkedExecChain.from(new Interceptor[]{interceptor1, interceptor2},
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response22 = chain2.proceed(request);
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
@@ -189,7 +164,7 @@ class LinkedExecChainTest {
         then(response.headers().get("responseInterceptor2")).isEqualTo("2");
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
 
         final Interceptor interceptor3 = (request12, next) -> Futures.completed(new RuntimeException());
         final Interceptor interceptor4 = (request13, next) ->
@@ -197,24 +172,18 @@ class LinkedExecChainTest {
 
         // throwable in preHandle
         final ExecChain chain3 = LinkedExecChain.from(new Interceptor[]{interceptor1, interceptor3},
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response33 = chain3.proceed(request);
         then(response33.isDone()).isTrue();
         then(response33.isCompletedExceptionally()).isTrue();
         then(request.headers().get("requestInterceptor1")).isEqualTo("1");
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
 
         // throwable in postHandle
         final ExecChain chain4 = LinkedExecChain.from(new Interceptor[]{interceptor4, interceptor1, interceptor2},
-                transceiver,
-                null,
-                ctx,
-                listener);
+                transceiver, ctx);
         final CompletableFuture<HttpResponse> response44 = chain4.proceed(request);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
@@ -224,7 +193,7 @@ class LinkedExecChainTest {
         then(response.headers().get("responseInterceptor2")).isEqualTo("2");
         request.headers().clear();
         response.headers().clear();
-        ctx.clear();
+        ((MockContext) ctx.ctx()).clear();
     }
 
 }

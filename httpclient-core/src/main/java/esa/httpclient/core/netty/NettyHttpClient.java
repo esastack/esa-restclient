@@ -42,6 +42,8 @@ import esa.httpclient.core.config.CallbackThreadPoolOptions;
 import esa.httpclient.core.config.ChannelPoolOptions;
 import esa.httpclient.core.config.Decompression;
 import esa.httpclient.core.config.SslOptions;
+import esa.httpclient.core.exec.ExecContext;
+import esa.httpclient.core.exec.HttpTransceiver;
 import esa.httpclient.core.exec.RequestExecutor;
 import esa.httpclient.core.exec.RequestExecutorImpl;
 import esa.httpclient.core.metrics.CallbackExecutorMetric;
@@ -111,7 +113,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     private static final long IOTHREADS_GRACEFULLY_SHUTDOWN_TIMEOUT_SECONDS =
             SystemPropertyUtil.getLong(IOTHREADS_GRACEFULLY_SHUTDOWN_TIMEOUT_SECONDS_KEY, 15L);
 
-    private static final String IDENTITY_PREFIX = "NettyHttpClient-";
+    private static final String IDENTITY_PREFIX = "ESAHttpClient-";
     private static final AtomicInteger IDENTITY = new AtomicInteger();
     private static final AtomicInteger ACTIVE_CLIENTS = new AtomicInteger();
 
@@ -130,39 +132,41 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
     private static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
             new ScheduledThreadPoolExecutor(1,
-                    new ThreadFactoryImpl("HttpClient-CloseConnectionPool-Scheduler", true),
+                    new ThreadFactoryImpl("ESAHttpClient-CloseConnectionPool-Scheduler", true),
                     (r, executor) -> LoggerUtils.logger().error(
-                            "HttpClient-CloseConnectionPool-Scheduler-Pool has full, a task has been rejected"));
+                            "ESAHttpClient-CloseConnectionPool-Scheduler-Pool has full," +
+                                    " a task has been rejected"));
 
-    protected volatile HttpClientBuilder builder;
+    protected final HttpClientBuilder builder;
 
-    private final ChannelPools channelPools;
+    private final CachedChannelPools channelPools;
     private final IdentityFactory.Identified<EventLoopGroup> ioThreads;
     private final IdentityFactory.Identified<ThreadPoolExecutor> callbackExecutor;
     private final String id;
-    private final RequestExecutor executor;
 
-    private final SslEngineFactory sslEngineFactory;
+    private volatile RequestExecutor executor;
+    private final ChannelPoolFactory channelPoolFactory;
+
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
-    public NettyHttpClient(HttpClientBuilder builder, ChannelPools channelPools) {
+    public NettyHttpClient(HttpClientBuilder builder, CachedChannelPools channelPools) {
         this(builder, channelPools, SHARED_IO_THREADS, SHARED_CALLBACK_EXECUTOR);
     }
 
     private NettyHttpClient(HttpClientBuilder builder,
-                            ChannelPools channelPools,
+                            CachedChannelPools channelPools,
                             IdentityFactory.Identified<EventLoopGroup> ioThreads,
                             IdentityFactory.Identified<ThreadPoolExecutor> callbackExecutor) {
-        Checks.checkNotNull(builder, "HttpClientBuilder must not be null");
-        Checks.checkNotNull(ioThreads, "I/O Threads must not be null");
-        Checks.checkNotNull(channelPools, "ChannelPools must not be null");
+        Checks.checkNotNull(builder, "builder");
+        Checks.checkNotNull(ioThreads, "ioThreads");
+        Checks.checkNotNull(channelPools, "channelPools");
         this.builder = builder;
         this.callbackExecutor = callbackExecutor;
         this.ioThreads = ioThreads;
         this.channelPools = channelPools;
         this.id = IDENTITY_PREFIX + IDENTITY.incrementAndGet();
-        this.sslEngineFactory = loadSslEngineFactory(builder.sslOptions());
-        this.executor = build(ioThreads.origin(), channelPools);
+        this.channelPoolFactory = new ChannelPoolFactory(loadSslEngineFactory(builder.sslOptions()));
+        this.executor = build(ioThreads.origin(), channelPools, buildOptions(builder));
         ACTIVE_CLIENTS.incrementAndGet();
     }
 
@@ -238,13 +242,14 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                                                    Context ctx,
                                                    Consumer<Handle> handle,
                                                    Handler handler) {
-        Checks.checkNotNull(request, "HttpRequest must not be null");
-        Checks.checkNotNull(ctx, "Context must not be null");
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(ctx, "ctx");
         final Listener listener = ListenerProxy.DEFAULT;
 
         addAcceptEncodingIfAbsent(request);
 
-        CompletableFuture<HttpResponse> response = executor.execute(request, ctx, listener, handle, handler);
+        CompletableFuture<HttpResponse> response = executor.execute(request,
+                new ExecContext(ctx, listener, handle, handler));
         if (request.buffer() != null) {
             response = response.whenComplete((rsp, th) -> Utils.tryRelease(request.buffer().getByteBuf()));
         }
@@ -289,7 +294,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
             // Close channel pools and all according channels.
             channelPools.close();
 
-            sslEngineFactory.onDestroy();
+            channelPoolFactory.sslEngineFactory.onDestroy();
 
             if (ACTIVE_CLIENTS.intValue() == 0) {
                 closeGlobalGracefully();
@@ -298,7 +303,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     private HttpRequestFacade newRequestFacade(HttpMethod method, String uri) {
-        Checks.checkNotNull("HttpMethod must not be null");
+        Checks.checkNotNull("method");
         Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
         return new CompositeRequest(builder, this,
                 () -> new SegmentRequestImpl(builder, executor, method, uri),
@@ -359,7 +364,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         }
 
         // Shutdown ReadTimeout-Timer
-        NettyTransceiver.closeTimer();
+        HttpTransceiverImpl.closeTimer();
     }
 
     @Override
@@ -369,7 +374,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
     @Override
     public synchronized NettyHttpClient applyChannelPoolOptions(ChannelPoolOptions options, boolean applyToExisted) {
-        Checks.checkNotNull(options, "ChannelPool options must not be null");
+        Checks.checkNotNull(options, "options");
 
         if (options.connectTimeout() == builder.connectTimeout()
                 && options.readTimeout() == builder.readTimeout()
@@ -378,11 +383,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
             return this;
         }
 
-        this.builder = builder.copy()
-                .connectTimeout(options.connectTimeout())
-                .readTimeout(options.readTimeout())
-                .connectionPoolSize(options.poolSize())
-                .connectionPoolWaitingQueueLength(options.waitingQueueLength());
+        // NOTE: update the global channelPoolOptions hold in executor.
+        this.executor = build(ioThreads.origin(), channelPools, options);
 
         if (!applyToExisted) {
             return this;
@@ -424,16 +426,19 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         }
 
         channelPools.put(address,
-                ChannelPools.CHANNEL_POOL_FACTORY.create(old.ssl,
-                        true,
-                        address,
-                        ioThreads.origin(),
-                        builder,
-                        options,
-                        old.sslHandler));
-        CLOSE_CONNECTION_POOL_SCHEDULER.schedule(() -> ChannelPools.close(address, old, true),
+                channelPoolFactory.create(old.ssl, true, address, ioThreads.origin(), options, builder));
+        CLOSE_CONNECTION_POOL_SCHEDULER.schedule(() -> CachedChannelPools.close(address, old, true),
                 CLOSE_CHANNEL_POOL_DELAY_SECONDS,
                 TimeUnit.SECONDS);
+    }
+
+    private ChannelPoolOptions buildOptions(HttpClientBuilder builder) {
+        return ChannelPoolOptions.options()
+                .connectTimeout(builder.connectTimeout())
+                .readTimeout(builder.readTimeout())
+                .poolSize(builder.connectionPoolSize())
+                .waitingQueueLength(builder.connectionPoolWaitingQueueLength())
+                .build();
     }
 
     /**
@@ -444,11 +449,13 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      * @return executor
      */
     protected RequestExecutor build(EventLoopGroup ioThreads,
-                                    ChannelPools channelPools) {
-        final NettyTransceiver transceiver = new NettyTransceiver(ioThreads,
+                                    CachedChannelPools channelPools,
+                                    ChannelPoolOptions channelPoolOptions) {
+        HttpTransceiver transceiver = new NettyTransceiver(ioThreads,
                 channelPools,
                 builder,
-                sslEngineFactory);
+                channelPoolOptions,
+                channelPoolFactory);
 
         return new RequestExecutorImpl(builder.unmodifiableInterceptors(), transceiver);
     }

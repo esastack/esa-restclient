@@ -41,7 +41,7 @@ final class ReadTimeoutTask implements TimerTask {
 
     @Override
     public void run(Timeout timeout) {
-        final NettyHandle handle = registry.remove(requestId);
+        final ResponseHandle handle = registry.remove(requestId);
         if (handle != null) {
             channel.eventLoop().execute(() -> handle.onError(new
                     SocketTimeoutException("Request: " + uri + " reads timeout")));
@@ -54,7 +54,7 @@ final class ReadTimeoutTask implements TimerTask {
     }
 
     void cancel() {
-        NettyHandle handle = registry.remove(requestId);
+        ResponseHandle handle = registry.remove(requestId);
         if (handle != null) {
             handle.onError(new IllegalStateException("Request: " + uri +
                     " haven't finished while connection: " + channel + "has closed"));

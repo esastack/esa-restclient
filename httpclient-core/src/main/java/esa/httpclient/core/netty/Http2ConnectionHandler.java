@@ -129,6 +129,10 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                                      Object data,
                                      boolean endStream,
                                      ChannelPromise promise) {
+        if (checkIfEnded(streamId, false, promise)) {
+            return promise;
+        }
+
         ByteBuf buf = null;
         try {
             if (data != null) {
@@ -204,25 +208,35 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                                         Http2Headers headers,
                                         boolean endStream,
                                         ChannelPromise promise) {
+        if (checkIfEnded(streamId, true, promise)) {
+            return promise;
+        }
+
         int dependencyId = headers.getInt(
                 HttpConversionUtil.ExtensionHeaderNames.STREAM_DEPENDENCY_ID.text(), 0);
         short weight = headers.getShort(
                 HttpConversionUtil.ExtensionHeaderNames.STREAM_WEIGHT.text(),
                 Http2CodecUtil.DEFAULT_PRIORITY_WEIGHT);
 
-        try {
-            return encoder().writeHeaders(ctx,
-                    streamId,
-                    headers,
-                    dependencyId,
-                    weight,
-                    false,
-                    0,
-                    endStream,
-                    promise);
-        } catch (Throwable ex) {
-            return promise.setFailure(ex);
+        return encoder().writeHeaders(ctx,
+                streamId,
+                headers,
+                dependencyId,
+                weight,
+                false,
+                0,
+                endStream,
+                promise);
+    }
+
+    boolean checkIfEnded(int streamId, boolean isHeader, ChannelPromise promise) {
+        if (registry.get(streamId) == null) {
+            promise.setFailure(new IllegalStateException("Request may has ended before writing "
+                    + (isHeader ? "headers" : "data")));
+            return true;
         }
+
+        return false;
     }
 
     HandleRegistry getRegistry() {

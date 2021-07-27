@@ -16,8 +16,9 @@
 package esa.httpclient.core.netty;
 
 import esa.commons.netty.core.BufferImpl;
-import esa.httpclient.core.Context;
+import esa.httpclient.core.ExecContextUtil;
 import esa.httpclient.core.HttpClient;
+import esa.httpclient.core.exec.ExecContext;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -49,7 +50,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final esa.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -81,7 +82,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
         request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
-        final NettyContext ctx = new NettyContext();
+        final NettyExecContext ctx = ExecContextUtil.newAsNetty();
 
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
@@ -119,7 +120,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final esa.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -158,8 +159,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
                 .body(new BufferImpl().writeBytes(DATA));
         request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-        final NettyContext ctx = new NettyContext();
-
+        final NettyExecContext ctx = ExecContextUtil.newAsNetty();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,

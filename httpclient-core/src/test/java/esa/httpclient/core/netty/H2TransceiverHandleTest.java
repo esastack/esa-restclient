@@ -25,6 +25,7 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.Listener;
 import esa.httpclient.core.ListenerProxy;
 import esa.httpclient.core.NoopListener;
+import esa.httpclient.core.exec.ExecContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -74,9 +75,8 @@ class H2TransceiverHandleTest {
         final H2TransceiverHandle handle = new H2TransceiverHandle();
         final HttpRequest request = mock(HttpRequest.class);
         when(request.headers()).thenReturn(new Http1HeadersImpl());
-        final Context ctx = mock(Context.class);
+        final ExecContext ctx = mock(ExecContext.class);
 
-        final Listener listener = NoopListener.INSTANCE;
         final HandleRegistry registry = new HandleRegistry(2, 1);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
@@ -84,8 +84,8 @@ class H2TransceiverHandleTest {
         channel.pipeline().addLast(new Http1ChannelHandler(registry, -1L));
 
         then(registry.get(3)).isNull();
-        int requestId = handle.addRspHandle(request, ctx, channel, listener,
-                null, null, registry, response);
+        int requestId = handle.addRspHandle(request, ctx, channel,
+                null, registry, new TimeoutHandle(NoopListener.INSTANCE), response);
         then(requestId).isEqualTo(3);
         then(registry.get(requestId)).isNotNull();
         then(request.headers().getInt(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text())).isEqualTo(requestId);

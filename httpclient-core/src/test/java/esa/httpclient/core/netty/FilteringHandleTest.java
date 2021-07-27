@@ -19,13 +19,13 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.Http1HeadersImpl;
-import esa.httpclient.core.Context;
+import esa.httpclient.core.ExecContextUtil;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpMessage;
 import esa.httpclient.core.HttpRequest;
 import esa.httpclient.core.HttpResponse;
-import esa.httpclient.core.Listener;
 import esa.httpclient.core.NoopListener;
+import esa.httpclient.core.exec.ExecContext;
 import esa.httpclient.core.filter.FilterContext;
 import esa.httpclient.core.filter.ResponseFilter;
 import esa.httpclient.core.util.Futures;
@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -51,43 +52,43 @@ class FilteringHandleTest {
     @Test
     void testConstructor() {
         final HttpRequest request = mock(HttpRequest.class);
-        final Context ctx = mock(Context.class);
-        final Listener listener = mock(Listener.class);
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = mock(CompletableFuture.class);
         final ResponseFilter[] filters = new ResponseFilter[]{(request1, response1, ctx1) -> null};
         final FilterContext fCtx = mock(FilterContext.class);
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
 
         assertThrows(NullPointerException.class, () -> new FilteringHandle(null,
-                request, ctx, listener, response, filters, fCtx));
+                request, ctx, tHandle, response, filters, fCtx));
 
         assertThrows(NullPointerException.class, () -> new FilteringHandle(handle,
-                null, ctx, listener, response, filters, fCtx));
+                null, ctx, tHandle, response, filters, fCtx));
 
         assertThrows(NullPointerException.class, () -> new FilteringHandle(handle,
-                request, null, listener, response, filters, fCtx));
+                request, null, tHandle, response, filters, fCtx));
 
         assertThrows(NullPointerException.class, () -> new FilteringHandle(handle,
                 request, ctx, null, response, filters, fCtx));
 
         assertThrows(NullPointerException.class, () -> new FilteringHandle(handle,
-                request, ctx, listener, null, filters, fCtx));
+                request, ctx, tHandle, null, filters, fCtx));
 
         assertThrows(IllegalArgumentException.class, () -> new FilteringHandle(handle,
-                request, ctx, listener, response, null, fCtx));
+                request, ctx, tHandle, response, null, fCtx));
 
         assertThrows(NullPointerException.class, () -> new FilteringHandle(handle,
-                request, ctx, listener, response, filters, null));
+                request, ctx, tHandle, response, filters, null));
 
-        new FilteringHandle(handle, request, ctx, listener, response, filters, fCtx);
+        assertDoesNotThrow(() -> new FilteringHandle(handle, request, ctx, tHandle, response, filters, fCtx));
     }
 
     @Test
     void testOpsNormal() throws Exception {
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final ResponseFilter[] filters = new ResponseFilter[2];
 
@@ -112,10 +113,10 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContext(ctx);
+        final FilterContext fCtx = new FilterContext(ctx.ctx());
 
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
-                listener, response, filters, fCtx);
+                tHandle, response, filters, fCtx);
 
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
@@ -157,8 +158,8 @@ class FilteringHandleTest {
     void testOnFilterError() {
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final ResponseFilter[] filters = new ResponseFilter[2];
 
@@ -184,10 +185,10 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContext(ctx);
+        final FilterContext fCtx = new FilterContext(ctx.ctx());
 
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
-                listener, response, filters, fCtx);
+                tHandle, response, filters, fCtx);
 
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
@@ -220,8 +221,8 @@ class FilteringHandleTest {
     void testExceptionThrownByFilter() {
         final HandleImpl handle = new DefaultHandle(ByteBufAllocator.DEFAULT);
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final ResponseFilter[] filters = new ResponseFilter[2];
 
@@ -237,10 +238,9 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContext(ctx);
-
+        final FilterContext fCtx = new FilterContext(ctx.ctx());
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
-                listener, response, filters, fCtx);
+                tHandle, response, filters, fCtx);
 
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
@@ -272,8 +272,8 @@ class FilteringHandleTest {
     @Test
     void testOnMessageError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
@@ -283,14 +283,14 @@ class FilteringHandleTest {
             throw ex;
         });
 
-        testOnXxxError(request, ctx, listener, response, handle, ex);
+        testOnXxxError(request, ctx, tHandle, response, handle, ex);
     }
 
     @Test
     void testOnDataError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
@@ -300,14 +300,14 @@ class FilteringHandleTest {
             throw ex;
         });
 
-        testOnXxxError(request, ctx, listener, response, handle, ex);
+        testOnXxxError(request, ctx, tHandle, response, handle, ex);
     }
 
     @Test
     void testOnTrailersError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
@@ -317,14 +317,15 @@ class FilteringHandleTest {
             throw ex;
         });
 
-        testOnXxxError(request, ctx, listener, response, handle, ex);
+        testOnXxxError(request, ctx, tHandle, response, handle, ex);
     }
 
     @Test
     void testOnEndError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
+
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
@@ -334,14 +335,15 @@ class FilteringHandleTest {
             throw ex;
         });
 
-        testOnXxxError(request, ctx, listener, response, handle, ex);
+        testOnXxxError(request, ctx, tHandle, response, handle, ex);
     }
 
     @Test
     void testOnErrorError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
+
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
@@ -353,12 +355,12 @@ class FilteringHandleTest {
             throw ex;
         });
 
-        testOnXxxError(request, ctx, listener, response, handle, ex);
+        testOnXxxError(request, ctx, tHandle, response, handle, ex);
     }
 
     private void testOnXxxError(HttpRequest request,
-                                Context ctx,
-                                Listener listener,
+                                ExecContext ctx,
+                                TimeoutHandle tHandle,
                                 CompletableFuture<HttpResponse> response,
                                 HandleImpl handle,
                                 RuntimeException ex) {
@@ -385,9 +387,9 @@ class FilteringHandleTest {
             return Futures.completed();
         };
 
-        final FilterContext fCtx = new FilterContext(ctx);
+        final FilterContext fCtx = new FilterContext(ctx.ctx());
         final FilteringHandle nHandle = new FilteringHandle(handle, request, ctx,
-                listener, response, filters, fCtx);
+                tHandle, response, filters, fCtx);
 
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");

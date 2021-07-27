@@ -63,7 +63,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
                        HttpMethod method,
                        String uri) {
         super(builder, method, uri);
-        Checks.checkNotNull(executor, "RequestExecutor must not be null");
+        Checks.checkNotNull(executor, "executor");
         this.executor = executor;
     }
 
@@ -276,8 +276,9 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
             }
 
             this.started = true;
-            response = executor.execute(this, ctx, ListenerProxy.DEFAULT, handle, handler);
-            segmentWriter = ctx.getWriter().orElse(null);
+            NettyExecContext execCtx = new NettyExecContext(ctx, ListenerProxy.DEFAULT, handle, handler);
+            response = executor.execute(this, execCtx);
+            segmentWriter = execCtx.segmentWriter().orElse(null);
         }
     }
 

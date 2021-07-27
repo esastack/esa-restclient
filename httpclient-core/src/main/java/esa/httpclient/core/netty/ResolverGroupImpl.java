@@ -33,7 +33,7 @@ class ResolverGroupImpl extends AddressResolverGroup<InetSocketAddress> {
     private final HostResolver delegate;
 
     private ResolverGroupImpl(HostResolver delegate) {
-        Checks.checkNotNull(delegate, "HostResolver must not be null");
+        Checks.checkNotNull(delegate, "delegate");
         this.delegate = delegate;
     }
 

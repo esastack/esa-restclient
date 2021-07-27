@@ -28,13 +28,13 @@ import io.netty.util.Timeout;
  */
 class TimeoutHandle extends ListenerProxy {
 
-    private Timeout task;
+    Timeout task;
 
     TimeoutHandle(Listener delegate) {
         super(delegate);
     }
 
-    void addCancelTask(Timeout task) {
+    void addTimeoutTask(Timeout task) {
         this.task = task;
     }
 

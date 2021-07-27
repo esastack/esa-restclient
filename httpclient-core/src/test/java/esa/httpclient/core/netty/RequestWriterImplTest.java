@@ -20,8 +20,10 @@ import esa.commons.http.HttpHeaderValues;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.http.Http1HeadersImpl;
 import esa.httpclient.core.Context;
+import esa.httpclient.core.ExecContextUtil;
 import esa.httpclient.core.HttpClient;
 import esa.httpclient.core.HttpRequest;
+import esa.httpclient.core.exec.ExecContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPromise;
@@ -57,7 +59,7 @@ class RequestWriterImplTest {
 
         ChannelFuture future = writer.writeAndFlush(request1,
                 channel,
-                mock(Context.class),
+                mock(ExecContext.class),
                 channel.newPromise(),
                 ThreadLocalRandom.current().nextBoolean(),
                 HttpVersion.HTTP_1_1,
@@ -72,7 +74,7 @@ class RequestWriterImplTest {
 
         future = writer.writeAndFlush(request2,
                 channel,
-                mock(Context.class),
+                mock(ExecContext.class),
                 channel.newPromise(),
                 ThreadLocalRandom.current().nextBoolean(),
                 HttpVersion.HTTP_1_1,
@@ -124,19 +126,21 @@ class RequestWriterImplTest {
         when(request.headers()).thenReturn(headers);
 
         final Context ctx = mock(Context.class);
+        final ExecContext execCtx = ExecContextUtil.from(ctx);
+
         when(ctx.isUseExpectContinue()).thenReturn(false);
 
         headers.set(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
-        then(RequestWriterImpl.writeContentNow(ctx, request)).isFalse();
+        then(RequestWriterImpl.writeContentNow(execCtx, request)).isFalse();
 
         headers.clear();
         headers.set(HttpHeaderNames.EXPECT, "");
         when(ctx.isUseExpectContinue()).thenReturn(true);
-        then(RequestWriterImpl.writeContentNow(ctx, request)).isTrue();
+        then(RequestWriterImpl.writeContentNow(execCtx, request)).isTrue();
 
         when(ctx.isUseExpectContinue()).thenReturn(false);
         headers.clear();
-        then(RequestWriterImpl.writeContentNow(ctx, request)).isTrue();
+        then(RequestWriterImpl.writeContentNow(execCtx, request)).isTrue();
     }
 
     @Test
@@ -188,12 +192,12 @@ class RequestWriterImplTest {
         then(RequestWriterImpl.computeHost(uri5)).isEqualTo("127.0.0.1:80");
     }
 
-    private class FakeRequestWriterImpl extends RequestWriterImpl {
+    private static class FakeRequestWriterImpl extends RequestWriterImpl {
 
         @Override
         ChannelFuture writeAndFlush2(HttpRequest request,
                                      Channel channel,
-                                     Context context,
+                                     ExecContext context,
                                      ChannelPromise headFuture,
                                      Http2ConnectionHandler handler,
                                      int streamId,
@@ -204,7 +208,7 @@ class RequestWriterImplTest {
         @Override
         ChannelFuture writeAndFlush1(HttpRequest request,
                                      Channel channel,
-                                     Context context,
+                                     ExecContext context,
                                      ChannelPromise headFuture,
                                      HttpVersion version,
                                      boolean uriEncodeEnabled) {

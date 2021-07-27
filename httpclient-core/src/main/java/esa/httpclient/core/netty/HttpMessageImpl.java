@@ -36,8 +36,8 @@ class HttpMessageImpl implements HttpMessage {
     private final HttpHeaders headers;
 
     HttpMessageImpl(int status, HttpVersion version, HttpHeaders headers) {
-        Checks.checkNotNull(version, "HttpVersion must not be null");
-        Checks.checkNotNull(headers, "HttpHeaders must not be null");
+        Checks.checkNotNull(version, "version");
+        Checks.checkNotNull(headers, "headers");
         this.status = status;
         this.version = version;
         this.headers = headers;

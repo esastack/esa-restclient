@@ -29,7 +29,7 @@ class SslEngineFactoryImpl implements SslEngineFactory {
     private final SslContext sslContext;
 
     SslEngineFactoryImpl(SslContext sslContext) {
-        Checks.checkNotNull(sslContext, "SslContext must not be null");
+        Checks.checkNotNull(sslContext, "sslContext");
         this.sslContext = sslContext;
     }
 

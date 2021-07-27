@@ -150,9 +150,7 @@ class Http2FrameHandler extends Http2EventAdapter {
         final Http2Stream stream = connection.stream(streamId);
         if (stream != null) {
             final Throwable ex = ClosedStreamException.CAUSED_BY_RST;
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug(ex.getMessage());
-            }
+            LoggerUtils.logger().debug(ex.getMessage());
             onError(ex, stream, streamId, false);
         }
     }

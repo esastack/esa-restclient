@@ -356,7 +356,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return Collections.unmodifiableList(encodeAdvices0).toArray(new EncodeAdvice[0]);
     }
 
-
     @Override
     public RestClientBuilder copy() {
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);

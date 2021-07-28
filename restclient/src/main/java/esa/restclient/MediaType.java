@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+//TODO 抽到公共的包里去
 public class MediaType extends MimeType {
 
     private static final Function3<String, String, Map<String, String>, MediaType> GENERATOR = MediaType::new;

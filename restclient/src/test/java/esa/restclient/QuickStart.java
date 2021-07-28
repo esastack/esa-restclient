@@ -9,8 +9,10 @@ public class QuickStart {
     public static void main(String[] args) {
         RestClient restClient = createClient();
         sendRestRequest(restClient);
+
         System.out.println("\r\n\r\n========================================\r\n\r\n");
         sendMultipartRequest(restClient, true);
+
         System.out.println("\r\n\r\n========================================\r\n\r\n");
         sendMultipartRequest(restClient, false);
     }

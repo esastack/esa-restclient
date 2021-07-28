@@ -1,9 +1,14 @@
 package esa.restclient;
 
+/**
+ * Used to support the transfer of data received by httpClient to restClient
+ *
+ * @param <T> the class of content
+ */
 public final class ResponseBodyContent<T> implements BodyContent<T> {
+
     /**
-     * Use this flag to represent content type to avoid using Class.equal()
-     * to improve performance
+     * Use this flag to represent content type to avoid using content.getClass().equal()
      */
     private final byte type;
 

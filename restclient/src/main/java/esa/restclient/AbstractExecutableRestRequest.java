@@ -116,7 +116,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     private RequestBodyContent<?> encode() throws Exception {
-        return new EncodeContextImpl(this, entity(), clientConfig).proceed();
+        return new EncodeContextImpl(this, entity(), clientConfig.unmodifiableEncodeAdvices()).proceed();
     }
 
     private void fillBody(RequestBodyContent<?> content) {

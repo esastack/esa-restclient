@@ -11,6 +11,9 @@ import esa.restclient.exec.Interceptor;
 
 import java.util.List;
 
+/**
+ * RestClientConfig is designed for wrapping the configuration of restClient
+ */
 public interface RestClientConfig {
 
     HostResolver resolver();

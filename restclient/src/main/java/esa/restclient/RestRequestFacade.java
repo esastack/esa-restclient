@@ -8,14 +8,48 @@ import java.util.Map;
 
 public interface RestRequestFacade extends ExecutableRestRequest {
 
+    /**
+     * Fills the request's entity with given entity.The entity will be encoded to
+     * be request,s {@link RequestBodyContent} by {@link esa.restclient.codec.Encoder#encode}.
+     *
+     * @param entity entity
+     * @return ExecutableRestRequest
+     */
     ExecutableRestRequest entity(Object entity);
 
+    /**
+     * Fills the request's entity with given content.The content will be encoded to
+     * be request,s {@link RequestBodyContent} by {@link esa.restclient.codec.Encoder#encode}.
+     *
+     * @param content content
+     * @return ExecutableRestRequest
+     */
     ExecutableRestRequest entity(String content);
 
+    /**
+     * Fills the request's entity with given data.The data will be encoded to
+     * be request,s {@link RequestBodyContent} by {@link esa.restclient.codec.Encoder#encode}.
+     *
+     * @param data data
+     * @return ExecutableRestRequest
+     */
     ExecutableRestRequest entity(byte[] data);
 
+    /**
+     * Fills the request's entity with given file.The file will be encoded to
+     * be request,s {@link RequestBodyContent} by {@link esa.restclient.codec.Encoder#encode}.
+     *
+     * @param file data
+     * @return RestFileRequest
+     */
     RestFileRequest entity(File file);
 
+    /**
+     * Converts to a {@link RestMultipartRequest} which can be used to handle the body
+     * by multipart encoding.
+     *
+     * @return RestMultipartRequest
+     */
     RestMultipartRequest multipart();
 
     @Override

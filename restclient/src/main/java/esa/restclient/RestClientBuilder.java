@@ -20,6 +20,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * The facade which is designed to help user obtain a configured {@link RestClient} easily. Before staring
+ * to use this builder.
+ */
 public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientConfig {
 
     private final HttpClientBuilder httpClientBuilder;

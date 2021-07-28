@@ -3,7 +3,6 @@ package esa.restclient.codec;
 import esa.commons.Checks;
 import esa.restclient.ContentType;
 import esa.restclient.RequestBodyContent;
-import esa.restclient.RestClientConfig;
 import esa.restclient.RestRequest;
 
 public class EncodeContextImpl implements EncodeContext {
@@ -13,10 +12,10 @@ public class EncodeContextImpl implements EncodeContext {
     private int adviceIndex = 0;
     private Object entity;
 
-    public EncodeContextImpl(RestRequest request, Object entity, RestClientConfig clientConfig) {
+    public EncodeContextImpl(RestRequest request, Object entity, EncodeAdvice[] advices) {
         this.request = request;
         this.entity = entity;
-        this.advices = clientConfig.unmodifiableEncodeAdvices();
+        this.advices = advices;
     }
 
     @Override

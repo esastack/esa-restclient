@@ -20,7 +20,7 @@ It's so easy to get start with `ESA HttpClient`.
 ```
 
 #### Step 2: Send a request and handle response
-> **Note：执行请求得到的CompletionStage<HttpResponse\>直接由IO线程执行，请勿在该线程内做其他耗时操作，以免阻塞IO操作**
+> **Note：执行请求得到的CompletionStage<HttpResponse\>直接由IO线程执行，请勿在该线程内做其他耗时操作，以免阻塞IO线程**
  
 ```java
 final HttpClient client = HttpClient.ofDefault();

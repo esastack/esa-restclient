@@ -40,6 +40,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static esa.httpclient.core.netty.Utils.CLOSE_CONNECTION_POOL_SCHEDULER;
+
 /**
  * This class is designed to cache the given {@link ChannelPool}s.
  */
@@ -56,6 +58,17 @@ public class CachedChannelPools implements ConnectionPoolMetricProvider {
                 .expireAfterAccess(options.expireSeconds(), TimeUnit.SECONDS)
                 .removalListener(new ChannelPoolRemovalListener())
                 .build();
+
+        // make sure the connection pool closed timely, see more information from
+        // https://github.com/esastack/esa-httpclient/issues/102
+        CLOSE_CONNECTION_POOL_SCHEDULER.scheduleAtFixedRate(() -> {
+            try {
+                cachedPools.cleanUp();
+                LoggerUtils.logger().debug("Scheduled cachedPools#cleanUp successfully.");
+            } catch (Throwable th) {
+                LoggerUtils.logger().error("Failed to schedule cachedPools#cleanUp.", th);
+            }
+        }, options.expireSeconds() / 2, options.expireSeconds(), TimeUnit.SECONDS);
     }
 
     ChannelPool getIfPresent(SocketAddress address) {

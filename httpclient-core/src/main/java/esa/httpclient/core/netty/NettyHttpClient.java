@@ -80,8 +80,6 @@ import java.util.StringJoiner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -90,6 +88,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static esa.httpclient.core.netty.ChannelPoolFactory.PREFER_NATIVE;
+import static esa.httpclient.core.netty.Utils.CLOSE_CONNECTION_POOL_SCHEDULER;
 
 @Internal
 public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpClient> {
@@ -129,13 +128,6 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      */
     private static final IdentityFactory.Identified<EventLoopGroup> SHARED_IO_THREADS = IdentityFactoryProvider
             .ioThreadsIdentityFactory().generate(sharedIoThreads());
-
-    private static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
-            new ScheduledThreadPoolExecutor(1,
-                    new ThreadFactoryImpl("ESAHttpClient-CloseConnectionPool-Scheduler", true),
-                    (r, executor) -> LoggerUtils.logger().error(
-                            "ESAHttpClient-CloseConnectionPool-Scheduler-Pool has full," +
-                                    " a task has been rejected"));
 
     protected final HttpClientBuilder builder;
 

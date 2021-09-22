@@ -235,6 +235,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     @Override
     public RestMultipartRequest multipart() {
         checkEntityHadSet();
+        // TODO: 添加默认Header的时机是否过早？
         setContentTypeIfAbsent(ContentType.MULTIPART_FORM_DATA);
         this.entity = new MultipartBodyImpl();
         return self();

@@ -6,6 +6,7 @@ import esa.restclient.RequestBodyContent;
 
 import java.io.File;
 
+// TODO: FileToFile?
 public class FileToFileEncoder implements Encoder {
 
     @Override

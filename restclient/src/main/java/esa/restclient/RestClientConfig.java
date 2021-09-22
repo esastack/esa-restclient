@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * RestClientConfig is designed for wrapping the configuration of restClient
  */
+// TODO: XxxConfig（XxxOptions）命名风格？该类的作用
 public interface RestClientConfig {
 
     HostResolver resolver();

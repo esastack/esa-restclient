@@ -8,6 +8,7 @@ import esa.restclient.RequestBodyContent;
  *
  * @see Encoder
  */
+// TODO: EncodeAdvice or EncoderAdvice?
 public interface EncodeAdvice extends Ordered {
 
     /**
@@ -24,5 +25,6 @@ public interface EncodeAdvice extends Ordered {
      * @see Encoder
      * @see EncodeContext
      */
+    // TODO: RequestBodyContent的作用？用户如何使用呢？
     RequestBodyContent<?> aroundEncode(EncodeContext context) throws Exception;
 }

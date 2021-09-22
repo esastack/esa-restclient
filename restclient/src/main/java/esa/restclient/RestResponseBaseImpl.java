@@ -70,6 +70,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
                 clientConfig,
                 type,
                 mediaType,
+                // TODO: ByteBuf.array() 方法的具体用法？
                 ResponseBodyContent.of(response.body().getByteBuf().array()));
         return (T) decodeContext.proceed();
     }

@@ -11,6 +11,7 @@ import esa.restclient.RequestBodyContent;
  * @see RequestBodyContent
  * @see esa.restclient.ContentType
  */
+// TODO: Encoder or serializer?
 public interface Encoder {
 
     /**

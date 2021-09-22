@@ -31,8 +31,17 @@ import io.netty.util.ReferenceCounted;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 final class Utils {
+
+    static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
+            new ScheduledThreadPoolExecutor(1,
+                    new ThreadFactoryImpl("ESAHttpClient-CloseConnectionPool-Scheduler", true),
+                    (r, executor) -> LoggerUtils.logger().error(
+                            "ESAHttpClient-CloseConnectionPool-Scheduler-Pool has full," +
+                                    " a task has been rejected"));
 
     static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
     static final ConnectException WRITE_BUF_IS_FULL = new ConnectException("Connection write buffer is full");

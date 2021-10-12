@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-class InterceptorFactoryImpl implements InterceptorFactory {
+public class InterceptorFactoryImpl implements InterceptorFactory {
 
     @Override
     public Collection<ClientInterceptor> interceptors() {

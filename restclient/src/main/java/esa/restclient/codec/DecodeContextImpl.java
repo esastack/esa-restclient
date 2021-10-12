@@ -8,6 +8,7 @@ import esa.restclient.RestClientOptions;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponse;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 
 import java.lang.reflect.Type;
 
@@ -35,14 +36,7 @@ public class DecodeContextImpl implements DecodeContext {
         this.decoderSelectors = clientOptions.unmodifiableDecoderSelectors();
         this.type = type;
         this.mediaType = mediaType;
-        this.content = ResponseBodyContent.of(extractBytes(byteBuf));
-    }
-
-    private byte[] extractBytes(ByteBuf byteBuf) {
-        int length = byteBuf.readableBytes();
-        byte[] data = new byte[length];
-        byteBuf.getBytes(byteBuf.readerIndex(), data);
-        return data;
+        this.content = ResponseBodyContent.of(ByteBufUtil.getBytes(byteBuf));
     }
 
     @Override

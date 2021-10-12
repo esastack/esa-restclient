@@ -25,7 +25,8 @@ public interface DecodeContext {
     MediaType mediaType();
 
     /**
-     * Update media type of HTTP entity.
+     * Update media type of HTTP entity.this method is not safe for
+     * use by multiple threads
      *
      * @param mediaType new type for HTTP entity
      */
@@ -33,6 +34,11 @@ public interface DecodeContext {
 
     ResponseBodyContent<?> content();
 
+    /**
+     * set content,this method is not safe for use by multiple threads
+     *
+     * @param content content
+     */
     void content(ResponseBodyContent<?> content);
 
     Type type();

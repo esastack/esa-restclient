@@ -18,6 +18,11 @@ public interface EncodeContext {
 
     Object entity();
 
+    /**
+     * set entity,this method is not safe for use by multiple threads
+     *
+     * @param entity entity
+     */
     void entity(Object entity);
 
     /**

@@ -16,9 +16,8 @@ public class RequestInvocation implements InvocationChain {
         }
 
         final AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
-
-        // TODO: doRequest()?
-        return executableRequest.doRequest()
+        
+        return executableRequest.sendRequest()
                 .thenApply((response) -> processResponse(executableRequest, response));
     }
 

@@ -111,7 +111,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
         return requestExecutor.execute(this);
     }
 
-    CompletionStage<HttpResponse> doRequest() {
+    CompletionStage<HttpResponse> sendRequest() {
         try {
             fillBody(encode());
         } catch (Exception e) {

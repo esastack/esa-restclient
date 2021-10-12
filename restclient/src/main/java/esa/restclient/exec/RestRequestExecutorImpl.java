@@ -27,12 +27,12 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
     private InvocationChain buildInvokeChain(RestClientConfig clientConfig) {
         InvocationChain invocationChain = new RequestInvocation();
 
-        List<Interceptor> interceptors = clientConfig.interceptors();
+        List<ClientInterceptor> interceptors = clientConfig.interceptors();
 
         if (interceptors.size() == 0) {
             return invocationChain;
         }
-        final List<Interceptor> interceptors0 = new LinkedList<>(interceptors);
+        final List<ClientInterceptor> interceptors0 = new LinkedList<>(interceptors);
         OrderedComparator.sort(interceptors0);
         for (int i = interceptors0.size() - 1; i >= 0; i--) {
             invocationChain = new InterceptorInvocationChain(interceptors0.get(i), invocationChain);

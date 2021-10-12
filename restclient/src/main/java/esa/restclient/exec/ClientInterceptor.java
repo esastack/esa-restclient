@@ -10,7 +10,7 @@ import java.util.concurrent.CompletionStage;
  * Interceptor is designed for intercept request execution.Users can execute business
  * logic or modify the parameters of the request before and after executing the request.
  */
-public interface Interceptor extends Ordered {
+public interface ClientInterceptor extends Ordered {
 
     /**
      * Proceeds the RestRequest and obtains RestResponse.Users can execute business

@@ -4,14 +4,19 @@ import esa.commons.Checks;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpClientBuilder;
 import esa.httpclient.core.Reusable;
-import esa.httpclient.core.config.*;
+import esa.httpclient.core.config.Decompression;
+import esa.httpclient.core.config.Http1Options;
+import esa.httpclient.core.config.Http2Options;
+import esa.httpclient.core.config.NetOptions;
+import esa.httpclient.core.config.RetryOptions;
+import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.codec.DecodeAdvice;
 import esa.restclient.codec.DecoderSelector;
 import esa.restclient.codec.EncodeAdvice;
-import esa.restclient.exec.Interceptor;
+import esa.restclient.exec.ClientInterceptor;
 import esa.restclient.spi.DecodeAdviceFactory;
 import esa.restclient.spi.DecoderSelectorFactory;
 import esa.restclient.spi.EncodeAdviceFactory;
@@ -27,7 +32,7 @@ import java.util.List;
 public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientConfig {
 
     private final HttpClientBuilder httpClientBuilder;
-    private final List<Interceptor> interceptors = new LinkedList<>();
+    private final List<ClientInterceptor> interceptors = new LinkedList<>();
     private final LinkedList<DecoderSelector> decoderSelectors = new LinkedList<>();
     private final LinkedList<DecodeAdvice> decodeAdvices = new LinkedList<>();
     private final LinkedList<EncodeAdvice> encodeAdvices = new LinkedList<>();
@@ -112,13 +117,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addInterceptor(Interceptor interceptor) {
+    public RestClientBuilder addInterceptor(ClientInterceptor interceptor) {
         Checks.checkNotNull(interceptor, "interceptor");
         this.interceptors.add(interceptor);
         return self();
     }
 
-    public RestClientBuilder addInterceptors(List<Interceptor> interceptors) {
+    public RestClientBuilder addInterceptors(List<ClientInterceptor> interceptors) {
         Checks.checkNotNull(interceptors, "interceptors");
         this.interceptors.addAll(interceptors);
         return self();
@@ -285,7 +290,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<Interceptor> interceptors() {
+    public List<ClientInterceptor> interceptors() {
         return Collections.unmodifiableList(interceptors);
     }
 

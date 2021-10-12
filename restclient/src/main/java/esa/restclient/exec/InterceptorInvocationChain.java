@@ -8,10 +8,10 @@ import java.util.concurrent.CompletionStage;
 
 public class InterceptorInvocationChain implements InvocationChain {
 
-    private final Interceptor current;
+    private final ClientInterceptor current;
     private final InvocationChain next;
 
-    public InterceptorInvocationChain(Interceptor current, InvocationChain next) {
+    public InterceptorInvocationChain(ClientInterceptor current, InvocationChain next) {
         Checks.checkNotNull(current, "Current must not be null");
         Checks.checkNotNull(next, "Next must not be null");
         this.current = current;

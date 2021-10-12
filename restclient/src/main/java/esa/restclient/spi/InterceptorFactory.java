@@ -16,7 +16,7 @@
 package esa.restclient.spi;
 
 
-import esa.restclient.exec.Interceptor;
+import esa.restclient.exec.ClientInterceptor;
 
 import java.util.Collection;
 
@@ -25,10 +25,10 @@ public interface InterceptorFactory {
     InterceptorFactory DEFAULT = new InterceptorFactoryImpl();
 
     /**
-     * Obtains {@link Interceptor}s.
+     * Obtains {@link ClientInterceptor}s.
      *
      * @return interceptors
      */
-    Collection<Interceptor> interceptors();
+    Collection<ClientInterceptor> interceptors();
 
 }

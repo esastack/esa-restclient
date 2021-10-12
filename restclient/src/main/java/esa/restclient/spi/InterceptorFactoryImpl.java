@@ -16,7 +16,7 @@
 package esa.restclient.spi;
 
 import esa.commons.spi.SpiLoader;
-import esa.restclient.exec.Interceptor;
+import esa.restclient.exec.ClientInterceptor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,8 +25,8 @@ import java.util.List;
 class InterceptorFactoryImpl implements InterceptorFactory {
 
     @Override
-    public Collection<Interceptor> interceptors() {
-        List<Interceptor> interceptors = SpiLoader.getAll(Interceptor.class);
+    public Collection<ClientInterceptor> interceptors() {
+        List<ClientInterceptor> interceptors = SpiLoader.getAll(ClientInterceptor.class);
         return interceptors == null
                 ? Collections.emptyList() : Collections.unmodifiableList(interceptors);
     }

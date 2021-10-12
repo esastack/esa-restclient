@@ -8,7 +8,7 @@ import java.util.concurrent.CompletionStage;
 public interface InvocationChain {
 
     /**
-     * Invoke the registered {@link Interceptor}s.
+     * Invoke the registered {@link ClientInterceptor}s.
      *
      * @param request current request
      * @return future

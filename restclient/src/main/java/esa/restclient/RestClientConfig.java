@@ -1,13 +1,18 @@
 package esa.restclient;
 
 import esa.commons.http.HttpVersion;
-import esa.httpclient.core.config.*;
+import esa.httpclient.core.config.Decompression;
+import esa.httpclient.core.config.Http1Options;
+import esa.httpclient.core.config.Http2Options;
+import esa.httpclient.core.config.NetOptions;
+import esa.httpclient.core.config.RetryOptions;
+import esa.httpclient.core.config.SslOptions;
 import esa.httpclient.core.resolver.HostResolver;
 import esa.httpclient.core.spi.ChannelPoolOptionsProvider;
 import esa.restclient.codec.DecodeAdvice;
 import esa.restclient.codec.DecoderSelector;
 import esa.restclient.codec.EncodeAdvice;
-import esa.restclient.exec.Interceptor;
+import esa.restclient.exec.ClientInterceptor;
 
 import java.util.List;
 
@@ -51,7 +56,7 @@ public interface RestClientConfig {
 
     Http2Options http2Options();
 
-    List<Interceptor> interceptors();
+    List<ClientInterceptor> interceptors();
 
     RetryOptions retryOptions();
 

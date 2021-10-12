@@ -18,25 +18,30 @@ import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 public abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     protected final CompositeRequest target;
-    protected final RestClientConfig clientConfig;
+    protected final RestClientOptions clientOptions;
     protected final RestRequestExecutor requestExecutor;
     protected ContentType contentType;
     private ContentType[] acceptTypes;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
-                                            RestClientConfig clientConfig,
+                                            RestClientOptions clientOptions,
                                             RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "Request must not be null");
-        Checks.checkNotNull(clientConfig, "ClientConfig must not be null");
+        Checks.checkNotNull(clientOptions, "ClientOptions must not be null");
         Checks.checkNotNull(requestExecutor, "RequestExecutor must not be null");
         this.target = request;
-        this.clientConfig = clientConfig;
+        this.clientOptions = clientOptions;
         this.requestExecutor = requestExecutor;
     }
 
@@ -116,7 +121,7 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     private RequestBodyContent<?> encode() throws Exception {
-        return new EncodeContextImpl(this, entity(), clientConfig.unmodifiableEncodeAdvices()).proceed();
+        return new EncodeContextImpl(this, entity(), clientOptions.unmodifiableEncodeAdvices()).proceed();
     }
 
     private void fillBody(RequestBodyContent<?> content) {

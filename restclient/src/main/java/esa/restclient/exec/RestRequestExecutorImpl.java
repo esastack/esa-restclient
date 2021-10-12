@@ -2,7 +2,7 @@ package esa.restclient.exec;
 
 import esa.httpclient.core.util.OrderedComparator;
 import esa.restclient.RequestInvocation;
-import esa.restclient.RestClientConfig;
+import esa.restclient.RestClientOptions;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponseBase;
 
@@ -14,8 +14,8 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
 
     private final InvocationChain invocationChain;
 
-    public RestRequestExecutorImpl(RestClientConfig clientConfig) {
-        this.invocationChain = buildInvokeChain(clientConfig);
+    public RestRequestExecutorImpl(RestClientOptions clientOptions) {
+        this.invocationChain = buildInvokeChain(clientOptions);
     }
 
     @Override
@@ -24,10 +24,10 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
                 .thenApply(response -> (RestResponseBase) response);
     }
 
-    private InvocationChain buildInvokeChain(RestClientConfig clientConfig) {
+    private InvocationChain buildInvokeChain(RestClientOptions clientOptions) {
         InvocationChain invocationChain = new RequestInvocation();
 
-        List<ClientInterceptor> interceptors = clientConfig.interceptors();
+        List<ClientInterceptor> interceptors = clientOptions.interceptors();
 
         if (interceptors.size() == 0) {
             return invocationChain;

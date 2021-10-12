@@ -1,7 +1,13 @@
 package esa.restclient.codec;
 
 import esa.commons.http.HttpHeaders;
-import esa.restclient.*;
+import esa.restclient.ContentType;
+import esa.restclient.MediaType;
+import esa.restclient.ResponseBodyContent;
+import esa.restclient.RestClientOptions;
+import esa.restclient.RestRequest;
+import esa.restclient.RestResponse;
+import io.netty.buffer.ByteBuf;
 
 import java.lang.reflect.Type;
 
@@ -18,18 +24,25 @@ public class DecodeContextImpl implements DecodeContext {
 
     public DecodeContextImpl(RestRequest request,
                              RestResponse response,
-                             RestClientConfig clientConfig,
+                             RestClientOptions clientOptions,
                              Type type,
                              MediaType mediaType,
-                             ResponseBodyContent<?> content) {
+                             ByteBuf byteBuf) {
 
         this.request = request;
         this.response = response;
-        this.advices = clientConfig.unmodifiableDecodeAdvices();
-        this.decoderSelectors = clientConfig.unmodifiableDecoderSelectors();
+        this.advices = clientOptions.unmodifiableDecodeAdvices();
+        this.decoderSelectors = clientOptions.unmodifiableDecoderSelectors();
         this.type = type;
         this.mediaType = mediaType;
-        this.content = content;
+        this.content = ResponseBodyContent.of(extractBytes(byteBuf));
+    }
+
+    private byte[] extractBytes(ByteBuf byteBuf) {
+        int length = byteBuf.readableBytes();
+        byte[] data = new byte[length];
+        byteBuf.getBytes(byteBuf.readerIndex(), data);
+        return data;
     }
 
     @Override

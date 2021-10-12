@@ -15,18 +15,18 @@ public class RestResponseBaseImpl implements RestResponseBase {
 
     private final RestRequest request;
     private final HttpResponse response;
-    private final RestClientConfig clientConfig;
+    private final RestClientOptions clientOptions;
 
     public RestResponseBaseImpl(
             RestRequest request,
             HttpResponse response,
-            RestClientConfig clientConfig) {
+            RestClientOptions clientOptions) {
         Checks.checkNotNull(request, "Request must be not null!");
         Checks.checkNotNull(response, "Response must be not null!");
-        Checks.checkNotNull(clientConfig, "ClientConfig must be not null!");
+        Checks.checkNotNull(clientOptions, "ClientOptions must be not null!");
         this.request = request;
         this.response = response;
-        this.clientConfig = clientConfig;
+        this.clientOptions = clientOptions;
     }
 
     @Override
@@ -67,11 +67,10 @@ public class RestResponseBaseImpl implements RestResponseBase {
         final DecodeContext decodeContext = new DecodeContextImpl(
                 request,
                 this,
-                clientConfig,
+                clientOptions,
                 type,
                 mediaType,
-                // TODO: ByteBuf.array() 方法的具体用法？
-                ResponseBodyContent.of(response.body().getByteBuf().array()));
+                response.body().getByteBuf());
         return (T) decodeContext.proceed();
     }
 

@@ -52,7 +52,7 @@ public interface RestClient {
      */
     ExecutableRestRequest options(String uri);
 
-    RestClientConfig clientConfig();
+    RestClientOptions clientOptions();
 
     /**
      * An easy way to obtain a {@link RestClient} conveniently

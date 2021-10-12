@@ -3,20 +3,20 @@ package esa.restclient;
 import esa.commons.Checks;
 import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpClient;
-import esa.restclient.exec.RestRequestExecutorImpl;
 import esa.restclient.exec.RestRequestExecutor;
+import esa.restclient.exec.RestRequestExecutorImpl;
 
 public class RestClientImpl implements RestClient {
 
-    private final RestClientConfig clientConfig;
+    private final RestClientOptions clientOptions;
     private final RestRequestExecutor requestExecutor;
     private final HttpClient target;
 
-    RestClientImpl(RestClientConfig clientConfig, HttpClient httpClient) {
-        Checks.checkNotNull(clientConfig, "ClientConfig must not be null!");
+    RestClientImpl(RestClientOptions clientOptions, HttpClient httpClient) {
+        Checks.checkNotNull(clientOptions, "ClientOptions must not be null!");
         Checks.checkNotNull(httpClient, "HttpClient must not be null!");
-        this.clientConfig = clientConfig;
-        this.requestExecutor = new RestRequestExecutorImpl(clientConfig);
+        this.clientOptions = clientOptions;
+        this.requestExecutor = new RestRequestExecutorImpl(clientOptions);
         this.target = httpClient;
     }
 
@@ -28,7 +28,7 @@ public class RestClientImpl implements RestClient {
 
     @Override
     public RestRequestFacade post(String uri) {
-        return new RestCompositeRequest((CompositeRequest) target.post(uri), clientConfig, requestExecutor);
+        return new RestCompositeRequest((CompositeRequest) target.post(uri), clientOptions, requestExecutor);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class RestClientImpl implements RestClient {
     }
 
     @Override
-    public RestClientConfig clientConfig() {
-        return clientConfig;
+    public RestClientOptions clientOptions() {
+        return clientOptions;
     }
 
 }

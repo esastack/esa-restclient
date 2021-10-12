@@ -1,4 +1,4 @@
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
 import esa.restclient.ContentType;
@@ -7,6 +7,10 @@ import esa.restclient.ResponseBodyContent;
 import esa.restclient.RestClientOptions;
 import esa.restclient.RestRequest;
 import esa.restclient.RestResponse;
+import esa.restclient.codec.DecodeAdvice;
+import esa.restclient.codec.DecodeContext;
+import esa.restclient.codec.Decoder;
+import esa.restclient.codec.DecoderSelector;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 

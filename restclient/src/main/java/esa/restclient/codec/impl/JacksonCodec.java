@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.restclient.MediaType;
+import esa.restclient.codec.JsonCodec;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

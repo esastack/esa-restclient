@@ -11,7 +11,7 @@ import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
 import esa.httpclient.core.MultipartBody;
 import esa.httpclient.core.util.Futures;
-import esa.restclient.codec.EncodeContextImpl;
+import esa.restclient.codec.impl.EncodeContextImpl;
 import esa.restclient.exec.RestRequestExecutor;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ClientCookieEncoder;

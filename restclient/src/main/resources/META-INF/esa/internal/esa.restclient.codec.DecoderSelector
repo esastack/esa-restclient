@@ -1,1 +1,1 @@
-esa.restclient.codec.DefaultDecoderSelector
+esa.restclient.codec.impl.DefaultDecoderSelector

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import esa.commons.http.HttpHeaders;
 import esa.restclient.MediaType;
+import esa.restclient.codec.JsonCodec;
 
 import java.lang.reflect.Type;
 

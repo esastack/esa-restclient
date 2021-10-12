@@ -1,6 +1,7 @@
 package esa.restclient.spi;
 
 import esa.restclient.codec.DecoderSelector;
+import esa.restclient.spi.impl.DecoderSelectorFactoryImpl;
 
 import java.util.Collection;
 

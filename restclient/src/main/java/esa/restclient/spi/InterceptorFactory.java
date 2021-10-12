@@ -17,6 +17,7 @@ package esa.restclient.spi;
 
 
 import esa.restclient.exec.ClientInterceptor;
+import esa.restclient.spi.impl.InterceptorFactoryImpl;
 
 import java.util.Collection;
 

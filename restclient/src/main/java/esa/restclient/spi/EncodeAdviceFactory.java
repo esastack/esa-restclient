@@ -1,6 +1,7 @@
 package esa.restclient.spi;
 
 import esa.restclient.codec.EncodeAdvice;
+import esa.restclient.spi.impl.EncodeAdviceFactoryImpl;
 
 import java.util.Collection;
 

@@ -1,9 +1,10 @@
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import esa.commons.http.HttpHeaders;
 import esa.restclient.MediaType;
+import esa.restclient.codec.ByteCodec;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.util.AsciiString;
 

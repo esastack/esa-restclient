@@ -1,10 +1,12 @@
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.restclient.ContentType;
 import esa.restclient.MediaType;
 import esa.restclient.RestRequest;
+import esa.restclient.codec.ByteDecoder;
+import esa.restclient.codec.ByteDecoderSelector;
 
 import java.lang.reflect.Type;
 

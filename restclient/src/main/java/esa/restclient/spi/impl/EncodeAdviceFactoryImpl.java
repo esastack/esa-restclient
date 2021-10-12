@@ -1,7 +1,8 @@
-package esa.restclient.spi;
+package esa.restclient.spi.impl;
 
 import esa.commons.spi.SpiLoader;
 import esa.restclient.codec.EncodeAdvice;
+import esa.restclient.spi.EncodeAdviceFactory;
 
 import java.util.Collection;
 import java.util.Collections;

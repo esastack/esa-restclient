@@ -1,9 +1,10 @@
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
 import esa.httpclient.core.MultipartBody;
 import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
+import esa.restclient.codec.Encoder;
 
 public class MultipartToMultipartEncoder implements Encoder {
 

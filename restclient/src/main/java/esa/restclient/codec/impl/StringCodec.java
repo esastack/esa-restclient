@@ -1,7 +1,8 @@
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
 import esa.restclient.MediaType;
+import esa.restclient.codec.ByteCodec;
 
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;

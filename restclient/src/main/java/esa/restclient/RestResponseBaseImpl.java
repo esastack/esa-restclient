@@ -6,7 +6,7 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.codec.DecodeContext;
-import esa.restclient.codec.DecodeContextImpl;
+import esa.restclient.codec.impl.DecodeContextImpl;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;

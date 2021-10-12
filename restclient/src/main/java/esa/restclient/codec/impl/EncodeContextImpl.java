@@ -1,9 +1,12 @@
-package esa.restclient.codec;
+package esa.restclient.codec.impl;
 
 import esa.commons.Checks;
 import esa.restclient.ContentType;
 import esa.restclient.RequestBodyContent;
 import esa.restclient.RestRequest;
+import esa.restclient.codec.EncodeAdvice;
+import esa.restclient.codec.EncodeContext;
+import esa.restclient.codec.Encoder;
 
 public class EncodeContextImpl implements EncodeContext {
 

@@ -125,16 +125,15 @@ public abstract class AbstractExecutableRestRequest implements ExecutableRestReq
     }
 
     private void fillBody(RequestBodyContent<?> content) {
-        byte type = content.type();
-        if (type == RequestBodyContent.TYPE.BYTES) {
-            target.body((byte[]) content.content());
-        } else if (type == RequestBodyContent.TYPE.FILE) {
-            target.body((File) content.content());
-        } else if (type == RequestBodyContent.TYPE.MULTIPART) {
-            target.multipart((MultipartBody) content.content());
+        Object data = content.content();
+        if (data == null || data instanceof byte[]) {
+            target.body((byte[]) data);
+        } else if (data instanceof File) {
+            target.body((File) data);
+        } else if (data instanceof MultipartBody) {
+            target.multipart((MultipartBody) data);
         } else {
-            throw new IllegalStateException("Illegal type:" + type
-                    + ",Type only supports elements of RequestContent.TYPE");
+            throw new IllegalStateException("Illegal content type:" + data.getClass());
         }
     }
 

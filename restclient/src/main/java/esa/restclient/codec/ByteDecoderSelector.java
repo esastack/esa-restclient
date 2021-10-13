@@ -13,7 +13,8 @@ public abstract class ByteDecoderSelector implements DecoderSelector {
     @Override
     public final Decoder select(RestRequest request, ContentType[] acceptTypes, MediaType responseMediaType,
                                 HttpHeaders responseHeaders, ResponseBodyContent<?> content, Type type) {
-        if (content.type() == ResponseBodyContent.TYPE.BYTES) {
+        Object data = content.content();
+        if (data == null || data instanceof byte[]) {
             return doSelect(request, acceptTypes, type, responseMediaType, responseHeaders);
         } else {
             return null;

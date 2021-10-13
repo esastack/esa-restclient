@@ -2,9 +2,9 @@ package esa.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
 import esa.httpclient.core.MultipartBody;
-import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
 import esa.restclient.codec.Encoder;
+import io.esastack.commons.net.http.MediaType;
 
 public class FormURLEncodedEncoder implements Encoder {
 
@@ -13,7 +13,7 @@ public class FormURLEncodedEncoder implements Encoder {
         if (entity == null) {
             return null;
         }
-        
+
         MultipartBody formBody = (MultipartBody) entity;
         formBody.multipartEncode(false);
         return RequestBodyContent.of(formBody);

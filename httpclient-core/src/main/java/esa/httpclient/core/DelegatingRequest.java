@@ -23,6 +23,7 @@ import esa.commons.netty.core.Buffer;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class DelegatingRequest implements HttpRequest {
@@ -60,6 +61,11 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
+    public HttpRequest addParams(Map<String, String> params) {
+        return underlying.addParams(params);
+    }
+
+    @Override
     public String getParam(String name) {
         return underlying.getParam(name);
     }
@@ -82,6 +88,11 @@ public class DelegatingRequest implements HttpRequest {
     @Override
     public HttpRequest addHeader(CharSequence name, CharSequence value) {
         return underlying.addHeader(name, value);
+    }
+
+    @Override
+    public HttpRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers) {
+        return underlying.addHeaders(headers);
     }
 
     @Override

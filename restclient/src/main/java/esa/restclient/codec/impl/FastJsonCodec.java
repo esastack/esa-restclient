@@ -18,8 +18,8 @@ package esa.restclient.codec.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
 import esa.restclient.codec.JsonCodec;
+import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 

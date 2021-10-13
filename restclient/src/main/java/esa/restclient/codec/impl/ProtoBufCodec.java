@@ -3,8 +3,9 @@ package esa.restclient.codec.impl;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
+import esa.restclient.ContentType;
 import esa.restclient.codec.ByteCodec;
+import io.esastack.commons.net.http.MediaType;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.util.AsciiString;
 
@@ -45,7 +46,7 @@ public class ProtoBufCodec implements ByteCodec {
         }
 
         Message message = (Message) entity;
-        headers.set(HttpHeaderNames.CONTENT_TYPE, MediaType.PROTOBUF.value());
+        headers.set(HttpHeaderNames.CONTENT_TYPE, ContentType.PROTOBUF.mediaType().value());
         headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
         headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
         return message.toByteArray();

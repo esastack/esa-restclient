@@ -18,8 +18,8 @@ package esa.restclient.codec.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
 import esa.restclient.codec.JsonCodec;
+import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;

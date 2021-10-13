@@ -38,6 +38,10 @@
             <version>${httpclient.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.esastack</groupId>
+            <artifactId>commons-net-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>

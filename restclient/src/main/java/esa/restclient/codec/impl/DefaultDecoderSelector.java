@@ -3,11 +3,11 @@ package esa.restclient.codec.impl;
 import esa.commons.annotation.Internal;
 import esa.commons.http.HttpHeaders;
 import esa.restclient.ContentType;
-import esa.restclient.MediaType;
 import esa.restclient.ResponseBodyContent;
 import esa.restclient.RestRequest;
 import esa.restclient.codec.Decoder;
 import esa.restclient.codec.DecoderSelector;
+import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 

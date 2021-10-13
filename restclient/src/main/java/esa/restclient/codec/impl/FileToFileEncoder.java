@@ -1,9 +1,9 @@
 package esa.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
 import esa.restclient.codec.Encoder;
+import io.esastack.commons.net.http.MediaType;
 
 import java.io.File;
 

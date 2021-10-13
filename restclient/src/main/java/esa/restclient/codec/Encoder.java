@@ -1,8 +1,8 @@
 package esa.restclient.codec;
 
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
+import io.esastack.commons.net.http.MediaType;
 
 /**
  * <code>Encoder</code> is designed for the conversion of a Java type to a {@link RequestBodyContent}.And it

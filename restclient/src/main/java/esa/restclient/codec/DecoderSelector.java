@@ -4,9 +4,9 @@ import esa.commons.annotation.Internal;
 import esa.commons.http.HttpHeaders;
 import esa.httpclient.core.util.Ordered;
 import esa.restclient.ContentType;
-import esa.restclient.MediaType;
 import esa.restclient.ResponseBodyContent;
 import esa.restclient.RestRequest;
+import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 

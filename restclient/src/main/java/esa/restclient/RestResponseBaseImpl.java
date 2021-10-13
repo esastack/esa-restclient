@@ -7,6 +7,8 @@ import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.codec.DecodeContext;
 import esa.restclient.codec.impl.DecodeContextImpl;
+import io.esastack.commons.net.http.MediaType;
+import io.esastack.commons.net.http.MediaTypeUtil;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
@@ -61,7 +63,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
         final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
         MediaType mediaType = null;
         if (StringUtils.isNotBlank(mediaTypeValue)) {
-            mediaType = MediaType.parseMediaType(mediaTypeValue);
+            mediaType = MediaTypeUtil.parseMediaType(mediaTypeValue);
         }
 
         final DecodeContext decodeContext = new DecodeContextImpl(

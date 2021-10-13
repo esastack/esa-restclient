@@ -1,8 +1,8 @@
 package esa.restclient.codec;
 
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
 import esa.restclient.RequestBodyContent;
+import io.esastack.commons.net.http.MediaType;
 
 public interface ByteEncoder extends Encoder {
     @Override

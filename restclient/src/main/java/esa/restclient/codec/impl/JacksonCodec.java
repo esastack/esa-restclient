@@ -25,8 +25,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
-import esa.restclient.MediaType;
 import esa.restclient.codec.JsonCodec;
+import io.esastack.commons.net.http.MediaType;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

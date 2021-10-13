@@ -2,10 +2,10 @@ package esa.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
 import esa.restclient.ContentType;
-import esa.restclient.MediaType;
 import esa.restclient.RestRequest;
 import esa.restclient.codec.ByteDecoder;
 import esa.restclient.codec.ByteDecoderSelector;
+import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 

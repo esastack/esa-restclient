@@ -1,7 +1,9 @@
 package esa.restclient;
 
 import esa.commons.Checks;
-import esa.restclient.codec.*;
+import esa.restclient.codec.ByteCodec;
+import esa.restclient.codec.Decoder;
+import esa.restclient.codec.Encoder;
 import esa.restclient.codec.impl.ByteToByteCodec;
 import esa.restclient.codec.impl.FileToFileEncoder;
 import esa.restclient.codec.impl.FormURLEncodedEncoder;
@@ -9,6 +11,10 @@ import esa.restclient.codec.impl.JacksonCodec;
 import esa.restclient.codec.impl.MultipartToMultipartEncoder;
 import esa.restclient.codec.impl.ProtoBufCodec;
 import esa.restclient.codec.impl.StringCodec;
+import io.esastack.commons.net.http.MediaType;
+import io.esastack.commons.net.http.MediaTypeUtil;
+
+import java.nio.charset.StandardCharsets;
 
 public class ContentType {
 
@@ -52,24 +58,24 @@ public class ContentType {
     }
 
     public static final ContentType PROTOBUF
-            = of(MediaType.PROTOBUF, new ProtoBufCodec());
+            = of(MediaTypeUtil.of("application", "x-protobuf", StandardCharsets.UTF_8), new ProtoBufCodec());
 
     public static final ContentType APPLICATION_JSON_UTF8
-            = of(MediaType.APPLICATION_JSON_UTF8, new JacksonCodec());
+            = of(MediaTypeUtil.APPLICATION_JSON_UTF8, new JacksonCodec());
 
     public static final ContentType TEXT_PLAIN =
-            of(MediaType.TEXT_PLAIN, new StringCodec());
+            of(MediaTypeUtil.TEXT_PLAIN, new StringCodec());
 
     public static final ContentType APPLICATION_OCTET_STREAM =
-            of(MediaType.APPLICATION_OCTET_STREAM, new ByteToByteCodec());
+            of(MediaTypeUtil.APPLICATION_OCTET_STREAM, new ByteToByteCodec());
 
     public static final ContentType FILE =
-            of(MediaType.APPLICATION_OCTET_STREAM, new FileToFileEncoder());
+            of(MediaTypeUtil.APPLICATION_OCTET_STREAM, new FileToFileEncoder());
 
     public static final ContentType MULTIPART_FORM_DATA =
-            of(MediaType.MULTIPART_FORM_DATA, new MultipartToMultipartEncoder());
+            of(MediaTypeUtil.MULTIPART_FORM_DATA, new MultipartToMultipartEncoder());
 
     public static final ContentType APPLICATION_FORM_URLENCODED =
-            of(MediaType.APPLICATION_FORM_URLENCODED, new FormURLEncodedEncoder());
+            of(MediaTypeUtil.APPLICATION_FORM_URLENCODED, new FormURLEncodedEncoder());
 
 }

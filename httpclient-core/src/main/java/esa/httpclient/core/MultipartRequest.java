@@ -96,12 +96,6 @@ public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfi
     MultipartRequest readTimeout(long readTimeout);
 
     @Override
-    MultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
-
-    @Override
-    MultipartRequest addParams(Map<String, String> params);
-
-    @Override
     MultipartRequest handle(Consumer<Handle> handle);
 
     @Override
@@ -111,6 +105,9 @@ public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfi
     MultipartRequest addHeader(CharSequence name, CharSequence value);
 
     @Override
+    MultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
     MultipartRequest setHeader(CharSequence name, CharSequence value);
 
     @Override
@@ -118,6 +115,9 @@ public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfi
 
     @Override
     MultipartRequest addParam(String name, String value);
+
+    @Override
+    MultipartRequest addParams(Map<String, String> params);
 
     @Override
     MultipartRequest copy();

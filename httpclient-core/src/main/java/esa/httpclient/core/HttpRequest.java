@@ -20,6 +20,7 @@ import esa.commons.netty.core.Buffer;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public interface HttpRequest extends Request, Multipart, Reusable<HttpRequest> {
 
@@ -27,7 +28,13 @@ public interface HttpRequest extends Request, Multipart, Reusable<HttpRequest> {
     HttpRequest addParam(String name, String value);
 
     @Override
+    HttpRequest addParams(Map<String, String> params);
+
+    @Override
     HttpRequest addHeader(CharSequence name, CharSequence value);
+
+    @Override
+    HttpRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
 
     @Override
     HttpRequest setHeader(CharSequence name, CharSequence value);

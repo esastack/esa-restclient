@@ -21,9 +21,7 @@ import java.util.function.Consumer;
 /**
  * The modifiable {@link HttpRequest} which is allowed to be modified.
  */
-public interface HttpRequestBase extends HttpRequest,
-        RequestMoreConfig,
-        RequestBaseConfig {
+public interface HttpRequestBase extends HttpRequest, RequestBaseConfig {
 
     @Override
     HttpRequestBase enableUriEncode();
@@ -39,12 +37,6 @@ public interface HttpRequestBase extends HttpRequest,
 
     @Override
     HttpRequestBase readTimeout(long readTimeout);
-
-    @Override
-    HttpRequestBase addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
-
-    @Override
-    HttpRequestBase addParams(Map<String, String> params);
 
     /**
      * Specifies the given {@link Handle} to handle the inbound message.
@@ -74,6 +66,9 @@ public interface HttpRequestBase extends HttpRequest,
 
     @Override
     HttpRequestBase addHeader(CharSequence name, CharSequence value);
+    
+    @Override
+    HttpRequestBase addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
 
     @Override
     HttpRequestBase setHeader(CharSequence name, CharSequence value);
@@ -83,6 +78,9 @@ public interface HttpRequestBase extends HttpRequest,
 
     @Override
     HttpRequestBase addParam(String name, String value);
+
+    @Override
+    HttpRequestBase addParams(Map<String, String> params);
 
     @Override
     HttpRequestBase copy();

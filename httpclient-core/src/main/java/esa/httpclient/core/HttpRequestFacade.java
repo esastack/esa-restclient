@@ -101,12 +101,6 @@ public interface HttpRequestFacade extends ExecutableRequest {
     HttpRequestFacade readTimeout(long readTimeout);
 
     @Override
-    HttpRequestFacade addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
-
-    @Override
-    HttpRequestFacade addParams(Map<String, String> params);
-
-    @Override
     HttpRequestFacade handle(Consumer<Handle> handle);
 
     @Override
@@ -116,6 +110,9 @@ public interface HttpRequestFacade extends ExecutableRequest {
     HttpRequestFacade addHeader(CharSequence name, CharSequence value);
 
     @Override
+    HttpRequestFacade addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
     HttpRequestFacade setHeader(CharSequence name, CharSequence value);
 
     @Override
@@ -123,5 +120,8 @@ public interface HttpRequestFacade extends ExecutableRequest {
 
     @Override
     HttpRequestFacade addParam(String name, String value);
+
+    @Override
+    HttpRequestFacade addParams(Map<String, String> params);
 }
 

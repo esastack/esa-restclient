@@ -2,13 +2,13 @@ package esa.httpclient.core;
 
 public interface RequestBaseConfig {
 
-    RequestMoreConfig enableUriEncode();
+    RequestBaseConfig enableUriEncode();
 
-    RequestMoreConfig disableExpectContinue();
+    RequestBaseConfig disableExpectContinue();
 
-    RequestMoreConfig maxRedirects(int maxRedirects);
+    RequestBaseConfig maxRedirects(int maxRedirects);
 
-    RequestMoreConfig maxRetries(int maxRetries);
+    RequestBaseConfig maxRetries(int maxRetries);
 
-    RequestMoreConfig readTimeout(long readTimeout);
+    RequestBaseConfig readTimeout(long readTimeout);
 }

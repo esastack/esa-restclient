@@ -2,24 +2,23 @@ package esa.restclient;
 
 import esa.commons.http.Cookie;
 import esa.httpclient.core.Request;
-import esa.httpclient.core.RequestMoreConfig;
 
 import java.util.List;
 import java.util.Map;
 
-public interface RestRequest extends Request, RequestMoreConfig {
-
-    @Override
-    RestRequest addParams(Map<String, String> params);
+public interface RestRequest extends Request {
 
     @Override
     RestRequest addParam(String name, String value);
 
     @Override
-    RestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+    RestRequest addParams(Map<String, String> params);
 
     @Override
     RestRequest addHeader(CharSequence name, CharSequence value);
+
+    @Override
+    RestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
 
     @Override
     RestRequest setHeader(CharSequence name, CharSequence value);

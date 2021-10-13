@@ -36,12 +36,6 @@ public interface PlainRequest extends ExecutableRequest {
     PlainRequest readTimeout(long readTimeout);
 
     @Override
-    PlainRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
-
-    @Override
-    PlainRequest addParams(Map<String, String> params);
-
-    @Override
     PlainRequest handle(Consumer<Handle> handle);
 
     @Override
@@ -51,6 +45,9 @@ public interface PlainRequest extends ExecutableRequest {
     PlainRequest addHeader(CharSequence name, CharSequence value);
 
     @Override
+    PlainRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
     PlainRequest setHeader(CharSequence name, CharSequence value);
 
     @Override
@@ -58,6 +55,9 @@ public interface PlainRequest extends ExecutableRequest {
 
     @Override
     PlainRequest addParam(String name, String value);
+
+    @Override
+    PlainRequest addParams(Map<String, String> params);
 
     @Override
     PlainRequest copy();

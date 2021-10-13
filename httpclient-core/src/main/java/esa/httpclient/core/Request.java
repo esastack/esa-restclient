@@ -4,6 +4,7 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface Request {
@@ -16,6 +17,8 @@ public interface Request {
     HttpUri uri();
 
     Request addParam(String name, String value);
+
+    Request addParams(Map<String, String> params);
 
     String getParam(String name);
 
@@ -37,6 +40,8 @@ public interface Request {
     HttpHeaders headers();
 
     Request addHeader(CharSequence name, CharSequence value);
+
+    Request addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
 
     CharSequence getHeader(CharSequence name);
 

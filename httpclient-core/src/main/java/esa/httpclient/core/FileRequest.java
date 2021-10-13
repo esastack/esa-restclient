@@ -36,12 +36,6 @@ public interface FileRequest extends ExecutableRequest {
     FileRequest readTimeout(long readTimeout);
 
     @Override
-    FileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
-
-    @Override
-    FileRequest addParams(Map<String, String> params);
-
-    @Override
     FileRequest handle(Consumer<Handle> handle);
 
     @Override
@@ -51,6 +45,9 @@ public interface FileRequest extends ExecutableRequest {
     FileRequest addHeader(CharSequence name, CharSequence value);
 
     @Override
+    FileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
+
+    @Override
     FileRequest setHeader(CharSequence name, CharSequence value);
 
     @Override
@@ -58,6 +55,9 @@ public interface FileRequest extends ExecutableRequest {
 
     @Override
     FileRequest addParam(String name, String value);
+
+    @Override
+    FileRequest addParams(Map<String, String> params);
 
     @Override
     FileRequest copy();

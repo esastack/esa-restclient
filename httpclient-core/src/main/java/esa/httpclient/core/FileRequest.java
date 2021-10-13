@@ -33,7 +33,7 @@ public interface FileRequest extends ExecutableRequest {
     FileRequest maxRetries(int maxRetries);
 
     @Override
-    FileRequest readTimeout(int readTimeout);
+    FileRequest readTimeout(long readTimeout);
 
     @Override
     FileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

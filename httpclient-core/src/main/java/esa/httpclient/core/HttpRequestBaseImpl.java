@@ -37,7 +37,7 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
 
     protected Consumer<Handle> handle;
     protected Handler handler;
-    private int readTimeout;
+    private long readTimeout;
     private boolean useUriEncode;
 
     protected HttpRequestBaseImpl(HttpClientBuilder builder,
@@ -83,7 +83,7 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     }
 
     @Override
-    public HttpRequestBase readTimeout(int readTimeout) {
+    public HttpRequestBase readTimeout(long readTimeout) {
         this.readTimeout = readTimeout;
         return self();
     }
@@ -208,7 +208,7 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     }
 
     @Override
-    public int readTimeout() {
+    public long readTimeout() {
         return readTimeout;
     }
 

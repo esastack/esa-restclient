@@ -276,7 +276,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
-    public CompositeRequest readTimeout(int readTimeout) {
+    public CompositeRequest readTimeout(long readTimeout) {
         checkStarted();
         super.readTimeout(readTimeout);
         return self();

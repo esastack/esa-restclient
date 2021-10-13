@@ -89,7 +89,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade enableUriEncode();
 
     @Override
-    RestRequestFacade readTimeout(int readTimeout);
+    RestRequestFacade readTimeout(long readTimeout);
 
     @Override
     RestRequestFacade disableExpectContinue();

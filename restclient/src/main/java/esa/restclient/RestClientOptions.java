@@ -27,7 +27,7 @@ public interface RestClientOptions {
 
     int connectTimeout();
 
-    int readTimeout();
+    long readTimeout();
 
     long maxContentLength();
 

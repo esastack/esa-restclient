@@ -366,7 +366,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
     }
 
     @Override
-    public SegmentRequest readTimeout(int readTimeout) {
+    public SegmentRequest readTimeout(long readTimeout) {
         checkStarted();
         super.readTimeout(readTimeout);
         return this;

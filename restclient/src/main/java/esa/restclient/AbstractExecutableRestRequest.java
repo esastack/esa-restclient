@@ -102,7 +102,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public int readTimeout() {
+    public long readTimeout() {
         return target.readTimeout();
     }
 
@@ -138,7 +138,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public ExecutableRestRequest readTimeout(int readTimeout) {
+    public ExecutableRestRequest readTimeout(long readTimeout) {
         target.readTimeout(readTimeout);
         return self();
     }

@@ -10,7 +10,7 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfig {
     Object entity();
 
     @Override
-    RestRequestBase readTimeout(int readTimeout);
+    RestRequestBase readTimeout(long readTimeout);
 
     @Override
     RestRequestBase maxRedirects(int maxRedirects);

@@ -264,7 +264,7 @@ public interface SegmentRequest extends HttpRequestBase {
     SegmentRequest maxRetries(int maxRetries);
 
     @Override
-    SegmentRequest readTimeout(int readTimeout);
+    SegmentRequest readTimeout(long readTimeout);
 
     @Override
     SegmentRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

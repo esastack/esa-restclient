@@ -34,7 +34,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest readTimeout(int readTimeout) {
+    public RestCompositeRequest readTimeout(long readTimeout) {
         super.readTimeout(readTimeout);
         return self();
     }

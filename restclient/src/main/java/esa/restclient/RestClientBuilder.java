@@ -71,8 +71,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    //TODO 关于readTimeout要不要改成long类型
-    public RestClientBuilder readTimeout(int readTimeout) {
+    public RestClientBuilder readTimeout(long readTimeout) {
         httpClientBuilder.readTimeout(readTimeout);
         return self();
     }
@@ -220,7 +219,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public int readTimeout() {
+    public long readTimeout() {
         return httpClientBuilder.readTimeout();
     }
 

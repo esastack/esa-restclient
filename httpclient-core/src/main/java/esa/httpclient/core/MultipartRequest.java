@@ -93,7 +93,7 @@ public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfi
     MultipartRequest maxRetries(int maxRetries);
 
     @Override
-    MultipartRequest readTimeout(int readTimeout);
+    MultipartRequest readTimeout(long readTimeout);
 
     @Override
     MultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

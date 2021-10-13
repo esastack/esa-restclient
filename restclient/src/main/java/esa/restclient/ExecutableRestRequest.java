@@ -11,7 +11,7 @@ public interface ExecutableRestRequest extends RestRequestBase {
     CompletionStage<RestResponseBase> execute();
 
     @Override
-    ExecutableRestRequest readTimeout(int readTimeout);
+    ExecutableRestRequest readTimeout(long readTimeout);
 
     @Override
     ExecutableRestRequest maxRedirects(int maxRedirects);

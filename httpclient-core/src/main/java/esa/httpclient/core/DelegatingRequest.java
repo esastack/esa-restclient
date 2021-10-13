@@ -105,7 +105,7 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
-    public int readTimeout() {
+    public long readTimeout() {
         return underlying.readTimeout();
     }
 

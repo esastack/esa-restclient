@@ -38,7 +38,7 @@ public interface HttpRequestBase extends HttpRequest,
     HttpRequestBase maxRetries(int maxRetries);
 
     @Override
-    HttpRequestBase readTimeout(int readTimeout);
+    HttpRequestBase readTimeout(long readTimeout);
 
     @Override
     HttpRequestBase addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

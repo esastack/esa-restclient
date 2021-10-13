@@ -102,7 +102,7 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartIt
     RestMultipartRequest enableUriEncode();
 
     @Override
-    RestMultipartRequest readTimeout(int readTimeout);
+    RestMultipartRequest readTimeout(long readTimeout);
 
     @Override
     RestMultipartRequest disableExpectContinue();

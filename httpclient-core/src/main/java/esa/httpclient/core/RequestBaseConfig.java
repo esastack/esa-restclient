@@ -10,5 +10,5 @@ public interface RequestBaseConfig {
 
     RequestMoreConfig maxRetries(int maxRetries);
 
-    RequestMoreConfig readTimeout(int readTimeout);
+    RequestMoreConfig readTimeout(long readTimeout);
 }

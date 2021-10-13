@@ -33,7 +33,7 @@ public interface PlainRequest extends ExecutableRequest {
     PlainRequest maxRetries(int maxRetries);
 
     @Override
-    PlainRequest readTimeout(int readTimeout);
+    PlainRequest readTimeout(long readTimeout);
 
     @Override
     PlainRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

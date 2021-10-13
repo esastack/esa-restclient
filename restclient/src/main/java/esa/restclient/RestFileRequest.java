@@ -47,7 +47,7 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest enableUriEncode();
 
     @Override
-    RestFileRequest readTimeout(int readTimeout);
+    RestFileRequest readTimeout(long readTimeout);
 
     @Override
     RestFileRequest disableExpectContinue();

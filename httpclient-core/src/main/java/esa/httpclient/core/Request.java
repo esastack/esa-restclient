@@ -56,5 +56,5 @@ public interface Request {
      *
      * @return readTimeout
      */
-    int readTimeout();
+    long readTimeout();
 }

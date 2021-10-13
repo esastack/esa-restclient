@@ -98,7 +98,7 @@ public interface HttpRequestFacade extends ExecutableRequest {
     HttpRequestFacade maxRetries(int maxRetries);
 
     @Override
-    HttpRequestFacade readTimeout(int readTimeout);
+    HttpRequestFacade readTimeout(long readTimeout);
 
     @Override
     HttpRequestFacade addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

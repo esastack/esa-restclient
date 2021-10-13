@@ -17,7 +17,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
     private final HttpResponse response;
     private final RestClientOptions clientOptions;
 
-    public RestResponseBaseImpl(
+    RestResponseBaseImpl(
             RestRequest request,
             HttpResponse response,
             RestClientOptions clientOptions) {

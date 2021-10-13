@@ -43,7 +43,10 @@ public class GsonCodec implements JsonCodec {
 
     @Override
     public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) {
-        Charset charset = mediaType.charset();
+        Charset charset = null;
+        if (mediaType != null) {
+            charset = mediaType.charset();
+        }
         if (charset == null) {
             return gson.toJson(entity).getBytes(StandardCharsets.UTF_8);
         } else {
@@ -53,7 +56,10 @@ public class GsonCodec implements JsonCodec {
 
     @Override
     public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
-        Charset charset = mediaType.charset();
+        Charset charset = null;
+        if (mediaType != null) {
+            charset = mediaType.charset();
+        }
         if (charset == null) {
             return gson.fromJson(new String(data, StandardCharsets.UTF_8), type);
         } else {

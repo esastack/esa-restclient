@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
-public abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
+abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     protected final CompositeRequest target;
     protected final RestClientOptions clientOptions;

@@ -17,7 +17,10 @@ public class StringCodec implements ByteCodec {
             return null;
         }
 
-        Charset charset = mediaType.charset();
+        Charset charset = null;
+        if (mediaType != null) {
+            charset = mediaType.charset();
+        }
         if (charset == null) {
             return new String(data, StandardCharsets.UTF_8);
         } else {
@@ -31,7 +34,10 @@ public class StringCodec implements ByteCodec {
             return null;
         }
 
-        Charset charset = mediaType.charset();
+        Charset charset = null;
+        if (mediaType != null) {
+            charset = mediaType.charset();
+        }
         if (charset == null) {
             return ((String) entity).getBytes(StandardCharsets.UTF_8);
         } else {

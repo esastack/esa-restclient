@@ -11,7 +11,7 @@ public class InterceptorInvocationChain implements InvocationChain {
     private final ClientInterceptor current;
     private final InvocationChain next;
 
-    public InterceptorInvocationChain(ClientInterceptor current, InvocationChain next) {
+    InterceptorInvocationChain(ClientInterceptor current, InvocationChain next) {
         Checks.checkNotNull(current, "Current must not be null");
         Checks.checkNotNull(next, "Next must not be null");
         this.current = current;

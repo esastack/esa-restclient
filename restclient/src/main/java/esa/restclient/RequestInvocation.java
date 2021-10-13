@@ -6,7 +6,7 @@ import esa.restclient.exec.InvocationChain;
 import java.util.concurrent.CompletionStage;
 
 public class RequestInvocation implements InvocationChain {
-
+    
     @Override
     public CompletionStage<RestResponse> proceed(RestRequest request) {
         if (!(request instanceof AbstractExecutableRestRequest)) {

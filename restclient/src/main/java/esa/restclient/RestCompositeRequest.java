@@ -16,7 +16,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
 
     private Object entity;
 
-    public RestCompositeRequest(CompositeRequest request,
+    RestCompositeRequest(CompositeRequest request,
                                 RestClientOptions clientOptions,
                                 RestRequestExecutor requestExecutor) {
         super(request, clientOptions, requestExecutor);

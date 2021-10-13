@@ -65,10 +65,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
 
     @Override
     public File file() {
-        if (entity instanceof File) {
-            return (File) entity;
-        }
-        throw new IllegalStateException("Entity is not file type");
+        return (File) entity;
     }
 
     @Override

@@ -18,11 +18,6 @@ public class ByteToByteCodec implements ByteCodec {
             return null;
         }
 
-        if (entity instanceof byte[]) {
-            return (byte[]) entity;
-        }
-
-        throw new UnsupportedOperationException("ByteToByteCodec " +
-                "only support encode byte[] to byte[]!entityClass:" + entity.getClass());
+        return (byte[]) entity;
     }
 }

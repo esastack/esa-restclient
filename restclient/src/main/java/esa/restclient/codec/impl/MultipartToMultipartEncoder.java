@@ -14,11 +14,6 @@ public class MultipartToMultipartEncoder implements Encoder {
             return null;
         }
 
-        if (entity instanceof MultipartBody) {
-            return RequestBodyContent.of((MultipartBody) entity);
-        }
-
-        throw new UnsupportedOperationException("MultipartToMultipartEncoder " +
-                "only support encode multipart to multipart!entityClass:" + entity.getClass());
+        return RequestBodyContent.of((MultipartBody) entity);
     }
 }

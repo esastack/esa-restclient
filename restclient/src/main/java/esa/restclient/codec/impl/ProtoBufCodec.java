@@ -43,15 +43,12 @@ public class ProtoBufCodec implements ByteCodec {
         if (entity == null) {
             return null;
         }
-        if (entity instanceof Message) {
-            Message message = (Message) entity;
-            headers.set(HttpHeaderNames.CONTENT_TYPE, MediaType.PROTOBUF.value());
-            headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
-            headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
-            return message.toByteArray();
-        }
-        throw new UnsupportedOperationException("Could not serialize class: " +
-                entity.getClass().getName());
+
+        Message message = (Message) entity;
+        headers.set(HttpHeaderNames.CONTENT_TYPE, MediaType.PROTOBUF.value());
+        headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
+        headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
+        return message.toByteArray();
     }
 
     @SuppressWarnings("unchecked")

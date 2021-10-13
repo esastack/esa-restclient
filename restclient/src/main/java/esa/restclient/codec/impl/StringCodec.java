@@ -12,7 +12,7 @@ public class StringCodec implements ByteCodec {
 
     @SuppressWarnings("unchecked")
     @Override
-    public String doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
+    public String doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
         if (data == null || type == null) {
             return null;
         }
@@ -31,16 +31,11 @@ public class StringCodec implements ByteCodec {
             return null;
         }
 
-        if (entity instanceof String) {
-            Charset charset = mediaType.charset();
-            if (charset == null) {
-                return ((String) entity).getBytes(StandardCharsets.UTF_8);
-            } else {
-                return ((String) entity).getBytes(mediaType.charset());
-            }
+        Charset charset = mediaType.charset();
+        if (charset == null) {
+            return ((String) entity).getBytes(StandardCharsets.UTF_8);
+        } else {
+            return ((String) entity).getBytes(mediaType.charset());
         }
-
-        throw new UnsupportedOperationException("FileToFileEncoder " +
-                "only support encode string to byte[]!entityClass:" + entity.getClass());
     }
 }

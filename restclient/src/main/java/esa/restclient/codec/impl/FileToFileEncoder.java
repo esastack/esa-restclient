@@ -16,11 +16,6 @@ public class FileToFileEncoder implements Encoder {
             return null;
         }
 
-        if (entity instanceof File) {
-            return RequestBodyContent.of((File) entity);
-        }
-
-        throw new UnsupportedOperationException("FileToFileEncoder " +
-                "only support encode file to file!entityClass:" + entity.getClass());
+        return RequestBodyContent.of((File) entity);
     }
 }

@@ -13,9 +13,6 @@ public class StringDecoderSelector extends ByteDecoderSelector {
 
     private static final StringCodec CODEC = new StringCodec();
 
-    public StringDecoderSelector() {
-    }
-
     @Override
     public ByteDecoder doSelect(RestRequest request, ContentType[] acceptTypes, Type type,
                                 MediaType responseMediaType, HttpHeaders responseHeaders) {

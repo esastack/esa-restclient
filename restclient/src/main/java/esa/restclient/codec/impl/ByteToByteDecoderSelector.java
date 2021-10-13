@@ -12,9 +12,6 @@ import java.lang.reflect.Type;
 public class ByteToByteDecoderSelector extends ByteDecoderSelector {
     private static final ByteToByteCodec CODEC = new ByteToByteCodec();
 
-    public ByteToByteDecoderSelector() {
-    }
-
     @Override
     public ByteDecoder doSelect(RestRequest request, ContentType[] acceptTypes, Type type,
                                 MediaType responseMediaType, HttpHeaders responseHeaders) {

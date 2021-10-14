@@ -40,20 +40,20 @@ public class CookiesUtil {
         return cookiesWithName == null ? Collections.emptyList() : Collections.unmodifiableList(cookiesWithName);
     }
 
-    private static void coverAllCookies(List<Cookie> cookies, HttpHeaders headers) {
-        if (cookies == null || cookies.size() == 0) {
-            headers.remove(HttpHeaderNames.COOKIE);
-            return;
-        }
-        headers.set(HttpHeaderNames.COOKIE, encodeCookies(cookies));
-    }
-
     public static String encodeCookies(List<Cookie> cookies) {
         List<io.netty.handler.codec.http.cookie.Cookie> adapterCookies = new ArrayList<>();
         for (Cookie cookie : cookies) {
             adapterCookies.add(new DefaultCookie(cookie.name(), cookie.value()));
         }
         return ClientCookieEncoder.STRICT.encode(adapterCookies);
+    }
+
+    private static void coverAllCookies(List<Cookie> cookies, HttpHeaders headers) {
+        if (cookies == null || cookies.size() == 0) {
+            headers.remove(HttpHeaderNames.COOKIE);
+            return;
+        }
+        headers.set(HttpHeaderNames.COOKIE, encodeCookies(cookies));
     }
 
     private static Map<String, List<Cookie>> getModifiableCookiesMap(HttpHeaders headers) {

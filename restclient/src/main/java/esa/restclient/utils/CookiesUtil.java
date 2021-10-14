@@ -19,6 +19,24 @@ public class CookiesUtil {
     private CookiesUtil() {
     }
 
+    public static void cookie(Cookie cookie, HttpHeaders headers) {
+        if (cookie == null) {
+            return;
+        }
+        headers.add(esa.commons.http.HttpHeaderNames.COOKIE, cookie.encode(false));
+    }
+
+    public static void cookie(String name, String value, HttpHeaders headers) {
+        cookie(new CookieImpl(name, value), headers);
+    }
+
+    public static void cookies(List<Cookie> cookies, HttpHeaders headers) {
+        if (cookies == null || cookies.size() == 0) {
+            return;
+        }
+        headers.add(esa.commons.http.HttpHeaderNames.COOKIE, CookiesUtil.encodeCookies(cookies));
+    }
+
     public static List<Cookie> getCookies(String name, HttpHeaders headers) {
         List<Cookie> cookies = getCookiesMap(headers).get(name);
         return cookies == null ? Collections.emptyList() : Collections.unmodifiableList(cookies);

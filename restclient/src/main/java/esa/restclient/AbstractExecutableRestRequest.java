@@ -5,7 +5,6 @@ import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
-import esa.commons.netty.http.CookieImpl;
 import esa.httpclient.core.CompositeRequest;
 import esa.httpclient.core.HttpResponse;
 import esa.httpclient.core.HttpUri;
@@ -176,24 +175,19 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public ExecutableRestRequest cookie(Cookie cookie) {
-        if (cookie == null) {
-            return self();
-        }
-        headers().add(HttpHeaderNames.COOKIE, cookie.encode(false));
+        CookiesUtil.cookie(cookie, headers());
         return self();
     }
 
     @Override
     public ExecutableRestRequest cookie(String name, String value) {
-        return cookie(new CookieImpl(name, value));
+        CookiesUtil.cookie(name, value, headers());
+        return self();
     }
 
     @Override
     public ExecutableRestRequest cookies(List<Cookie> cookies) {
-        if (cookies == null) {
-            return self();
-        }
-        headers().add(HttpHeaderNames.COOKIE, CookiesUtil.encodeCookies(cookies));
+        CookiesUtil.cookies(cookies, headers());
         return self();
     }
 

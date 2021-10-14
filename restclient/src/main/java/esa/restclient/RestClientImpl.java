@@ -22,8 +22,7 @@ public class RestClientImpl implements RestClient {
 
     @Override
     public ExecutableRestRequest get(String uri) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return new RestCompositeRequest((CompositeRequest) target.get(uri), clientOptions, requestExecutor);
     }
 
     @Override
@@ -33,26 +32,22 @@ public class RestClientImpl implements RestClient {
 
     @Override
     public RestRequestFacade delete(String uri) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return new RestCompositeRequest((CompositeRequest) target.delete(uri), clientOptions, requestExecutor);
     }
 
     @Override
     public RestRequestFacade put(String uri) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return new RestCompositeRequest((CompositeRequest) target.put(uri), clientOptions, requestExecutor);
     }
 
     @Override
     public ExecutableRestRequest head(String uri) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return new RestCompositeRequest((CompositeRequest) target.head(uri), clientOptions, requestExecutor);
     }
 
     @Override
     public ExecutableRestRequest options(String uri) {
-        //TODO implement the method!
-        throw new UnsupportedOperationException("The method need to be implemented!");
+        return new RestCompositeRequest((CompositeRequest) target.options(uri), clientOptions, requestExecutor);
     }
 
     @Override

@@ -13,14 +13,9 @@ import esa.httpclient.core.MultipartBody;
 import esa.httpclient.core.util.Futures;
 import esa.restclient.codec.impl.EncodeContextImpl;
 import esa.restclient.exec.RestRequestExecutor;
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
-import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
-import io.netty.handler.codec.http.cookie.DefaultCookie;
+import esa.restclient.utils.CookiesUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -198,66 +193,23 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         if (cookies == null) {
             return self();
         }
-        headers().add(HttpHeaderNames.COOKIE, encodeCookies(cookies));
+        headers().add(HttpHeaderNames.COOKIE, CookiesUtil.encodeCookies(cookies));
         return self();
     }
 
     @Override
     public List<Cookie> removeCookies(String name) {
-        if (name == null) {
-            return Collections.emptyList();
-        }
-        Map<String, List<Cookie>> cookiesMap = getModifiableCookiesMap();
-        List<Cookie> cookiesWithName = cookiesMap.remove(name);
-        List<Cookie> allCookies = new ArrayList<>();
-        cookiesMap.values().forEach(allCookies::addAll);
-        coverAllCookies(allCookies);
-        return cookiesWithName == null ? Collections.emptyList() : Collections.unmodifiableList(cookiesWithName);
-    }
-
-    private void coverAllCookies(List<Cookie> cookies) {
-        HttpHeaders headers = headers();
-        if (cookies == null || cookies.size() == 0) {
-            headers.remove(HttpHeaderNames.COOKIE);
-            return;
-        }
-        headers.set(HttpHeaderNames.COOKIE, encodeCookies(cookies));
-    }
-
-    private String encodeCookies(List<Cookie> cookies) {
-        List<io.netty.handler.codec.http.cookie.Cookie> adapterCookies = new ArrayList<>();
-        for (Cookie cookie : cookies) {
-            adapterCookies.add(new DefaultCookie(cookie.name(), cookie.value()));
-        }
-        return ClientCookieEncoder.STRICT.encode(adapterCookies);
+        return CookiesUtil.removeCookies(name, headers());
     }
 
     @Override
     public List<Cookie> getCookies(String name) {
-        List<Cookie> cookies = getCookiesMap().get(name);
-        return cookies == null ? Collections.emptyList() : Collections.unmodifiableList(cookies);
+        return CookiesUtil.getCookies(name, headers());
     }
 
     @Override
     public Map<String, List<Cookie>> getCookiesMap() {
-        return Collections.unmodifiableMap(getModifiableCookiesMap());
-    }
-
-    private Map<String, List<Cookie>> getModifiableCookiesMap() {
-        List<String> cookieHeaders = headers().getAll(HttpHeaderNames.COOKIE);
-        if (cookieHeaders == null || cookieHeaders.size() == 0) {
-            return Collections.emptyMap();
-        }
-        Map<String, List<Cookie>> cookiesMap = new HashMap<>();
-        for (String cookieHeader : cookieHeaders) {
-            String[] cookieStrings = cookieHeader.split(";");
-            for (String cookieString : cookieStrings) {
-                Cookie cookie = new CookieImpl(ClientCookieDecoder.STRICT.decode(cookieString));
-                List<Cookie> cookies = cookiesMap.computeIfAbsent(cookie.name(), (name) -> new ArrayList<>());
-                cookies.add(cookie);
-            }
-        }
-        return cookiesMap;
+        return CookiesUtil.getCookiesMap(headers());
     }
 
     @Override

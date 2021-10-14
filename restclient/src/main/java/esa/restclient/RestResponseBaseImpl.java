@@ -2,16 +2,20 @@ package esa.restclient;
 
 import esa.commons.Checks;
 import esa.commons.StringUtils;
+import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.httpclient.core.HttpResponse;
 import esa.restclient.codec.DecodeContext;
 import esa.restclient.codec.impl.DecodeContextImpl;
+import esa.restclient.utils.CookiesUtil;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 public class RestResponseBaseImpl implements RestResponseBase {
 
@@ -76,4 +80,13 @@ public class RestResponseBaseImpl implements RestResponseBase {
         return (T) decodeContext.proceed();
     }
 
+    @Override
+    public List<Cookie> getCookies(String name) {
+        return CookiesUtil.getCookies(name, headers());
+    }
+
+    @Override
+    public Map<String, List<Cookie>> getCookiesMap() {
+        return CookiesUtil.getCookiesMap(headers());
+    }
 }

@@ -28,7 +28,9 @@ public class QuickStart {
                 .execute()
                 .thenAccept(response -> {
                     try {
+                        System.out.println("----------------response.bodyToEntity begin------------------");
                         System.out.println(response.bodyToEntity(String.class));
+                        System.out.println("----------------response.bodyToEntity end------------------");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

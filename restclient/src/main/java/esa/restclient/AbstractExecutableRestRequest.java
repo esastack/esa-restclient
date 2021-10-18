@@ -107,11 +107,20 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     CompletionStage<HttpResponse> sendRequest() {
         try {
-            fillBody(encode());
+            if (hasBody()) {
+                fillBody(encode());
+            }
         } catch (Exception e) {
             return Futures.completed(e);
         }
         return target.execute();
+    }
+
+    private boolean hasBody() {
+        HttpMethod method = method();
+        return method != HttpMethod.GET &&
+                method != HttpMethod.HEAD &&
+                method != HttpMethod.OPTIONS;
     }
 
     private RequestBodyContent<?> encode() throws Exception {
@@ -175,35 +184,35 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public ExecutableRestRequest cookie(Cookie cookie) {
-        CookiesUtil.cookie(cookie, headers());
+        CookiesUtil.cookie(cookie, headers(), false);
         return self();
     }
 
     @Override
     public ExecutableRestRequest cookie(String name, String value) {
-        CookiesUtil.cookie(name, value, headers());
+        CookiesUtil.cookie(name, value, headers(), false);
         return self();
     }
 
     @Override
     public ExecutableRestRequest cookies(List<Cookie> cookies) {
-        CookiesUtil.cookies(cookies, headers());
+        CookiesUtil.cookies(cookies, headers(), false);
         return self();
     }
 
     @Override
     public List<Cookie> removeCookies(String name) {
-        return CookiesUtil.removeCookies(name, headers());
+        return CookiesUtil.removeCookies(name, headers(), false);
     }
 
     @Override
     public List<Cookie> getCookies(String name) {
-        return CookiesUtil.getCookies(name, headers());
+        return CookiesUtil.getCookies(name, headers(), false);
     }
 
     @Override
     public Map<String, List<Cookie>> getCookiesMap() {
-        return CookiesUtil.getCookiesMap(headers());
+        return CookiesUtil.getCookiesMap(headers(), false);
     }
 
     @Override

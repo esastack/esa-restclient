@@ -18,19 +18,17 @@ public class FileRequestTest {
 
     @Test
     void testFileRequest() throws Exception {
-        int port = 13333;
         String path = "/file";
         String contentString = "hello";
         byte[] content = contentString.getBytes(StandardCharsets.UTF_8);
         File file = createFile(content);
-        ClientAndServer mockServer = MockServerUtil.startMockServer(content, content, MediaType.TEXT_PLAIN, port, path);
+        ClientAndServer mockServer = MockServerUtil.startMockServer(content, content, MediaType.TEXT_PLAIN, path);
         RestResponseBase response =
-                RestClient.ofDefault().post("http://localhost:" + port + path)
+                RestClient.ofDefault().post("http://localhost:" + MockServerUtil.PORT + path)
                         .entity(file)
                         .execute()
                         .toCompletableFuture().get();
         then(response.bodyToEntity(String.class)).isEqualTo(contentString);
-        mockServer.close();
         if (!file.delete()) {
             throw new IllegalStateException("File delete error!");
         }

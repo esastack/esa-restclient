@@ -21,7 +21,6 @@ public class CodecTest {
 
     private final RestClient restClient = RestClient.ofDefault();
 
-    private final int port = 13333;
     private final String path = "/codec";
 
     @Test
@@ -32,11 +31,10 @@ public class CodecTest {
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, responseEntity).content()),
                 MediaType.APPLICATION_JSON_UTF_8,
-                port,
                 path
         );
 
-        RestResponseBase response = restClient.post("http://localhost:" + port + path)
+        RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
                 .contentType(ContentType.APPLICATION_JSON_UTF8)
                 .accept(ContentType.APPLICATION_JSON_UTF8)
                 .entity(requestEntity)
@@ -44,8 +42,6 @@ public class CodecTest {
                 .toCompletableFuture()
                 .get();
         then(response.bodyToEntity(Person.class)).isEqualTo(responseEntity);
-
-        mockServer.close();
     }
 
     @Test
@@ -56,11 +52,10 @@ public class CodecTest {
                 (byte[]) (ContentType.TEXT_PLAIN.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.TEXT_PLAIN.encoder().encode(null, null, responseEntity).content()),
                 MediaType.TEXT_PLAIN,
-                port,
                 path
         );
 
-        RestResponseBase response = restClient.post("http://localhost:" + port + path)
+        RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
                 .contentType(ContentType.TEXT_PLAIN)
                 .accept(ContentType.TEXT_PLAIN)
                 .entity(requestEntity)
@@ -68,8 +63,6 @@ public class CodecTest {
                 .toCompletableFuture()
                 .get();
         then(response.bodyToEntity(String.class)).isEqualTo(responseEntity);
-
-        mockServer.close();
     }
 
     @Test
@@ -80,11 +73,10 @@ public class CodecTest {
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, responseEntity).content()),
                 MediaType.APPLICATION_JSON_UTF_8,
-                port,
                 path
         );
 
-        RestResponseBase response = restClient.post("http://localhost:" + port + path)
+        RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
                 .contentType(ContentType.of(MediaTypeUtil.APPLICATION_JSON_UTF8,
                         (mediaType, headers, entity) ->
                                 RequestBodyContent.of((byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
@@ -101,8 +93,6 @@ public class CodecTest {
                 .toCompletableFuture()
                 .get();
         then(response.bodyToEntity(Person.class)).isEqualTo(responseEntity);
-
-        mockServer.close();
     }
 
     private static class Person {

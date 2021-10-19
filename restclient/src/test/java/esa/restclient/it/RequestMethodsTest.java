@@ -17,13 +17,11 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Java6BDDAssertions.then;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 public class RequestMethodsTest {
-
-    private final int port = 13333;
+    
     private final String path = "/hello";
     private final Person body = new Person("aaa", "bbb");
     private final static List<Cookie> EXPECTED_REQUEST_COOKIES = new ArrayList<>();
@@ -45,58 +43,52 @@ public class RequestMethodsTest {
     void testPost() throws Exception {
         ClientAndServer mockServer = initMockServerWithBody("POST");
         RestClient restClient = buildRestClient();
-        then(restClient.post("http://localhost:" + port + path).entity(body).execute()
+        then(restClient.post("http://localhost:" + MockServerUtil.PORT + path).entity(body).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
-        mockServer.close();
     }
 
     @Test
     void testGet() throws Exception {
         ClientAndServer mockServer = initMockServerWithoutBody("GET");
         RestClient restClient = buildRestClient();
-        then(restClient.get("http://localhost:" + port + path).execute()
+        then(restClient.get("http://localhost:" + MockServerUtil.PORT + path).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
-        mockServer.close();
     }
 
     @Test
     void testPut() throws Exception {
         ClientAndServer mockServer = initMockServerWithBody("PUT");
         RestClient restClient = buildRestClient();
-        then(restClient.put("http://localhost:" + port + path).entity(body).execute()
+        then(restClient.put("http://localhost:" + MockServerUtil.PORT + path).entity(body).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
-        mockServer.close();
     }
 
     @Test
     void testHead() throws Exception {
         ClientAndServer mockServer = initMockServerWithoutBody("HEAD");
         RestClient restClient = buildRestClient();
-        restClient.head("http://localhost:" + port + path).execute()
+        restClient.head("http://localhost:" + MockServerUtil.PORT + path).execute()
                 .toCompletableFuture().get();
-        mockServer.close();
     }
 
     @Test
     void testOptions() throws Exception {
         ClientAndServer mockServer = initMockServerWithoutBody("OPTIONS");
         RestClient restClient = buildRestClient();
-        then(restClient.options("http://localhost:" + port + path).execute()
+        then(restClient.options("http://localhost:" + MockServerUtil.PORT + path).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
-        mockServer.close();
     }
 
     @Test
     void testDelete() throws Exception {
         ClientAndServer mockServer = initMockServerWithBody("DELETE");
         RestClient restClient = buildRestClient();
-        then(restClient.delete("http://localhost:" + port + path).entity(body).execute()
+        then(restClient.delete("http://localhost:" + MockServerUtil.PORT + path).entity(body).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
-        mockServer.close();
     }
 
     private ClientAndServer initMockServerWithBody(String method) throws Exception {
-        ClientAndServer mockServer = startClientAndServer(port);
+        ClientAndServer mockServer = MockServerUtil.getMockServer();
         mockServer.when(
                 request().withMethod(method)
                         .withPath(path)
@@ -118,7 +110,7 @@ public class RequestMethodsTest {
     }
 
     private ClientAndServer initMockServerWithoutBody(String method) throws Exception {
-        ClientAndServer mockServer = startClientAndServer(port);
+        ClientAndServer mockServer = MockServerUtil.getMockServer();
         mockServer.when(
                 request().withMethod(method)
                         .withPath(path)

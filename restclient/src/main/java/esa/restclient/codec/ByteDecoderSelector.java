@@ -21,7 +21,7 @@ public abstract class ByteDecoderSelector implements DecoderSelector {
         }
     }
 
-    abstract public ByteDecoder doSelect(RestRequest request, ContentType[] acceptTypes, Type type,
+    public abstract ByteDecoder doSelect(RestRequest request, ContentType[] acceptTypes, Type type,
                                          MediaType responseMediaType, HttpHeaders responseHeaders);
 
 }

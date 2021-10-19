@@ -21,11 +21,11 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 class RequestMethodsTest {
-    
+
     private final String path = "/hello";
     private final Person body = new Person("aaa", "bbb");
-    private final static List<Cookie> EXPECTED_REQUEST_COOKIES = new ArrayList<>();
-    private final static List<Cookie> EXPECTED_RESPONSE_COOKIES = new ArrayList<>();
+    private static final List<Cookie> EXPECTED_REQUEST_COOKIES = new ArrayList<>();
+    private static final List<Cookie> EXPECTED_RESPONSE_COOKIES = new ArrayList<>();
     private RestClient restClient;
 
     static {
@@ -211,8 +211,12 @@ class RequestMethodsTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Person person = (Person) o;
             return Objects.equals(name, person.name) &&
                     Objects.equals(value, person.value);

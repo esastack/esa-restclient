@@ -101,7 +101,8 @@ public class CookiesUtil {
         return cookiesMap;
     }
 
-    private static void decodeAndFillToMap(String cookieHeader, Map<String, List<Cookie>> cookiesMap, boolean isResponse) {
+    private static void decodeAndFillToMap(
+            String cookieHeader, Map<String, List<Cookie>> cookiesMap, boolean isResponse) {
         if (isResponse) {
             ServerCookieDecoder.STRICT.decodeAll(cookieHeader)
                     .forEach(cookie -> fillCookieToMap(new CookieImpl(cookie), cookiesMap));

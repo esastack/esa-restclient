@@ -83,7 +83,8 @@ class CodecTest {
                                         .encode(mediaType, headers, requestEntity).content()))))
                 .accept(ContentType.of(MediaTypeUtil.APPLICATION_JSON_UTF8, new Decoder() {
                     @Override
-                    public <T> T decode(io.esastack.commons.net.http.MediaType mediaType, HttpHeaders headers, ResponseBodyContent<?> content, Type type) throws Exception {
+                    public <T> T decode(io.esastack.commons.net.http.MediaType mediaType, HttpHeaders headers,
+                                        ResponseBodyContent<?> content, Type type) throws Exception {
                         return ContentType.APPLICATION_JSON_UTF8.decoder()
                                 .decode(mediaType, headers, content, type);
                     }
@@ -125,8 +126,12 @@ class CodecTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Person person = (Person) o;
             return Objects.equals(name, person.name) &&
                     Objects.equals(value, person.value);

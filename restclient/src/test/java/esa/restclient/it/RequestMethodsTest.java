@@ -189,7 +189,7 @@ public class RequestMethodsTest {
         }
     }
 
-    public static class Person {
+    private static class Person {
         private String name;
         private String value;
 

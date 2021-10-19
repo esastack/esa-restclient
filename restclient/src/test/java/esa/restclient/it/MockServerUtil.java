@@ -8,7 +8,7 @@ import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public class MockServerUtil {
+class MockServerUtil {
 
     public static int PORT = 13333;
     private static volatile ClientAndServer mockServer;

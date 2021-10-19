@@ -20,7 +20,7 @@ import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public class RequestMethodsTest {
+class RequestMethodsTest {
     
     private final String path = "/hello";
     private final Person body = new Person("aaa", "bbb");

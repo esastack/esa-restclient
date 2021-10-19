@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class CodecTest {
+class CodecTest {
 
     private final RestClient restClient = RestClient.ofDefault();
 

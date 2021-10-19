@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class FileRequestTest {
+class FileRequestTest {
 
     @Test
     void testFileRequest() throws Exception {

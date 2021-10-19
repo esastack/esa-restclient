@@ -23,12 +23,12 @@ import static org.mockserver.model.HttpResponse.response;
 
 public class RequestMethodsTest {
 
-    private static final int PORT = 13333;
-    private static final String PATH = "/hello";
-    private static final Person BODY = new Person("aaa", "bbb");
-    private static final List<Cookie> EXPECTED_REQUEST_COOKIES = new ArrayList<>();
-    private static final List<Cookie> EXPECTED_RESPONSE_COOKIES = new ArrayList<>();
-    private static RestClient restClient;
+    private final int port = 13333;
+    private final String path = "/hello";
+    private final Person body = new Person("aaa", "bbb");
+    private final static List<Cookie> EXPECTED_REQUEST_COOKIES = new ArrayList<>();
+    private final static List<Cookie> EXPECTED_RESPONSE_COOKIES = new ArrayList<>();
+    private RestClient restClient;
 
     static {
         EXPECTED_REQUEST_COOKIES.add(new Cookie("aaa", "aaa"));
@@ -42,67 +42,67 @@ public class RequestMethodsTest {
     }
 
     @Test
-    public void testPost() throws Exception {
+    void testPost() throws Exception {
         ClientAndServer mockServer = initMockServerWithBody("POST");
         RestClient restClient = buildRestClient();
-        then(restClient.post("http://localhost:" + PORT + PATH).entity(BODY).execute()
-                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(BODY);
+        then(restClient.post("http://localhost:" + port + path).entity(body).execute()
+                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
         mockServer.close();
     }
 
     @Test
-    public void testGet() throws Exception {
+    void testGet() throws Exception {
         ClientAndServer mockServer = initMockServerWithoutBody("GET");
         RestClient restClient = buildRestClient();
-        then(restClient.get("http://localhost:" + PORT + PATH).execute()
-                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(BODY);
+        then(restClient.get("http://localhost:" + port + path).execute()
+                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
         mockServer.close();
     }
 
     @Test
-    public void testPut() throws Exception {
+    void testPut() throws Exception {
         ClientAndServer mockServer = initMockServerWithBody("PUT");
         RestClient restClient = buildRestClient();
-        then(restClient.put("http://localhost:" + PORT + PATH).entity(BODY).execute()
-                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(BODY);
+        then(restClient.put("http://localhost:" + port + path).entity(body).execute()
+                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
         mockServer.close();
     }
 
     @Test
-    public void testHead() throws Exception {
+    void testHead() throws Exception {
         ClientAndServer mockServer = initMockServerWithoutBody("HEAD");
         RestClient restClient = buildRestClient();
-        restClient.head("http://localhost:" + PORT + PATH).execute()
+        restClient.head("http://localhost:" + port + path).execute()
                 .toCompletableFuture().get();
         mockServer.close();
     }
 
     @Test
-    public void testOptions() throws Exception {
+    void testOptions() throws Exception {
         ClientAndServer mockServer = initMockServerWithoutBody("OPTIONS");
         RestClient restClient = buildRestClient();
-        then(restClient.options("http://localhost:" + PORT + PATH).execute()
-                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(BODY);
+        then(restClient.options("http://localhost:" + port + path).execute()
+                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
         mockServer.close();
     }
 
     @Test
-    public void testDelete() throws Exception {
+    void testDelete() throws Exception {
         ClientAndServer mockServer = initMockServerWithBody("DELETE");
         RestClient restClient = buildRestClient();
-        then(restClient.delete("http://localhost:" + PORT + PATH).entity(BODY).execute()
-                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(BODY);
+        then(restClient.delete("http://localhost:" + port + path).entity(body).execute()
+                .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
         mockServer.close();
     }
 
-    private static ClientAndServer initMockServerWithBody(String method) throws Exception {
-        ClientAndServer mockServer = startClientAndServer(PORT);
+    private ClientAndServer initMockServerWithBody(String method) throws Exception {
+        ClientAndServer mockServer = startClientAndServer(port);
         mockServer.when(
                 request().withMethod(method)
-                        .withPath(PATH)
+                        .withPath(path)
                         .withBody((byte[]) (
                                 ContentType.APPLICATION_JSON_UTF8.encoder()
-                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, BODY)
+                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, body)
                                         .content()))
                         .withCookies(EXPECTED_REQUEST_COOKIES)
         ).respond(
@@ -111,17 +111,17 @@ public class RequestMethodsTest {
                         .withContentType(MediaType.APPLICATION_JSON_UTF_8)
                         .withBody(
                                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
-                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, BODY)
+                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, body)
                                         .content()))
         );
         return mockServer;
     }
 
-    private static ClientAndServer initMockServerWithoutBody(String method) throws Exception {
-        ClientAndServer mockServer = startClientAndServer(PORT);
+    private ClientAndServer initMockServerWithoutBody(String method) throws Exception {
+        ClientAndServer mockServer = startClientAndServer(port);
         mockServer.when(
                 request().withMethod(method)
-                        .withPath(PATH)
+                        .withPath(path)
                         .withCookies(EXPECTED_REQUEST_COOKIES)
         ).respond(
                 response().withStatusCode(200)
@@ -129,13 +129,13 @@ public class RequestMethodsTest {
                         .withContentType(MediaType.APPLICATION_JSON_UTF_8)
                         .withBody(
                                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
-                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, BODY)
+                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, body)
                                         .content()))
         );
         return mockServer;
     }
 
-    private static RestClient buildRestClient() {
+    private RestClient buildRestClient() {
         if (restClient != null) {
             return restClient;
         }
@@ -148,7 +148,7 @@ public class RequestMethodsTest {
         return restClient;
     }
 
-    private static void addCookieProcessInterceptor(RestClientBuilder builder) {
+    private void addCookieProcessInterceptor(RestClientBuilder builder) {
         builder.addInterceptor((request, next) -> {
             addExpectCookies(request);
             return next.proceed(request).thenApply((response) -> {
@@ -159,29 +159,29 @@ public class RequestMethodsTest {
         });
     }
 
-    private static void addAssertRequestBodyAdvice(RestClientBuilder builder) {
+    private void addAssertRequestBodyAdvice(RestClientBuilder builder) {
         builder.addEncodeAdvice(encodeContext -> {
             RequestBodyContent<?> content = encodeContext.proceed();
-            then(encodeContext.entity()).isEqualTo(BODY);
+            then(encodeContext.entity()).isEqualTo(body);
             return content;
         });
     }
 
-    private static void addAssertResponseBodyAdvice(RestClientBuilder builder) {
+    private void addAssertResponseBodyAdvice(RestClientBuilder builder) {
         builder.addDecodeAdvice(decodeContext -> {
             Person body = (Person) decodeContext.proceed();
-            then(body).isEqualTo(BODY);
+            then(body).isEqualTo(body);
             return body;
         });
     }
 
-    private static void addExpectCookies(RestRequest request) {
+    private void addExpectCookies(RestRequest request) {
         for (Cookie cookie : EXPECTED_REQUEST_COOKIES) {
             request.cookie(cookie.getName().toString(), cookie.getValue().toString());
         }
     }
 
-    private static void assertExpectCookie(RestResponse response) {
+    private void assertExpectCookie(RestResponse response) {
         for (Cookie expectCookie : EXPECTED_RESPONSE_COOKIES) {
             List<esa.commons.http.Cookie> cookies = response.getCookies(expectCookie.getName().toString());
             then(cookies.size()).isEqualTo(1);

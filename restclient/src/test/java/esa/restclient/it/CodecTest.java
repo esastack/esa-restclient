@@ -16,28 +16,27 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 public class CodecTest {
 
     private final RestClient restClient = RestClient.ofDefault();
 
-    private final int PORT = 13333;
-    private final String PATH = "/hello";
+    private final int port = 13333;
+    private final String path = "/codec";
 
     @Test
-    public void jsonCodecTest() throws Exception {
+    void jsonCodecTest() throws Exception {
         Person requestEntity = new Person("LiMing", "aaa");
         Person responseEntity = new Person("WangHong", "bbb");
-        ClientAndServer mockServer = startMockServer(
+        ClientAndServer mockServer = MockServerUtil.startMockServer(
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, responseEntity).content()),
-                MediaType.APPLICATION_JSON_UTF_8
+                MediaType.APPLICATION_JSON_UTF_8,
+                port,
+                path
         );
 
-        RestResponseBase response = restClient.post("http://localhost:" + PORT + PATH)
+        RestResponseBase response = restClient.post("http://localhost:" + port + path)
                 .contentType(ContentType.APPLICATION_JSON_UTF8)
                 .accept(ContentType.APPLICATION_JSON_UTF8)
                 .entity(requestEntity)
@@ -50,16 +49,18 @@ public class CodecTest {
     }
 
     @Test
-    public void stringCodecTest() throws Exception {
+    void stringCodecTest() throws Exception {
         String requestEntity = "requestEntity";
         String responseEntity = "responseEntity";
-        ClientAndServer mockServer = startMockServer(
+        ClientAndServer mockServer = MockServerUtil.startMockServer(
                 (byte[]) (ContentType.TEXT_PLAIN.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.TEXT_PLAIN.encoder().encode(null, null, responseEntity).content()),
-                MediaType.TEXT_PLAIN
+                MediaType.TEXT_PLAIN,
+                port,
+                path
         );
 
-        RestResponseBase response = restClient.post("http://localhost:" + PORT + PATH)
+        RestResponseBase response = restClient.post("http://localhost:" + port + path)
                 .contentType(ContentType.TEXT_PLAIN)
                 .accept(ContentType.TEXT_PLAIN)
                 .entity(requestEntity)
@@ -72,16 +73,18 @@ public class CodecTest {
     }
 
     @Test
-    public void customizeCodecTest() throws Exception {
+    void customizeCodecTest() throws Exception {
         Person requestEntity = new Person("LiMing", "aaa");
         Person responseEntity = new Person("WangHong", "bbb");
-        ClientAndServer mockServer = startMockServer(
+        ClientAndServer mockServer = MockServerUtil.startMockServer(
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, responseEntity).content()),
-                MediaType.APPLICATION_JSON_UTF_8
+                MediaType.APPLICATION_JSON_UTF_8,
+                port,
+                path
         );
 
-        RestResponseBase response = restClient.post("http://localhost:" + PORT + PATH)
+        RestResponseBase response = restClient.post("http://localhost:" + port + path)
                 .contentType(ContentType.of(MediaTypeUtil.APPLICATION_JSON_UTF8,
                         (mediaType, headers, entity) ->
                                 RequestBodyContent.of((byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
@@ -102,22 +105,7 @@ public class CodecTest {
         mockServer.close();
     }
 
-    private ClientAndServer startMockServer(byte[] requestBody, byte[] responseBody,
-                                            MediaType responseMediaType) {
-        ClientAndServer mockServer = startClientAndServer(PORT);
-        mockServer.when(
-                request().withMethod("POST")
-                        .withPath(PATH)
-                        .withBody(requestBody)
-        ).respond(
-                response().withStatusCode(200)
-                        .withContentType(responseMediaType)
-                        .withBody(responseBody)
-        );
-        return mockServer;
-    }
-
-    public static class Person {
+    private static class Person {
         private String name;
         private String value;
 

@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 /**
  * The modifiable {@link HttpRequest} which is allowed to be modified.
  */
-public interface HttpRequestBase extends HttpRequest, RequestBaseConfig {
+public interface HttpRequestBase extends HttpRequest, RequestBaseConfigure {
 
     @Override
     HttpRequestBase enableUriEncode();

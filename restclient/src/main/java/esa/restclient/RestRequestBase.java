@@ -1,12 +1,12 @@
 package esa.restclient;
 
 import esa.commons.http.Cookie;
-import esa.httpclient.core.RequestBaseConfig;
+import esa.httpclient.core.RequestBaseConfigure;
 
 import java.util.List;
 import java.util.Map;
 
-public interface RestRequestBase extends RestRequest, RequestBaseConfig {
+public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     Object entity();
 
     @Override

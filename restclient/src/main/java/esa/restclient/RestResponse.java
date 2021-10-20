@@ -16,7 +16,7 @@ public interface RestResponse extends Response {
 
     List<Cookie> removeCookies(String name);
 
-    List<Cookie> getCookies(String name);
+    List<Cookie> cookies(String name);
 
-    Map<String, List<Cookie>> getCookiesMap();
+    Map<String, List<Cookie>> cookiesMap();
 }

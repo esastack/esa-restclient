@@ -101,12 +101,12 @@ public class RestResponseBaseImpl implements RestResponseBase {
     }
 
     @Override
-    public List<Cookie> getCookies(String name) {
+    public List<Cookie> cookies(String name) {
         return CookiesUtil.getCookies(name, headers(), true);
     }
 
     @Override
-    public Map<String, List<Cookie>> getCookiesMap() {
+    public Map<String, List<Cookie>> cookiesMap() {
         return CookiesUtil.getCookiesMap(headers(), true);
     }
 }

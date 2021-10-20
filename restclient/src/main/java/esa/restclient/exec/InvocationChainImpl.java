@@ -6,12 +6,12 @@ import esa.restclient.RestResponse;
 
 import java.util.concurrent.CompletionStage;
 
-public class InterceptorInvocationChain implements InvocationChain {
+class InvocationChainImpl implements InvocationChain {
 
     private final ClientInterceptor current;
     private final InvocationChain next;
 
-    InterceptorInvocationChain(ClientInterceptor current, InvocationChain next) {
+    InvocationChainImpl(ClientInterceptor current, InvocationChain next) {
         Checks.checkNotNull(current, "Current must not be null");
         Checks.checkNotNull(next, "Next must not be null");
         this.current = current;

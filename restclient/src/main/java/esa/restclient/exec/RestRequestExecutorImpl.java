@@ -35,7 +35,7 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
         final List<ClientInterceptor> interceptors0 = new LinkedList<>(interceptors);
         OrderedComparator.sort(interceptors0);
         for (int i = interceptors0.size() - 1; i >= 0; i--) {
-            invocationChain = new InterceptorInvocationChain(interceptors0.get(i), invocationChain);
+            invocationChain = new InvocationChainImpl(interceptors0.get(i), invocationChain);
         }
         return invocationChain;
     }

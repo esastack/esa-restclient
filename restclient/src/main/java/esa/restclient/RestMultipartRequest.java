@@ -1,13 +1,13 @@
 package esa.restclient;
 
 import esa.commons.http.Cookie;
-import esa.httpclient.core.MultipartItemsConfig;
+import esa.httpclient.core.MultipartItemsConfigure;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public interface RestMultipartRequest extends ExecutableRestRequest, MultipartItemsConfig {
+public interface RestMultipartRequest extends ExecutableRestRequest, MultipartItemsConfigure {
 
     /**
      * add multipart attribute,this method is not thread-safe.

@@ -36,13 +36,13 @@ public class HandleImpl implements Handle {
     volatile Consumer<Void> start;
 
     public HandleImpl(NettyResponse underlying) {
-        Checks.checkNotNull(underlying, "NettyResponse must not be null");
+        Checks.checkNotNull(underlying, "underlying");
         this.underlying = underlying;
     }
 
     public HandleImpl(NettyResponse underlying, Handler handler) {
-        Checks.checkNotNull(underlying, "NettyResponse must not be null");
-        Checks.checkNotNull(handler, "Handler must not be null");
+        Checks.checkNotNull(underlying, "underlying");
+        Checks.checkNotNull(handler, "handler");
         this.underlying = underlying;
         this.start = (v) -> handler.onStart();
         this.data = handler::onData;
@@ -52,8 +52,8 @@ public class HandleImpl implements Handle {
     }
 
     public HandleImpl(NettyResponse underlying, Consumer<Handle> handle0) {
-        Checks.checkNotNull(underlying, "NettyResponse must not be null");
-        Checks.checkNotNull(handle0, "Handle must not be null");
+        Checks.checkNotNull(underlying, "underlying");
+        Checks.checkNotNull(handle0, "handle0");
         this.underlying = underlying;
         handle0.accept(this);
     }

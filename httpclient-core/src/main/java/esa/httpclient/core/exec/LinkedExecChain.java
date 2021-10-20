@@ -34,9 +34,9 @@ public class LinkedExecChain implements ExecChain {
     private LinkedExecChain(Interceptor current,
                             ExecChain next,
                             Context ctx) {
-        Checks.checkNotNull(ctx, "Context must not be null");
-        Checks.checkNotNull(next, "ExecChain must not be null");
-        Checks.checkNotNull(current, "Interceptor must not be null");
+        Checks.checkNotNull(ctx, "ctx");
+        Checks.checkNotNull(next, "next");
+        Checks.checkNotNull(current, "current");
         this.ctx = ctx;
         this.current = current;
         this.next = next;

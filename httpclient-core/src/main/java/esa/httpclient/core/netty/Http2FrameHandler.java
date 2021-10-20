@@ -54,8 +54,8 @@ class Http2FrameHandler extends Http2EventAdapter {
     Http2FrameHandler(HandleRegistry registry,
                       Http2Connection connection,
                       long maxContentLength) {
-        Checks.checkNotNull(registry, "HandleRegistry must not be null");
-        Checks.checkNotNull(connection, "Http2Connection must not be null");
+        Checks.checkNotNull(registry, "registry");
+        Checks.checkNotNull(connection, "connection");
         this.connection = connection;
         this.messageKey = connection.newKey();
         this.registry = registry;

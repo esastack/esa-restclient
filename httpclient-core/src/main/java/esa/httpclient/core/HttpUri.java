@@ -57,7 +57,7 @@ public final class HttpUri {
     }
 
     public HttpUri(URI uri, MultiValueMap<String, String> params) {
-        Checks.checkNotNull(uri, "uri must not be null");
+        Checks.checkNotNull(uri, "uri");
         this.uri = uri;
         this.rawUri = uri.toString();
         this.params = params == null ? new HashMultiValueMap<>() : new HashMultiValueMap<>(params);

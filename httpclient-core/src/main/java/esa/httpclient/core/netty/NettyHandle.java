@@ -45,11 +45,11 @@ class NettyHandle {
                 Context ctx,
                 Listener listener,
                 CompletableFuture<HttpResponse> response) {
-        Checks.checkNotNull(handle, "HandleImpl must not be null");
-        Checks.checkNotNull(request, "HttpRequest must not be null");
-        Checks.checkNotNull(ctx, "Context must not be null");
-        Checks.checkNotNull(listener, "Listener must not be null");
-        Checks.checkNotNull(response, "HttpResponse must not be null");
+        Checks.checkNotNull(handle, "handle");
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(ctx, "ctx");
+        Checks.checkNotNull(listener, "listener");
+        Checks.checkNotNull(response, "response");
         this.handle = handle;
         this.request = request;
         this.ctx = ctx;

@@ -153,9 +153,9 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                             ChannelPools channelPools,
                             IdentityFactory.Identified<EventLoopGroup> ioThreads,
                             IdentityFactory.Identified<ThreadPoolExecutor> callbackExecutor) {
-        Checks.checkNotNull(builder, "HttpClientBuilder must not be null");
-        Checks.checkNotNull(ioThreads, "I/O Threads must not be null");
-        Checks.checkNotNull(channelPools, "ChannelPools must not be null");
+        Checks.checkNotNull(builder, "builder");
+        Checks.checkNotNull(ioThreads, "ioThreads");
+        Checks.checkNotNull(channelPools, "channelPools");
         this.builder = builder;
         this.callbackExecutor = callbackExecutor;
         this.ioThreads = ioThreads;
@@ -238,8 +238,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
                                                    Context ctx,
                                                    Consumer<Handle> handle,
                                                    Handler handler) {
-        Checks.checkNotNull(request, "HttpRequest must not be null");
-        Checks.checkNotNull(ctx, "Context must not be null");
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(ctx, "ctx");
         final Listener listener = ListenerProxy.DEFAULT;
 
         addAcceptEncodingIfAbsent(request);
@@ -298,8 +298,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     private HttpRequestFacade newRequestFacade(HttpMethod method, String uri) {
-        Checks.checkNotNull("HttpMethod must not be null");
-        Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
+        Checks.checkNotNull(method,"method");
+        Checks.checkNotEmptyArg(uri, "uri");
         return new CompositeRequest(builder, this,
                 () -> new SegmentRequestImpl(builder, executor, method, uri),
                 method, uri);
@@ -369,7 +369,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
 
     @Override
     public synchronized NettyHttpClient applyChannelPoolOptions(ChannelPoolOptions options, boolean applyToExisted) {
-        Checks.checkNotNull(options, "ChannelPool options must not be null");
+        Checks.checkNotNull(options, "options");
 
         if (options.connectTimeout() == builder.connectTimeout()
                 && options.readTimeout() == builder.readTimeout()

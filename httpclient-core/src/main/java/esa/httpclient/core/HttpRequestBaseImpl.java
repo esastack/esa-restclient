@@ -43,9 +43,9 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     protected HttpRequestBaseImpl(HttpClientBuilder builder,
                                   HttpMethod method,
                                   String uri) {
-        Checks.checkNotNull(builder, "HttpClientBuilder must not be null");
-        Checks.checkNotEmptyArg(uri, "Request's uri must not be empty");
-        Checks.checkNotNull(method, "HttpMethod must not be null");
+        Checks.checkNotNull(builder, "builder");
+        Checks.checkNotEmptyArg(uri, "uri");
+        Checks.checkNotNull(method, "method");
         this.builder = builder;
         this.method = method;
         this.uri = new HttpUri(uri);

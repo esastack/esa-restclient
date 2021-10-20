@@ -27,9 +27,9 @@ public class RestResponseBaseImpl implements RestResponseBase {
             RestRequest request,
             HttpResponse response,
             RestClientOptions clientOptions) {
-        Checks.checkNotNull(request, "Request must be not null!");
-        Checks.checkNotNull(response, "Response must be not null!");
-        Checks.checkNotNull(clientOptions, "ClientOptions must be not null!");
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(response, "response");
+        Checks.checkNotNull(clientOptions, "clientOptions");
         this.request = request;
         this.response = response;
         this.clientOptions = clientOptions;

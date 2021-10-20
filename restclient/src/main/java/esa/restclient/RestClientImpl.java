@@ -13,8 +13,8 @@ public class RestClientImpl implements RestClient {
     private final HttpClient target;
 
     RestClientImpl(RestClientOptions clientOptions, HttpClient httpClient) {
-        Checks.checkNotNull(clientOptions, "ClientOptions must not be null!");
-        Checks.checkNotNull(httpClient, "HttpClient must not be null!");
+        Checks.checkNotNull(clientOptions, "clientOptions");
+        Checks.checkNotNull(httpClient, "httpClient");
         this.clientOptions = clientOptions;
         this.requestExecutor = new RestRequestExecutorImpl(clientOptions);
         this.target = httpClient;

@@ -39,8 +39,8 @@ public class RequestExecutorImpl implements RequestExecutor {
 
     public RequestExecutorImpl(Interceptor[] interceptors,
                                HttpTransceiver transceiver) {
-        Checks.checkNotNull(interceptors, "Interceptors must not be null");
-        Checks.checkNotNull(transceiver, "HttpTransceiver must not be null");
+        Checks.checkNotNull(interceptors, "interceptors");
+        Checks.checkNotNull(transceiver, "transceiver");
         this.transceiver = transceiver;
         this.interceptors = interceptors;
     }

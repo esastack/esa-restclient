@@ -32,8 +32,8 @@ public class MultipartFileItem {
                       File file,
                       String contentType,
                       boolean isText) {
-        Checks.checkNotNull(name, "Name of multipart must not be null");
-        Checks.checkNotNull(file, "Multipart file must not be null");
+        Checks.checkNotNull(name, "name");
+        Checks.checkNotNull(file, "file");
         this.name = name;
         this.filename = filename;
         this.file = file;

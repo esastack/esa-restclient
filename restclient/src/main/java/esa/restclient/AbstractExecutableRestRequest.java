@@ -31,9 +31,9 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             RestClientOptions clientOptions,
                                             RestRequestExecutor requestExecutor) {
-        Checks.checkNotNull(request, "Request must not be null");
-        Checks.checkNotNull(clientOptions, "ClientOptions must not be null");
-        Checks.checkNotNull(requestExecutor, "RequestExecutor must not be null");
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(clientOptions, "clientOptions");
+        Checks.checkNotNull(requestExecutor, "requestExecutor");
         this.target = request;
         this.clientOptions = clientOptions;
         this.requestExecutor = requestExecutor;

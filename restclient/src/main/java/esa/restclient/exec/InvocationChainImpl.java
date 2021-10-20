@@ -12,8 +12,8 @@ class InvocationChainImpl implements InvocationChain {
     private final InvocationChain next;
 
     InvocationChainImpl(ClientInterceptor current, InvocationChain next) {
-        Checks.checkNotNull(current, "Current must not be null");
-        Checks.checkNotNull(next, "Next must not be null");
+        Checks.checkNotNull(current, "current");
+        Checks.checkNotNull(next, "next");
         this.current = current;
         this.next = next;
     }

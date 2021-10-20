@@ -92,10 +92,10 @@ class NettyTransceiver implements HttpTransceiver {
                      ChannelPools channelPools,
                      HttpClientBuilder builder,
                      SslEngineFactory sslEngineFactory) {
-        Checks.checkNotNull(ioThreads, "IOThreads must not be null");
-        Checks.checkNotNull(channelPools, "ChannelPools must not be null");
-        Checks.checkNotNull(builder, "HttpClientBuilder must not be null");
-        Checks.checkNotNull(sslEngineFactory, "SslEngineFactory must not be null");
+        Checks.checkNotNull(ioThreads, "ioThreads");
+        Checks.checkNotNull(channelPools, "channelPools");
+        Checks.checkNotNull(builder, "builder");
+        Checks.checkNotNull(sslEngineFactory, "sslEngineFactory");
         this.ioThreads = ioThreads;
         this.channelPools = channelPools;
         this.builder = builder;

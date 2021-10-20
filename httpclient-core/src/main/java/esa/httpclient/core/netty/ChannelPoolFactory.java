@@ -224,7 +224,7 @@ final class ChannelPoolFactory {
                                 int maxPendingAcquires) {
             super(bootstrap, handler, healthCheck, action,
                     acquireTimeoutMillis, maxConnections, maxPendingAcquires);
-            Checks.checkNotNull(initializer, "ChannelInitializer must not be null");
+            Checks.checkNotNull(initializer, "initializer");
             this.initializer = initializer;
         }
 
@@ -242,7 +242,7 @@ final class ChannelPoolFactory {
                                                  ChannelPoolHandler handler,
                                                  ChannelInitializer initializer) {
             super(bootstrap, handler, ChannelHealthChecker.ACTIVE, false, false);
-            Checks.checkNotNull(initializer, "ChannelInitializer must not be null");
+            Checks.checkNotNull(initializer, "initializer");
             this.initializer = initializer;
         }
 

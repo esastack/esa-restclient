@@ -51,7 +51,7 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public ChannelPools(CacheOptions options) {
-        Checks.checkNotNull(options, "CacheOptions must not be null");
+        Checks.checkNotNull(options, "options");
         cachedPools = Caffeine.newBuilder()
                 .initialCapacity(options.initialCapacity())
                 .maximumSize(options.maximumSize())

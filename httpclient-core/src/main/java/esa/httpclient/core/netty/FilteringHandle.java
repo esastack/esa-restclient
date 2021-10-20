@@ -43,8 +43,8 @@ class FilteringHandle extends NettyHandle {
                     ResponseFilter[] filters,
                     FilterContext fCtx) {
         super(handle, request, ctx, listener, response);
-        Checks.checkNotNull(fCtx, "FilterContext must not be null");
-        Checks.checkNotEmptyArg(filters, "ResponseFilters must not be empty");
+        Checks.checkNotNull(fCtx, "fCtx");
+        Checks.checkNotEmptyArg(filters, "filters");
         this.filters = filters;
         this.ctx = fCtx;
     }

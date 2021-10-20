@@ -31,9 +31,9 @@ final class ChannelPool {
                 ChannelPoolOptions options,
                 boolean ssl,
                 ThrowingSupplier<SslHandler> sslHandler) {
-        Checks.checkNotNull(underlying, "ChannelPool must not be null");
-        Checks.checkNotNull(options, "ChannelPoolOptions must not be null");
-        Checks.checkNotNull(sslHandler, "SslHandler must not be null");
+        Checks.checkNotNull(underlying, "underlying");
+        Checks.checkNotNull(options, "options");
+        Checks.checkNotNull(sslHandler, "sslHandler");
         this.underlying = underlying;
         this.options = options;
         this.ssl = ssl;

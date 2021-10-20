@@ -63,7 +63,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
                        HttpMethod method,
                        String uri) {
         super(builder, method, uri);
-        Checks.checkNotNull(executor, "RequestExecutor must not be null");
+        Checks.checkNotNull(executor, "executor");
         this.executor = executor;
     }
 

@@ -47,7 +47,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     private long remaining = -1L;
 
     Http1ChannelHandler(HandleRegistry registry, long maxContentLength) {
-        Checks.checkNotNull(registry, "HandleRegistry must not be null");
+        Checks.checkNotNull(registry, "registry");
         this.registry = registry;
         this.maxContentLength = maxContentLength;
     }

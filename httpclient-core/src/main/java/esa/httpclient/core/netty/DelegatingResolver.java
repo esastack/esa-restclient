@@ -30,7 +30,7 @@ class DelegatingResolver extends InetNameResolver {
 
     DelegatingResolver(EventExecutor executor, HostResolver delegate) {
         super(executor);
-        Checks.checkNotNull(delegate, "HostResolver must not be null");
+        Checks.checkNotNull(delegate, "delegate");
         this.delegate = delegate;
     }
 

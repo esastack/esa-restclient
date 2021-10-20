@@ -15,9 +15,10 @@ class MultipartRequestTest {
     void testMultipartRequest() throws Exception {
         String path = "/multipart";
         String responseContentString = "hello";
-        byte[] responseContent = responseContentString.getBytes(StandardCharsets.UTF_8);
         MockServerUtil.startMockServer(
-                null, responseContent, MediaType.TEXT_PLAIN, path);
+                null,
+                responseContentString.getBytes(StandardCharsets.UTF_8),
+                MediaType.TEXT_PLAIN, path);
         RestResponseBase response = RestClient.ofDefault().post("http://localhost:" + MockServerUtil.PORT + path)
                 .multipart()
                 .attr("aaa", "bbb")

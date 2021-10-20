@@ -41,7 +41,7 @@ class RequestMethodsTest {
 
     @Test
     void testPost() throws Exception {
-        ClientAndServer mockServer = initMockServerWithBody("POST");
+        initMockServerWithBody("POST");
         RestClient restClient = buildRestClient();
         then(restClient.post("http://localhost:" + MockServerUtil.PORT + path).entity(body).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
@@ -49,7 +49,7 @@ class RequestMethodsTest {
 
     @Test
     void testGet() throws Exception {
-        ClientAndServer mockServer = initMockServerWithoutBody("GET");
+        initMockServerWithoutBody("GET");
         RestClient restClient = buildRestClient();
         then(restClient.get("http://localhost:" + MockServerUtil.PORT + path).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
@@ -57,7 +57,7 @@ class RequestMethodsTest {
 
     @Test
     void testPut() throws Exception {
-        ClientAndServer mockServer = initMockServerWithBody("PUT");
+        initMockServerWithBody("PUT");
         RestClient restClient = buildRestClient();
         then(restClient.put("http://localhost:" + MockServerUtil.PORT + path).entity(body).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
@@ -65,7 +65,7 @@ class RequestMethodsTest {
 
     @Test
     void testHead() throws Exception {
-        ClientAndServer mockServer = initMockServerWithoutBody("HEAD");
+        initMockServerWithoutBody("HEAD");
         RestClient restClient = buildRestClient();
         restClient.head("http://localhost:" + MockServerUtil.PORT + path).execute()
                 .toCompletableFuture().get();
@@ -73,7 +73,7 @@ class RequestMethodsTest {
 
     @Test
     void testOptions() throws Exception {
-        ClientAndServer mockServer = initMockServerWithoutBody("OPTIONS");
+        initMockServerWithoutBody("OPTIONS");
         RestClient restClient = buildRestClient();
         then(restClient.options("http://localhost:" + MockServerUtil.PORT + path).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);
@@ -81,7 +81,7 @@ class RequestMethodsTest {
 
     @Test
     void testDelete() throws Exception {
-        ClientAndServer mockServer = initMockServerWithBody("DELETE");
+        initMockServerWithBody("DELETE");
         RestClient restClient = buildRestClient();
         then(restClient.delete("http://localhost:" + MockServerUtil.PORT + path).entity(body).execute()
                 .toCompletableFuture().get().bodyToEntity(Person.class)).isEqualTo(body);

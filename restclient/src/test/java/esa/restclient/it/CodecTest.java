@@ -9,7 +9,6 @@ import esa.restclient.RestResponseBase;
 import esa.restclient.codec.Decoder;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import org.junit.jupiter.api.Test;
-import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.MediaType;
 
 import java.lang.reflect.Type;
@@ -27,7 +26,7 @@ class CodecTest {
     void jsonCodecTest() throws Exception {
         Person requestEntity = new Person("LiMing", "aaa");
         Person responseEntity = new Person("WangHong", "bbb");
-        ClientAndServer mockServer = MockServerUtil.startMockServer(
+        MockServerUtil.startMockServer(
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, responseEntity).content()),
                 MediaType.APPLICATION_JSON_UTF_8,
@@ -48,7 +47,7 @@ class CodecTest {
     void stringCodecTest() throws Exception {
         String requestEntity = "requestEntity";
         String responseEntity = "responseEntity";
-        ClientAndServer mockServer = MockServerUtil.startMockServer(
+        MockServerUtil.startMockServer(
                 (byte[]) (ContentType.TEXT_PLAIN.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.TEXT_PLAIN.encoder().encode(null, null, responseEntity).content()),
                 MediaType.TEXT_PLAIN,
@@ -69,7 +68,7 @@ class CodecTest {
     void customizeCodecTest() throws Exception {
         Person requestEntity = new Person("LiMing", "aaa");
         Person responseEntity = new Person("WangHong", "bbb");
-        ClientAndServer mockServer = MockServerUtil.startMockServer(
+        MockServerUtil.startMockServer(
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, requestEntity).content()),
                 (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder().encode(null, null, responseEntity).content()),
                 MediaType.APPLICATION_JSON_UTF_8,

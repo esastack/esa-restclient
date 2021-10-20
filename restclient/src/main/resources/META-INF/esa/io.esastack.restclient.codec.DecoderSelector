@@ -1,4 +1,0 @@
-io.esastack.restclient.codec.impl.ProtoBufDecoderSelector
-io.esastack.restclient.codec.impl.ByteToByteDecoderSelector
-io.esastack.restclient.codec.impl.StringDecoderSelector
-io.esastack.restclient.codec.impl.JsonDecoderSelector

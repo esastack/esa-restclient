@@ -2,15 +2,13 @@ package io.esastack.restclient.codec.impl;
 
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.ContentType;
+import io.esastack.restclient.AcceptType;
 import io.esastack.restclient.ResponseBodyContent;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.DecodeContext;
-import io.esastack.restclient.codec.Decoder;
-import io.esastack.restclient.codec.DecoderSelector;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 
@@ -21,7 +19,6 @@ public class DecodeContextImpl implements DecodeContext {
     private final RestRequest request;
     private final RestResponse response;
     private final DecodeAdvice[] advices;
-    private final DecoderSelector[] decoderSelectors;
     private int adviceIndex = 0;
     private final Type type;
     private MediaType mediaType;
@@ -37,7 +34,6 @@ public class DecodeContextImpl implements DecodeContext {
         this.request = request;
         this.response = response;
         this.advices = clientOptions.unmodifiableDecodeAdvices();
-        this.decoderSelectors = clientOptions.unmodifiableDecoderSelectors();
         this.type = type;
         this.mediaType = mediaType;
         this.content = ResponseBodyContent.of(ByteBufUtil.getBytes(byteBuf));
@@ -81,13 +77,17 @@ public class DecodeContextImpl implements DecodeContext {
     @Override
     public Object proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
-            final ContentType[] acceptTypes = request.acceptTypes();
+            final AcceptType[] acceptTypes = request.acceptTypes();
             final HttpHeaders headers = response.headers();
 
-            for (DecoderSelector decoderSelector : decoderSelectors) {
-                Decoder decoder = decoderSelector.select(request, acceptTypes, mediaType, headers, content, type);
-                if (decoder != null) {
-                    return decoder.decode(mediaType, headers, content, type);
+            for (AcceptType acceptType : acceptTypes) {
+                MediaType acceptMediaType = acceptType.mediaType();
+                if (acceptMediaType == AcceptType.EMPTY_MEDIA_TYPE) {
+                    return acceptType.decoder().decode(mediaType, headers, content, type);
+                }
+
+                if (acceptMediaType.isCompatibleWith(mediaType)) {
+                    return acceptType.decoder().decode(mediaType, headers, content, type);
                 }
             }
 

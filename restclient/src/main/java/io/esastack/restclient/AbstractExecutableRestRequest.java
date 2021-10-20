@@ -5,6 +5,7 @@ import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
@@ -26,7 +27,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     protected final RestClientOptions clientOptions;
     protected final RestRequestExecutor requestExecutor;
     protected ContentType contentType;
-    private ContentType[] acceptTypes;
+    private AcceptType[] acceptTypes = {AcceptType.DEFAULT};
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             RestClientOptions clientOptions,
@@ -102,6 +103,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public CompletionStage<RestResponseBase> execute() {
+        fillAcceptHeader();
         return requestExecutor.execute(this);
     }
 
@@ -206,12 +208,12 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public List<Cookie> getCookies(String name) {
+    public List<Cookie> cookies(String name) {
         return CookiesUtil.getCookies(name, headers(), false);
     }
 
     @Override
-    public Map<String, List<Cookie>> getCookiesMap() {
+    public Map<String, List<Cookie>> cookiesMap() {
         return CookiesUtil.getCookiesMap(headers(), false);
     }
 
@@ -236,33 +238,39 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public ExecutableRestRequest accept(ContentType... acceptTypes) {
-        if (acceptTypes == null || acceptTypes.length == 0) {
-            return self();
-        }
-        StringBuilder acceptBuilder = new StringBuilder();
-
-        for (int i = 0; i < acceptTypes.length; i++) {
-            ContentType acceptType = acceptTypes[i];
-            if (acceptType == null) {
-                throw new NullPointerException("acceptType is null when index is equal to" + i);
-            }
-            if (acceptType.decoder() == null) {
-                throw new NullPointerException("acceptType‘s decoder is null when index is equal to" + i);
-            }
-            if (i > 0) {
-                acceptBuilder.append(",");
-            }
-            acceptBuilder.append(acceptType.mediaType().toString());
-        }
-
-        headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
+    public ExecutableRestRequest accept(AcceptType... acceptTypes) {
         this.acceptTypes = acceptTypes;
         return self();
     }
 
+    private void fillAcceptHeader() {
+        if (this.acceptTypes == null || this.acceptTypes.length == 0) {
+            return;
+        }
+        StringBuilder acceptBuilder = new StringBuilder();
+
+        for (int i = 0; i < this.acceptTypes.length; i++) {
+            AcceptType acceptType = this.acceptTypes[i];
+            if (acceptType == null) {
+                throw new NullPointerException("acceptType is null when index is equal to" + i);
+            }
+            MediaType mediaType = acceptType.mediaType();
+            if (mediaType == AcceptType.EMPTY_MEDIA_TYPE) {
+                continue;
+            }
+            if (acceptBuilder.length() > 0) {
+                acceptBuilder.append(",");
+            }
+            acceptBuilder.append(mediaType.toString());
+        }
+
+        if (acceptBuilder.length() > 0) {
+            headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
+        }
+    }
+
     @Override
-    public ContentType[] acceptTypes() {
+    public AcceptType[] acceptTypes() {
         return acceptTypes;
     }
 

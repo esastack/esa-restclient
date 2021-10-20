@@ -2,6 +2,7 @@ package io.esastack.restclient.it;
 
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.restclient.AcceptType;
 import io.esastack.restclient.ContentType;
 import io.esastack.restclient.RequestBodyContent;
 import io.esastack.restclient.ResponseBodyContent;
@@ -35,7 +36,7 @@ class CodecTest {
 
         RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
                 .contentType(ContentType.APPLICATION_JSON_UTF8)
-                .accept(ContentType.APPLICATION_JSON_UTF8)
+                .accept(AcceptType.APPLICATION_JSON_UTF8)
                 .entity(requestEntity)
                 .execute()
                 .toCompletableFuture()
@@ -56,7 +57,6 @@ class CodecTest {
 
         RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
                 .contentType(ContentType.TEXT_PLAIN)
-                .accept(ContentType.TEXT_PLAIN)
                 .entity(requestEntity)
                 .execute()
                 .toCompletableFuture()
@@ -76,15 +76,15 @@ class CodecTest {
         );
 
         RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
-                .contentType(ContentType.of(MediaTypeUtil.APPLICATION_JSON_UTF8,
+                .contentType(new ContentType(MediaTypeUtil.APPLICATION_JSON_UTF8,
                         (mediaType, headers, entity) ->
                                 RequestBodyContent.of((byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
                                         .encode(mediaType, headers, requestEntity).content()))))
-                .accept(ContentType.of(MediaTypeUtil.APPLICATION_JSON_UTF8, new Decoder() {
+                .accept(new AcceptType(MediaTypeUtil.APPLICATION_JSON_UTF8, new Decoder() {
                     @Override
                     public <T> T decode(io.esastack.commons.net.http.MediaType mediaType, HttpHeaders headers,
                                         ResponseBodyContent<?> content, Type type) throws Exception {
-                        return ContentType.APPLICATION_JSON_UTF8.decoder()
+                        return AcceptType.APPLICATION_JSON_UTF8.decoder()
                                 .decode(mediaType, headers, content, type);
                     }
                 }))

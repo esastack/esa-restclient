@@ -44,7 +44,7 @@ public interface ExecutableRestRequest extends RestRequestBase {
     ExecutableRestRequest contentType(ContentType contentType);
 
     @Override
-    ExecutableRestRequest accept(ContentType... contentTypes);
+    ExecutableRestRequest accept(AcceptType... acceptTypes);
 
     @Override
     ExecutableRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

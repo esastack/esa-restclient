@@ -34,15 +34,15 @@ public interface RestRequest extends Request {
 
     RestRequest contentType(ContentType contentType);
 
-    RestRequest accept(ContentType... contentTypes);
+    RestRequest accept(AcceptType... acceptTypes);
 
     List<Cookie> removeCookies(String name);
 
-    List<Cookie> getCookies(String name);
+    List<Cookie> cookies(String name);
 
-    Map<String, List<Cookie>> getCookiesMap();
+    Map<String, List<Cookie>> cookiesMap();
 
     ContentType contentType();
 
-    ContentType[] acceptTypes();
+    AcceptType[] acceptTypes();
 }

@@ -14,11 +14,9 @@ import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
 import io.esastack.httpclient.core.util.OrderedComparator;
 import io.esastack.restclient.codec.DecodeAdvice;
-import io.esastack.restclient.codec.DecoderSelector;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.exec.ClientInterceptor;
 import io.esastack.restclient.spi.DecodeAdviceFactory;
-import io.esastack.restclient.spi.DecoderSelectorFactory;
 import io.esastack.restclient.spi.EncodeAdviceFactory;
 
 import java.util.Collections;
@@ -33,11 +31,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private final HttpClientBuilder httpClientBuilder;
     private final List<ClientInterceptor> interceptors = new LinkedList<>();
-    private final LinkedList<DecoderSelector> decoderSelectors = new LinkedList<>();
     private final LinkedList<DecodeAdvice> decodeAdvices = new LinkedList<>();
     private final LinkedList<EncodeAdvice> encodeAdvices = new LinkedList<>();
-    private DecoderSelector[] unmodifiableDecoderSelectors
-            = buildUnmodifiableDecoderSelectors();
     private DecodeAdvice[] unmodifiableDecodeAdvices
             = buildUnmodifiableDecodeAdvices();
     private EncodeAdvice[] unmodifiableEncodeAdvices
@@ -154,16 +149,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         this.decodeAdvices.addAll(decodeAdvices);
         this.unmodifiableDecodeAdvices = buildUnmodifiableDecodeAdvices();
         return self();
-    }
-
-    public void addDecoderSelector(DecoderSelector decoderSelector) {
-        this.decoderSelectors.add(decoderSelector);
-        this.unmodifiableDecoderSelectors = buildUnmodifiableDecoderSelectors();
-    }
-
-    public void addDecoderSelectors(List<DecoderSelector> decoderSelectors) {
-        this.decoderSelectors.addAll(decoderSelectors);
-        this.unmodifiableDecoderSelectors = buildUnmodifiableDecoderSelectors();
     }
 
     public RestClientBuilder channelPoolOptionsProvider(ChannelPoolOptionsProvider channelPoolOptionsProvider) {
@@ -309,11 +294,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public DecoderSelector[] unmodifiableDecoderSelectors() {
-        return unmodifiableDecoderSelectors;
-    }
-
-    @Override
     public EncodeAdvice[] unmodifiableEncodeAdvices() {
         return unmodifiableEncodeAdvices;
     }
@@ -339,13 +319,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
-    private DecoderSelector[] buildUnmodifiableDecoderSelectors() {
-        final List<DecoderSelector> decoderSelectors0 = new LinkedList<>(decoderSelectors);
-        decoderSelectors0.addAll(DecoderSelectorFactory.DEFAULT.decoderSelectors());
-        OrderedComparator.sort(decoderSelectors0);
-        return Collections.unmodifiableList(decoderSelectors0).toArray(new DecoderSelector[0]);
-    }
-
     private DecodeAdvice[] buildUnmodifiableDecodeAdvices() {
         final List<DecodeAdvice> decodeAdvices0 = new LinkedList<>(decodeAdvices);
         decodeAdvices0.addAll(DecodeAdviceFactory.DEFAULT.decodeAdvices());
@@ -364,7 +337,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public RestClientBuilder copy() {
         RestClientBuilder restClientBuilder = new RestClientBuilder(httpClientBuilder);
         restClientBuilder.addInterceptors(interceptors);
-        restClientBuilder.addDecoderSelectors(decoderSelectors);
         restClientBuilder.addEncodeAdvices(encodeAdvices);
         restClientBuilder.addDecodeAdvices(decodeAdvices);
         return restClientBuilder;

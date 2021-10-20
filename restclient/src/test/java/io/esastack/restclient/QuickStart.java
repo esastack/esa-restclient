@@ -24,7 +24,7 @@ public class QuickStart {
                 .maxRetries(3)
                 .readTimeout(100L)
                 .contentType(ContentType.TEXT_PLAIN)
-                .accept(ContentType.TEXT_PLAIN)
+                .accept(AcceptType.TEXT_PLAIN)
                 .execute()
                 .thenAccept(response -> {
                     try {
@@ -106,7 +106,7 @@ public class QuickStart {
                 .multipart()
                 .maxRetries(3)
                 .readTimeout(100L)
-                .accept(ContentType.TEXT_PLAIN)
+                .accept(AcceptType.TEXT_PLAIN)
                 .attr("aaa", "aaa");
         if (!useMultipartEncode) {
             request.contentType(ContentType.APPLICATION_FORM_URLENCODED);

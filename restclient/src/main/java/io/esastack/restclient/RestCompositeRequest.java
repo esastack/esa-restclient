@@ -170,8 +170,8 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest accept(ContentType... contentTypes) {
-        super.accept(contentTypes);
+    public RestCompositeRequest accept(AcceptType... acceptTypes) {
+        super.accept(acceptTypes);
         return self();
     }
 

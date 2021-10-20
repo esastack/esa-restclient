@@ -72,7 +72,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade contentType(ContentType contentType);
 
     @Override
-    RestRequestFacade accept(ContentType... contentTypes);
+    RestRequestFacade accept(AcceptType... acceptTypes);
 
     @Override
     RestRequestFacade addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);

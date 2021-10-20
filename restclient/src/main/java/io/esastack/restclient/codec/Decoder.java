@@ -8,8 +8,7 @@ import io.esastack.restclient.ResponseBodyContent;
 import java.lang.reflect.Type;
 
 /**
- * <code>Decoder</code> is designed for the conversion of a {@link ResponseBodyContent} to a Java type.And it
- * is dynamically bound to the response through the {@link DecoderSelector}.
+ * <code>Decoder</code> is designed for the conversion of a {@link ResponseBodyContent} to a Java type.
  * <p>
  * If you want to implement a <code>Decoder</code>, please implement the {@link ByteDecoder} interface
  * inherited from the <code>Decoder</code> instead of directly using the internal interface of the

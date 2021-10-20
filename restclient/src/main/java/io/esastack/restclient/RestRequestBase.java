@@ -42,13 +42,18 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     @Override
     RestRequestBase removeHeader(CharSequence name);
 
+    @Override
     RestRequestBase cookie(Cookie cookie);
 
+    @Override
     RestRequestBase cookie(String name, String value);
 
+    @Override
     RestRequestBase cookies(List<Cookie> cookies);
 
+    @Override
     RestRequestBase contentType(ContentType contentType);
 
-    RestRequestBase accept(ContentType... contentTypes);
+    @Override
+    RestRequestBase accept(AcceptType... acceptTypes);
 }

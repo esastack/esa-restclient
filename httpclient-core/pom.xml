@@ -154,7 +154,7 @@
                                 <relocation>
                                     <pattern>com.github.benmanes.caffeine</pattern>
                                     <shadedPattern>
-                                        esa.httpclient.cache.shaded.com.github.benmanes.caffeine
+                                        io.esastack.httpclient.cache.shaded.com.github.benmanes.caffeine
                                     </shadedPattern>
                                 </relocation>
                             </relocations>

@@ -48,6 +48,6 @@ final HttpClient client = HttpClient.create().channelPoolOptionsProvider(new Cha
 |    expireSeconds        | 	访问过期时间	      |         600(s)    |
 
 如上参数表示：连接池初始容量为16，最大容量为512，当连续10min连接池未被使用时该连接池将被关闭。使用时，可以通过系统属性更新上述参数，具体为：
-- 通过name为"esa.httpclient.caching-connectionPools.initialCapacity"的系统属性设置连接池初始化大小
-- 通过name为"esa.httpclient.caching-connectionPools.maximumSize"的系统属性设置连接池最大值
-- 通过name为"esa.httpclient.caching-connectionPools.expireAfterAccess"的系统属性设置访问过期时间
+- 通过name为"io.esastack.httpclient.caching-connectionPools.initialCapacity"的系统属性设置连接池初始化大小
+- 通过name为"io.esastack.httpclient.caching-connectionPools.maximumSize"的系统属性设置连接池最大值
+- 通过name为"io.esastack.httpclient.caching-connectionPools.expireAfterAccess"的系统属性设置访问过期时间

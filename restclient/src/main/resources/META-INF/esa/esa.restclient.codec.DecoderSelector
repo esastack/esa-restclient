@@ -1,4 +1,0 @@
-esa.restclient.codec.impl.ProtoBufDecoderSelector
-esa.restclient.codec.impl.ByteToByteDecoderSelector
-esa.restclient.codec.impl.StringDecoderSelector
-esa.restclient.codec.impl.JsonDecoderSelector

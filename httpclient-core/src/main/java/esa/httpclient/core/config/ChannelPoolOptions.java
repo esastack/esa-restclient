@@ -32,7 +32,7 @@ public class ChannelPoolOptions implements Reusable<ChannelPoolOptions>, Seriali
     private final int waitingQueueLength;
 
     private ChannelPoolOptions(long readTimeout, int connectTimeout, int poolSize, int waitingQueueLength) {
-        Checks.checkArg(readTimeout >= 1, "readTimeout is " + readTimeout +
+        Checks.checkArg(readTimeout >= 1L, "readTimeout is " + readTimeout +
                 " (expected >= 1)");
         Checks.checkArg(connectTimeout >= 1, "connectTimeout is " + connectTimeout +
                 " (expected >= 1)");
@@ -107,7 +107,7 @@ public class ChannelPoolOptions implements Reusable<ChannelPoolOptions>, Seriali
 
     public static class ChannelPoolOptionsBuilder {
 
-        private long readTimeout = 6000;
+        private long readTimeout = 6000L;
         private int connectTimeout = 3000;
         private int poolSize = 512;
         private int waitingQueueLength = 256;

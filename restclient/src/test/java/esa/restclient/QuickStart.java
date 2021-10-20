@@ -22,7 +22,7 @@ public class QuickStart {
                 .cookie(new CookieImpl("aaa", "aaa"))
                 .entity("aaa")
                 .maxRetries(3)
-                .readTimeout(100)
+                .readTimeout(100L)
                 .contentType(ContentType.TEXT_PLAIN)
                 .accept(ContentType.TEXT_PLAIN)
                 .execute()
@@ -105,7 +105,7 @@ public class QuickStart {
                 .cookie(new CookieImpl("aaa", "aaa"))
                 .multipart()
                 .maxRetries(3)
-                .readTimeout(100)
+                .readTimeout(100L)
                 .accept(ContentType.TEXT_PLAIN)
                 .attr("aaa", "aaa");
         if (!useMultipartEncode) {

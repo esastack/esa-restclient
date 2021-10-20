@@ -85,7 +85,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
 
     private int idleTimeoutSeconds = -1;
 
-    private long readTimeout = 6000;
+    private long readTimeout = 6000L;
 
     /**
      * Whether to use h2c only when current {@link #version} equals {@link HttpVersion#HTTP_2} and scheme
@@ -154,7 +154,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
     }
 
     public HttpClientBuilder readTimeout(long timeout) {
-        Checks.checkArg(timeout > 0, "readTimeout must greater than 0");
+        Checks.checkArg(timeout > 0L, "readTimeout must greater than 0");
         this.readTimeout = timeout;
         return self();
     }

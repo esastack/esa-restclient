@@ -62,7 +62,8 @@ import java.util.function.BiFunction;
 
 class NettyTransceiver implements HttpTransceiver {
 
-    private static final String HASHEDWHEELTIMER_TICKDURATION_KEY = "io.esastack.httpclient.hashedWheelTimer.tickDurationMs";
+    private static final String HASHEDWHEELTIMER_TICKDURATION_KEY =
+            "io.esastack.httpclient.hashedWheelTimer.tickDurationMs";
     private static final String HASHEDWHEELTIMER_SIZE_KEY = "io.esastack.httpclient.hashedWheelTimer.size";
 
     private static final Timer READ_TIMEOUT_TIMER;
@@ -362,7 +363,8 @@ class NettyTransceiver implements HttpTransceiver {
     ChannelPool getChannelPool(HttpRequest request, SocketAddress address) {
         final boolean keepAlive = isKeepAlive(request);
 
-        io.esastack.httpclient.core.netty.ChannelPool channelPool = keepAlive ? channelPools.getIfPresent(address) : null;
+        io.esastack.httpclient.core.netty.ChannelPool channelPool =
+                keepAlive ? channelPools.getIfPresent(address) : null;
         if (channelPool != null) {
             return channelPool.underlying;
         }
@@ -537,8 +539,8 @@ class NettyTransceiver implements HttpTransceiver {
     /**
      * Set keepAlive to given headers.
      *
-     * @param headers   headers
-     * @param version   version
+     * @param headers headers
+     * @param version version
      */
     private void setKeepAliveIfNecessary(Http1HeadersImpl headers, esa.commons.http.HttpVersion version) {
         if (esa.commons.http.HttpVersion.HTTP_2 == builder.version()) {

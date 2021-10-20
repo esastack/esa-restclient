@@ -215,7 +215,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      * Executes the given {@link HttpRequest} and obtains the {@link HttpResponse}. If both {@code handle}
      * and {@code handler} are null, the default {@link DefaultHandle} will be used to aggregate the inbound
      * message to a {@link HttpResponse}.
-     *
+     * <p>
      * Be aware that, if the {@link CompletableFuture} is returned, which means that we will release
      * the {@link HttpRequest#buffer()} automatically even if it's an exceptionally {@code future}.
      * Besides, you should manage the {@link HttpRequest#buffer()} by yourself. eg:
@@ -298,7 +298,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     private HttpRequestFacade newRequestFacade(HttpMethod method, String uri) {
-        Checks.checkNotNull(method,"method");
+        Checks.checkNotNull(method, "method");
         Checks.checkNotEmptyArg(uri, "uri");
         return new CompositeRequest(builder, this,
                 () -> new SegmentRequestImpl(builder, executor, method, uri),
@@ -439,8 +439,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     /**
      * Build a {@link RequestExecutor} to execute given {@link HttpRequest} with given {@link Listener}.
      *
-     * @param ioThreads            ioThreads
-     * @param channelPools         channel pool map
+     * @param ioThreads    ioThreads
+     * @param channelPools channel pool map
      * @return executor
      */
     protected RequestExecutor build(EventLoopGroup ioThreads,
@@ -457,7 +457,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      * Builds a {@link ThreadPoolExecutor} which to handle the callback logic with specified
      * {@link CallbackThreadPoolOptions}.
      *
-     * @param options       options
+     * @param options options
      * @return executor
      */
     static ThreadPoolExecutor newCallbackExecutor(CallbackThreadPoolOptions options) {
@@ -510,8 +510,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     /**
      * Package visibility for unit test.
      *
-     * @param sslOptions        sslOptions
-     * @return                  factory
+     * @param sslOptions sslOptions
+     * @return factory
      */
     protected SslEngineFactory loadSslEngineFactory(SslOptions sslOptions) {
         List<SslEngineFactory> sslEngineFactories = SpiLoader.getAll(SslEngineFactory.class);

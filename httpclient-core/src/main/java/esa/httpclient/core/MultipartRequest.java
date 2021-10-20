@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public interface MultipartRequest extends ExecutableRequest, MultipartItemsConfigure {
+public interface MultipartRequest extends ExecutableRequest, MultipartConfigure {
 
     MultipartRequest multipartEncode(boolean multipartEncode);
 

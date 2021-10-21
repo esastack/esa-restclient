@@ -111,39 +111,40 @@ class RestClientBuilderTest {
         builder.addDecodeAdvice(createDecodeAdvice(2));
         builder.addEncodeAdvice(createEncodeAdvice(2));
 
-        testCopy(builder, builder.copy());
+        isEqual(builder, builder.copy());
+        isEqual(builder, builder.build().clientOptions());
     }
 
-    void testCopy(RestClientBuilder origin, RestClientBuilder copied) {
-        then(origin.channelPoolOptionsProvider()).isEqualTo(copied.channelPoolOptionsProvider());
-        then(origin.connectionPoolSize()).isEqualTo(copied.connectionPoolSize());
-        then(origin.connectionPoolWaitingQueueLength()).isEqualTo(copied.connectionPoolWaitingQueueLength());
-        then(origin.connectTimeout()).isEqualTo(copied.connectTimeout());
-        then(origin.decompression()).isEqualTo(copied.decompression());
-        then(origin.ish2ClearTextUpgrade()).isEqualTo(copied.ish2ClearTextUpgrade());
-        then(origin.http1Options().maxChunkSize()).isEqualTo(copied.http1Options().maxChunkSize());
-        then(origin.http1Options().maxHeaderSize()).isEqualTo(copied.http1Options().maxHeaderSize());
-        then(origin.http1Options().maxInitialLineLength()).isEqualTo(copied.http1Options().maxInitialLineLength());
-        then(origin.http2Options().maxFrameSize()).isEqualTo(copied.http2Options().maxFrameSize());
-        then(origin.http2Options().gracefulShutdownTimeoutMillis()).isEqualTo(copied.http2Options().gracefulShutdownTimeoutMillis());
-        then(origin.idleTimeoutSeconds()).isEqualTo(copied.idleTimeoutSeconds());
-        then(origin.isKeepAlive()).isEqualTo(copied.isKeepAlive());
-        then(origin.maxContentLength()).isEqualTo(copied.maxContentLength());
-        then(origin.maxRedirects()).isEqualTo(copied.maxRedirects());
-        then(origin.netOptions().isSoKeepAlive()).isEqualTo(copied.netOptions().isSoKeepAlive());
-        then(origin.netOptions().isSoReuseAddr()).isEqualTo(copied.netOptions().isSoReuseAddr());
-        then(origin.netOptions().isTcpNoDelay()).isEqualTo(copied.netOptions().isTcpNoDelay());
-        then(origin.netOptions().soLinger()).isEqualTo(copied.netOptions().soLinger());
-        then(origin.readTimeout()).isEqualTo(copied.readTimeout());
-        then(origin.resolver()).isEqualTo(copied.resolver());
-        then(origin.retryOptions().maxRetries()).isEqualTo(copied.retryOptions().maxRetries());
-        then(origin.sslOptions().sessionTimeout()).isEqualTo(copied.sslOptions().sessionTimeout());
-        then(origin.version()).isEqualTo(copied.version());
-        then(origin.isUseDecompress()).isEqualTo(copied.isUseDecompress());
-        then(origin.isUseExpectContinue()).isEqualTo(copied.isUseExpectContinue());
-        then(origin.unmodifiableDecodeAdvices()[0]).isEqualTo(copied.unmodifiableDecodeAdvices()[0]);
-        then(origin.unmodifiableEncodeAdvices()[0]).isEqualTo(copied.unmodifiableEncodeAdvices()[0]);
-        then(origin.unmodifiableInterceptors()[0]).isEqualTo(copied.unmodifiableInterceptors()[0]);
+    void isEqual(RestClientOptions origin, RestClientOptions other) {
+        then(origin.channelPoolOptionsProvider()).isEqualTo(other.channelPoolOptionsProvider());
+        then(origin.connectionPoolSize()).isEqualTo(other.connectionPoolSize());
+        then(origin.connectionPoolWaitingQueueLength()).isEqualTo(other.connectionPoolWaitingQueueLength());
+        then(origin.connectTimeout()).isEqualTo(other.connectTimeout());
+        then(origin.decompression()).isEqualTo(other.decompression());
+        then(origin.ish2ClearTextUpgrade()).isEqualTo(other.ish2ClearTextUpgrade());
+        then(origin.http1Options().maxChunkSize()).isEqualTo(other.http1Options().maxChunkSize());
+        then(origin.http1Options().maxHeaderSize()).isEqualTo(other.http1Options().maxHeaderSize());
+        then(origin.http1Options().maxInitialLineLength()).isEqualTo(other.http1Options().maxInitialLineLength());
+        then(origin.http2Options().maxFrameSize()).isEqualTo(other.http2Options().maxFrameSize());
+        then(origin.http2Options().gracefulShutdownTimeoutMillis()).isEqualTo(other.http2Options().gracefulShutdownTimeoutMillis());
+        then(origin.idleTimeoutSeconds()).isEqualTo(other.idleTimeoutSeconds());
+        then(origin.isKeepAlive()).isEqualTo(other.isKeepAlive());
+        then(origin.maxContentLength()).isEqualTo(other.maxContentLength());
+        then(origin.maxRedirects()).isEqualTo(other.maxRedirects());
+        then(origin.netOptions().isSoKeepAlive()).isEqualTo(other.netOptions().isSoKeepAlive());
+        then(origin.netOptions().isSoReuseAddr()).isEqualTo(other.netOptions().isSoReuseAddr());
+        then(origin.netOptions().isTcpNoDelay()).isEqualTo(other.netOptions().isTcpNoDelay());
+        then(origin.netOptions().soLinger()).isEqualTo(other.netOptions().soLinger());
+        then(origin.readTimeout()).isEqualTo(other.readTimeout());
+        then(origin.resolver()).isEqualTo(other.resolver());
+        then(origin.retryOptions().maxRetries()).isEqualTo(other.retryOptions().maxRetries());
+        then(origin.sslOptions().sessionTimeout()).isEqualTo(other.sslOptions().sessionTimeout());
+        then(origin.version()).isEqualTo(other.version());
+        then(origin.isUseDecompress()).isEqualTo(other.isUseDecompress());
+        then(origin.isUseExpectContinue()).isEqualTo(other.isUseExpectContinue());
+        then(origin.unmodifiableDecodeAdvices()[0]).isEqualTo(other.unmodifiableDecodeAdvices()[0]);
+        then(origin.unmodifiableEncodeAdvices()[0]).isEqualTo(other.unmodifiableEncodeAdvices()[0]);
+        then(origin.unmodifiableInterceptors()[0]).isEqualTo(other.unmodifiableInterceptors()[0]);
     }
 
     @Test
@@ -211,7 +212,7 @@ class RestClientBuilderTest {
     private EncodeAdvice createEncodeAdvice(int order) {
         return new EncodeAdvice() {
             @Override
-            public RequestBodyContent aroundEncode(EncodeContext context) {
+            public RequestBodyContent<?> aroundEncode(EncodeContext context) {
                 return null;
             }
 

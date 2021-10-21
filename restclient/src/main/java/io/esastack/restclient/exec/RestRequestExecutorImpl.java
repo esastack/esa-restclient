@@ -1,13 +1,10 @@
 package io.esastack.restclient.exec;
 
-import io.esastack.httpclient.core.util.OrderedComparator;
 import io.esastack.restclient.RequestInvocation;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponseBase;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class RestRequestExecutorImpl implements RestRequestExecutor {
@@ -27,15 +24,13 @@ public class RestRequestExecutorImpl implements RestRequestExecutor {
     private InvocationChain buildInvokeChain(RestClientOptions clientOptions) {
         InvocationChain invocationChain = new RequestInvocation();
 
-        List<ClientInterceptor> interceptors = clientOptions.interceptors();
+        ClientInterceptor[] orderedInterceptors = clientOptions.unmodifiableInterceptors();
 
-        if (interceptors.size() == 0) {
+        if (orderedInterceptors.length == 0) {
             return invocationChain;
         }
-        final List<ClientInterceptor> interceptors0 = new LinkedList<>(interceptors);
-        OrderedComparator.sort(interceptors0);
-        for (int i = interceptors0.size() - 1; i >= 0; i--) {
-            invocationChain = new InvocationChainImpl(interceptors0.get(i), invocationChain);
+        for (int i = orderedInterceptors.length - 1; i >= 0; i--) {
+            invocationChain = new InvocationChainImpl(orderedInterceptors[i], invocationChain);
         }
         return invocationChain;
     }

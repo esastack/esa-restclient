@@ -13,8 +13,6 @@ import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.exec.ClientInterceptor;
 
-import java.util.List;
-
 /**
  * RestClientOptions is designed for wrapping the configuration of restClient
  */
@@ -54,8 +52,6 @@ public interface RestClientOptions {
 
     Http2Options http2Options();
 
-    List<ClientInterceptor> interceptors();
-
     RetryOptions retryOptions();
 
     int maxRedirects();
@@ -65,4 +61,6 @@ public interface RestClientOptions {
     EncodeAdvice[] unmodifiableEncodeAdvices();
 
     DecodeAdvice[] unmodifiableDecodeAdvices();
+
+    ClientInterceptor[] unmodifiableInterceptors();
 }

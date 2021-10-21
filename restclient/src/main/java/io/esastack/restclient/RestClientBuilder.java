@@ -18,6 +18,7 @@ import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.exec.ClientInterceptor;
 import io.esastack.restclient.spi.DecodeAdviceFactory;
 import io.esastack.restclient.spi.EncodeAdviceFactory;
+import io.esastack.restclient.spi.impl.InterceptorFactoryImpl;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -37,6 +38,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
             = buildUnmodifiableDecodeAdvices();
     private EncodeAdvice[] unmodifiableEncodeAdvices
             = buildUnmodifiableEncodeAdvices();
+    private ClientInterceptor[] unmodifiableInterceptors
+            = buildUnmodifiableInterceptors();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -114,12 +117,14 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public RestClientBuilder addInterceptor(ClientInterceptor interceptor) {
         Checks.checkNotNull(interceptor, "interceptor");
         this.interceptors.add(interceptor);
+        this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public RestClientBuilder addInterceptors(List<ClientInterceptor> interceptors) {
         Checks.checkNotNull(interceptors, "interceptors");
         this.interceptors.addAll(interceptors);
+        this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
@@ -274,11 +279,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<ClientInterceptor> interceptors() {
-        return Collections.unmodifiableList(interceptors);
-    }
-
-    @Override
     public RetryOptions retryOptions() {
         return httpClientBuilder.retryOptions();
     }
@@ -301,6 +301,11 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     @Override
     public DecodeAdvice[] unmodifiableDecodeAdvices() {
         return unmodifiableDecodeAdvices;
+    }
+
+    @Override
+    public ClientInterceptor[] unmodifiableInterceptors() {
+        return unmodifiableInterceptors;
     }
 
     private RestClientBuilder self() {
@@ -331,6 +336,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         encodeAdvices0.addAll(EncodeAdviceFactory.DEFAULT.encodeAdvices());
         OrderedComparator.sort(encodeAdvices0);
         return Collections.unmodifiableList(encodeAdvices0).toArray(new EncodeAdvice[0]);
+    }
+
+    private ClientInterceptor[] buildUnmodifiableInterceptors() {
+        final List<ClientInterceptor> interceptors0 = new LinkedList<>(interceptors);
+        interceptors0.addAll(InterceptorFactoryImpl.DEFAULT.interceptors());
+        OrderedComparator.sort(interceptors0);
+        return Collections.unmodifiableList(interceptors0).toArray(new ClientInterceptor[0]);
     }
 
     @Override

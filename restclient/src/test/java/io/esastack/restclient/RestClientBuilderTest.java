@@ -126,7 +126,8 @@ class RestClientBuilderTest {
         then(origin.http1Options().maxHeaderSize()).isEqualTo(other.http1Options().maxHeaderSize());
         then(origin.http1Options().maxInitialLineLength()).isEqualTo(other.http1Options().maxInitialLineLength());
         then(origin.http2Options().maxFrameSize()).isEqualTo(other.http2Options().maxFrameSize());
-        then(origin.http2Options().gracefulShutdownTimeoutMillis()).isEqualTo(other.http2Options().gracefulShutdownTimeoutMillis());
+        then(origin.http2Options().gracefulShutdownTimeoutMillis())
+                .isEqualTo(other.http2Options().gracefulShutdownTimeoutMillis());
         then(origin.idleTimeoutSeconds()).isEqualTo(other.idleTimeoutSeconds());
         then(origin.isKeepAlive()).isEqualTo(other.isKeepAlive());
         then(origin.maxContentLength()).isEqualTo(other.maxContentLength());

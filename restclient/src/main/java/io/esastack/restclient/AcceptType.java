@@ -36,7 +36,8 @@ public class AcceptType {
             = new AcceptType(AcceptType.EMPTY_MEDIA_TYPE, new DefaultDecoder());
 
     public static final AcceptType PROTOBUF
-            = new AcceptType(MediaTypeUtil.of("application", "x-protobuf", StandardCharsets.UTF_8), new ProtoBufCodec());
+            = new AcceptType(
+                    MediaTypeUtil.of("application", "x-protobuf", StandardCharsets.UTF_8), new ProtoBufCodec());
 
     public static final AcceptType APPLICATION_JSON_UTF8
             = new AcceptType(MediaTypeUtil.APPLICATION_JSON_UTF8, new JacksonCodec());

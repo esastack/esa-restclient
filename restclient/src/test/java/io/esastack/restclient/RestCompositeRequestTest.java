@@ -66,7 +66,7 @@ class RestCompositeRequestTest {
         then(request.headers().get("ddd")).isNull();
 
         request.removeHeader("aaa");
-        request.setHeader("bbb","bbb2");
+        request.setHeader("bbb", "bbb2");
         then(request.headers().size()).isEqualTo(2);
         then(request.headers().get("aaa")).isNull();
         then(request.headers().get("bbb")).isEqualTo("bbb2");

@@ -35,7 +35,8 @@ public class ContentType {
     }
 
     public static final ContentType PROTOBUF
-            = new ContentType(MediaTypeUtil.of("application", "x-protobuf", StandardCharsets.UTF_8), new ProtoBufCodec());
+            = new ContentType(
+                    MediaTypeUtil.of("application", "x-protobuf", StandardCharsets.UTF_8), new ProtoBufCodec());
 
     public static final ContentType APPLICATION_JSON_UTF8
             = new ContentType(MediaTypeUtil.APPLICATION_JSON_UTF8, new JacksonCodec());

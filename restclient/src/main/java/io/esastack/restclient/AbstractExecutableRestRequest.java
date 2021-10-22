@@ -219,12 +219,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public ExecutableRestRequest contentType(ContentType contentType) {
-        if (contentType == null) {
-            throw new NullPointerException("contentType");
-        }
-        if (contentType.encoder() == null) {
-            throw new NullPointerException("contentType‘s encoder");
-        }
+        Checks.checkNotNull(contentType, "contentType");
 
         this.contentType = contentType;
         headers().set(HttpHeaderNames.CONTENT_TYPE,
@@ -239,6 +234,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public ExecutableRestRequest accept(AcceptType... acceptTypes) {
+        Checks.checkNotNull(acceptTypes, "acceptTypes");
         this.acceptTypes = acceptTypes;
         return self();
     }

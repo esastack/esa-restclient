@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class RestClientTest {
+class RestClientTest {
 
     @Test
     void testMethod() {

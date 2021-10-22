@@ -6,7 +6,7 @@ import io.esastack.restclient.exec.InvocationChain;
 import java.util.concurrent.CompletionStage;
 
 public class RequestInvocation implements InvocationChain {
-    
+
     @Override
     public CompletionStage<RestResponse> proceed(RestRequest request) {
         if (!(request instanceof AbstractExecutableRestRequest)) {
@@ -22,6 +22,6 @@ public class RequestInvocation implements InvocationChain {
     }
 
     private RestResponse processResponse(AbstractExecutableRestRequest request, HttpResponse response) {
-        return new RestResponseBaseImpl(request, response, request.clientOptions);
+        return new RestResponseBaseImpl(request, response, request.clientOptions());
     }
 }

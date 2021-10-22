@@ -107,6 +107,10 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return requestExecutor.execute(this);
     }
 
+    RestClientOptions clientOptions() {
+        return clientOptions;
+    }
+
     CompletionStage<HttpResponse> sendRequest() {
         try {
             if (hasBody()) {

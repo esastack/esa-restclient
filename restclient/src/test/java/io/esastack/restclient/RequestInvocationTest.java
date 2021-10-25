@@ -9,7 +9,9 @@ import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.CookieImpl;
 import esa.commons.netty.http.Http1HeadersImpl;
 import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
+import io.esastack.restclient.exec.RestRequestExecutor;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -21,16 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class RequestInvocationTest {
+public class RequestInvocationTest {
 
     @Test
     void testProceed() throws ExecutionException, InterruptedException {
-        RestCompositeRequest request = mock(RestCompositeRequest.class);
-        when(request.sendRequest())
-                .thenReturn(CompletableFuture.completedFuture(
-                        createResponse("Hi", "aaa", "aaa")));
-        when(request.clientOptions())
-                .thenReturn(mock(RestClientOptions.class));
+        RestCompositeRequest request = mockRequest(
+                mock(RestClientOptions.class), mock(RestRequestExecutor.class),
+                "Hi", "aaa", "aaa");
 
         RequestInvocation requestInvocation = new RequestInvocation();
         assertThrows(IllegalStateException.class,
@@ -46,7 +45,21 @@ class RequestInvocationTest {
                 .isEqualTo("aaa");
     }
 
-    private HttpResponse createResponse(String content, String cookieName, String cookieValue) {
+    public static RestCompositeRequest mockRequest(
+            RestClientOptions clientOptions,
+            RestRequestExecutor requestExecutor,
+            String responseContent, String responseCookieName, String responseCookieValue) {
+        CompositeRequest request = mock(CompositeRequest.class);
+        when(request.headers()).thenReturn(new Http1HeadersImpl());
+        RestCompositeRequest restRequest = new RestCompositeRequest(request, clientOptions, requestExecutor);
+        restRequest.entity("Hi".getBytes());
+        when(request.execute())
+                .thenReturn(CompletableFuture.completedFuture(
+                        createResponse(responseContent, responseCookieName, responseCookieValue)));
+        return restRequest;
+    }
+
+    private static HttpResponse createResponse(String content, String cookieName, String cookieValue) {
         return new HttpResponse() {
             @Override
             public Buffer body() {

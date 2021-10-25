@@ -5,6 +5,7 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffers;
+import esa.commons.netty.http.CookieImpl;
 import esa.commons.netty.http.Http1HeadersImpl;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.HttpResponse;
@@ -12,9 +13,11 @@ import io.esastack.restclient.codec.DecodeAdvice;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,7 +40,6 @@ class RestResponseBaseImplTest {
         then(restResponse.status()).isEqualTo(-1);
         when(response.status()).thenReturn(0);
         then(restResponse.status()).isEqualTo(0);
-
     }
 
     @Test
@@ -113,23 +115,25 @@ class RestResponseBaseImplTest {
         headers.add(HttpHeaderNames.SET_COOKIE, "ccc=ccc1");
         headers.add(HttpHeaderNames.SET_COOKIE, "ccc=ccc2");
 
-        then(restResponse.cookiesMap().get("aaa").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("aaa").get(0).value()).isEqualTo("aaa1");
-        then(restResponse.cookiesMap().get("aaa").get(1).value()).isEqualTo("aaa2");
-        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("bbb").get(0).value()).isEqualTo("bbb1");
-        then(restResponse.cookiesMap().get("bbb").get(1).value()).isEqualTo("bbb2");
-        then(restResponse.cookiesMap().get("ccc").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("ccc").get(0).value()).isEqualTo("ccc1");
-        then(restResponse.cookiesMap().get("ccc").get(1).value()).isEqualTo("ccc2");
+        //test get cookies
+        then(restResponse.cookies("aaa").size()).isEqualTo(2);
+        then(restResponse.cookies("aaa").get(0).value()).isEqualTo("aaa1");
+        then(restResponse.cookies("aaa").get(1).value()).isEqualTo("aaa2");
+        then(restResponse.cookies("bbb").size()).isEqualTo(2);
+        then(restResponse.cookies("bbb").get(0).value()).isEqualTo("bbb1");
+        then(restResponse.cookies("bbb").get(1).value()).isEqualTo("bbb2");
+        then(restResponse.cookies("ccc").size()).isEqualTo(2);
+        then(restResponse.cookies("ccc").get(0).value()).isEqualTo("ccc1");
+        then(restResponse.cookies("ccc").get(1).value()).isEqualTo("ccc2");
         then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(6);
 
+        //test remove cookies
         List<Cookie> cookies = restResponse.removeCookies("aaa");
         then(cookies.size()).isEqualTo(2);
         then(cookies.get(0).value()).isEqualTo("aaa1");
         then(cookies.get(1).value()).isEqualTo("aaa2");
         then(restResponse.cookiesMap().size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("aaa")).isNull();
+        then(restResponse.cookies("aaa").size()).isEqualTo(0);
         then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(2);
         then(restResponse.cookiesMap().get("bbb").get(0).value()).isEqualTo("bbb1");
         then(restResponse.cookiesMap().get("bbb").get(1).value()).isEqualTo("bbb2");
@@ -138,6 +142,7 @@ class RestResponseBaseImplTest {
         then(restResponse.cookiesMap().get("ccc").get(1).value()).isEqualTo("ccc2");
         then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(4);
 
+        //test remove cookies when the name of cookie is null
         cookies = restResponse.removeCookies(null);
         then(cookies.size()).isEqualTo(0);
         then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(2);
@@ -146,6 +151,39 @@ class RestResponseBaseImplTest {
         then(restResponse.cookiesMap().get("ccc").size()).isEqualTo(2);
         then(restResponse.cookiesMap().get("ccc").get(0).value()).isEqualTo("ccc1");
         then(restResponse.cookiesMap().get("ccc").get(1).value()).isEqualTo("ccc2");
+
+        //test set cookie by cookie(cookie)
+        assertDoesNotThrow(() ->
+                restResponse.cookie(null)
+        );
+        restResponse.cookie(new CookieImpl("bbb", "bbb3"));
+        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(3);
+        then(restResponse.cookiesMap().get("bbb").get(2).value()).isEqualTo("bbb3");
+        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(5);
+
+        //test set cookie by cookie(name, value)
+        assertThrows(NullPointerException.class, () ->
+                restResponse.cookie(null, "bbb4"));
+        assertThrows(NullPointerException.class, () ->
+                restResponse.cookie("bbb", null));
+        restResponse.cookie("bbb", "bbb4");
+        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(4);
+        then(restResponse.cookiesMap().get("bbb").get(3).value()).isEqualTo("bbb4");
+        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(6);
+
+        //test set cookies by cookies(cookies)
+        assertDoesNotThrow(() ->
+                restResponse.cookies((List<Cookie>) null)
+        );
+        List<Cookie> cookieList = new ArrayList<>();
+        cookieList.add(new CookieImpl("bbb", "bbb5"));
+        restResponse.cookies(cookieList);
+        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(5);
+        then(restResponse.cookiesMap().get("bbb").get(4).value()).isEqualTo("bbb5");
+        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(7);
+
+        //test remove cookie by cookiesMap().remove(name)
+        assertThrows(UnsupportedOperationException.class, () -> restResponse.cookiesMap().remove("aaa"));
     }
 
     @Test

@@ -84,30 +84,46 @@ class RestCompositeRequestTest {
     @Test
     void testCookieOperate() {
         RestRequest request = RestClient.ofDefault().post("aaa");
+
+        //test set cookie by cookie(name , value)
+        assertThrows(NullPointerException.class, () -> request.cookie("aaa", null));
+        assertThrows(NullPointerException.class, () -> request.cookie(null, "aaa"));
         request.cookie("aaa", "aaa1");
         request.cookie("aaa", "aaa2");
+
+        //test set cookie by cookie(cookie)
+        assertDoesNotThrow(() ->
+                request.cookie(null)
+        );
         request.cookie(new CookieImpl("bbb", "bbb1"));
         request.cookie(new CookieImpl("bbb", "bbb2"));
+
+        //test set cookies by cookies(cookie)
+        assertDoesNotThrow(() ->
+                request.cookies((List<Cookie>) null)
+        );
         List<Cookie> cookieList = new ArrayList<>();
         cookieList.add(new CookieImpl("ccc", "ccc1"));
         cookieList.add(new CookieImpl("ccc", "ccc2"));
         request.cookies(cookieList);
 
+        //test get cookies
         then(request.cookiesMap().size()).isEqualTo(3);
-        then(request.cookiesMap().get("aaa").size()).isEqualTo(2);
-        then(request.cookiesMap().get("aaa").get(0).value()).isEqualTo("aaa1");
-        then(request.cookiesMap().get("aaa").get(1).value()).isEqualTo("aaa2");
+        then(request.cookies("aaa").size()).isEqualTo(2);
+        then(request.cookies("aaa").get(0).value()).isEqualTo("aaa1");
+        then(request.cookies("aaa").get(1).value()).isEqualTo("aaa2");
 
-        then(request.cookiesMap().get("bbb").size()).isEqualTo(2);
-        then(request.cookiesMap().get("bbb").get(0).value()).isEqualTo("bbb1");
-        then(request.cookiesMap().get("bbb").get(1).value()).isEqualTo("bbb2");
+        then(request.cookies("bbb").size()).isEqualTo(2);
+        then(request.cookies("bbb").get(0).value()).isEqualTo("bbb1");
+        then(request.cookies("bbb").get(1).value()).isEqualTo("bbb2");
 
-        then(request.cookiesMap().get("ccc").size()).isEqualTo(2);
-        then(request.cookiesMap().get("ccc").get(0).value()).isEqualTo("ccc1");
-        then(request.cookiesMap().get("ccc").get(1).value()).isEqualTo("ccc2");
+        then(request.cookies("ccc").size()).isEqualTo(2);
+        then(request.cookies("ccc").get(0).value()).isEqualTo("ccc1");
+        then(request.cookies("ccc").get(1).value()).isEqualTo("ccc2");
 
         then(request.headers().getAll(HttpHeaderNames.COOKIE).size()).isEqualTo(6);
 
+        //test remove cookies
         List<Cookie> cookies = request.removeCookies("aaa");
         then(cookies.size()).isEqualTo(2);
         then(cookies.get(0).value()).isEqualTo("aaa1");
@@ -126,6 +142,7 @@ class RestCompositeRequestTest {
 
         then(request.headers().getAll(HttpHeaderNames.COOKIE).size()).isEqualTo(4);
 
+        //test remove cookies when the name of cookie is null
         cookies = request.removeCookies(null);
         then(cookies.size()).isEqualTo(0);
         then(request.cookiesMap().get("bbb").size()).isEqualTo(2);
@@ -138,15 +155,9 @@ class RestCompositeRequestTest {
 
         then(request.headers().getAll(HttpHeaderNames.COOKIE).size()).isEqualTo(4);
 
+        //test remove cookie by cookiesMap().remove(name)
         assertThrows(UnsupportedOperationException.class, () -> request.cookiesMap().remove("aaa"));
-        assertThrows(NullPointerException.class, () -> request.cookie("aaa", null));
-        assertThrows(NullPointerException.class, () -> request.cookie(null, null));
-        assertDoesNotThrow(() ->
-                request.cookie(null)
-        );
-        assertDoesNotThrow(() ->
-                request.cookies((List<Cookie>) null)
-        );
+
     }
 
     @Test

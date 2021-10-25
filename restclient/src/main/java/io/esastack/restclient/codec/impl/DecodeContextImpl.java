@@ -1,5 +1,6 @@
 package io.esastack.restclient.codec.impl;
 
+import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.AcceptType;
@@ -80,6 +81,7 @@ public class DecodeContextImpl implements DecodeContext {
             final AcceptType[] acceptTypes = request.acceptTypes();
             final HttpHeaders headers = response.headers();
 
+            Checks.checkNotNull(acceptTypes, "acceptTypes");
             for (AcceptType acceptType : acceptTypes) {
                 MediaType acceptMediaType = acceptType.mediaType();
                 if (acceptMediaType == AcceptType.EMPTY_MEDIA_TYPE) {

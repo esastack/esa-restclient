@@ -192,7 +192,8 @@ class RestResponseBaseImplTest {
                         context -> {
                             String result = (String) context.proceed();
                             return result + " Test2";
-                        }});
+                        }
+                });
         then(restResponse.bodyToEntity(String.class)).isEqualTo("Hello Test2 Test1");
     }
 }

@@ -38,6 +38,10 @@ public class FastJsonCodec implements JsonCodec {
 
     @Override
     public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
+        if (data == null || type == null) {
+            return null;
+        }
+
         return JSON.parseObject(data, type);
     }
 }

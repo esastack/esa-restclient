@@ -11,7 +11,7 @@ public class MultipartToMultipartEncoder implements Encoder {
     @Override
     public RequestBodyContent<MultipartBody> encode(MediaType mediaType, HttpHeaders headers, Object entity) {
         if (entity == null) {
-            return null;
+            return RequestBodyContent.of((MultipartBody) null);
         }
 
         return RequestBodyContent.of((MultipartBody) entity);

@@ -54,6 +54,10 @@ public class JacksonCodec implements JsonCodec {
 
     @Override
     public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
+        if (data == null || type == null) {
+            return null;
+        }
+
         return objectMapper.readValue(data, getJavaType(type));
     }
 

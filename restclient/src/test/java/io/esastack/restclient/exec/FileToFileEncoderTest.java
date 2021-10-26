@@ -7,7 +7,7 @@ import java.io.File;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class FileToFileEncoderTest {
+class FileToFileEncoderTest {
 
     @Test
     void testEncode() {

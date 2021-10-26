@@ -60,6 +60,10 @@ public class GsonCodec implements JsonCodec {
         if (mediaType != null) {
             charset = mediaType.charset();
         }
+        if (data == null || type == null) {
+            return null;
+        }
+
         if (charset == null) {
             return gson.fromJson(new String(data, StandardCharsets.UTF_8), type);
         } else {

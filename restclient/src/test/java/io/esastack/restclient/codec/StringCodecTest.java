@@ -1,4 +1,4 @@
-package io.esastack.restclient.exec;
+package io.esastack.restclient.codec;
 
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.ResponseBodyContent;

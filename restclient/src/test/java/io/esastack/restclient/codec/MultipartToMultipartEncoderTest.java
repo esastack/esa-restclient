@@ -1,4 +1,4 @@
-package io.esastack.restclient.exec;
+package io.esastack.restclient.codec;
 
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;

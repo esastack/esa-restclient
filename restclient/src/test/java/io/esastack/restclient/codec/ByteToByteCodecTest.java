@@ -1,4 +1,4 @@
-package io.esastack.restclient.exec;
+package io.esastack.restclient.codec;
 
 import io.esastack.restclient.ResponseBodyContent;
 import io.esastack.restclient.codec.impl.ByteToByteCodec;

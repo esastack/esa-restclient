@@ -1,12 +1,11 @@
 package io.esastack.restclient.codec.impl;
 
+import com.google.protobuf.Descriptors;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.ContentType;
 import io.esastack.restclient.codec.ByteCodec;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.util.AsciiString;
 
 import java.lang.reflect.Method;
@@ -46,15 +45,23 @@ public class ProtoBufCodec implements ByteCodec {
         }
 
         Message message = (Message) entity;
-        headers.set(HttpHeaderNames.CONTENT_TYPE, ContentType.PROTOBUF.mediaType().value());
-        headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
-        headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
+        Descriptors.Descriptor descriptor = message.getDescriptorForType();
+        if (descriptor != null) {
+            headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
+            Descriptors.FileDescriptor fileDescriptor = message.getDescriptorForType().getFile();
+            if (fileDescriptor != null) {
+                headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
+            }
+        }
         return message.toByteArray();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws Exception {
+        if (type == null || data == null) {
+            return null;
+        }
         Message.Builder builder = getMessageBuilder((Class<? extends Message>) type);
         builder.mergeFrom(data, extensionRegistry);
         return (T) builder.build();

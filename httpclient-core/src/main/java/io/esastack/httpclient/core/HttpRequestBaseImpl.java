@@ -19,7 +19,6 @@ import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
 import esa.commons.netty.http.Http1HeadersImpl;
-import io.esastack.httpclient.core.netty.NettyContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.function.Consumer;
 
 public class HttpRequestBaseImpl implements HttpRequestBase {
 
-    protected final NettyContext ctx;
+    protected final Context ctx;
     protected final HttpClientBuilder builder;
     private final HttpUri uri;
     private final HttpMethod method;
@@ -49,7 +48,7 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
         this.builder = builder;
         this.method = method;
         this.uri = new HttpUri(uri);
-        this.ctx = new NettyContext();
+        this.ctx = new Context();
         this.readTimeout = builder.readTimeout();
         if (builder.retryOptions() != null) {
             this.ctx.maxRetries(builder.retryOptions().maxRetries());

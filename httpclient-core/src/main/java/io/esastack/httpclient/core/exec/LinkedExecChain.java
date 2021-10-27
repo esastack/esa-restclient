@@ -19,11 +19,8 @@ import esa.commons.Checks;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
-import io.esastack.httpclient.core.netty.HandleImpl;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
 public class LinkedExecChain implements ExecChain {
 
@@ -31,9 +28,7 @@ public class LinkedExecChain implements ExecChain {
     private final ExecChain next;
     private final Context ctx;
 
-    private LinkedExecChain(Interceptor current,
-                            ExecChain next,
-                            Context ctx) {
+    private LinkedExecChain(Interceptor current, ExecChain next, Context ctx) {
         Checks.checkNotNull(ctx, "ctx");
         Checks.checkNotNull(next, "next");
         Checks.checkNotNull(current, "current");
@@ -54,35 +49,30 @@ public class LinkedExecChain implements ExecChain {
 
     static ExecChain from(Interceptor[] interceptors,
                           HttpTransceiver transceiver,
-                          BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                          Context ctx,
-                          Listener listener) {
+                          ExecContext execContext) {
         if (interceptors.length == 0) {
-            return buildTransceiver(transceiver, handle, ctx, listener);
+            return buildTransceiver(transceiver, execContext);
         }
 
-        ExecChain chain = buildTransceiver(transceiver, handle, ctx, listener);
+        ExecChain chain = buildTransceiver(transceiver, execContext);
         for (int i = interceptors.length - 1; i >= 0; i--) {
-            chain = new LinkedExecChain(interceptors[i], chain, ctx);
+            chain = new LinkedExecChain(interceptors[i], chain, execContext.ctx());
         }
 
         return chain;
     }
 
     private static ExecChain buildTransceiver(HttpTransceiver transceiver,
-                                              BiFunction<Listener,
-                                                      CompletableFuture<HttpResponse>, HandleImpl> handle,
-                                              Context ctx,
-                                              Listener listener) {
+                                              ExecContext execContext) {
         return new ExecChain() {
             @Override
             public Context ctx() {
-                return ctx;
+                return execContext.ctx();
             }
 
             @Override
             public CompletableFuture<HttpResponse> proceed(HttpRequest request) {
-                return transceiver.handle(request, ctx, handle, listener);
+                return transceiver.handle(request, execContext);
             }
         };
 

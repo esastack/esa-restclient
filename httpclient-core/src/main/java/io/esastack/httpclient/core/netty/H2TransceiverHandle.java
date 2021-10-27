@@ -39,7 +39,7 @@ class H2TransceiverHandle extends TransceiverHandle {
     int addRspHandle0(HttpRequest request,
                       Context ctx,
                       Channel channel,
-                      NettyHandle handle,
+                      ResponseHandle handle,
                       HandleRegistry registry) {
         int requestId = registry.put(handle);
         request.headers().set(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(),

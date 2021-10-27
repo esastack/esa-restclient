@@ -32,24 +32,24 @@ class HandleRegistryTest {
         final HandleRegistry registry = new HandleRegistry(1, 0);
         then(registry.remove(1)).isNull();
 
-        final NettyHandle handle1 = mock(NettyHandle.class);
+        final ResponseHandle handle1 = mock(ResponseHandle.class);
         then(registry.put(handle1)).isEqualTo(1);
         then(registry.get(1)).isSameAs(handle1);
         then(registry.remove(1)).isSameAs(handle1);
 
-        final NettyHandle handle2 = mock(NettyHandle.class);
+        final ResponseHandle handle2 = mock(ResponseHandle.class);
         then(registry.put(handle2)).isEqualTo(2);
     }
 
     @Test
     void testHandleAndClearAll() {
         final HandleRegistry registry = new HandleRegistry(1, 0);
-        final NettyHandle handle1 = mock(NettyHandle.class);
+        final ResponseHandle handle1 = mock(ResponseHandle.class);
         registry.put(handle1);
-        final NettyHandle handle2 = mock(NettyHandle.class);
+        final ResponseHandle handle2 = mock(ResponseHandle.class);
         registry.put(handle2);
 
-        final Set<NettyHandle> handles = new HashSet<>(2);
+        final Set<ResponseHandle> handles = new HashSet<>(2);
         registry.handleAndClearAll(handles::add);
         then(handles.size()).isEqualTo(2);
         then(handles.contains(handle1)).isTrue();
@@ -67,7 +67,7 @@ class HandleRegistryTest {
             if (j == 0) {
                 new Thread(() -> {
                     try {
-                        registry.put(mock(NettyHandle.class));
+                        registry.put(mock(ResponseHandle.class));
                     } catch (Throwable ex) {
                         error.incrementAndGet();
                     } finally {

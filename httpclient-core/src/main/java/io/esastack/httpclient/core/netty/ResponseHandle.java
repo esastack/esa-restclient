@@ -18,42 +18,41 @@ package io.esastack.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpMessage;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class NettyHandle {
+class ResponseHandle {
 
     final HandleImpl handle;
     final HttpRequest request;
 
     private final AtomicBoolean ended = new AtomicBoolean();
-    private final Context ctx;
-    private final Listener listener;
+    private final ExecContext execCtx;
+    private final TimeoutHandle tHandle;
     private final CompletableFuture<HttpResponse> response;
 
     long remaining = -1L;
 
-    NettyHandle(HandleImpl handle,
-                HttpRequest request,
-                Context ctx,
-                Listener listener,
-                CompletableFuture<HttpResponse> response) {
+    ResponseHandle(HandleImpl handle,
+                   HttpRequest request,
+                   ExecContext execCtx,
+                   TimeoutHandle tHandle,
+                   CompletableFuture<HttpResponse> response) {
         Checks.checkNotNull(handle, "handle");
         Checks.checkNotNull(request, "request");
-        Checks.checkNotNull(ctx, "ctx");
-        Checks.checkNotNull(listener, "listener");
+        Checks.checkNotNull(execCtx, "execCtx");
         Checks.checkNotNull(response, "response");
+        Checks.checkNotNull(tHandle, "tHandle");
         this.handle = handle;
+        this.tHandle = tHandle;
         this.request = request;
-        this.ctx = ctx;
-        this.listener = listener;
+        this.execCtx = execCtx;
         this.response = response;
     }
 
@@ -64,7 +63,7 @@ class NettyHandle {
 
         try {
             handle.underlying.message(message);
-            listener.onMessageReceived(request, ctx, message);
+            tHandle.onMessageReceived(request, execCtx.ctx(), message);
             if (handle.start != null) {
                 handle.start.accept(null);
             }
@@ -98,7 +97,7 @@ class NettyHandle {
                     handle.end.accept(null);
                 }
                 response.complete(handle.underlying);
-                listener.onCompleted(request, ctx, handle.underlying);
+                tHandle.onCompleted(request, execCtx.ctx(), handle.underlying);
             }
         } catch (Throwable ex) {
             // Reset the ended flag so that onError can have chance to execute.
@@ -126,8 +125,8 @@ class NettyHandle {
         }
     }
 
-    public Context ctx() {
-        return ctx;
+    public ExecContext ctx() {
+        return execCtx;
     }
 
     private void onError0(Throwable cause) {
@@ -137,19 +136,9 @@ class NettyHandle {
                 handle.error.accept(cause);
             }
 
-            listener.onError(request, ctx, cause);
+            tHandle.onError(request, execCtx.ctx(), cause);
         } catch (Throwable ex) {
             LoggerUtils.logger().error("Unexpected exception occurred on handle#onError0", cause);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
     }
 }

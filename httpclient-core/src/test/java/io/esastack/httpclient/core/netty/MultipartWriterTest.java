@@ -16,9 +16,9 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderValues;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
-import io.esastack.httpclient.core.MultipartRequest;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -58,12 +58,12 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final MultipartRequest request = client
+            final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
                     .attr("key1", "value1");
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -97,13 +97,13 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         final MultipartWriter writer = MultipartWriter.singleton();
         final EmbeddedChannel channel = new EmbeddedChannel();
 
-        final MultipartRequest request = client
+        final io.esastack.httpclient.core.MultipartRequest request = client
                 .post("http://127.0.0.1/abc")
                 .multipart()
                 .attr("key1", "value1")
                 .attr("key2", "value2")
                 .multipartEncode(false);
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -140,14 +140,14 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final MultipartRequest request = client
+            final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
                     .attr("key1", "value1");
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-            final NettyContext ctx = new NettyContext();
+            final NettyExecContext ctx = ExecContextUtil.newAsNetty();
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
                     ctx,
@@ -195,14 +195,14 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final MultipartRequest request = client
+            final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true)
                     .attr("key1", "value1");
 
             file.delete();
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
 
             final ChannelFuture end = writer.writeAndFlush(request,
                     channel,
@@ -239,11 +239,11 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final MultipartRequest request = client
+            final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true);
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -282,14 +282,14 @@ class MultipartWriterTest extends Http2ConnectionHelper {
         setUp();
         final MultipartWriter writer = MultipartWriter.singleton();
 
-        final MultipartRequest request = client
+        final io.esastack.httpclient.core.MultipartRequest request = client
                 .post("http://127.0.0.1/abc")
                 .multipart()
                 .attr("key1", "value1")
                 .attr("key2", "value2")
                 .multipartEncode(false);
 
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -332,13 +332,13 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final MultipartRequest request = client
+            final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true);
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-            final NettyContext ctx = new NettyContext();
+            final NettyExecContext ctx = ExecContextUtil.newAsNetty();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -392,12 +392,12 @@ class MultipartWriterTest extends Http2ConnectionHelper {
                 out.write(data);
             }
 
-            final MultipartRequest request = client
+            final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
                     .file("file", file, null, true);
 
-            final Context ctx = new Context();
+            final ExecContext ctx = ExecContextUtil.newAs();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
             file.delete();
 

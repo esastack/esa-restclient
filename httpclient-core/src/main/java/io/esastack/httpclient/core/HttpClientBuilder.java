@@ -33,7 +33,7 @@ import io.esastack.httpclient.core.exec.RetryInterceptor;
 import io.esastack.httpclient.core.filter.DuplexFilter;
 import io.esastack.httpclient.core.filter.RequestFilter;
 import io.esastack.httpclient.core.filter.ResponseFilter;
-import io.esastack.httpclient.core.netty.ChannelPools;
+import io.esastack.httpclient.core.netty.CachedChannelPools;
 import io.esastack.httpclient.core.netty.NettyHttpClient;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.resolver.SystemDefaultResolver;
@@ -321,7 +321,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
      * @return client
      */
     public HttpClient build() {
-        return new NettyHttpClient(copy(), new ChannelPools(CacheOptions.ofDefault()));
+        return new NettyHttpClient(copy(), new CachedChannelPools(CacheOptions.ofDefault()));
     }
 
     /**

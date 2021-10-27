@@ -15,11 +15,13 @@
  */
 package io.esastack.httpclient.core.netty;
 
+import esa.commons.annotation.Internal;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 
 import java.net.SocketAddress;
 
+@Internal
 public interface NettyClientConfigure {
 
     /**

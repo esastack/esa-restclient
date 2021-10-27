@@ -15,11 +15,9 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
-import io.netty.buffer.ByteBufAllocator;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.netty.channel.AbstractChannel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelConfig;
@@ -54,9 +52,10 @@ class ReadTimeoutTaskTest {
 
         final HandleRegistry registry = mock(HandleRegistry.class);
 
-        final Handler0 adapter0 = new Handler0(mock(HttpRequest.class),
-                mock(Context.class),
-                mock(Listener.class),
+        final Handler0 adapter0 = new Handler0(mock(HandleImpl.class),
+                mock(HttpRequest.class),
+                mock(ExecContext.class),
+                mock(TimeoutHandle.class),
                 mock(CompletableFuture.class),
                 error);
 
@@ -64,6 +63,7 @@ class ReadTimeoutTaskTest {
 
         final ReadTimeoutTask task1 = new ReadTimeoutTask(requestId1,
                 "",
+                -1,
                 channel,
                 registry);
 
@@ -81,16 +81,17 @@ class ReadTimeoutTaskTest {
         then(error.intValue()).isEqualTo(1);
     }
 
-    private static final class Handler0 extends NettyHandle {
+    private static final class Handler0 extends ResponseHandle {
 
         private final AtomicInteger error;
 
-        private Handler0(HttpRequest request,
-                         Context ctx,
-                         Listener listener,
+        private Handler0(HandleImpl handle,
+                         HttpRequest request,
+                         ExecContext execCtx,
+                         TimeoutHandle tHandle,
                          CompletableFuture<HttpResponse> response,
                          AtomicInteger error) {
-            super(new DefaultHandle(ByteBufAllocator.DEFAULT), request, ctx, listener, response);
+            super(handle, request, execCtx, tHandle, response);
             this.error = error;
         }
 

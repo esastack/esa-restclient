@@ -17,6 +17,8 @@ package io.esastack.httpclient.core.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 class CacheOptionsTest {
@@ -28,6 +30,11 @@ class CacheOptionsTest {
         then(options.expireSeconds()).isEqualTo(1L);
         then(options.initialCapacity()).isEqualTo(2);
         then(options.maximumSize()).isEqualTo(3L);
+        then(options.toString()).isEqualTo(new StringJoiner(", ", CacheOptions.class.getSimpleName() + "[", "]")
+                .add("initialCapacity=" + 2)
+                .add("maximumSize=" + 3L)
+                .add("expireSeconds=" + 1L)
+                .toString());
     }
 
     @Test

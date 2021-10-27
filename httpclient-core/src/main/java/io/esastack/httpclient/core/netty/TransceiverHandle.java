@@ -22,6 +22,7 @@ import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.Listener;
 import io.esastack.httpclient.core.ListenerProxy;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.filter.ResponseFilter;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
@@ -45,29 +46,27 @@ abstract class TransceiverHandle {
                                               HttpVersion version);
 
     /**
-     * Builds a {@link NettyHandle} and adds it to {@link HandleRegistry}.
+     * Builds a {@link ResponseHandle} and adds it to {@link HandleRegistry}.
      *
      * @param request  request
-     * @param ctx      ctx
+     * @param execCtx      ctx
      * @param channel  channel
-     * @param listener listener
-     * @param handle   handle
      * @param filters  filters
      * @param registry registry of handler adapter
+     * @param tHandle  timeout handle
      * @param response response
      * @return requestId
      */
     int addRspHandle(HttpRequest request,
-                     Context ctx,
+                     ExecContext execCtx,
                      Channel channel,
-                     Listener listener,
-                     HandleImpl handle,
                      ResponseFilter[] filters,
                      HandleRegistry registry,
+                     TimeoutHandle tHandle,
                      CompletableFuture<HttpResponse> response) {
-        final NettyHandle nHandle = buildNettyHandle(request, ctx, channel, listener,
-                handle, filters, response);
-        return addRspHandle0(request, ctx, channel, nHandle, registry);
+        final ResponseHandle nHandle = buildNettyHandle(request, tHandle, execCtx, channel,
+                filters, response);
+        return addRspHandle0(request, execCtx.ctx(), channel, nHandle, registry);
     }
 
     /**
@@ -83,25 +82,25 @@ abstract class TransceiverHandle {
     abstract int addRspHandle0(HttpRequest request,
                                Context ctx,
                                Channel channel,
-                               NettyHandle handle,
+                               ResponseHandle handle,
                                HandleRegistry registry);
 
-    private NettyHandle buildNettyHandle(HttpRequest request,
-                                         Context ctx,
-                                         Channel channel,
-                                         Listener listener,
-                                         HandleImpl handle,
-                                         ResponseFilter[] filters,
-                                         CompletableFuture<HttpResponse> response) {
+    private ResponseHandle buildNettyHandle(HttpRequest request,
+                                            TimeoutHandle tHandle,
+                                            ExecContext execCtx,
+                                            Channel channel,
+                                            ResponseFilter[] filters,
+                                            CompletableFuture<HttpResponse> response) {
+        HandleImpl handle = execCtx.handleImpl(request);
         if (handle == null) {
             handle = new DefaultHandle(channel.alloc());
         }
 
         if (filters == null || filters.length == 0) {
-            return new NettyHandle(handle, request, ctx, listener, response);
+            return new ResponseHandle(handle, request, execCtx, tHandle, response);
         } else {
-            return new FilteringHandle(handle, request, ctx, listener, response, filters,
-                    ctx.removeAttr(ContextNames.FILTER_CONTEXT));
+            return new FilteringHandle(handle, request, execCtx, tHandle, response, filters,
+                    execCtx.ctx().removeAttr(ContextNames.FILTER_CONTEXT));
         }
     }
 }

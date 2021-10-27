@@ -18,9 +18,9 @@ package io.esastack.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http2HeadersAdaptor;
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.exception.ClosedStreamException;
 import io.esastack.httpclient.core.exception.ContentOverSizedException;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.HttpHeadersUtils;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -36,10 +36,7 @@ import io.netty.handler.codec.http2.Http2Headers;
 import io.netty.handler.codec.http2.Http2Stream;
 import io.netty.handler.codec.http2.HttpConversionUtil;
 
-import java.nio.charset.StandardCharsets;
-
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
 import static io.netty.handler.codec.http2.Http2Error.PROTOCOL_ERROR;
 import static io.netty.handler.codec.http2.Http2Exception.connectionError;
 import static io.netty.handler.codec.http2.HttpConversionUtil.ExtensionHeaderNames.STREAM_ID;
@@ -102,32 +99,30 @@ class Http2FrameHandler extends Http2EventAdapter {
                           ByteBuf data,
                           int padding,
                           boolean endOfStream) {
-        final NettyHandle handle = registry.get(streamId);
+        final ResponseHandle handle = registry.get(streamId);
         if (handle == null) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug(String.format("Data Frame received for unknown stream id %d", streamId));
-            }
+            // The request has ended before.
             return data.readableBytes() + padding;
         }
 
         final int readableBytes = data.readableBytes();
         if (readableBytes > 0) {
-            ByteBuf handledData;
+            ByteBuf retainedData;
             boolean exceeded = false;
             if (handle.remaining == -1L) {
-                handledData = data;
+                retainedData = data;
             } else {
                 handle.remaining -= readableBytes;
                 if (handle.remaining >= 0L) {
-                    handledData = data;
+                    retainedData = data;
                 } else {
                     handle.remaining += readableBytes;
-                    handledData = data.slice(0, (int) handle.remaining);
+                    retainedData = data.slice(0, (int) handle.remaining);
                     exceeded = true;
                     handle.remaining = 0L;
                 }
             }
-            handle.onData(new BufferImpl(handledData.duplicate()));
+            handle.onData(new BufferImpl(retainedData.duplicate()));
             if (exceeded) {
                 String errMsg = String.format("Content length exceeded %d bytes", maxContentLength);
                 onError(new ContentOverSizedException(errMsg), null, streamId, true);
@@ -155,42 +150,8 @@ class Http2FrameHandler extends Http2EventAdapter {
         final Http2Stream stream = connection.stream(streamId);
         if (stream != null) {
             final Throwable ex = ClosedStreamException.CAUSED_BY_RST;
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug(ex.getMessage());
-            }
-            onError(ex, stream, streamId, false);
-        }
-    }
-
-    @Override
-    public void onGoAwayRead(ChannelHandlerContext ctx, int lastStreamId,
-                             long errorCode, ByteBuf debugData) throws Http2Exception {
-        final String errMsg = debugData.toString(StandardCharsets.UTF_8);
-
-        final ClosedStreamException ex;
-        if (NO_ERROR.code() == errorCode) {
-            ex = new ClosedStreamException("Received goAway stream in connection: " + ctx.channel()
-                    + ", maybe server has closed the connection");
-        } else {
-            ex = new ClosedStreamException("Received goAway stream in connection: " +
-                    ctx.channel() + ", msg: " + errMsg);
-        }
-
-        // Ends the stream which id > lastStreamId with ConnectionException.
-        connection.forEachActiveStream(stream -> {
-            if (stream.id() > lastStreamId) {
-                try {
-                    onError(ex, stream, stream.id(), false);
-                } catch (Throwable ignore) {
-
-                }
-            }
-
-            return true;
-        });
-
-        if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger().debug(ex.getMessage());
+            onError(ex, stream, streamId, false);
         }
     }
 
@@ -220,12 +181,8 @@ class Http2FrameHandler extends Http2EventAdapter {
 
     @Override
     public void onStreamRemoved(Http2Stream stream) {
-        try {
-            super.onStreamRemoved(stream);
-        } finally {
-            final Throwable ex = ClosedStreamException.CAUSED_BY_REMOVED;
-            onError(ex, stream, -1, false);
-        }
+        Throwable ex = ClosedStreamException.CAUSED_BY_REMOVED;
+        onError(ex, stream, -1, false);
     }
 
     private void onHeaders(int streamId,
@@ -233,12 +190,9 @@ class Http2FrameHandler extends Http2EventAdapter {
                            Http2Headers headers,
                            boolean trailer,
                            boolean endOfStream) throws Http2Exception {
-        final NettyHandle handle = registry.get(streamId);
+        final ResponseHandle handle = registry.get(streamId);
 
         if (handle == null) {
-            if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug(String.format("Data Frame received for unknown stream id %d", streamId));
-            }
             return;
         }
 
@@ -280,18 +234,18 @@ class Http2FrameHandler extends Http2EventAdapter {
         }
 
         // May be the handle has ended before, such as timeout, ended normally.
-        NettyHandle handle = registry.remove(streamId);
+        ResponseHandle handle = registry.remove(streamId);
         Utils.handleException(handle, cause, enableLog);
     }
 
-    private void handle100Continue(Context ctx) {
-        final Runnable runnable = ((NettyContext) ctx).remove100ContinueCallback();
+    private void handle100Continue(ExecContext ctx) {
+        final Runnable runnable = ctx.remove100ContinueCallback();
         if (runnable != null) {
             runnable.run();
         }
     }
 
-    private boolean isContentLengthInvalid(Http2Headers headers, NettyHandle handle) {
+    private boolean isContentLengthInvalid(Http2Headers headers, ResponseHandle handle) {
         if (maxContentLength > 0L) {
             long contentLength;
             try {

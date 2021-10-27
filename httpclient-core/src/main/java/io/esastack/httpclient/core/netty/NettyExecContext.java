@@ -16,31 +16,29 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.Handle;
+import io.esastack.httpclient.core.Handler;
+import io.esastack.httpclient.core.Listener;
+import io.esastack.httpclient.core.exec.ExecContext;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
-public class NettyContext extends Context {
+public class NettyExecContext extends ExecContext {
 
-    private volatile Runnable continueCallback;
-    protected volatile CompletableFuture<SegmentWriter> writer;
+    private volatile CompletableFuture<SegmentWriter> segmentWriter;
 
-    void set100ContinueCallback(Runnable callback) {
-        this.continueCallback = callback;
+    public NettyExecContext(Context ctx, Listener listener, Consumer<Handle> handle, Handler handler) {
+        super(ctx, listener, handle, handler);
     }
 
-    Runnable remove100ContinueCallback() {
-        final Runnable callback0 = continueCallback;
-        this.continueCallback = null;
-        return callback0;
+    void segmentWriter(CompletableFuture<SegmentWriter> segmentWriter) {
+        this.segmentWriter = segmentWriter;
     }
 
-    void setWriter(CompletableFuture<SegmentWriter> writer) {
-        this.writer = writer;
-    }
-
-    Optional<CompletableFuture<SegmentWriter>> getWriter() {
-        return Optional.ofNullable(writer);
+    Optional<CompletableFuture<SegmentWriter>> segmentWriter() {
+        return Optional.ofNullable(segmentWriter);
     }
 
 }

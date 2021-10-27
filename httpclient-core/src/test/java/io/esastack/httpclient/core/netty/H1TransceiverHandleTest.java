@@ -24,6 +24,7 @@ import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.Listener;
 import io.esastack.httpclient.core.ListenerProxy;
 import io.esastack.httpclient.core.NoopListener;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -94,16 +95,15 @@ class H1TransceiverHandleTest {
     void testAddRspHandle() {
         final H1TransceiverHandle handle = new H1TransceiverHandle();
         final HttpRequest request = mock(HttpRequest.class);
-        final Context ctx = mock(Context.class);
-        final Listener listener = NoopListener.INSTANCE;
+        final ExecContext ctx = mock(ExecContext.class);
         final HandleRegistry registry = new HandleRegistry(1, 0);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final EmbeddedChannel channel = new EmbeddedChannel();
         channel.pipeline().addLast(new Http1ChannelHandler(registry, -1L));
 
-        int requestId = handle.addRspHandle(request, ctx, channel, listener,
-                null, null, registry, response);
+        int requestId = handle.addRspHandle(request, ctx, channel,
+                null, registry, new TimeoutHandle(NoopListener.INSTANCE), response);
         then(requestId).isEqualTo(1);
         then(registry.get(requestId)).isNotNull();
     }

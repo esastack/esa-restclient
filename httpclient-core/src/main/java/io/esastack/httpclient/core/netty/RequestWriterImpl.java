@@ -19,9 +19,9 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.Scheme;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -37,6 +37,8 @@ import java.net.URI;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToLongFunction;
+
+import static io.esastack.httpclient.core.netty.Utils.CONNECT_INACTIVE;
 
 abstract class RequestWriterImpl implements RequestWriter {
 
@@ -55,7 +57,7 @@ abstract class RequestWriterImpl implements RequestWriter {
     @Override
     public ChannelFuture writeAndFlush(HttpRequest request,
                                        Channel channel,
-                                       Context ctx,
+                                       ExecContext execCtx,
                                        ChannelPromise headFuture,
                                        boolean useUriEncode,
                                        io.netty.handler.codec.http.HttpVersion version,
@@ -67,7 +69,7 @@ abstract class RequestWriterImpl implements RequestWriter {
             int streamId = request.headers().getInt(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text());
             return writeAndFlush2(request,
                     channel,
-                    ctx,
+                    execCtx,
                     headFuture,
                     handler,
                     streamId,
@@ -75,7 +77,7 @@ abstract class RequestWriterImpl implements RequestWriter {
         } else {
             return writeAndFlush1(request,
                     channel,
-                    ctx,
+                    execCtx,
                     headFuture,
                     version,
                     useUriEncode);
@@ -122,7 +124,7 @@ abstract class RequestWriterImpl implements RequestWriter {
      *
      * @param request  request
      * @param channel  channel
-     * @param context  context
+     * @param execCtx  context
      * @param headFuture headFuture
      * @param streamId channel
      * @param handler  handler
@@ -133,7 +135,7 @@ abstract class RequestWriterImpl implements RequestWriter {
      */
     abstract ChannelFuture writeAndFlush2(HttpRequest request,
                                           Channel channel,
-                                          Context context,
+                                          ExecContext execCtx,
                                           ChannelPromise headFuture,
                                           Http2ConnectionHandler handler,
                                           int streamId,
@@ -144,7 +146,7 @@ abstract class RequestWriterImpl implements RequestWriter {
      *
      * @param request request
      * @param channel channel
-     * @param context context
+     * @param execCtx context
      * @param headFuture headFuture
      * @param version version
      * @param uriEncodeEnabled enable uriEncode or not
@@ -153,7 +155,7 @@ abstract class RequestWriterImpl implements RequestWriter {
      */
     abstract ChannelFuture writeAndFlush1(HttpRequest request,
                                           Channel channel,
-                                          Context context,
+                                          ExecContext execCtx,
                                           ChannelPromise headFuture,
                                           io.netty.handler.codec.http.HttpVersion version,
                                           boolean uriEncodeEnabled) throws IOException;
@@ -196,7 +198,7 @@ abstract class RequestWriterImpl implements RequestWriter {
         request.headers().set(HttpHeaderNames.CONTENT_TYPE, contentTypeVal);
     }
 
-    static boolean writeContentNow(Context context, HttpRequest request) {
+    static boolean writeContentNow(ExecContext context, HttpRequest request) {
         return !request.headers().contains(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE, true);
     }
 
@@ -239,7 +241,7 @@ abstract class RequestWriterImpl implements RequestWriter {
             return handler;
         }
 
-        throw Utils.CONNECT_INACTIVE;
+        throw CONNECT_INACTIVE;
     }
 
     private static class StreamIdExhaustedException extends RuntimeException {

@@ -31,8 +31,17 @@ import io.netty.util.ReferenceCounted;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 final class Utils {
+
+    static final ScheduledExecutorService CLOSE_CONNECTION_POOL_SCHEDULER =
+            new ScheduledThreadPoolExecutor(1,
+                    new ThreadFactoryImpl("ESAHttpClient-CloseConnectionPool-Scheduler", true),
+                    (r, executor) -> LoggerUtils.logger().error(
+                            "ESAHttpClient-CloseConnectionPool-Scheduler-Pool has full," +
+                                    " a task has been rejected"));
 
     static final ConnectException CONNECT_INACTIVE = new ConnectException("Connection inactive");
     static final ConnectException WRITE_BUF_IS_FULL = new ConnectException("Connection write buffer is full");
@@ -44,7 +53,7 @@ final class Utils {
                                   int reusableRequestId,
                                   Throwable cause,
                                   boolean enableLog) {
-        final NettyHandle handle = registry.remove(reusableRequestId);
+        final ResponseHandle handle = registry.remove(reusableRequestId);
         if (handle == null) {
             return;
         }
@@ -133,14 +142,14 @@ final class Utils {
         return value != null ? value : defaultValue;
     }
 
-    static void handleException(NettyHandle handle, Throwable cause, boolean enableLog) {
+    static void handleException(ResponseHandle handle, Throwable cause, boolean enableLog) {
         // Maybe the handle has been removed by timeout checker or the request has ended normally.
         if (handle == null) {
             return;
         }
 
         if (enableLog) {
-            logger.warn("Unexpected exception occurred, and request will end abnormally", cause);
+            logger.warn("Unexpected exception occurred, and the request has to end in error.", cause);
         }
         handle.onError(cause);
     }

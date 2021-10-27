@@ -17,8 +17,8 @@ package io.esastack.httpclient.core.netty;
 
 import esa.commons.collection.MultiValueMap;
 import esa.commons.netty.http.Http1HeadersImpl;
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.MultipartFileItem;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -51,8 +51,8 @@ import static io.esastack.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 
 class MultipartWriter extends RequestWriterImpl {
 
-    private static final String MEMORY_THRESHOLD_KEY = "io.esastack.httpclient.multipart.memoryThreshold";
-    private static final String TEMP_DIR_KEY = "io.esastack.httpclient.multipart.tempDir";
+    private static final String MEMORY_THRESHOLD_KEY = "esa.httpclient.multipart.memoryThreshold";
+    private static final String TEMP_DIR_KEY = "esa.httpclient.multipart.tempDir";
 
     private static final long MEMORY_THRESHOLD = SystemPropertyUtil.getLong(MEMORY_THRESHOLD_KEY,
             2 * 1014 * 1024);
@@ -84,7 +84,7 @@ class MultipartWriter extends RequestWriterImpl {
     @Override
     ChannelFuture writeAndFlush1(io.esastack.httpclient.core.HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
@@ -97,7 +97,7 @@ class MultipartWriter extends RequestWriterImpl {
         final ChannelPromise endPromise = channel.newPromise();
         final Runnable runnable = () -> {
             try {
-                encodeAndWrite1(request, request0, channel, context, headFuture, endPromise);
+                encodeAndWrite1(request, request0, channel, execCtx, headFuture, endPromise);
             } catch (IOException e) {
                 endPromise.setFailure(e);
             }
@@ -110,7 +110,7 @@ class MultipartWriter extends RequestWriterImpl {
     private static void encodeAndWrite1(io.esastack.httpclient.core.HttpRequest request,
                                         HttpRequest request0,
                                         Channel channel,
-                                        Context ctx,
+                                        ExecContext execCtx,
                                         ChannelPromise headFuture,
                                         ChannelPromise endPromise) throws IOException {
         try {
@@ -136,11 +136,11 @@ class MultipartWriter extends RequestWriterImpl {
                     channel.writeAndFlush(last, endPromise);
                 }
             };
-            if (writeContentNow(ctx, request)) {
+            if (writeContentNow(execCtx, request)) {
                 writeContent.run();
             } else {
                 channel.flush();
-                ((NettyContext) ctx).set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
+                execCtx.set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
             }
 
             // Now no more use of file representation (and list of HttpData)
@@ -154,7 +154,7 @@ class MultipartWriter extends RequestWriterImpl {
     @Override
     ChannelFuture writeAndFlush2(io.esastack.httpclient.core.HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
@@ -172,7 +172,7 @@ class MultipartWriter extends RequestWriterImpl {
                         handler,
                         streamId,
                         request0,
-                        context,
+                        execCtx,
                         uriEncodeEnabled,
                         headFuture,
                         endPromise);
@@ -190,7 +190,7 @@ class MultipartWriter extends RequestWriterImpl {
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  HttpRequest request0,
-                                 Context ctx,
+                                 ExecContext execCtx,
                                  boolean uriEncodeEnabled,
                                  ChannelPromise headFuture,
                                  ChannelPromise endPromise) throws IOException {
@@ -227,9 +227,9 @@ class MultipartWriter extends RequestWriterImpl {
             };
 
             // Considering 100-expect-continue, We must write request immediately.
-            if (!writeContentNow(ctx, request)) {
+            if (!writeContentNow(execCtx, request)) {
                 channel.flush();
-                ((NettyContext) ctx).set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
+                execCtx.set100ContinueCallback(() -> Utils.runInChannel(channel, writeContent));
             } else {
                 writeContent.run();
             }

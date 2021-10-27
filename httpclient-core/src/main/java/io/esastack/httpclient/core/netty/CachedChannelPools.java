@@ -20,18 +20,14 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
 import esa.commons.Checks;
-import esa.commons.function.ThrowingSupplier;
 import esa.commons.reflect.BeanUtils;
-import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.config.CacheOptions;
 import io.esastack.httpclient.core.config.ChannelPoolOptions;
 import io.esastack.httpclient.core.metrics.ConnectionPoolMetric;
 import io.esastack.httpclient.core.metrics.ConnectionPoolMetricProvider;
 import io.esastack.httpclient.core.util.LoggerUtils;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
-import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 
 import java.net.SocketAddress;
@@ -42,15 +38,19 @@ import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
-public class ChannelPools implements ConnectionPoolMetricProvider {
+import static io.esastack.httpclient.core.netty.Utils.CLOSE_CONNECTION_POOL_SCHEDULER;
 
-    static final ChannelPoolFactory CHANNEL_POOL_FACTORY = new ChannelPoolFactory();
+/**
+ * This class is designed to cache the given {@link ChannelPool}s.
+ */
+public class CachedChannelPools implements ConnectionPoolMetricProvider {
 
     private final Cache<SocketAddress, ChannelPool> cachedPools;
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    public ChannelPools(CacheOptions options) {
+    public CachedChannelPools(CacheOptions options) {
         Checks.checkNotNull(options, "options");
         cachedPools = Caffeine.newBuilder()
                 .initialCapacity(options.initialCapacity())
@@ -58,6 +58,17 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
                 .expireAfterAccess(options.expireSeconds(), TimeUnit.SECONDS)
                 .removalListener(new ChannelPoolRemovalListener())
                 .build();
+
+        // make sure the connection pool closed timely, see more information from
+        // https://github.com/esastack/esa-httpclient/issues/102
+        CLOSE_CONNECTION_POOL_SCHEDULER.scheduleAtFixedRate(() -> {
+            try {
+                cachedPools.cleanUp();
+                LoggerUtils.logger().debug("Scheduled cachedPools#cleanUp successfully.");
+            } catch (Throwable th) {
+                LoggerUtils.logger().error("Failed to schedule cachedPools#cleanUp.", th);
+            }
+        }, options.expireSeconds() / 2, options.expireSeconds(), TimeUnit.SECONDS);
     }
 
     ChannelPool getIfPresent(SocketAddress address) {
@@ -66,24 +77,16 @@ public class ChannelPools implements ConnectionPoolMetricProvider {
         return cachedPools.getIfPresent(address);
     }
 
-    ChannelPool getOrCreate(boolean ssl,
-                            boolean keepAlive,
+    ChannelPool getOrCreate(boolean keepAlive,
                             SocketAddress address,
-                            EventLoopGroup ioThreads,
-                            HttpClientBuilder builder,
-                            ThrowingSupplier<SslHandler> sslHandler) {
+                            Function<SocketAddress, ChannelPool> creator) {
         checkClosed();
 
         // Only keepAlive connection will be cached.
         if (keepAlive) {
-            return cachedPools.get(address, addr -> CHANNEL_POOL_FACTORY.create(ssl,
-                    true,
-                    addr,
-                    ioThreads,
-                    builder,
-                    sslHandler));
+            return cachedPools.get(address, creator);
         } else {
-            return CHANNEL_POOL_FACTORY.create(ssl, false, address, ioThreads, builder, sslHandler);
+            return creator.apply(address);
         }
     }
 

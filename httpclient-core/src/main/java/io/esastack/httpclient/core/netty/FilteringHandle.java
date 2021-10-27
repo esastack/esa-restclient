@@ -18,17 +18,16 @@ package io.esastack.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpMessage;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.filter.FilterContext;
 import io.esastack.httpclient.core.filter.ResponseFilter;
 
 import java.util.concurrent.CompletableFuture;
 
-class FilteringHandle extends NettyHandle {
+class FilteringHandle extends ResponseHandle {
 
     private final ResponseFilter[] filters;
     private final FilterContext ctx;
@@ -37,12 +36,12 @@ class FilteringHandle extends NettyHandle {
 
     FilteringHandle(HandleImpl handle,
                     HttpRequest request,
-                    Context ctx,
-                    Listener listener,
+                    ExecContext execContext,
+                    TimeoutHandle tHandle,
                     CompletableFuture<HttpResponse> response,
                     ResponseFilter[] filters,
                     FilterContext fCtx) {
-        super(handle, request, ctx, listener, response);
+        super(handle, request, execContext, tHandle, response);
         Checks.checkNotNull(fCtx, "fCtx");
         Checks.checkNotEmptyArg(filters, "filters");
         this.filters = filters;

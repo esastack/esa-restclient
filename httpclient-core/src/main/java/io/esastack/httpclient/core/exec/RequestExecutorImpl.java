@@ -16,20 +16,13 @@
 package io.esastack.httpclient.core.exec;
 
 import esa.commons.Checks;
-import io.esastack.httpclient.core.Context;
-import io.esastack.httpclient.core.Handle;
-import io.esastack.httpclient.core.Handler;
+import esa.commons.annotation.Internal;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
-import io.esastack.httpclient.core.netty.HandleImpl;
-import io.esastack.httpclient.core.netty.NettyResponse;
-import io.esastack.httpclient.core.util.LoggerUtils;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
+@Internal
 public class RequestExecutorImpl implements RequestExecutor {
 
     static final String LISTENER_KEY = "$listener";
@@ -46,54 +39,11 @@ public class RequestExecutorImpl implements RequestExecutor {
     }
 
     @Override
-    public CompletableFuture<HttpResponse> execute(HttpRequest request,
-                                                   Context ctx,
-                                                   Listener listener,
-                                                   Consumer<Handle> handle,
-                                                   Handler handler) {
-        final ExecChain chain = build(
-                (l, r) -> decideCustomHandle(request, handle, handler),
-                ctx,
-                listener);
+    public CompletableFuture<HttpResponse> execute(HttpRequest request, ExecContext execContext) {
+        ExecChain chain = LinkedExecChain.from(interceptors, transceiver, execContext);
 
-        listener.onInterceptorsStart(request, chain.ctx());
-        chain.ctx().setAttr(LISTENER_KEY, listener);
+        execContext.listener().onInterceptorsStart(request, chain.ctx());
+        chain.ctx().setAttr(LISTENER_KEY, execContext.listener());
         return chain.proceed(request);
     }
-
-    /**
-     * Builds a  execChain to execute {@link HttpRequest}
-     *
-     * @param handle       handler
-     * @param ctx          ctx
-     * @param listener     listener
-     * @return chain       execution chain
-     */
-    private ExecChain build(BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                            Context ctx,
-                            Listener listener) {
-        return LinkedExecChain.from(interceptors, transceiver, handle, ctx, listener);
-    }
-
-    private HandleImpl decideCustomHandle(HttpRequest request,
-                                          Consumer<Handle> handle,
-                                          Handler handler) {
-        if (handler != null && handle != null) {
-            LoggerUtils.logger().warn("Both handler and consumer<handle> are found to handle the" +
-                    "inbound message, the handler will be used, uri: {}", request.uri());
-        }
-        if (handler != null) {
-            return new HandleImpl(new NettyResponse(false), handler);
-        } else if (handle != null) {
-            return new HandleImpl(new NettyResponse(false), handle);
-        }
-
-        if (LoggerUtils.logger().isDebugEnabled()) {
-            LoggerUtils.logger().debug("The default handle will be used to aggregate the inbound message to" +
-                    " a response");
-        }
-
-        return null;
-    }
-
 }

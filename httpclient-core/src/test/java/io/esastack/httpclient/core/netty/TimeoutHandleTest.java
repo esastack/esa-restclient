@@ -35,7 +35,7 @@ class TimeoutHandleTest {
 
         clearInvocations(listener);
         final Timeout timeout = mock(Timeout.class);
-        handle.addCancelTask(timeout);
+        handle.addTimeoutTask(timeout);
         handle.onCompleted(null, null, null);
         verify(timeout).cancel();
         verify(listener).onCompleted(null, null, null);
@@ -54,7 +54,7 @@ class TimeoutHandleTest {
 
         clearInvocations(listener);
         final Timeout timeout = mock(Timeout.class);
-        handle.addCancelTask(timeout);
+        handle.addTimeoutTask(timeout);
         handle.onError(null, null, null);
         verify(timeout).cancel();
         verify(listener).onError(null, null, null);

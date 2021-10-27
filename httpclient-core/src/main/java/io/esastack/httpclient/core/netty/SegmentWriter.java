@@ -20,7 +20,7 @@ import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.http.Http1HeadersImpl;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.HttpHeadersUtils;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -58,7 +58,7 @@ class SegmentWriter extends RequestWriterImpl {
     @Override
     public ChannelFuture writeAndFlush(io.esastack.httpclient.core.HttpRequest request,
                                        Channel channel,
-                                       Context ctx,
+                                       ExecContext execCtx,
                                        ChannelPromise headFuture,
                                        boolean useUriEncode,
                                        HttpVersion version,
@@ -66,13 +66,13 @@ class SegmentWriter extends RequestWriterImpl {
         this.endPromise = channel.newPromise();
         this.channel = channel;
 
-        return super.writeAndFlush(request, channel, ctx, headFuture, useUriEncode, version, http2);
+        return super.writeAndFlush(request, channel, execCtx, headFuture, useUriEncode, version, http2);
     }
 
     @Override
     ChannelFuture writeAndFlush2(io.esastack.httpclient.core.HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  Http2ConnectionHandler handler,
                                  int streamId,
@@ -97,7 +97,7 @@ class SegmentWriter extends RequestWriterImpl {
     @Override
     ChannelFuture writeAndFlush1(io.esastack.httpclient.core.HttpRequest request,
                                  Channel channel,
-                                 Context context,
+                                 ExecContext execCtx,
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {

@@ -16,16 +16,15 @@
 package io.esastack.httpclient.core.exec;
 
 import esa.commons.annotation.Internal;
-import io.esastack.httpclient.core.Context;
-import io.esastack.httpclient.core.Handle;
-import io.esastack.httpclient.core.Handler;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
+/**
+ * A {@link RequestExecutor} is used to send a {@link HttpRequest} and get the corresponding {@link HttpResponse}
+ * asynchronously.
+ */
 @Internal
 public interface RequestExecutor {
 
@@ -34,14 +33,7 @@ public interface RequestExecutor {
      *
      * @param request       request
      * @param ctx           ctx
-     * @param listener      listener
-     * @param handle        handle
-     * @param handler       handler
      * @return response
      */
-    CompletableFuture<HttpResponse> execute(HttpRequest request,
-                                            Context ctx,
-                                            Listener listener,
-                                            Consumer<Handle> handle,
-                                            Handler handler);
+    CompletableFuture<HttpResponse> execute(HttpRequest request, ExecContext ctx);
 }

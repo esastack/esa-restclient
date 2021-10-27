@@ -17,14 +17,14 @@ package io.esastack.httpclient.core.netty;
 
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpVersion;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
 import io.esastack.httpclient.core.NoopListener;
 import io.esastack.httpclient.core.exception.ClosedStreamException;
 import io.esastack.httpclient.core.exception.ContentOverSizedException;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
@@ -53,7 +53,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.netty.handler.codec.http2.Http2Error.NO_ERROR;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -106,12 +105,13 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
+
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -143,12 +143,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -182,12 +182,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -227,15 +227,15 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final NettyContext ctx = new NettyContext();
-        final Listener listener = new NoopListener();
+        final NettyExecContext ctx = ExecContextUtil.newAsNetty();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger count = new AtomicInteger();
 
         ctx.set100ContinueCallback(count::incrementAndGet);
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -304,12 +304,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength1);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId1 = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -353,12 +353,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength1);
 
         final HttpRequest request1 = client.get("/abc");
-        final Context ctx1 = new Context();
-        final Listener listener1 = new NoopListener();
+        final ExecContext ctx1 = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle1 = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
-        final NettyHandle handle1 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request1, ctx1, listener1, response1);
+        final ResponseHandle handle1 = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request1, ctx1, tHandle1, response1);
         final int requestId1 = registry.put(handle1);
 
         final Http2Headers headers1 = new DefaultHttp2Headers();
@@ -397,12 +397,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength2);
 
         final HttpRequest request2 = client.get("/abc");
-        final Context ctx2 = new Context();
-        final Listener listener2 = new NoopListener();
+        final ExecContext ctx2 = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle2 = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
-        final NettyHandle handle2 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request2, ctx2, listener2, response2);
+        final ResponseHandle handle2 = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request2, ctx2, tHandle2, response2);
         final int requestId2 = registry.put(handle2);
 
         final Http2Headers headers2 = new DefaultHttp2Headers();
@@ -438,12 +438,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -480,12 +480,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength1);
 
         final HttpRequest request1 = client.get("/abc");
-        final Context ctx1 = new Context();
-        final Listener listener1 = new NoopListener();
+        final ExecContext ctx1 = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle1 = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
-        final NettyHandle handle1 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request1, ctx1, listener1, response1);
+        final ResponseHandle handle1 = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request1, ctx1, tHandle1, response1);
         final int requestId1 = registry.put(handle1);
 
         final Http2Headers headers1 = new DefaultHttp2Headers();
@@ -517,12 +517,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength2);
 
         final HttpRequest request2 = client.get("/abc");
-        final Context ctx2 = new Context();
-        final Listener listener2 = new NoopListener();
+        final ExecContext ctx2 = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle2 = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
-        final NettyHandle handle2 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request2, ctx2, listener2, response2);
+        final ResponseHandle handle2 = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request2, ctx2, tHandle2, response2);
         final int requestId2 = registry.put(handle2);
 
         final Http2Headers headers2 = new DefaultHttp2Headers();
@@ -556,12 +556,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         final Http2Headers headers = new DefaultHttp2Headers();
@@ -585,12 +585,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId1 = registry.put(handle);
         final int requestId2 = registry.put(handle);
 
@@ -619,12 +619,12 @@ class Http2FrameHandlerTest {
         setUp(registry, maxContentLength);
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
+        final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response);
         final int requestId = registry.put(handle);
 
         // The stream will removed when any exception occurred.
@@ -635,38 +635,6 @@ class Http2FrameHandlerTest {
         then(response.isDone() && response.isCompletedExceptionally()).isTrue();
         then(Futures.getCause(response)).isInstanceOf(ClosedStreamException.class);
         channel.flush();
-
-        then(registry.get(requestId)).isNull();
-        channel.finishAndReleaseAll();
-    }
-
-    @Test
-    void testOnGoAwayRead() {
-        final HandleRegistry registry = new HandleRegistry(2, 0);
-        final long maxContentLength = -1L;
-
-        setUp(registry, maxContentLength);
-
-        final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-
-        final NettyHandle handle = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, response);
-        final int requestId = registry.put(handle);
-
-        final Http2Headers headers = new DefaultHttp2Headers();
-        headers.add("a", "b");
-        headers.add("x", "y");
-        headers.status(HttpResponseStatus.BAD_REQUEST.codeAsText());
-
-        frameInboundWriter.writeInboundHeaders(requestId, headers, 0, false);
-        frameInboundWriter.writeInboundGoAway(requestId - 2, NO_ERROR.code(), Unpooled.EMPTY_BUFFER);
-        channel.flushInbound();
-
-        then(response.isDone() && response.isCompletedExceptionally()).isTrue();
-        then(Futures.getCause(response)).isInstanceOf(ClosedStreamException.class);
 
         then(registry.get(requestId)).isNull();
         channel.finishAndReleaseAll();

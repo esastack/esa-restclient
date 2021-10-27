@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 
 class MultiValueMapUtilsTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     void testUnmodifiableMap() {
         final MultiValueMap<String, String> underlying = new HashMultiValueMap<>(8);

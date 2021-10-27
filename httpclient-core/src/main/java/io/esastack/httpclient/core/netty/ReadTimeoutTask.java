@@ -28,33 +28,37 @@ final class ReadTimeoutTask implements TimerTask {
     private final String uri;
     private final Channel channel;
     private final HandleRegistry registry;
+    private final long timeout;
 
     ReadTimeoutTask(int requestId,
                     String uri,
+                    long timeout,
                     Channel channel,
                     HandleRegistry registry) {
         this.requestId = requestId;
         this.uri = uri;
+        this.timeout = timeout;
         this.channel = channel;
         this.registry = registry;
     }
 
     @Override
     public void run(Timeout timeout) {
-        final NettyHandle handle = registry.remove(requestId);
+        final ResponseHandle handle = registry.remove(requestId);
         if (handle != null) {
             channel.eventLoop().execute(() -> handle.onError(new
-                    SocketTimeoutException("Request: " + uri + " reads timeout")));
+                    SocketTimeoutException("Request: " + uri + " exceeds read timeout: " + this.timeout + "ms")));
             channel.close();
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("Request: " + uri + " reads timeout, begin to close connection: "
+                LoggerUtils.logger().debug("Request: " + uri + " exceeds read timeout " + this.timeout
+                        + "ms, begin to close connection: "
                         + channel);
             }
         }
     }
 
     void cancel() {
-        NettyHandle handle = registry.remove(requestId);
+        ResponseHandle handle = registry.remove(requestId);
         if (handle != null) {
             handle.onError(new IllegalStateException("Request: " + uri +
                     " haven't finished while connection: " + channel + "has closed"));

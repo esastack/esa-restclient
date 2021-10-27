@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Java6BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -35,6 +36,10 @@ class MultipartFileItemTest {
 
         assertThrows(NullPointerException.class, () ->
                 new MultipartFileItem("abc", "abc", null,
+                        HttpHeaderValues.APPLICATION_JSON, true));
+
+        assertDoesNotThrow(() ->
+                new MultipartFileItem("abc", "abc", mock(File.class),
                         HttpHeaderValues.APPLICATION_JSON, true));
     }
 

@@ -19,9 +19,10 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.Http1HeadersImpl;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.SegmentRequest;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpContent;
@@ -51,7 +52,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         final HttpClient client = HttpClient.ofDefault();
 
         final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -113,7 +114,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         final HttpClient client = HttpClient.ofDefault();
 
         final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -140,7 +141,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
 
         final HttpClient client = HttpClient.ofDefault();
         final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -208,7 +209,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         final HttpClient client = HttpClient.ofDefault();
 
         final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -240,7 +241,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         final HttpClient client = HttpClient.ofDefault();
 
         final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         writer.writeAndFlush(request,
@@ -262,7 +263,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         final HttpClient client = HttpClient.ofDefault();
 
         final SegmentRequest request = client.post("http://127.0.0.1/abc").segment();
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,

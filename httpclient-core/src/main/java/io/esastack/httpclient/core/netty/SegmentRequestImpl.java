@@ -276,8 +276,9 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
             }
 
             this.started = true;
-            response = executor.execute(this, ctx, ListenerProxy.DEFAULT, handle, handler);
-            segmentWriter = ctx.getWriter().orElse(null);
+            NettyExecContext execCtx = new NettyExecContext(ctx, ListenerProxy.DEFAULT, handle, handler);
+            response = executor.execute(this, execCtx);
+            segmentWriter = execCtx.segmentWriter().orElse(null);
         }
     }
 

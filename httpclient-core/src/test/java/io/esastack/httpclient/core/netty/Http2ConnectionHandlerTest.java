@@ -16,12 +16,11 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.netty.core.BufferImpl;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
-import io.esastack.httpclient.core.NoopListener;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
@@ -49,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
 
@@ -68,21 +68,21 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
         setUp(registry);
 
         final HttpRequest request1 = client.get("/abc");
-        final Context ctx1 = new Context();
-        final Listener listener1 = new NoopListener();
+        final ExecContext ctx1 = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle1 = new TimeoutHandle(ctx1.listener());
         final CompletableFuture<HttpResponse> response1 = new CompletableFuture<>();
 
-        final NettyHandle handle1 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request1, ctx1, listener1, response1);
+        final ResponseHandle handle1 = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request1, ctx1, tHandle1, response1);
         final int requestId1 = registry.put(handle1);
 
         final HttpRequest request2 = client.get("/abc");
-        final Context ctx2 = new Context();
-        final Listener listener2 = new NoopListener();
+        final ExecContext ctx2 = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle2 = new TimeoutHandle(ctx2.listener());
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
 
-        final NettyHandle handle2 = new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request2, ctx2, listener2, response2);
+        final ResponseHandle handle2 = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request2, ctx2, tHandle2, response2);
         final int requestId2 = registry.put(handle2);
 
         channel.pipeline().fireExceptionCaught(new IOException());
@@ -101,6 +101,8 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     @Test
     void testWriteChunkedInput() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
+        registry.put(mock(ResponseHandle.class));
+
         setUp(registry);
 
         final File file = File.createTempFile("httpclient-", ".tmp");
@@ -146,6 +148,7 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     @Test
     void testWriteHeaders() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
+        registry.put(mock(ResponseHandle.class));
         setUp(registry);
 
         final Http2ConnectionHandler handler = channel.pipeline().get(Http2ConnectionHandler.class);
@@ -170,6 +173,7 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     @Test
     void testWriteArrayData() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
+        registry.put(mock(ResponseHandle.class));
         setUp(registry);
 
         final Http2ConnectionHandler handler = channel.pipeline().get(Http2ConnectionHandler.class);
@@ -190,6 +194,7 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     @Test
     void testWriteByteBufData() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
+        registry.put(mock(ResponseHandle.class));
         setUp(registry);
 
         final Http2ConnectionHandler handler = channel.pipeline().get(Http2ConnectionHandler.class);
@@ -211,6 +216,7 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     @Test
     void testWriteBufferData() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
+        registry.put(mock(ResponseHandle.class));
         setUp(registry);
 
         final Http2ConnectionHandler handler = channel.pipeline().get(Http2ConnectionHandler.class);
@@ -233,6 +239,7 @@ class Http2ConnectionHandlerTest extends Http2ConnectionHelper {
     @Test
     void testWriteUnsupportedData() throws Exception {
         final HandleRegistry registry = new HandleRegistry(2, 1);
+        registry.put(mock(ResponseHandle.class));
         setUp(registry);
 
         final Http2ConnectionHandler handler = channel.pipeline().get(Http2ConnectionHandler.class);

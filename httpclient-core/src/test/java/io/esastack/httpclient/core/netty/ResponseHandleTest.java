@@ -18,12 +18,12 @@ package io.esastack.httpclient.core.netty;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.Http1HeadersImpl;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
 import io.esastack.httpclient.core.NoopListener;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.Futures;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.jupiter.api.Test;
@@ -33,10 +33,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class NettyHandleTest {
+class ResponseHandleTest {
 
     private final HttpClient client = HttpClient.ofDefault();
 
@@ -44,21 +45,23 @@ class NettyHandleTest {
     @Test
     void testConstructor() {
         final HttpRequest request = mock(HttpRequest.class);
-        final Context ctx = mock(Context.class);
-        final Listener listener = mock(Listener.class);
+        final ExecContext ctx = mock(ExecContext.class);
+        final TimeoutHandle tHandle = mock(TimeoutHandle.class);
         final CompletableFuture<HttpResponse> response = mock(CompletableFuture.class);
 
-        assertThrows(NullPointerException.class, () -> new NettyHandle(null,
-                request, ctx, listener, response));
-        assertThrows(NullPointerException.class, () -> new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                null, ctx, listener, response));
-        assertThrows(NullPointerException.class, () -> new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, null, listener, response));
-        assertThrows(NullPointerException.class, () -> new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+        assertThrows(NullPointerException.class, () -> new ResponseHandle(null,
+                request, ctx, tHandle, response));
+        assertThrows(NullPointerException.class, () -> new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                null, ctx, tHandle, response));
+        assertThrows(NullPointerException.class, () -> new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, null, tHandle, response));
+        assertThrows(NullPointerException.class, () -> new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
                 request, ctx, null, response));
-        assertThrows(NullPointerException.class, () -> new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
-                request, ctx, listener, null));
-        new NettyHandle(new DefaultHandle(ByteBufAllocator.DEFAULT), request, ctx, listener, response);
+        assertThrows(NullPointerException.class, () -> new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, null));
+
+        assertDoesNotThrow(() -> new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
+                request, ctx, tHandle, response));
     }
 
     @Test
@@ -66,12 +69,12 @@ class NettyHandleTest {
         final AtomicInteger count = new AtomicInteger();
 
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onStart((v) -> {});
         handle.onData((b) -> {});
         handle.onTrailer((t) -> {});
@@ -92,13 +95,13 @@ class NettyHandleTest {
     @Test
     void testOnStartError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onStart((v) -> {
             throw new IllegalArgumentException();
         });
@@ -115,13 +118,13 @@ class NettyHandleTest {
     @Test
     void testOnEndError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onEnd((v) -> {
             throw new IllegalArgumentException();
         });
@@ -139,13 +142,13 @@ class NettyHandleTest {
     @Test
     void testOnDataError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onData((v) -> {
             throw new IllegalArgumentException();
         });
@@ -163,13 +166,13 @@ class NettyHandleTest {
     @Test
     void testOnTrailerError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger error = new AtomicInteger();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onTrailer((v) -> {
             throw new IllegalArgumentException();
         });
@@ -187,12 +190,12 @@ class NettyHandleTest {
     @Test
     void testOnErrorError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onError((v) -> {
             throw new IllegalArgumentException();
         });
@@ -208,13 +211,13 @@ class NettyHandleTest {
     @Test
     void testNoOpsAfterOnError() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger count = new AtomicInteger();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onStart(v -> count.incrementAndGet())
                 .onData(v -> count.incrementAndGet())
                 .onTrailer(v -> count.incrementAndGet())
@@ -235,13 +238,13 @@ class NettyHandleTest {
     @Test
     void testNoOpsAfterOnEnd() {
         final HttpRequest request = client.get("/abc");
-        final Context ctx = new Context();
-        final Listener listener = new NoopListener();
+        final ExecContext ctx = ExecContextUtil.newAs();
+        final TimeoutHandle tHandle = new TimeoutHandle(NoopListener.INSTANCE);
         final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
         final AtomicInteger count = new AtomicInteger();
 
         final HandleImpl handle = new HandleImpl(new NettyResponse(true));
-        final NettyHandle nHandle = new NettyHandle(handle, request, ctx, listener, response);
+        final ResponseHandle nHandle = new ResponseHandle(handle, request, ctx, tHandle, response);
         handle.onStart(v -> count.incrementAndGet())
                 .onData(v -> count.incrementAndGet())
                 .onTrailer(v -> count.incrementAndGet())

@@ -88,7 +88,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        final NettyHandle handle = registry.get(reusableRequestId);
+        final ResponseHandle handle = registry.get(reusableRequestId);
         // Handle == null means the request has ended(timeout, exceeds maxContentLength, or others),
         // and the current msg should be ignored.
         if (handle == null) {
@@ -188,14 +188,14 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         onError(new ProtocolException(errMsg, cause), true);
     }
 
-    private void handleResponse(NettyHandle handle, HttpResponse msg) {
+    private void handleResponse(ResponseHandle handle, HttpResponse msg) {
         // Handle Except: 100-continue' preface response
         // Note: a request which has a 'Expect: 100-continue' will receive two full http response
         // and only the last one is the common response to the request
         final int status = msg.status().code();
         if (status == HttpResponseStatus.CONTINUE.code()) {
             continue100Received = true;
-            final Runnable runnable = ((NettyContext) handle.ctx()).remove100ContinueCallback();
+            final Runnable runnable = handle.ctx().remove100ContinueCallback();
             if (runnable != null) {
                 runnable.run();
             }

@@ -17,6 +17,8 @@ package io.esastack.httpclient.core.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.assertj.core.api.BDDAssertions.then;
 
 class Http1OptionsTest {
@@ -27,6 +29,11 @@ class Http1OptionsTest {
         then(options.maxInitialLineLength()).isEqualTo(4096);
         then(options.maxHeaderSize()).isEqualTo(8192);
         then(options.maxChunkSize()).isEqualTo(8192);
+        then(options.toString()).isEqualTo(new StringJoiner(", ", Http1Options.class.getSimpleName() + "[", "]")
+                .add("maxInitialLineLength=" + 4096)
+                .add("maxHeaderSize=" + 8192)
+                .add("maxChunkSize=" + 8192)
+                .toString());
     }
 
     @Test

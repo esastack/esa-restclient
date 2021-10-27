@@ -19,6 +19,6 @@ public class NoopListener implements Listener {
 
     public static final Listener INSTANCE = new NoopListener();
 
-    public NoopListener() {
+    private NoopListener() {
     }
 }

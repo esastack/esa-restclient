@@ -84,7 +84,7 @@ class ChannelInitializerTest {
                         .options()
                         .writeBufferHighWaterMark(writeBufferHighWaterMark)
                         .writeBufferLowWaterMark(writeBufferLowWaterMark).build());
-        final ChannelInitializer initializer1 = new ChannelInitializer(builder1, null, false);
+        final ChannelInitializer initializer1 = new ChannelInitializer(false, null, builder1);
 
         final Channel channel1 = new EmbeddedChannel();
         initializer1.onConnected(channel1.newSucceededFuture());
@@ -96,7 +96,7 @@ class ChannelInitializerTest {
                 .netOptions(NetOptions
                         .options()
                         .writeBufferHighWaterMark(WriteBufferWaterMark.DEFAULT.low() + 1).build());
-        final ChannelInitializer initializer2 = new ChannelInitializer(builder2, null, false);
+        final ChannelInitializer initializer2 = new ChannelInitializer(false, null, builder2);
         final Channel channel2 = new EmbeddedChannel();
         initializer2.onConnected(channel2.newSucceededFuture());
         then(channel2.config().getWriteBufferHighWaterMark()).isEqualTo(WriteBufferWaterMark.DEFAULT.low() + 1);
@@ -106,7 +106,7 @@ class ChannelInitializerTest {
                 .netOptions(NetOptions
                         .options()
                         .writeBufferLowWaterMark(WriteBufferWaterMark.DEFAULT.high() - 1).build());
-        final ChannelInitializer handler3 = new ChannelInitializer(builder3, null, false);
+        final ChannelInitializer handler3 = new ChannelInitializer(false, null, builder3);
         final Channel initializer3 = new EmbeddedChannel();
         handler3.onConnected(initializer3.newSucceededFuture());
         then(initializer3.config().getWriteBufferLowWaterMark()).isEqualTo(WriteBufferWaterMark.DEFAULT.high() - 1);
@@ -117,7 +117,7 @@ class ChannelInitializerTest {
                         .options()
                         .writeBufferHighWaterMark(writeBufferLowWaterMark)
                         .writeBufferLowWaterMark(writeBufferHighWaterMark).build());
-        final ChannelInitializer initializer4 = new ChannelInitializer(builder4, null, false);
+        final ChannelInitializer initializer4 = new ChannelInitializer(false, null, builder4);
         final Channel channel4 = new EmbeddedChannel();
         assertThrows(IllegalArgumentException.class, () -> initializer4.onConnected(channel4.newSucceededFuture()));
     }
@@ -131,7 +131,7 @@ class ChannelInitializerTest {
     void testHttp11Directly() {
         // Case 1: decompressor is present
         final HttpClientBuilder builder1 = HttpClient.create().useDecompress(true);
-        final ChannelInitializer initializer1 = new ChannelInitializer(builder1, null, false);
+        final ChannelInitializer initializer1 = new ChannelInitializer(false, null, builder1);
         final Channel channel1 = new EmbeddedChannel();
         final ChannelFuture connectFuture1 = initializer1.onConnected(channel1.newSucceededFuture());
         then(connectFuture1.isDone()).isTrue();
@@ -147,7 +147,7 @@ class ChannelInitializerTest {
 
         // Case 2: decompress is absent, idle is present
         final HttpClientBuilder builder2 = HttpClient.create().useDecompress(true).idleTimeoutSeconds(60);
-        final ChannelInitializer initializer2 = new ChannelInitializer(builder2, null, false);
+        final ChannelInitializer initializer2 = new ChannelInitializer(false, null, builder2);
         final Channel channel2 = new EmbeddedChannel();
         final ChannelFuture connectFuture2 = initializer2.onConnected(channel2.newSucceededFuture());
         then(connectFuture2.isDone()).isTrue();
@@ -173,7 +173,7 @@ class ChannelInitializerTest {
                         .gracefulShutdownTimeoutMillis(gracefulShutdownTimeoutMillis)
                         .build());
 
-        final ChannelInitializer initializer = new ChannelInitializer(builder, null, false);
+        final ChannelInitializer initializer = new ChannelInitializer(false, null, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
         then(connectFuture.isDone()).isTrue();
@@ -201,7 +201,7 @@ class ChannelInitializerTest {
                         .gracefulShutdownTimeoutMillis(gracefulShutdownTimeoutMillis)
                         .build());
 
-        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> null, false);
+        final ChannelInitializer initializer = new ChannelInitializer(false, null, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
         then(connectFuture.isDone()).isFalse();
@@ -249,7 +249,7 @@ class ChannelInitializerTest {
                 .h2ClearTextUpgrade(true)
                 .useDecompress(decompression);
 
-        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> null, false);
+        final ChannelInitializer initializer = new ChannelInitializer(false, null, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
         then(connectFuture.isDone()).isFalse();
@@ -297,7 +297,7 @@ class ChannelInitializerTest {
                 .useDecompress(decompression);
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
         then(connectFuture.isDone()).isFalse();
@@ -331,7 +331,7 @@ class ChannelInitializerTest {
                 .useDecompress(decompression);
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
 
         final ChannelPromise connectFuture0 = channel.newPromise();
@@ -372,7 +372,7 @@ class ChannelInitializerTest {
                         .build());
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
         then(connectFuture.isDone()).isFalse();
@@ -403,15 +403,11 @@ class ChannelInitializerTest {
 
         // Illegal Argument
         assertThrows(IllegalStateException.class, () ->
-                new ChannelInitializer(builder, null, true)
-                        .onConnected(new EmbeddedChannel().newSucceededFuture()));
-
-        assertThrows(IllegalStateException.class, () ->
-                new ChannelInitializer(builder, () -> null, true)
+                new ChannelInitializer(true, null, builder)
                         .onConnected(new EmbeddedChannel().newSucceededFuture()));
 
         final SslHandler sslHandler = mock(SslHandler.class);
-        final ChannelInitializer initializer = new ChannelInitializer(builder, () -> sslHandler, true);
+        final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
 
         // Case 1: failed to connect

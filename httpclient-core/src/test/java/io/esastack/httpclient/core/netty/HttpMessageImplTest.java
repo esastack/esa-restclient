@@ -28,6 +28,8 @@ import io.netty.handler.codec.http2.DefaultHttp2Headers;
 import io.netty.handler.codec.http2.Http2Headers;
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -41,7 +43,12 @@ class HttpMessageImplTest {
         assertThrows(NullPointerException.class,
                 () -> new HttpMessageImpl(200, HttpVersion.HTTP_1_1, null));
 
-        new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
+        HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
+        then(message.toString()).isEqualTo(new StringJoiner(", ", HttpMessageImpl.class.getSimpleName() + "[", "]")
+                .add("status=" + 200)
+                .add("version=" + HttpVersion.HTTP_1_1)
+                .add("headers=" + new Http1HeadersImpl())
+                .toString());
     }
 
     @Test

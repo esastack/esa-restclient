@@ -38,6 +38,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class Http2ConnectionHelper {
@@ -80,7 +81,9 @@ class Http2ConnectionHelper {
     private Http2LocalFlowController localFlowController;
 
     void setUp() throws Http2Exception {
-        setUp(new HandleRegistry(2, 1));
+        HandleRegistry registry = new HandleRegistry(2, 1);
+        setUp(registry);
+        registry.put(mock(ResponseHandle.class));
     }
 
     void setUp(HandleRegistry registry) throws Http2Exception {

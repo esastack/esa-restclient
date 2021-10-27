@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
+import esa.commons.Checks;
 import esa.commons.ExceptionUtils;
-import esa.commons.function.ThrowingSupplier;
 import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.config.Http1Options;
 import io.esastack.httpclient.core.config.Http2Options;
@@ -74,21 +74,20 @@ import static io.esastack.httpclient.core.netty.ChannelPoolFactory.NETTY_CONFIGU
  */
 final class ChannelInitializer {
 
-    private static final String INTERNAL_DEBUG_ENABLED_KEY = "io.esastack.httpclient.internalDebugEnabled";
+    private static final String INTERNAL_DEBUG_ENABLED_KEY = "esa.httpclient.internalDebugEnabled";
 
     private static final boolean INTERNAL_DEBUG_ENABLED = SystemPropertyUtil
             .getBoolean(INTERNAL_DEBUG_ENABLED_KEY, false);
 
-    private final HttpClientBuilder builder;
-    private final ThrowingSupplier<SslHandler> sslHandler;
     private final boolean ssl;
+    private final SslHandler sslHandler;
+    private final HttpClientBuilder builder;
 
-    ChannelInitializer(HttpClientBuilder builder,
-                       ThrowingSupplier<SslHandler> sslHandler,
-                       boolean ssl) {
-        this.builder = builder;
-        this.sslHandler = sslHandler;
+    ChannelInitializer(boolean ssl, SslHandler sslHandler, HttpClientBuilder builder) {
+        Checks.checkNotNull(builder, "builder");
         this.ssl = ssl;
+        this.sslHandler = sslHandler;
+        this.builder = builder;
     }
 
     ChannelFuture onConnected(ChannelFuture connectFuture) {
@@ -135,14 +134,9 @@ final class ChannelInitializer {
                 initializeFuture);
 
         if (LoggerUtils.logger().isDebugEnabled()) {
-            LoggerUtils.logger().debug("Connection: " + channel + " has connected successfully");
-            channel.closeFuture().addListener(f -> {
-                if (f.isSuccess()) {
-                    LoggerUtils.logger().debug("Connection: " + channel + " has disconnected");
-                } else {
-                    LoggerUtils.logger().error("Failed to close connection: " + channel, f.cause());
-                }
-            });
+            LoggerUtils.logger().debug("Connection: " + channel + " has connected successfully.");
+            channel.closeFuture().addListener(f ->
+                    LoggerUtils.logger().debug("Connection: " + channel + " has closed."));
         }
     }
 
@@ -182,15 +176,8 @@ final class ChannelInitializer {
         }
 
         if (ssl) {
-            final SslHandler sslHandler;
-            try {
-                sslHandler = this.sslHandler.get();
-            } catch (Throwable ex) {
-                throw new IllegalStateException("Failed to build SslHandler for https", ex);
-            }
-
             if (sslHandler == null) {
-                throw new IllegalStateException("SslHandler is null");
+                throw new IllegalStateException("SslHandler is absent");
             }
             pipeline.addLast(sslHandler);
 

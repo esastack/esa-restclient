@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -213,5 +214,34 @@ class ListenerProxyTest {
         doThrow(ex).when(abnormal).onError(request, ctx, cause);
         assertThrows(Exception.class, () -> proxy.onError(request, ctx, cause));
         verify(normal, never()).onError(request, ctx, cause);
+    }
+
+    @Test
+    void testListenersAbsent() {
+        ListenerProxy listenersAbsentProxy = new ListenerProxy((Listener) null);
+        final HttpRequest request = mock(HttpRequest.class);
+        final Context ctx = mock(Context.class);
+        final FilterContext fCtx = mock(FilterContext.class);
+        final SocketAddress address = mock(SocketAddress.class);
+        final Throwable cause = mock(Throwable.class);
+        final HttpMessage message = mock(HttpMessage.class);
+        final HttpResponse response = mock(HttpResponse.class);
+
+        assertDoesNotThrow(() -> listenersAbsentProxy.onInterceptorsStart(request, ctx));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onInterceptorsEnd(request, ctx));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onFiltersStart(request, fCtx));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onFiltersEnd(request, ctx));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onConnectionPoolAttempt(request, ctx, address));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onConnectionPoolAcquired(request, ctx, address));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onAcquireConnectionPoolFailed(request, ctx, address, cause));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onConnectionAttempt(request, ctx, address));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onConnectionAcquired(request, ctx, address));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onAcquireConnectionFailed(request, ctx, address, cause));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onWriteAttempt(request, ctx));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onWriteDone(request, ctx));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onWriteFailed(request, ctx, cause));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onMessageReceived(request, ctx, message));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onCompleted(request, ctx, response));
+        assertDoesNotThrow(() -> listenersAbsentProxy.onError(request, ctx, cause));
     }
 }

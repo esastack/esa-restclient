@@ -16,12 +16,13 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.Checks;
-import esa.commons.function.ThrowingSupplier;
 import io.esastack.httpclient.core.HttpClientBuilder;
+import io.esastack.httpclient.core.Scheme;
 import io.esastack.httpclient.core.config.ChannelPoolOptions;
 import io.esastack.httpclient.core.config.NetOptions;
+import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.resolver.HostResolver;
-import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
+import io.esastack.httpclient.core.spi.SslEngineFactory;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.UnpooledByteBufAllocator;
@@ -40,29 +41,35 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.internal.SystemPropertyUtil;
 
+import javax.net.ssl.SSLEngine;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.time.Duration;
 
 final class ChannelPoolFactory {
 
     static final NettyClientConfigure NETTY_CONFIGURE = new NettyClientConfigureImpl();
 
-    private static final String PREFER_UNPOOLED_KEY = "io.esastack.httpclient.preferUnpooled";
+    private static final String PREFER_UNPOOLED_KEY = "esa.httpclient.preferUnpooled";
     private static final boolean PREFER_UNPOOLED =
             SystemPropertyUtil.getBoolean(PREFER_UNPOOLED_KEY, false);
 
-    private static final String PREFER_NATIVE_KEY = "io.esastack.httpclient.preferNative";
+    private static final String PREFER_NATIVE_KEY = "esa.httpclient.preferNative";
     static final boolean PREFER_NATIVE = SystemPropertyUtil.getBoolean(PREFER_NATIVE_KEY, true);
 
-    ChannelPoolFactory() {
+    final SslEngineFactory sslEngineFactory;
+
+    ChannelPoolFactory(SslEngineFactory sslEngineFactory) {
+        Checks.checkNotNull(sslEngineFactory, "sslEngineFactory");
+        this.sslEngineFactory = sslEngineFactory;
     }
 
     ChannelPool create(boolean ssl,
                        boolean keepAlive,
                        SocketAddress address,
                        EventLoopGroup ioThreads,
-                       HttpClientBuilder builder,
                        ChannelPoolOptions options,
-                       ThrowingSupplier<SslHandler> sslHandler) {
+                       HttpClientBuilder builder) {
         final Bootstrap bootstrap = buildBootstrap(address,
                 ioThreads,
                 builder.netOptions(),
@@ -82,7 +89,12 @@ final class ChannelPoolFactory {
 
             }
         };
-        final ChannelInitializer initializer = new ChannelInitializer(builder, sslHandler, ssl);
+
+        SslHandler sslHandler = null;
+        if (ssl) {
+            sslHandler = buildSslHandler(options.connectTimeout(), address, builder.sslOptions());
+        }
+        final ChannelInitializer initializer = new ChannelInitializer(ssl, sslHandler, builder);
         final io.netty.channel.pool.ChannelPool underlying;
         if (keepAlive) {
             LoggerUtils.logger().info("Begin to create a new connection pool, address: {}, options: {}",
@@ -101,51 +113,29 @@ final class ChannelPoolFactory {
             underlying = new DirectConnectAndCloseChannelPool(bootstrap, handler, initializer);
         }
 
-        return new ChannelPool(underlying,
-                options,
-                ssl,
-                sslHandler);
+        return new ChannelPool(ssl, underlying, options);
     }
 
-    ChannelPool create(boolean ssl,
-                       boolean keepAlive,
-                       SocketAddress address,
-                       EventLoopGroup ioThreads,
-                       HttpClientBuilder builder,
-                       ThrowingSupplier<SslHandler> sslHandler) {
-        return create(ssl,
-                keepAlive,
-                address,
-                ioThreads,
-                builder,
-                detectOptions(address, builder),
-                sslHandler);
-    }
-
-    /**
-     * Designed as package visibility for unit test purpose.
-     *
-     * @param address       address
-     * @param builder       builder
-     * @return              options
-     */
-    static ChannelPoolOptions detectOptions(SocketAddress address,
-                                            HttpClientBuilder builder) {
-        ChannelPoolOptionsProvider provider;
-        ChannelPoolOptions channelPoolOptions = null;
-        if ((provider = builder.channelPoolOptionsProvider()) != null) {
-            channelPoolOptions = provider.get(address);
-        }
-        if (channelPoolOptions != null) {
-            return channelPoolOptions;
+    private SslHandler buildSslHandler(int connectTimeout, SocketAddress address, SslOptions sslOptions) {
+        SSLEngine sslEngine = sslEngineFactory.create(sslOptions,
+                ((InetSocketAddress) address).getHostName(),
+                ((InetSocketAddress) address).getPort() > 0
+                        ? ((InetSocketAddress) address).getPort()
+                        : Scheme.HTTPS.port());
+        if (sslOptions != null && sslOptions.enabledProtocols().length > 0) {
+            sslEngine.setEnabledProtocols(sslOptions.enabledProtocols());
         }
 
-        return ChannelPoolOptions.options()
-                .poolSize(builder.connectionPoolSize())
-                .connectTimeout(builder.connectTimeout())
-                .waitingQueueLength(builder.connectionPoolWaitingQueueLength())
-                .readTimeout(builder.readTimeout())
-                .build();
+        SslHandler sslHandler = new SslHandler(sslEngine);
+        if (sslOptions != null && sslOptions.handshakeTimeoutMillis() > 0) {
+            sslHandler.setHandshakeTimeoutMillis(sslOptions.handshakeTimeoutMillis());
+        } else {
+            if (connectTimeout > 0) {
+                sslHandler.setHandshakeTimeoutMillis(Duration.ofSeconds(connectTimeout).toMillis());
+            }
+        }
+
+        return sslHandler;
     }
 
     /**
@@ -224,7 +214,6 @@ final class ChannelPoolFactory {
                                 int maxPendingAcquires) {
             super(bootstrap, handler, healthCheck, action,
                     acquireTimeoutMillis, maxConnections, maxPendingAcquires);
-            Checks.checkNotNull(initializer, "initializer");
             this.initializer = initializer;
         }
 
@@ -242,7 +231,6 @@ final class ChannelPoolFactory {
                                                  ChannelPoolHandler handler,
                                                  ChannelInitializer initializer) {
             super(bootstrap, handler, ChannelHealthChecker.ACTIVE, false, false);
-            Checks.checkNotNull(initializer, "initializer");
             this.initializer = initializer;
         }
 

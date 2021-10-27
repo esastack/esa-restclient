@@ -16,9 +16,9 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.netty.core.BufferImpl;
-import io.esastack.httpclient.core.Context;
+import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
-import io.esastack.httpclient.core.PlainRequest;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -47,10 +47,10 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final PlainWriter writer = PlainWriter.singleton();
         final EmbeddedChannel channel = new EmbeddedChannel();
 
-        final PlainRequest request = client
+        final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
                 ctx,
@@ -78,11 +78,11 @@ class PlainWriterTest extends Http2ConnectionHelper {
         final PlainWriter writer = PlainWriter.singleton();
         final EmbeddedChannel channel = new EmbeddedChannel();
 
-        final PlainRequest request = client
+        final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
         request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
-        final NettyContext ctx = new NettyContext();
+        final NettyExecContext ctx = ExecContextUtil.newAsNetty();
 
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
@@ -117,10 +117,10 @@ class PlainWriterTest extends Http2ConnectionHelper {
         setUp();
         final PlainWriter writer = PlainWriter.singleton();
 
-        final PlainRequest request = client
+        final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
-        final Context ctx = new Context();
+        final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,
@@ -154,13 +154,12 @@ class PlainWriterTest extends Http2ConnectionHelper {
         setUp();
         final PlainWriter writer = PlainWriter.singleton();
 
-        final PlainRequest request = client
+        final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
                 .body(new BufferImpl().writeBytes(DATA));
         request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
-        final NettyContext ctx = new NettyContext();
-
+        final NettyExecContext ctx = ExecContextUtil.newAsNetty();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
         final ChannelFuture end = writer.writeAndFlush(request,

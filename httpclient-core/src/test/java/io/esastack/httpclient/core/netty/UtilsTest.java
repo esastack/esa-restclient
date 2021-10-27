@@ -94,7 +94,7 @@ class UtilsTest {
     void testHandleException() {
         Utils.handleException(null, null, true);
 
-        final NettyHandle handle = mock(NettyHandle.class);
+        final ResponseHandle handle = mock(ResponseHandle.class);
         Utils.handleException(handle, new RuntimeException(), false);
         verify(handle).onError(any(Throwable.class));
     }

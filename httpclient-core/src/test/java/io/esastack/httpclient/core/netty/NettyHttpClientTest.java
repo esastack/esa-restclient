@@ -23,12 +23,12 @@ import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
 import io.esastack.httpclient.core.config.CacheOptions;
 import io.esastack.httpclient.core.config.CallbackThreadPoolOptions;
 import io.esastack.httpclient.core.config.ChannelPoolOptions;
 import io.esastack.httpclient.core.config.Decompression;
 import io.esastack.httpclient.core.config.SslOptions;
+import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.exec.RequestExecutor;
 import io.esastack.httpclient.core.metrics.CallbackExecutorMetric;
 import io.esastack.httpclient.core.metrics.IoThreadGroupMetric;
@@ -39,16 +39,20 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.net.ssl.SSLEngine;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,16 +67,11 @@ class NettyHttpClientTest {
     private static final RequestExecutor EXECUTOR = mock(RequestExecutor.class);
     private static final SslEngineFactory FACTORY = mock(SslEngineFactory.class);
 
-    @BeforeAll
-    static void setUp() {
-        when(FACTORY.create(any(SslOptions.class), anyString(), anyInt())).thenReturn(null);
-    }
-
     @Test
     void testConstructor() {
-        assertThrows(NullPointerException.class, () -> new NettyHttpClient(null, mock(ChannelPools.class)));
+        assertThrows(NullPointerException.class, () -> new NettyHttpClient(null, mock(CachedChannelPools.class)));
         assertThrows(NullPointerException.class, () -> new NettyHttpClient(HttpClient.create(), null));
-        new NettyHttpClient(HttpClient.create(), mock(ChannelPools.class));
+        assertDoesNotThrow(() -> new NettyHttpClient(HttpClient.create(), mock(CachedChannelPools.class)));
     }
 
     @Test
@@ -101,10 +100,7 @@ class NettyHttpClientTest {
         final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
 
         when(EXECUTOR.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> response);
 
         assertThrows(NullPointerException.class, () -> client.execute(null,
@@ -130,10 +126,7 @@ class NettyHttpClientTest {
         final NettyHttpClientImpl client = new NettyHttpClientImpl(HttpClient.create().useDecompress(true));
 
         when(EXECUTOR.execute(any(HttpRequest.class),
-                any(Context.class),
-                any(Listener.class),
-                any(),
-                any()))
+                any(ExecContext.class)))
                 .thenAnswer(answer -> response);
 
         assertThrows(NullPointerException.class, () -> client.execute(null,
@@ -151,10 +144,11 @@ class NettyHttpClientTest {
     @Test
     void testConnectionPoolMetric() {
         final HttpClientBuilder builder = HttpClient.create();
-        final ChannelPools channelPools = mock(ChannelPools.class);
+        final CachedChannelPools channelPools = mock(CachedChannelPools.class);
 
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
         then(client.connectionPoolMetric()).isSameAs(channelPools);
+
     }
 
     @Test
@@ -169,6 +163,15 @@ class NettyHttpClientTest {
         then(metric.groupId()).isEqualTo(id);
         then(metric.childExecutors().size()).isEqualTo(2);
 
+        then(metric.toString()).isEqualTo(new StringJoiner(", ",
+                NettyHttpClient.IoThreadGroupMetricImpl.class.getSimpleName()
+                        + "[", "]")
+                .add("id='" + id + "'")
+                .add("shutdown=" + false)
+                .add("terminated=" + false)
+                .add("childExecutors=" + metric.childExecutors())
+                .toString());
+
         IoThreadMetric childMetric = metric.childExecutors().get(0);
         then(childMetric).isNotNull();
 
@@ -178,6 +181,17 @@ class NettyHttpClientTest {
         then(childMetric.pendingTasks()).isEqualTo(0);
         childMetric.priority();
         then(childMetric.state()).isEqualTo("RUNNABLE");
+
+        then(childMetric.toString()).contains(
+                new StringJoiner(", ", childMetric.getClass().getSimpleName() + "[", "]")
+                        .add("name='" + childMetric.name() + "'")
+                        .add("pendingTasks=" + 0)
+                        .add("maxPendingTasks=" + Integer.MAX_VALUE)
+                        .add("ioRatio=" + 50)
+                        .add("priority=" + childMetric.priority())
+                        .add("state='" + "RUNNABLE" + "'")
+                        .toString());
+
     }
 
     @Test
@@ -198,12 +212,25 @@ class NettyHttpClientTest {
         then(metric.completedTaskCount()).isEqualTo(0);
         then(metric.executorId()).isEqualTo(id);
         then(metric.largestPoolSize()).isEqualTo(0);
+        then(metric.toString()).isEqualTo(new StringJoiner(", ",
+                NettyHttpClient.CallbackExecutorMetricImpl.class.getSimpleName() + "[", "]")
+                .add("id='" + id + "'")
+                .add("coreSize=" + options.coreSize())
+                .add("maxSize=" + options.maxSize())
+                .add("keepAliveSeconds=" + options.keepAliveSeconds())
+                .add("activeCount=" + 0)
+                .add("poolSize=" + 0)
+                .add("largestPoolSize=" + 0)
+                .add("taskCount=" + 0)
+                .add("queueSize=" + 0)
+                .add("completedTaskCount=" + 0)
+                .toString());
     }
 
     @Test
     void testClose() {
         final HttpClientBuilder builder = HttpClient.create();
-        final ChannelPools channelPools = mock(ChannelPools.class);
+        final CachedChannelPools channelPools = mock(CachedChannelPools.class);
 
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
         client.close();
@@ -213,20 +240,22 @@ class NettyHttpClientTest {
 
     @Test
     void testApplyChannelPoolOptions() {
+        when(FACTORY.create(any(), anyString(), anyInt())).thenReturn(mock(SSLEngine.class));
+
         final ChannelPoolOptions preOptions = ChannelPoolOptions.ofDefault();
         final HttpClientBuilder builder = HttpClient.create().channelPoolOptionsProvider(s -> preOptions);
 
-        final ChannelPools channelPools = new ChannelPools(CacheOptions.ofDefault());
+        final CachedChannelPools channelPools = new CachedChannelPools(CacheOptions.ofDefault());
         final NettyHttpClientImpl client = new NettyHttpClientImpl(builder, channelPools);
 
         final SocketAddress address1 = InetSocketAddress.createUnresolved("127.0.0.1", 8080);
         final SimpleChannelPool underlying1 = mock(FixedChannelPool.class);
-        final ChannelPool channelPool1 = new ChannelPool(underlying1, preOptions, false, () -> null);
+        final ChannelPool channelPool1 = new ChannelPool(false, underlying1, preOptions);
         channelPools.put(address1, channelPool1);
 
         final SocketAddress address2 = InetSocketAddress.createUnresolved("127.0.0.1", 8989);
         final SimpleChannelPool underlying2 = mock(FixedChannelPool.class);
-        final ChannelPool channelPool2 = new ChannelPool(underlying2, preOptions, false, () -> null);
+        final ChannelPool channelPool2 = new ChannelPool(false, underlying2, preOptions);
         channelPools.put(address2, channelPool2);
 
         assertThrows(NullPointerException.class,
@@ -239,6 +268,7 @@ class NettyHttpClientTest {
         when(underlying1.closeAsync()).thenAnswer(answer -> closeFuture);
         when(underlying2.closeAsync()).thenAnswer(answer -> closeFuture);
 
+        client.applyChannelPoolOptions(preOptions, true);
         final ChannelPoolOptions newOptions = ChannelPoolOptions.options()
                 .connectTimeout(10000)
                 .readTimeout(10000)
@@ -262,17 +292,26 @@ class NettyHttpClientTest {
         then(newChannelPool2.options.waitingQueueLength()).isEqualTo(2048);
         then(newChannelPool2.ssl).isEqualTo(false);
 
-        then(client.builder.connectionPoolSize()).isEqualTo(1024);
-        then(client.builder.connectTimeout()).isEqualTo(10000);
-        then(client.builder.readTimeout()).isEqualTo(10000);
-        then(client.builder.connectionPoolWaitingQueueLength()).isEqualTo(2048);
+        final ChannelPoolOptions options = ChannelPoolOptions.options()
+                .connectTimeout(1000)
+                .readTimeout(1000)
+                .waitingQueueLength(204)
+                .poolSize(102).build();
+        Map<SocketAddress, ChannelPoolOptions> optionsMap = new HashMap<>();
+        optionsMap.put(address2, options);
+        client.applyChannelPoolOptions(optionsMap);
+        final ChannelPool newChannelPool4 = channelPools.getIfPresent(address2);
+        then(newChannelPool4.options.poolSize()).isEqualTo(102);
+        then(newChannelPool4.options.connectTimeout()).isEqualTo(1000);
+        then(newChannelPool4.options.readTimeout()).isEqualTo(1000);
+        then(newChannelPool4.options.waitingQueueLength()).isEqualTo(204);
     }
 
     @Test
     void testLoadSslEngineFactory() {
         final NettyHttpClient client = new NettyHttpClientImpl(HttpClient
                 .create()
-                .version(HttpVersion.HTTP_2));
+                .version(HttpVersion.HTTP_2), true);
 
         final SslOptions options = SslOptions.options()
                 .sessionTimeout(2000L)
@@ -305,23 +344,24 @@ class NettyHttpClientTest {
         private final boolean useSuperLoadSslEngineFactory;
 
         NettyHttpClientImpl(HttpClientBuilder builder, boolean useSuperLoadSslEngineFactory) {
-            super(builder, new ChannelPools(CacheOptions.ofDefault()));
+            super(builder, new CachedChannelPools(CacheOptions.ofDefault()));
             this.useSuperLoadSslEngineFactory = useSuperLoadSslEngineFactory;
         }
 
         private NettyHttpClientImpl(HttpClientBuilder builder) {
-            super(builder, new ChannelPools(CacheOptions.ofDefault()));
+            super(builder, new CachedChannelPools(CacheOptions.ofDefault()));
             this.useSuperLoadSslEngineFactory = false;
         }
 
-        private NettyHttpClientImpl(HttpClientBuilder builder, ChannelPools channelPools) {
+        private NettyHttpClientImpl(HttpClientBuilder builder, CachedChannelPools channelPools) {
             super(builder, channelPools);
             this.useSuperLoadSslEngineFactory = false;
         }
 
         @Override
         protected RequestExecutor build(EventLoopGroup ioThreads,
-                                        ChannelPools channelPools) {
+                                        CachedChannelPools channelPools,
+                                        ChannelPoolOptions channelPoolOptions) {
             return EXECUTOR;
         }
 

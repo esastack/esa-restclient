@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 
 /**
  * This class holds a {@link #handlers} which saves the mapper from {@link HttpRequest} to corresponding
- * {@link NettyHandle} by request's {@code requestId}.
+ * {@link ResponseHandle} by request's {@code requestId}.
  */
 class HandleRegistry {
 
-    private final IntObjectMap<NettyHandle> handlers = new IntObjectHashMap<>(16);
+    private final IntObjectMap<ResponseHandle> handlers = new IntObjectHashMap<>(16);
 
     private final int delta;
     private int requestId;
@@ -37,21 +37,21 @@ class HandleRegistry {
         this.delta = delta;
     }
 
-    public synchronized NettyHandle remove(int requestId) {
+    public synchronized ResponseHandle remove(int requestId) {
         return handlers.remove(requestId);
     }
 
-    public synchronized int put(NettyHandle handle) {
+    public synchronized int put(ResponseHandle handle) {
         this.requestId += delta;
         handlers.putIfAbsent(requestId, handle);
         return requestId;
     }
 
-    public synchronized NettyHandle get(int requestId) {
+    public synchronized ResponseHandle get(int requestId) {
         return handlers.get(requestId);
     }
 
-    synchronized void handleAndClearAll(Consumer<NettyHandle> handle) {
+    synchronized void handleAndClearAll(Consumer<ResponseHandle> handle) {
         handlers.forEach((id, h) -> handle.accept(h));
         handlers.clear();
     }

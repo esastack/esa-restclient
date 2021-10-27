@@ -15,16 +15,12 @@
  */
 package io.esastack.httpclient.core.exec;
 
-import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.Handle;
 import io.esastack.httpclient.core.Handler;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.Listener;
-import io.esastack.httpclient.core.netty.HandleImpl;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
 /**
  * The core transceiver which can transform and write the given {@link HttpRequest} to network and
@@ -37,14 +33,9 @@ public interface HttpTransceiver {
      * Sends the given {@code request} and obtains the corresponding {@link HttpResponse}.
      *
      * @param request     request
-     * @param ctx         ctx
-     * @param handle      handle
-     * @param listener    listener
+     * @param execCtx     ctx
      * @return response
      */
-    CompletableFuture<HttpResponse> handle(HttpRequest request,
-                                           Context ctx,
-                                           BiFunction<Listener, CompletableFuture<HttpResponse>, HandleImpl> handle,
-                                           Listener listener);
+    CompletableFuture<HttpResponse> handle(HttpRequest request, ExecContext execCtx);
 
 }

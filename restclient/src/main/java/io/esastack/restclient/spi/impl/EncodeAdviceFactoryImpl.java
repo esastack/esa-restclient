@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class EncodeAdviceFactoryImpl implements EncodeAdviceFactory {
+
     @Override
     public Collection<EncodeAdvice> encodeAdvices() {
         List<EncodeAdvice> encodeAdvices = SpiLoader.getAll(EncodeAdvice.class);

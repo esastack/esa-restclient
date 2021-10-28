@@ -63,7 +63,6 @@ public class RestResponseBaseImpl implements RestResponseBase {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T bodyToEntity(Type type) throws Exception {
-
         final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
         MediaType mediaType = null;
         if (StringUtils.isNotBlank(mediaTypeValue)) {

@@ -31,5 +31,4 @@ public class InterceptorFactoryImpl implements InterceptorFactory {
         return interceptors == null
                 ? Collections.emptyList() : Collections.unmodifiableList(interceptors);
     }
-
 }

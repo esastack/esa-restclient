@@ -3,7 +3,6 @@ package io.esastack.restclient.it;
 import io.esastack.restclient.RestClient;
 import io.esastack.restclient.RestResponseBase;
 import org.junit.jupiter.api.Test;
-import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.MediaType;
 
 import java.io.BufferedOutputStream;
@@ -22,7 +21,7 @@ class FileRequestTest {
         String contentString = "hello";
         byte[] content = contentString.getBytes(StandardCharsets.UTF_8);
         File file = createFile(content);
-        ClientAndServer mockServer = MockServerUtil.startMockServer(content, content, MediaType.TEXT_PLAIN, path);
+        MockServerUtil.startMockServer(content, content, MediaType.TEXT_PLAIN, path);
         RestResponseBase response =
                 RestClient.ofDefault().post("http://localhost:" + MockServerUtil.PORT + path)
                         .entity(file)

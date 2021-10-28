@@ -63,8 +63,10 @@ import static io.esastack.httpclient.core.netty.Utils.WRITE_BUF_IS_FULL;
  */
 class HttpTransceiverImpl implements HttpTransceiver {
 
-    private static final String HASHEDWHEELTIMER_TICKDURATION_KEY = "io.esastack.httpclient.hashedWheelTimer.tickDurationMs";
-    private static final String HASHEDWHEELTIMER_SIZE_KEY = "io.esastack.httpclient.hashedWheelTimer.size";
+    private static final String HASHEDWHEELTIMER_TICKDURATION_KEY =
+            "io.esastack.httpclient.hashedWheelTimer.tickDurationMs";
+    private static final String HASHEDWHEELTIMER_SIZE_KEY =
+            "io.esastack.httpclient.hashedWheelTimer.size";
 
     private static final Timer READ_TIMEOUT_TIMER;
     private static final ServerSelector SERVER_SELECTOR = ServerSelector.DEFAULT;

@@ -295,8 +295,6 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     }
 
     private HttpRequestFacade newRequestFacade(HttpMethod method, String uri) {
-        Checks.checkNotNull("method");
-        Checks.checkNotEmptyArg(uri, "HttpRequest's uri must not be empty");
         Checks.checkNotNull(method, "method");
         Checks.checkNotEmptyArg(uri, "uri");
         return new CompositeRequest(builder, this,

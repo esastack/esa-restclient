@@ -15,7 +15,6 @@ class StringCodecTest {
     void testEncode() throws Exception {
 
         StringCodec codec = new StringCodec();
-
         then(codec.encode(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16),
                 null, null).content()).isEqualTo(null);
 
@@ -33,7 +32,6 @@ class StringCodecTest {
     @Test
     void testDecode() throws Exception {
         StringCodec codec = new StringCodec();
-
         then((String) codec.decode(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16),
                 null, ResponseBodyContent.of(null), String.class)).isEqualTo(null);
 

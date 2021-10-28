@@ -12,7 +12,6 @@ class ProtoBufCodecTest {
     @Test
     void testEncode() throws Exception {
         ProtoBufCodec protoBufCodec = new ProtoBufCodec();
-
         then(protoBufCodec.encode(ContentType.PROTOBUF.mediaType(), null, null).content())
                 .isEqualTo(null);
     }

@@ -15,7 +15,6 @@ public class FastJsonCodecTest {
     @Test
     void testEncode() throws Exception {
         FastJsonCodec fastJsonCodec = new FastJsonCodec();
-
         then(fastJsonCodec.encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, null).content())
                 .isEqualTo("null".getBytes(StandardCharsets.UTF_8));
 

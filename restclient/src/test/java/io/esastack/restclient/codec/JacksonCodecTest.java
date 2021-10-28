@@ -13,7 +13,6 @@ public class JacksonCodecTest {
     @Test
     void testEncode() throws Exception {
         JacksonCodec jacksonCodec = new JacksonCodec();
-
         then(jacksonCodec.encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, null).content())
                 .isEqualTo("null".getBytes(StandardCharsets.UTF_8));
 

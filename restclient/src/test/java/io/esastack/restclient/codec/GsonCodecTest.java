@@ -18,7 +18,6 @@ class GsonCodecTest {
     @Test
     void testEncode() throws Exception {
         GsonCodec gsonCodec = new GsonCodec();
-
         then(gsonCodec.encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, null).content())
                 .isEqualTo("null".getBytes(StandardCharsets.UTF_8));
 

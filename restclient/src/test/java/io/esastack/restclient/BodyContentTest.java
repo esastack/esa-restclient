@@ -12,7 +12,6 @@ class BodyContentTest {
 
     @Test
     void testRequestBodyContent() {
-
         BodyContent<File> fileContent = RequestBodyContent.of((File) null);
         then(fileContent.content()).isEqualTo(null);
         File file = new File("test");

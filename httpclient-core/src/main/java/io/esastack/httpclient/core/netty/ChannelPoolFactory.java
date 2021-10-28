@@ -50,11 +50,11 @@ final class ChannelPoolFactory {
 
     static final NettyClientConfigure NETTY_CONFIGURE = new NettyClientConfigureImpl();
 
-    private static final String PREFER_UNPOOLED_KEY = "esa.httpclient.preferUnpooled";
+    private static final String PREFER_UNPOOLED_KEY = "io.esastack.httpclient.preferUnpooled";
     private static final boolean PREFER_UNPOOLED =
             SystemPropertyUtil.getBoolean(PREFER_UNPOOLED_KEY, false);
 
-    private static final String PREFER_NATIVE_KEY = "esa.httpclient.preferNative";
+    private static final String PREFER_NATIVE_KEY = "io.esastack.httpclient.preferNative";
     static final boolean PREFER_NATIVE = SystemPropertyUtil.getBoolean(PREFER_NATIVE_KEY, true);
 
     final SslEngineFactory sslEngineFactory;

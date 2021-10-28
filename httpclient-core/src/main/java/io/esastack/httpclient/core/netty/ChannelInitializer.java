@@ -74,7 +74,7 @@ import static io.esastack.httpclient.core.netty.ChannelPoolFactory.NETTY_CONFIGU
  */
 final class ChannelInitializer {
 
-    private static final String INTERNAL_DEBUG_ENABLED_KEY = "esa.httpclient.internalDebugEnabled";
+    private static final String INTERNAL_DEBUG_ENABLED_KEY = "io.esastack.httpclient.internalDebugEnabled";
 
     private static final boolean INTERNAL_DEBUG_ENABLED = SystemPropertyUtil
             .getBoolean(INTERNAL_DEBUG_ENABLED_KEY, false);

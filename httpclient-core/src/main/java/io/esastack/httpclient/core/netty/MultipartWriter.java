@@ -51,8 +51,8 @@ import static io.esastack.httpclient.core.util.HttpHeadersUtils.toHttp2Headers;
 
 class MultipartWriter extends RequestWriterImpl {
 
-    private static final String MEMORY_THRESHOLD_KEY = "esa.httpclient.multipart.memoryThreshold";
-    private static final String TEMP_DIR_KEY = "esa.httpclient.multipart.tempDir";
+    private static final String MEMORY_THRESHOLD_KEY = "io.esastack.httpclient.multipart.memoryThreshold";
+    private static final String TEMP_DIR_KEY = "io.esastack.httpclient.multipart.tempDir";
 
     private static final long MEMORY_THRESHOLD = SystemPropertyUtil.getLong(MEMORY_THRESHOLD_KEY,
             2 * 1014 * 1024);

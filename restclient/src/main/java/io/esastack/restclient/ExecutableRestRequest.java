@@ -1,6 +1,9 @@
 package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.MediaType;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.Encoder;
 
 import java.util.List;
 import java.util.Map;
@@ -41,10 +44,10 @@ public interface ExecutableRestRequest extends RestRequestBase {
     ExecutableRestRequest cookies(List<Cookie> cookies);
 
     @Override
-    ExecutableRestRequest contentType(ContentType contentType);
+    ExecutableRestRequest contentType(MediaType contentType);
 
     @Override
-    ExecutableRestRequest accept(AcceptType... acceptTypes);
+    ExecutableRestRequest accept(MediaType... acceptTypes);
 
     @Override
     ExecutableRestRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -57,5 +60,11 @@ public interface ExecutableRestRequest extends RestRequestBase {
 
     @Override
     ExecutableRestRequest removeHeader(CharSequence name);
+
+    @Override
+    ExecutableRestRequest encoder(Encoder encoder);
+
+    @Override
+    ExecutableRestRequest decoder(Decoder decoder);
 
 }

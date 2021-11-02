@@ -1,6 +1,9 @@
 package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.MediaType;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.Encoder;
 
 import java.io.File;
 import java.util.List;
@@ -26,10 +29,10 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest cookies(List<Cookie> cookies);
 
     @Override
-    RestFileRequest contentType(ContentType contentType);
+    RestFileRequest contentType(MediaType contentType);
 
     @Override
-    RestFileRequest accept(AcceptType... acceptTypes);
+    RestFileRequest accept(MediaType... acceptTypes);
 
     @Override
     RestFileRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -57,5 +60,11 @@ public interface RestFileRequest extends ExecutableRestRequest {
 
     @Override
     RestFileRequest maxRetries(int maxRetries);
+
+    @Override
+    RestFileRequest encoder(Encoder encoder);
+
+    @Override
+    RestFileRequest decoder(Decoder decoder);
 
 }

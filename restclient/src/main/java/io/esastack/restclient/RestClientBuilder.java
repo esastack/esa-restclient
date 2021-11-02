@@ -14,7 +14,9 @@ import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
 import io.esastack.httpclient.core.util.OrderedComparator;
 import io.esastack.restclient.codec.DecodeAdvice;
+import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
+import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.ClientInterceptor;
 import io.esastack.restclient.spi.DecodeAdviceFactory;
 import io.esastack.restclient.spi.EncodeAdviceFactory;
@@ -34,12 +36,19 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private final List<ClientInterceptor> interceptors = new LinkedList<>();
     private final LinkedList<DecodeAdvice> decodeAdvices = new LinkedList<>();
     private final LinkedList<EncodeAdvice> encodeAdvices = new LinkedList<>();
+    private final LinkedList<Decoder> decoders = new LinkedList<>();
+    private final LinkedList<Encoder> encoders = new LinkedList<>();
+
     private DecodeAdvice[] unmodifiableDecodeAdvices
             = buildUnmodifiableDecodeAdvices();
     private EncodeAdvice[] unmodifiableEncodeAdvices
             = buildUnmodifiableEncodeAdvices();
     private ClientInterceptor[] unmodifiableInterceptors
             = buildUnmodifiableInterceptors();
+    private Encoder[] unmodifiableEncoders
+            = buildUnmodifiableEncoders();
+    private Decoder[] unmodifiableDecoders
+            = buildUnmodifiableDecoders();
 
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
@@ -153,6 +162,34 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         Checks.checkNotNull(decodeAdvices, "decodeAdvices");
         this.decodeAdvices.addAll(decodeAdvices);
         this.unmodifiableDecodeAdvices = buildUnmodifiableDecodeAdvices();
+        return self();
+    }
+
+    public RestClientBuilder addEncoder(Encoder encoder) {
+        Checks.checkNotNull(encoder, "encoder");
+        this.encoders.add(encoder);
+        this.unmodifiableEncoders = buildUnmodifiableEncoders();
+        return self();
+    }
+
+    public RestClientBuilder addEncoders(List<Encoder> encoders) {
+        Checks.checkNotNull(encoders, "encoders");
+        this.encoders.addAll(encoders);
+        this.unmodifiableEncoders = buildUnmodifiableEncoders();
+        return self();
+    }
+
+    public RestClientBuilder addDecoder(Decoder decoder) {
+        Checks.checkNotNull(decoder, "decoder");
+        this.decoders.add(decoder);
+        this.unmodifiableDecoders = buildUnmodifiableDecoders();
+        return self();
+    }
+
+    public RestClientBuilder addDecoders(List<Decoder> decoders) {
+        Checks.checkNotNull(decoders, "decoders");
+        this.decoders.addAll(decoders);
+        this.unmodifiableDecoders = buildUnmodifiableDecoders();
         return self();
     }
 
@@ -304,6 +341,16 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
+    public Encoder[] unmodifiableEncoders() {
+        return unmodifiableEncoders;
+    }
+
+    @Override
+    public Decoder[] unmodifiableDecoders() {
+        return unmodifiableDecoders;
+    }
+
+    @Override
     public ClientInterceptor[] unmodifiableInterceptors() {
         return unmodifiableInterceptors;
     }
@@ -343,6 +390,20 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         interceptors0.addAll(InterceptorFactoryImpl.DEFAULT.interceptors());
         OrderedComparator.sort(interceptors0);
         return Collections.unmodifiableList(interceptors0).toArray(new ClientInterceptor[0]);
+    }
+
+    private Encoder[] buildUnmodifiableEncoders() {
+        final List<Encoder> encoders0 = new LinkedList<>(encoders);
+        //TODO 增加SPI
+        OrderedComparator.sort(encoders0);
+        return Collections.unmodifiableList(encoders0).toArray(new Encoder[0]);
+    }
+
+    private Decoder[] buildUnmodifiableDecoders() {
+        final List<Decoder> decoders0 = new LinkedList<>(decoders);
+        //TODO 增加SPI
+        OrderedComparator.sort(decoders0);
+        return Collections.unmodifiableList(decoders0).toArray(new Decoder[0]);
     }
 
     @Override

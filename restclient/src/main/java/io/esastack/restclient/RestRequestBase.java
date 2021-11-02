@@ -1,7 +1,10 @@
 package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.RequestBaseConfigure;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.Encoder;
 
 import java.util.List;
 import java.util.Map;
@@ -52,8 +55,16 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     RestRequestBase cookies(List<Cookie> cookies);
 
     @Override
-    RestRequestBase contentType(ContentType contentType);
+    RestRequestBase contentType(MediaType contentType);
 
     @Override
-    RestRequestBase accept(AcceptType... acceptTypes);
+    RestRequestBase accept(MediaType... acceptTypes);
+
+    RestRequestBase encoder(Encoder encoder);
+
+    Encoder encoder();
+
+    RestRequestBase decoder(Decoder decoder);
+
+    Decoder decoder();
 }

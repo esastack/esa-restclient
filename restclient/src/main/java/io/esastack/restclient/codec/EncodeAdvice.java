@@ -1,7 +1,6 @@
 package io.esastack.restclient.codec;
 
 import io.esastack.httpclient.core.util.Ordered;
-import io.esastack.restclient.RequestBodyContent;
 
 /**
  * Interface for encode advice that wrap around calls to {@link Encoder#encode}
@@ -19,10 +18,10 @@ public interface EncodeAdvice extends Ordered {
      * Encoder#encode} method.
      *
      * @param context encode invocation context
-     * @return encoded requestBodyContent
+     * @return encoded requestBody
      * @throws Exception error
      * @see Encoder
      * @see EncodeContext
      */
-    RequestBodyContent<?> aroundEncode(EncodeContext context) throws Exception;
+    RequestBody<?> aroundEncode(EncodeContext context) throws Exception;
 }

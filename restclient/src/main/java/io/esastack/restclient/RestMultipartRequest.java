@@ -1,7 +1,10 @@
 package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.MultipartConfigure;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.Encoder;
 
 import java.io.File;
 import java.util.List;
@@ -81,10 +84,10 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
     RestMultipartRequest cookies(List<Cookie> cookies);
 
     @Override
-    RestMultipartRequest contentType(ContentType contentType);
+    RestMultipartRequest contentType(MediaType contentType);
 
     @Override
-    RestMultipartRequest accept(AcceptType... acceptTypes);
+    RestMultipartRequest accept(MediaType... acceptTypes);
 
     @Override
     RestMultipartRequest addHeaders(Map<? extends CharSequence, ? extends CharSequence> headers);
@@ -112,5 +115,11 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
 
     @Override
     RestMultipartRequest maxRetries(int maxRetries);
+
+    @Override
+    RestMultipartRequest encoder(Encoder encoder);
+
+    @Override
+    RestMultipartRequest decoder(Decoder decoder);
 
 }

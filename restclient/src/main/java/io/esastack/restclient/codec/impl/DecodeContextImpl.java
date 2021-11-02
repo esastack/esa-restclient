@@ -1,17 +1,22 @@
 package io.esastack.restclient.codec.impl;
 
-import esa.commons.Checks;
+import esa.commons.StringUtils;
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.AcceptType;
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
+import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.DecodeResult;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.ResponseBody;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
+import io.netty.handler.codec.CodecException;
+import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
 
@@ -20,24 +25,35 @@ public class DecodeContextImpl implements DecodeContext {
     private final RestRequest request;
     private final RestResponse response;
     private final DecodeAdvice[] advices;
-    private int adviceIndex = 0;
-    private final Type type;
-    private MediaType mediaType;
-    private ResponseBodyContent<?> content;
+    private final Decoder decoderOfRequest;
+    private final Decoder[] decodersOfClient;
 
-    public DecodeContextImpl(RestRequest request,
+    private final Class<?> type;
+    private final Type genericType;
+    private int adviceIndex = 0;
+    private MediaType contentType;
+    private ResponseBody<?> responseBody;
+
+    public DecodeContextImpl(RestRequestBase request,
                              RestResponse response,
                              RestClientOptions clientOptions,
-                             Type type,
-                             MediaType mediaType,
+                             Class<?> type,
+                             Type genericType,
                              ByteBuf byteBuf) {
 
         this.request = request;
         this.response = response;
         this.advices = clientOptions.unmodifiableDecodeAdvices();
+        this.decoderOfRequest = request.decoder();
+        this.decodersOfClient = clientOptions.unmodifiableDecoders();
         this.type = type;
-        this.mediaType = mediaType;
-        this.content = ResponseBodyContent.of(ByteBufUtil.getBytes(byteBuf));
+        this.genericType = genericType;
+        this.responseBody = ResponseBody.of(ByteBufUtil.getBytes(byteBuf));
+
+        final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
+        if (StringUtils.isNotBlank(mediaTypeValue)) {
+            this.contentType = MediaTypeUtil.parseMediaType(mediaTypeValue);
+        }
     }
 
     @Override
@@ -46,13 +62,13 @@ public class DecodeContextImpl implements DecodeContext {
     }
 
     @Override
-    public MediaType mediaType() {
-        return mediaType;
+    public MediaType contentType() {
+        return contentType;
     }
 
     @Override
-    public void mediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
+    public void contentType(MediaType mediaType) {
+        this.contentType = mediaType;
     }
 
     @Override
@@ -61,46 +77,80 @@ public class DecodeContextImpl implements DecodeContext {
     }
 
     @Override
-    public ResponseBodyContent<?> content() {
-        return content;
+    public ResponseBody<?> responseBody() {
+        return responseBody;
     }
 
     @Override
-    public void content(ResponseBodyContent<?> content) {
-        this.content = content;
+    public void responseBody(ResponseBody<?> responseBody) {
+        this.responseBody = responseBody;
     }
 
     @Override
-    public Type type() {
+    public Class<?> type() {
         return type;
+    }
+
+    @Override
+    public Type genericType() {
+        return genericType;
     }
 
     @Override
     public Object proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
-            final AcceptType[] acceptTypes = request.acceptTypes();
-            final HttpHeaders headers = response.headers();
-
-            Checks.checkNotNull(acceptTypes, "acceptTypes");
-            for (AcceptType acceptType : acceptTypes) {
-                MediaType acceptMediaType = acceptType.mediaType();
-                if (acceptMediaType == AcceptType.EMPTY_MEDIA_TYPE) {
-                    return acceptType.decoder().decode(mediaType, headers, content, type);
-                }
-
-                if (acceptMediaType.isCompatibleWith(mediaType)) {
-                    return acceptType.decoder().decode(mediaType, headers, content, type);
-                }
+            if (decoderOfRequest != null) {
+                return decodeByDecoderOfRequest();
+            } else {
+                return decodeByDecodersOfClient();
             }
-
-            throw new IllegalStateException("There is no suitable decoder for this response," +
-                    "Please set correct acceptType and decoderSelector!" +
-                    "request.uri: " + request.uri() +
-                    ",response.status: " + response.status() +
-                    ",response.headers: " + headers);
         }
 
         return advices[adviceIndex++].aroundDecode(this);
+    }
+
+    private Object decodeByDecoderOfRequest() throws Exception {
+        HttpHeaders headers = response.headers();
+        DecodeResult<?> decodeResult = decoderOfRequest.decode(contentType, headers, responseBody,
+                type, genericType);
+
+        if (decodeResult == null) {
+            throw new CodecException("DecodeResult should never be null!"
+                    + " Please set correct decoder to the request!"
+                    + " decoder of request : " + decoderOfRequest
+                    + " , headers of responses : " + headers
+                    + " , type : " + type
+                    + " , genericType : " + genericType);
+        }
+
+        if (decodeResult.isSuccess()) {
+            return decodeResult.getResult();
+        }
+
+        throw new CodecException("Decode is not success by decoderOfRequest,"
+                + " Please set correct decoder to the request!"
+                + " decoder of request : " + decoderOfRequest
+                + " , headers of responses : " + headers
+                + " , type : " + type
+                + " , genericType : " + genericType);
+    }
+
+    private Object decodeByDecodersOfClient() throws Exception {
+        HttpHeaders headers = response.headers();
+
+        for (Decoder decoder : decodersOfClient) {
+            DecodeResult<?> decodeResult = decoder.decode(contentType, headers, responseBody,
+                    type, genericType);
+
+            if (decodeResult.isSuccess()) {
+                return decodeResult.getResult();
+            }
+        }
+        throw new CodecException("There is no suitable decoder for this response in those decoders of client,"
+                + " Please add correct decoder to the client!"
+                + " , headers of responses : " + headers
+                + " , type : " + type
+                + " , genericType : " + genericType);
     }
 
 }

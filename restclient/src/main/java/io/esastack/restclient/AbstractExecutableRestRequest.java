@@ -11,6 +11,8 @@ import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.util.Futures;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.impl.EncodeContextImpl;
 import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.utils.CookiesUtil;
@@ -26,8 +28,10 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     protected final CompositeRequest target;
     protected final RestClientOptions clientOptions;
     protected final RestRequestExecutor requestExecutor;
-    protected ContentType contentType;
-    private AcceptType[] acceptTypes = {AcceptType.DEFAULT};
+    protected MediaType contentType = null;
+    private MediaType[] acceptTypes = null;
+    private Encoder encoder = null;
+    private Decoder decoder = null;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             RestClientOptions clientOptions,
@@ -103,7 +107,6 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public CompletionStage<RestResponseBase> execute() {
-        fillAcceptHeader();
         return requestExecutor.execute(this);
     }
 
@@ -222,55 +225,56 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public ExecutableRestRequest contentType(ContentType contentType) {
+    public ExecutableRestRequest contentType(MediaType contentType) {
         Checks.checkNotNull(contentType, "contentType");
 
         this.contentType = contentType;
         headers().set(HttpHeaderNames.CONTENT_TYPE,
-                contentType.mediaType().toString());
+                contentType.value());
         return self();
     }
 
     @Override
-    public ContentType contentType() {
+    public MediaType contentType() {
         return contentType;
     }
 
     @Override
-    public ExecutableRestRequest accept(AcceptType... acceptTypes) {
+    public ExecutableRestRequest accept(MediaType... acceptTypes) {
         Checks.checkNotNull(acceptTypes, "acceptTypes");
         this.acceptTypes = acceptTypes;
+        processAcceptHeader();
         return self();
     }
 
-    private void fillAcceptHeader() {
+    private void processAcceptHeader() {
         if (this.acceptTypes == null || this.acceptTypes.length == 0) {
+            headers().remove(HttpHeaderNames.ACCEPT);
             return;
         }
         StringBuilder acceptBuilder = new StringBuilder();
 
         for (int i = 0; i < this.acceptTypes.length; i++) {
-            AcceptType acceptType = this.acceptTypes[i];
+            MediaType acceptType = this.acceptTypes[i];
             if (acceptType == null) {
                 throw new NullPointerException("acceptType is null when index is equal to" + i);
-            }
-            MediaType mediaType = acceptType.mediaType();
-            if (mediaType == AcceptType.EMPTY_MEDIA_TYPE) {
-                continue;
             }
             if (acceptBuilder.length() > 0) {
                 acceptBuilder.append(",");
             }
-            acceptBuilder.append(mediaType.toString());
+            acceptBuilder.append(acceptType.value());
         }
 
-        if (acceptBuilder.length() > 0) {
+        int length = acceptBuilder.length();
+        if (length == 0) {
+            headers().remove(HttpHeaderNames.ACCEPT);
+        } else if (acceptBuilder.length() > 0) {
             headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
         }
     }
 
     @Override
-    public AcceptType[] acceptTypes() {
+    public MediaType[] acceptTypes() {
         return acceptTypes;
     }
 
@@ -290,6 +294,26 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     public ExecutableRestRequest setHeader(CharSequence name, CharSequence value) {
         target.setHeader(name, value);
         return self();
+    }
+
+    @Override
+    public ExecutableRestRequest encoder(Encoder encoder) {
+        this.encoder = encoder;
+        return self();
+    }
+
+    public Encoder encoder() {
+        return encoder;
+    }
+
+    @Override
+    public ExecutableRestRequest decoder(Decoder decoder) {
+        this.decoder = decoder;
+        return self();
+    }
+
+    public Decoder decoder() {
+        return decoder;
     }
 
     private ExecutableRestRequest self() {

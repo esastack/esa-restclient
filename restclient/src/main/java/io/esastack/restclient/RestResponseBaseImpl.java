@@ -19,12 +19,12 @@ import java.util.Map;
 
 public class RestResponseBaseImpl implements RestResponseBase {
 
-    private final RestRequest request;
+    private final RestRequestBase request;
     private final HttpResponse response;
     private final RestClientOptions clientOptions;
 
     RestResponseBaseImpl(
-            RestRequest request,
+            RestRequestBase request,
             HttpResponse response,
             RestClientOptions clientOptions) {
         Checks.checkNotNull(request, "request");

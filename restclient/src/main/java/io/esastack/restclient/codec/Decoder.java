@@ -1,35 +1,31 @@
 package io.esastack.restclient.codec;
 
-import esa.commons.annotation.Internal;
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.httpclient.core.util.Ordered;
 
 import java.lang.reflect.Type;
 
 /**
- * <code>Decoder</code> is designed for the conversion of a {@link ResponseBodyContent} to a Java type.
- * <p>
- * If you want to implement a <code>Decoder</code>, please implement the {@link ByteDecoder} interface
- * inherited from the <code>Decoder</code> instead of directly using the internal interface of the
- * <code>Decoder</code>
+ * <code>Decoder</code> is designed for the conversion from {@code bodyContent} to {@link DecodeResult}.
  *
- * @see ResponseBodyContent
- * @see ByteDecoder
+ * @see DecodeResult
  */
-@Internal
-public interface Decoder {
+public interface Decoder extends Ordered {
 
     /**
-     * Decode the {@link ResponseBodyContent} into a Java object
+     * Decode the bodyContent to {@link DecodeResult}.The call of {@code DecodeResult.isSuccess()} will return false
+     * when the Decoder can,t decode the bodyContent,otherwise it will return true,and the decoded result
+     * can be get by {@code DecodeResult.getResult()}
      *
-     * @param mediaType the media type of the HTTP response
-     * @param headers   the headers of the HTTP response
-     * @param content   the {@link ResponseBodyContent} of the HTTP response
-     * @param type      the type that is to be decode from the content.
-     * @param <T>       generic type
-     * @return decoded value
+     * @param mediaType    the media type of the HTTP response
+     * @param headers      the headers of the HTTP response
+     * @param responseBody the body of the HTTP response
+     * @param type         the class will be decoded from the bodyContent.
+     * @param genericType  the genericType will be decoded from the bodyContent.
+     * @return decoded result
      * @throws Exception error
      */
-    <T> T decode(MediaType mediaType, HttpHeaders headers, ResponseBodyContent<?> content, Type type) throws Exception;
+    <T> DecodeResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseBody<?> responseBody,
+                               Class<T> type, Type genericType) throws Exception;
 }

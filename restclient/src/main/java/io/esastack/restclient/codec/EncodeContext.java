@@ -1,11 +1,12 @@
 package io.esastack.restclient.codec;
 
-import io.esastack.restclient.RequestBodyContent;
 import io.esastack.restclient.RestRequest;
 
+import java.lang.reflect.Type;
+
 /**
- * Context class used by {@link EncodeAdvice} to intercept calls to
- * {@link Encoder#encode}
+ * Context class used by {@link EncodeAdvice} to intercept the call of
+ * {@link Encoder#encode}.
  * The member variables in this context class correspond to the
  * parameters of the intercepted method {@link Encoder#encode}
  *
@@ -17,6 +18,10 @@ public interface EncodeContext {
     RestRequest request();
 
     Object entity();
+
+    Class<?> type();
+
+    Type genericType();
 
     /**
      * set entity,this method is not safe for use by multiple threads
@@ -32,8 +37,8 @@ public interface EncodeContext {
      * the call to this method in the last of the chain will invoke
      * the wrapped {@link Encoder#encode} method.
      *
-     * @return encoded requestBodyContent
+     * @return encoded requestBody
      * @throws Exception error
      */
-    RequestBodyContent<?> proceed() throws Exception;
+    RequestBody<?> proceed() throws Exception;
 }

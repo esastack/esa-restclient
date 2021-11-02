@@ -1,6 +1,7 @@
 package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.Request;
 
 import java.util.List;
@@ -32,9 +33,9 @@ public interface RestRequest extends Request {
 
     RestRequest cookies(List<Cookie> cookies);
 
-    RestRequest contentType(ContentType contentType);
+    RestRequest contentType(MediaType contentType);
 
-    RestRequest accept(AcceptType... acceptTypes);
+    RestRequest accept(MediaType... acceptTypes);
 
     List<Cookie> removeCookies(String name);
 
@@ -42,7 +43,7 @@ public interface RestRequest extends Request {
 
     Map<String, List<Cookie>> cookiesMap();
 
-    ContentType contentType();
+    MediaType contentType();
 
-    AcceptType[] acceptTypes();
+    MediaType[] acceptTypes();
 }

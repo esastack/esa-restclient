@@ -10,7 +10,9 @@ import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
 import io.esastack.restclient.codec.DecodeAdvice;
+import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
+import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.ClientInterceptor;
 
 /**
@@ -61,6 +63,10 @@ public interface RestClientOptions {
     EncodeAdvice[] unmodifiableEncodeAdvices();
 
     DecodeAdvice[] unmodifiableDecodeAdvices();
+
+    Encoder[] unmodifiableEncoders();
+
+    Decoder[] unmodifiableDecoders();
 
     ClientInterceptor[] unmodifiableInterceptors();
 }

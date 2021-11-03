@@ -3,10 +3,12 @@ package io.esastack.restclient.codec.impl;
 import esa.commons.Checks;
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
+import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeContext;
-import io.esastack.restclient.codec.EncodeResult;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.GenericEntity;
 import io.esastack.restclient.codec.RequestBody;
@@ -23,15 +25,16 @@ public final class EncodeContextImpl implements EncodeContext {
     private int adviceIndex = 0;
     private Object entity;
 
-    public EncodeContextImpl(RestRequest request, Object entity, EncodeAdvice[] advices,
-                             Encoder encoderOfRequest, Encoder[] encodersOfClient) {
-        Checks.checkNotNull(advices, "advices");
+    public EncodeContextImpl(RestRequestBase request, Object entity, RestClientOptions clientOptions) {
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(entity, "entity");
+        Checks.checkNotNull(clientOptions, "clientOptions");
+        this.encodersOfClient = clientOptions.unmodifiableEncoders();
         Checks.checkNotNull(encodersOfClient, "encodersOfClient");
         this.request = request;
         this.entity = entity;
-        this.advices = advices;
-        this.encoderOfRequest = encoderOfRequest;
-        this.encodersOfClient = encodersOfClient;
+        this.advices = clientOptions.unmodifiableEncodeAdvices();
+        this.encoderOfRequest = request.encoder();
     }
 
     @Override
@@ -105,7 +108,7 @@ public final class EncodeContextImpl implements EncodeContext {
 
     private RequestBody<?> encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
                                                     Class<?> type, Type genericType) throws Exception {
-        EncodeResult encodeResult = encoderOfRequest.encode(contentType, headers, entity,
+        CodecResult<RequestBody<?>> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
                 type, genericType);
 
         if (encodeResult == null) {
@@ -131,7 +134,7 @@ public final class EncodeContextImpl implements EncodeContext {
                                                     Class<?> type, Type genericType) throws Exception {
 
         for (Encoder encoder : encodersOfClient) {
-            EncodeResult encodeResult = encoder.encode(contentType, headers, entity,
+            CodecResult<RequestBody<?>> encodeResult = encoder.encode(contentType, headers, entity,
                     type, genericType);
 
             if (encodeResult.isSuccess()) {

@@ -10,7 +10,7 @@ import io.esastack.restclient.codec.RequestBody;
 
 import java.lang.reflect.Type;
 
-public class FormURLEncodedEncoder implements Encoder {
+public class MultipartEncoder implements Encoder {
 
     @Override
     public CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers,

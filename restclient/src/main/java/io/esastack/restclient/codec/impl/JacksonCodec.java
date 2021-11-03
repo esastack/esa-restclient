@@ -48,17 +48,15 @@ public class JacksonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) throws JsonProcessingException {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers,
+                           Object entity, Class<?> type, Type genericType) throws JsonProcessingException {
         return objectMapper.writeValueAsBytes(entity);
     }
 
     @Override
-    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) throws IOException {
-        if (data == null || type == null) {
-            return null;
-        }
-
-        return objectMapper.readValue(data, getJavaType(type));
+    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] body,
+                          Class<T> type, Type genericType) throws IOException {
+        return objectMapper.readValue(body, getJavaType(type));
     }
 
     public static synchronized ObjectMapper getDefaultMapper() {

@@ -1,19 +1,15 @@
 package io.esastack.restclient;
 
 import esa.commons.Checks;
-import esa.commons.StringUtils;
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
-import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.GenericType;
 import io.esastack.restclient.codec.impl.DecodeContextImpl;
 import io.esastack.restclient.utils.CookiesUtil;
-import io.netty.handler.codec.http.HttpHeaderNames;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -55,26 +51,28 @@ public class RestResponseBaseImpl implements RestResponseBase {
         return response.headers();
     }
 
-    @Override
-    public <T> T bodyToEntity(Class<T> entityClass) throws Exception {
-        return bodyToEntity((Type) entityClass);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T bodyToEntity(Type type) throws Exception {
-        final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
-        MediaType mediaType = null;
-        if (StringUtils.isNotBlank(mediaTypeValue)) {
-            mediaType = MediaTypeUtil.parseMediaType(mediaTypeValue);
-        }
-
+    public <T> T bodyToEntity(Class<T> entityClass) throws Exception {
         final DecodeContext decodeContext = new DecodeContextImpl(
                 request,
                 this,
                 clientOptions,
-                type,
-                mediaType,
+                entityClass,
+                entityClass,
+                response.body().getByteBuf());
+        return (T) decodeContext.proceed();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T bodyToEntity(GenericType<T> genericType) throws Exception {
+        final DecodeContext decodeContext = new DecodeContextImpl(
+                request,
+                this,
+                clientOptions,
+                genericType.getRawType(),
+                genericType.getType(),
                 response.body().getByteBuf());
         return (T) decodeContext.proceed();
     }

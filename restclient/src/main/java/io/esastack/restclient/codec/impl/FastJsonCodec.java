@@ -32,16 +32,15 @@ public class FastJsonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] doEncode(MediaType mediaType, HttpHeaders headers, Object entity) {
+    public byte[] doEncode(MediaType mediaType, HttpHeaders headers,
+                           Object entity, Class<?> type, Type genericType) {
         return JSON.toJSONBytes(entity);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] data, Type type) {
-        if (data == null || type == null) {
-            return null;
-        }
-
-        return JSON.parseObject(data, type);
+    public <T> T doDecode(MediaType mediaType, HttpHeaders headers, byte[] body,
+                          Class<T> type, Type genericType) {
+        return (T) JSON.parseObject(body, type);
     }
 }

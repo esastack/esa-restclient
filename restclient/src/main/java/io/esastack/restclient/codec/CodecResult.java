@@ -1,11 +1,11 @@
-package io.esastack.restclient;
+package io.esastack.restclient.codec;
 
-public class CodecResult<T> {
+public final class CodecResult<T> {
 
     private boolean isSuccess;
     private T result;
 
-    protected CodecResult(boolean isSuccess, T result) {
+    private CodecResult(boolean isSuccess, T result) {
         this.isSuccess = isSuccess;
         this.result = result;
     }
@@ -26,5 +26,13 @@ public class CodecResult<T> {
      */
     public T getResult() {
         return result;
+    }
+
+    public static <T> CodecResult<T> success(T result) {
+        return new CodecResult<>(true, result);
+    }
+
+    public static <T> CodecResult<T> fail() {
+        return new CodecResult<>(false, null);
     }
 }

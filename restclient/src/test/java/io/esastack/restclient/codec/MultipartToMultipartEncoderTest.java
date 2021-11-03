@@ -2,16 +2,14 @@ package io.esastack.restclient.codec;
 
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
-import io.esastack.restclient.codec.impl.MultipartToMultipartEncoder;
+import io.esastack.restclient.codec.impl.MultipartEncoder;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 class MultipartToMultipartEncoderTest {
 
     @Test
     void testEncode() {
-        MultipartToMultipartEncoder encoder = new MultipartToMultipartEncoder();
+        MultipartEncoder encoder = new MultipartEncoder();
         then(encoder.encode(null, null, null).content())
                 .isEqualTo(null);
 

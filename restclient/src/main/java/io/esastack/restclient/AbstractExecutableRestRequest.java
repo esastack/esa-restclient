@@ -9,15 +9,14 @@ import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
-import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.util.Futures;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
+import io.esastack.restclient.codec.RequestBody;
 import io.esastack.restclient.codec.impl.EncodeContextImpl;
 import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.utils.CookiesUtil;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,26 +125,23 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     private boolean hasBody() {
-        HttpMethod method = method();
-        return method != HttpMethod.GET &&
-                method != HttpMethod.HEAD &&
-                method != HttpMethod.OPTIONS;
+        return entity() != null;
     }
 
-    private RequestBodyContent<?> encode() throws Exception {
-        return new EncodeContextImpl(this, entity(), clientOptions.unmodifiableEncodeAdvices()).proceed();
+    private RequestBody<?> encode() throws Exception {
+        return new EncodeContextImpl(this, entity(), clientOptions).proceed();
     }
 
-    private void fillBody(RequestBodyContent<?> content) {
-        Object data = content.content();
-        if (data == null || data instanceof byte[]) {
-            target.body((byte[]) data);
-        } else if (data instanceof File) {
-            target.body((File) data);
-        } else if (data instanceof MultipartBody) {
-            target.multipart((MultipartBody) data);
+    private void fillBody(RequestBody<?> requestBody) {
+        if (requestBody.isBytes()) {
+            target.body(requestBody.getBytes());
+        } else if (requestBody.isFile()) {
+            target.body(requestBody.getFile());
+        } else if (requestBody.isMultipart()) {
+            target.multipart(requestBody.getMultipart());
         } else {
-            throw new IllegalStateException("Illegal content type:" + data.getClass());
+            throw new IllegalStateException("Illegal requestBody type! type of requestBody: " + requestBody.getType()
+                    + " , content of requestBody: " + requestBody.getContent());
         }
     }
 
@@ -302,6 +298,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return self();
     }
 
+    @Override
     public Encoder encoder() {
         return encoder;
     }
@@ -312,6 +309,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return self();
     }
 
+    @Override
     public Decoder decoder() {
         return decoder;
     }

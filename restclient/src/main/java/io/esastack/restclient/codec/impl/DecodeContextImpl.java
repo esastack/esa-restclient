@@ -1,5 +1,6 @@
 package io.esastack.restclient.codec.impl;
 
+import esa.commons.Checks;
 import esa.commons.StringUtils;
 import esa.commons.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
@@ -8,9 +9,9 @@ import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.DecodeContext;
-import io.esastack.restclient.codec.DecodeResult;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.ResponseBody;
 import io.netty.buffer.ByteBuf;
@@ -40,7 +41,11 @@ public class DecodeContextImpl implements DecodeContext {
                              Class<?> type,
                              Type genericType,
                              ByteBuf byteBuf) {
-
+        Checks.checkNotNull(request, "request");
+        Checks.checkNotNull(response, "response");
+        Checks.checkNotNull(clientOptions, "clientOptions");
+        Checks.checkNotNull(type, "type");
+        Checks.checkNotNull(byteBuf, "byteBuf");
         this.request = request;
         this.response = response;
         this.advices = clientOptions.unmodifiableDecodeAdvices();
@@ -111,11 +116,11 @@ public class DecodeContextImpl implements DecodeContext {
 
     private Object decodeByDecoderOfRequest() throws Exception {
         HttpHeaders headers = response.headers();
-        DecodeResult<?> decodeResult = decoderOfRequest.decode(contentType, headers, responseBody,
+        CodecResult<?> CodecResult = decoderOfRequest.decode(contentType, headers, responseBody,
                 type, genericType);
 
-        if (decodeResult == null) {
-            throw new CodecException("DecodeResult should never be null!"
+        if (CodecResult == null) {
+            throw new CodecException("CodecResult should never be null!"
                     + " Please set correct decoder to the request!"
                     + " decoder of request : " + decoderOfRequest
                     + " , headers of responses : " + headers
@@ -123,8 +128,8 @@ public class DecodeContextImpl implements DecodeContext {
                     + " , genericType : " + genericType);
         }
 
-        if (decodeResult.isSuccess()) {
-            return decodeResult.getResult();
+        if (CodecResult.isSuccess()) {
+            return CodecResult.getResult();
         }
 
         throw new CodecException("Decode is not success by decoderOfRequest,"
@@ -135,15 +140,16 @@ public class DecodeContextImpl implements DecodeContext {
                 + " , genericType : " + genericType);
     }
 
+    @SuppressWarnings("unchecked")
     private Object decodeByDecodersOfClient() throws Exception {
         HttpHeaders headers = response.headers();
 
         for (Decoder decoder : decodersOfClient) {
-            DecodeResult<?> decodeResult = decoder.decode(contentType, headers, responseBody,
+            CodecResult<?> CodecResult = decoder.decode(contentType, headers, responseBody,
                     type, genericType);
 
-            if (decodeResult.isSuccess()) {
-                return decodeResult.getResult();
+            if (CodecResult.isSuccess()) {
+                return CodecResult.getResult();
             }
         }
         throw new CodecException("There is no suitable decoder for this response in those decoders of client,"

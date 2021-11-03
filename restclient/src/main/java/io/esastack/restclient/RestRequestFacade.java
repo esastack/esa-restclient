@@ -14,7 +14,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
      * Fills the request's entity with given entity.The entity will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.EncodeResult} by {@link Encoder#encode}.
+     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
      *
      * @param entity entity
      * @return ExecutableRestRequest
@@ -23,7 +23,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
      * Fills the request's entity with given entity.The entity will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.EncodeResult} by {@link Encoder#encode}.
+     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
      *
      * @param entity entity
      * @return ExecutableRestRequest
@@ -32,7 +32,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
      * Fills the request's entity with given content.The content will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.EncodeResult} by {@link Encoder#encode}.
+     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
      *
      * @param content content
      * @return ExecutableRestRequest
@@ -41,7 +41,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
      * Fills the request's entity with given data.The data will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.EncodeResult} by {@link Encoder#encode}.
+     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
      *
      * @param data data
      * @return ExecutableRestRequest
@@ -50,7 +50,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
      * Fills the request's entity with given file.The file will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.EncodeResult} by {@link Encoder#encode}.
+     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
      *
      * @param file data
      * @return RestFileRequest

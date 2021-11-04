@@ -20,6 +20,8 @@ import io.esastack.restclient.exec.ClientInterceptor;
  */
 public interface RestClientOptions {
 
+    String name();
+
     HostResolver resolver();
 
     boolean ish2ClearTextUpgrade();

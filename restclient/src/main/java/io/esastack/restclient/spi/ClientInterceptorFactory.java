@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.spi.impl;
+package io.esastack.restclient.spi;
 
-import esa.commons.spi.SpiLoader;
+
+import esa.commons.spi.SPI;
+import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.exec.ClientInterceptor;
-import io.esastack.restclient.spi.InterceptorFactory;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
-public class InterceptorFactoryImpl implements InterceptorFactory {
-
-    @Override
-    public Collection<ClientInterceptor> interceptors() {
-        List<ClientInterceptor> interceptors = SpiLoader.getAll(ClientInterceptor.class);
-        return interceptors == null
-                ? Collections.emptyList() : Collections.unmodifiableList(interceptors);
-    }
+@SPI
+public interface ClientInterceptorFactory {
+    Collection<ClientInterceptor> interceptors(RestClientOptions clientOptions);
 }

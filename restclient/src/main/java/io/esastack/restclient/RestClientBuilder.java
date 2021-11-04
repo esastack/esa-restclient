@@ -2,6 +2,7 @@ package io.esastack.restclient;
 
 import esa.commons.Checks;
 import esa.commons.http.HttpVersion;
+import esa.commons.spi.SpiLoader;
 import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.Reusable;
 import io.esastack.httpclient.core.config.Decompression;
@@ -18,9 +19,11 @@ import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.ClientInterceptor;
+import io.esastack.restclient.spi.ClientInterceptorFactory;
 import io.esastack.restclient.spi.DecodeAdviceFactory;
+import io.esastack.restclient.spi.DecoderFactory;
 import io.esastack.restclient.spi.EncodeAdviceFactory;
-import io.esastack.restclient.spi.impl.InterceptorFactoryImpl;
+import io.esastack.restclient.spi.EncoderFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -32,12 +35,15 @@ import java.util.List;
  */
 public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientOptions {
 
+    public static final String CLIENT = "RestClient";
+
     private final HttpClientBuilder httpClientBuilder;
     private final List<ClientInterceptor> interceptors = new LinkedList<>();
-    private final LinkedList<DecodeAdvice> decodeAdvices = new LinkedList<>();
-    private final LinkedList<EncodeAdvice> encodeAdvices = new LinkedList<>();
-    private final LinkedList<Decoder> decoders = new LinkedList<>();
-    private final LinkedList<Encoder> encoders = new LinkedList<>();
+    private final List<DecodeAdvice> decodeAdvices = new LinkedList<>();
+    private final List<EncodeAdvice> encodeAdvices = new LinkedList<>();
+    private final List<Decoder> decoders = new LinkedList<>();
+    private final List<Encoder> encoders = new LinkedList<>();
+    private String name = CLIENT;
 
     private DecodeAdvice[] unmodifiableDecodeAdvices
             = buildUnmodifiableDecodeAdvices();
@@ -56,6 +62,11 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     RestClientBuilder(HttpClientBuilder httpClientBuilder) {
         this.httpClientBuilder = httpClientBuilder.copy();
+    }
+
+    public RestClientBuilder name(String name) {
+        this.name = name;
+        return self();
     }
 
     public RestClientBuilder resolver(HostResolver resolver) {
@@ -229,6 +240,11 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
+    @Override
+    public String name() {
+        return name;
+    }
+
     //***********************************       GET METHODS        ***************************************//
     @Override
     public HostResolver resolver() {
@@ -366,42 +382,71 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
      */
     public RestClient build() {
         RestClientBuilder copiedRestClientBuilder = copy();
-
         return new RestClientImpl(copiedRestClientBuilder,
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
     private DecodeAdvice[] buildUnmodifiableDecodeAdvices() {
         final List<DecodeAdvice> decodeAdvices0 = new LinkedList<>(decodeAdvices);
-        decodeAdvices0.addAll(DecodeAdviceFactory.DEFAULT.decodeAdvices());
+
+        SpiLoader.cached(DecodeAdviceFactory.class)
+                .getByGroup(name(), true)
+                .forEach(decodeAdviceFactory ->
+                        decodeAdvices0.addAll(decodeAdviceFactory.decodeAdvices(this))
+                );
+
         OrderedComparator.sort(decodeAdvices0);
         return Collections.unmodifiableList(decodeAdvices0).toArray(new DecodeAdvice[0]);
     }
 
     private EncodeAdvice[] buildUnmodifiableEncodeAdvices() {
         final List<EncodeAdvice> encodeAdvices0 = new LinkedList<>(encodeAdvices);
-        encodeAdvices0.addAll(EncodeAdviceFactory.DEFAULT.encodeAdvices());
+
+        SpiLoader.cached(EncodeAdviceFactory.class)
+                .getByGroup(name(), true)
+                .forEach(encodeAdviceFactory ->
+                        encodeAdvices0.addAll(encodeAdviceFactory.encodeAdvices(this))
+                );
+
         OrderedComparator.sort(encodeAdvices0);
         return Collections.unmodifiableList(encodeAdvices0).toArray(new EncodeAdvice[0]);
     }
 
     private ClientInterceptor[] buildUnmodifiableInterceptors() {
         final List<ClientInterceptor> interceptors0 = new LinkedList<>(interceptors);
-        interceptors0.addAll(InterceptorFactoryImpl.DEFAULT.interceptors());
+
+        SpiLoader.cached(ClientInterceptorFactory.class)
+                .getByGroup(name(), true)
+                .forEach(clientInterceptorFactory ->
+                        interceptors0.addAll(clientInterceptorFactory.interceptors(this))
+                );
+
         OrderedComparator.sort(interceptors0);
         return Collections.unmodifiableList(interceptors0).toArray(new ClientInterceptor[0]);
     }
 
     private Encoder[] buildUnmodifiableEncoders() {
         final List<Encoder> encoders0 = new LinkedList<>(encoders);
-        //TODO 增加SPI
+
+        SpiLoader.cached(EncoderFactory.class)
+                .getByGroup(name(), true)
+                .forEach(encoderFactory ->
+                        encoders0.addAll(encoderFactory.encoders(this))
+                );
+
         OrderedComparator.sort(encoders0);
         return Collections.unmodifiableList(encoders0).toArray(new Encoder[0]);
     }
 
     private Decoder[] buildUnmodifiableDecoders() {
         final List<Decoder> decoders0 = new LinkedList<>(decoders);
-        //TODO 增加SPI
+
+        SpiLoader.cached(DecoderFactory.class)
+                .getByGroup(name(), true)
+                .forEach(decoderFactory ->
+                        decoders0.addAll(decoderFactory.decoders(this))
+                );
+
         OrderedComparator.sort(decoders0);
         return Collections.unmodifiableList(decoders0).toArray(new Decoder[0]);
     }

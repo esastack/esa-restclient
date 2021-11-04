@@ -225,8 +225,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         Checks.checkNotNull(contentType, "contentType");
 
         this.contentType = contentType;
-        headers().set(HttpHeaderNames.CONTENT_TYPE,
-                contentType.value());
+        headers().set(HttpHeaderNames.CONTENT_TYPE, contentType.value());
         return self();
     }
 

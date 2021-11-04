@@ -1,12 +1,12 @@
 package io.esastack.restclient.spi;
 
+import esa.commons.spi.SPI;
+import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.codec.EncodeAdvice;
-import io.esastack.restclient.spi.impl.EncodeAdviceFactoryImpl;
 
 import java.util.Collection;
 
+@SPI
 public interface EncodeAdviceFactory {
-    EncodeAdviceFactory DEFAULT = new EncodeAdviceFactoryImpl();
-
-    Collection<EncodeAdvice> encodeAdvices();
+    Collection<EncodeAdvice> encodeAdvices(RestClientOptions clientOptions);
 }

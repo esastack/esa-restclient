@@ -18,7 +18,7 @@ public class CookiesUtil {
     private CookiesUtil() {
     }
 
-    public static void cookie(Cookie cookie, HttpHeaders headers, boolean isResponse) {
+    private static void cookie(Cookie cookie, HttpHeaders headers, boolean isResponse) {
         if (cookie == null) {
             return;
         }
@@ -33,8 +33,8 @@ public class CookiesUtil {
         cookie(new CookieImpl(name, value), headers, isResponse);
     }
 
-    public static void cookies(List<Cookie> cookies, HttpHeaders headers, boolean isResponse) {
-        if (cookies == null || cookies.size() == 0) {
+    public static void cookie(HttpHeaders headers, boolean isResponse, Cookie... cookies) {
+        if (cookies == null || cookies.length == 0) {
             return;
         }
 

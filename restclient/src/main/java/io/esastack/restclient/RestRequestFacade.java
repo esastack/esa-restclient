@@ -7,7 +7,6 @@ import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.GenericEntity;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public interface RestRequestFacade extends ExecutableRestRequest {
@@ -72,13 +71,10 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade addParam(String name, String value);
 
     @Override
-    RestRequestFacade cookie(Cookie cookie);
-
-    @Override
     RestRequestFacade cookie(String name, String value);
 
     @Override
-    RestRequestFacade cookies(List<Cookie> cookies);
+    RestRequestFacade cookie(Cookie... cookies);
 
     @Override
     RestRequestFacade contentType(MediaType contentType);

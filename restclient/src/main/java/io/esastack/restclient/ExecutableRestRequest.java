@@ -5,7 +5,6 @@ import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
@@ -35,13 +34,10 @@ public interface ExecutableRestRequest extends RestRequestBase {
     ExecutableRestRequest addParam(String name, String value);
 
     @Override
-    ExecutableRestRequest cookie(Cookie cookie);
-
-    @Override
     ExecutableRestRequest cookie(String name, String value);
 
     @Override
-    ExecutableRestRequest cookies(List<Cookie> cookies);
+    ExecutableRestRequest cookie(Cookie... cookies);
 
     @Override
     ExecutableRestRequest contentType(MediaType contentType);

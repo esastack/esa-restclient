@@ -13,7 +13,6 @@ import io.esastack.restclient.codec.GenericEntity;
 import io.esastack.restclient.exec.RestRequestExecutor;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public class RestCompositeRequest extends AbstractExecutableRestRequest
@@ -151,20 +150,14 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest cookie(Cookie cookie) {
-        super.cookie(cookie);
-        return self();
-    }
-
-    @Override
     public RestCompositeRequest cookie(String name, String value) {
         super.cookie(name, value);
         return self();
     }
 
     @Override
-    public RestCompositeRequest cookies(List<Cookie> cookies) {
-        super.cookies(cookies);
+    public RestCompositeRequest cookie(Cookie... cookies) {
+        super.cookie(cookies);
         return self();
     }
 

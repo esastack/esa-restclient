@@ -188,20 +188,14 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public ExecutableRestRequest cookie(Cookie cookie) {
-        CookiesUtil.cookie(cookie, headers(), false);
-        return self();
-    }
-
-    @Override
     public ExecutableRestRequest cookie(String name, String value) {
         CookiesUtil.cookie(name, value, headers(), false);
         return self();
     }
 
     @Override
-    public ExecutableRestRequest cookies(List<Cookie> cookies) {
-        CookiesUtil.cookies(cookies, headers(), false);
+    public ExecutableRestRequest cookie(Cookie... cookies) {
+        CookiesUtil.cookie(headers(), false, cookies);
         return self();
     }
 

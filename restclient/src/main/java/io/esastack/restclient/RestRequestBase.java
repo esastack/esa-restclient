@@ -6,7 +6,6 @@ import io.esastack.httpclient.core.RequestBaseConfigure;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 
-import java.util.List;
 import java.util.Map;
 
 public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
@@ -46,13 +45,10 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     RestRequestBase removeHeader(CharSequence name);
 
     @Override
-    RestRequestBase cookie(Cookie cookie);
-
-    @Override
     RestRequestBase cookie(String name, String value);
 
     @Override
-    RestRequestBase cookies(List<Cookie> cookies);
+    RestRequestBase cookie(Cookie... cookies);
 
     @Override
     RestRequestBase contentType(MediaType contentType);

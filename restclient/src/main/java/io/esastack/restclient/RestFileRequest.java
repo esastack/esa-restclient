@@ -6,7 +6,6 @@ import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public interface RestFileRequest extends ExecutableRestRequest {
@@ -20,13 +19,10 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest addParam(String name, String value);
 
     @Override
-    RestFileRequest cookie(Cookie cookie);
-
-    @Override
     RestFileRequest cookie(String name, String value);
 
     @Override
-    RestFileRequest cookies(List<Cookie> cookies);
+    RestFileRequest cookie(Cookie... cookies);
 
     @Override
     RestFileRequest contentType(MediaType contentType);

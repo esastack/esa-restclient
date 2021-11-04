@@ -7,7 +7,6 @@ import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public interface RestMultipartRequest extends ExecutableRestRequest, MultipartConfigure {
@@ -75,13 +74,10 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
     RestMultipartRequest addParam(String name, String value);
 
     @Override
-    RestMultipartRequest cookie(Cookie cookie);
-
-    @Override
     RestMultipartRequest cookie(String name, String value);
 
     @Override
-    RestMultipartRequest cookies(List<Cookie> cookies);
+    RestMultipartRequest cookie(Cookie... cookies);
 
     @Override
     RestMultipartRequest contentType(MediaType contentType);

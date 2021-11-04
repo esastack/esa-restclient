@@ -27,11 +27,9 @@ public interface RestRequest extends Request {
     @Override
     RestRequest removeHeader(CharSequence name);
 
-    RestRequest cookie(Cookie cookie);
-
     RestRequest cookie(String name, String value);
 
-    RestRequest cookies(List<Cookie> cookies);
+    RestRequest cookie(Cookie... cookies);
 
     RestRequest contentType(MediaType contentType);
 

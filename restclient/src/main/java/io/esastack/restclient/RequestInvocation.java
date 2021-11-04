@@ -5,7 +5,7 @@ import io.esastack.restclient.exec.InvocationChain;
 
 import java.util.concurrent.CompletionStage;
 
-public class RequestInvocation implements InvocationChain {
+public final class RequestInvocation implements InvocationChain {
 
     @Override
     public CompletionStage<RestResponse> proceed(RestRequest request) {

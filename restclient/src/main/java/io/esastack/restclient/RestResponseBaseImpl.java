@@ -78,26 +78,6 @@ public class RestResponseBaseImpl implements RestResponseBase {
     }
 
     @Override
-    public void cookie(Cookie cookie) {
-        CookiesUtil.cookie(cookie, headers(), true);
-    }
-
-    @Override
-    public void cookie(String name, String value) {
-        CookiesUtil.cookie(name, value, headers(), true);
-    }
-
-    @Override
-    public void cookies(List<Cookie> cookies) {
-        CookiesUtil.cookies(cookies, headers(), true);
-    }
-
-    @Override
-    public List<Cookie> removeCookies(String name) {
-        return CookiesUtil.removeCookies(name, headers(), true);
-    }
-
-    @Override
     public List<Cookie> cookies(String name) {
         return CookiesUtil.getCookies(name, headers(), true);
     }

@@ -6,7 +6,7 @@ import io.esastack.restclient.RestResponse;
 
 import java.util.concurrent.CompletionStage;
 
-class InvocationChainImpl implements InvocationChain {
+final class InvocationChainImpl implements InvocationChain {
 
     private final ClientInterceptor current;
     private final InvocationChain next;

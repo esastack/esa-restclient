@@ -7,7 +7,7 @@ import io.esastack.restclient.RestResponseBase;
 
 import java.util.concurrent.CompletionStage;
 
-public class RestRequestExecutorImpl implements RestRequestExecutor {
+public final class RestRequestExecutorImpl implements RestRequestExecutor {
 
     private final InvocationChain invocationChain;
 

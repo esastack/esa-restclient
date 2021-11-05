@@ -25,9 +25,9 @@ public class StringCodec implements Encoder, Decoder {
                 charset = mediaType.charset();
             }
             if (charset == null) {
-                return CodecResult.success((T) new String(responseBody.getBytes(), StandardCharsets.UTF_8));
+                return CodecResult.success((T) new String((byte[]) responseBody.content(), StandardCharsets.UTF_8));
             } else {
-                return CodecResult.success((T) new String(responseBody.getBytes(), charset));
+                return CodecResult.success((T) new String((byte[]) responseBody.content(), charset));
             }
         }
         return CodecResult.fail();
@@ -35,7 +35,7 @@ public class StringCodec implements Encoder, Decoder {
 
     @Override
     public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
-                                              Object entity, Class<?> type, Type genericType) {
+                                           Object entity, Class<?> type, Type genericType) {
         if (String.class.isAssignableFrom(type)) {
             Charset charset = null;
             if (mediaType != null) {

@@ -1,5 +1,6 @@
 package io.esastack.restclient.it;
 
+import esa.commons.NetworkUtils;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.MediaType;
@@ -10,7 +11,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 class MockServerUtil {
 
-    public static int PORT = 13333;
+    public static int PORT = NetworkUtils.selectRandomPort();
     private static volatile ClientAndServer mockServer;
 
     public static ClientAndServer startMockServer(byte[] requestBody, byte[] responseBody,

@@ -116,10 +116,10 @@ public class DecodeContextImpl implements DecodeContext {
 
     private Object decodeByDecoderOfRequest() throws Exception {
         HttpHeaders headers = response.headers();
-        CodecResult<?> CodecResult = decoderOfRequest.decode(contentType, headers, responseBody,
+        CodecResult<?> codecResult = decoderOfRequest.decode(contentType, headers, responseBody,
                 type, genericType);
 
-        if (CodecResult == null) {
+        if (codecResult == null) {
             throw new CodecException("CodecResult should never be null!"
                     + " Please set correct decoder to the request!"
                     + " decoder of request : " + decoderOfRequest
@@ -128,8 +128,8 @@ public class DecodeContextImpl implements DecodeContext {
                     + " , genericType : " + genericType);
         }
 
-        if (CodecResult.isSuccess()) {
-            return CodecResult.getResult();
+        if (codecResult.isSuccess()) {
+            return codecResult.getResult();
         }
 
         throw new CodecException("Decode is not success by decoderOfRequest,"
@@ -140,16 +140,15 @@ public class DecodeContextImpl implements DecodeContext {
                 + " , genericType : " + genericType);
     }
 
-    @SuppressWarnings("unchecked")
     private Object decodeByDecodersOfClient() throws Exception {
         HttpHeaders headers = response.headers();
 
         for (Decoder decoder : decodersOfClient) {
-            CodecResult<?> CodecResult = decoder.decode(contentType, headers, responseBody,
+            CodecResult<?> codecResult = decoder.decode(contentType, headers, responseBody,
                     type, genericType);
 
-            if (CodecResult.isSuccess()) {
-                return CodecResult.getResult();
+            if (codecResult.isSuccess()) {
+                return codecResult.getResult();
             }
         }
         throw new CodecException("There is no suitable decoder for this response in those decoders of client,"

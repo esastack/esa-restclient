@@ -2,19 +2,23 @@ package io.esastack.restclient.codec;
 
 public class Body<T> {
 
-    private byte type;
+    public enum Type {
+        FILE, BYTES, MULTIPART
+    }
+
+    private Type type;
     private T content;
 
-    protected Body(byte type, T content) {
+    protected Body(Type type, T content) {
         this.type = type;
         this.content = content;
     }
 
-    public byte getType() {
+    public final Type type() {
         return type;
     }
 
-    public T getContent() {
+    public final T content() {
         return content;
     }
 }

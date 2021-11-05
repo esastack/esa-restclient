@@ -9,7 +9,9 @@ import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
+import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.util.Futures;
+import io.esastack.restclient.codec.Body;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestBody;
@@ -17,6 +19,7 @@ import io.esastack.restclient.codec.impl.EncodeContextImpl;
 import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.utils.CookiesUtil;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,15 +136,15 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     private void fillBody(RequestBody<?> requestBody) {
-        if (requestBody.isBytes()) {
-            target.body(requestBody.getBytes());
-        } else if (requestBody.isFile()) {
-            target.body(requestBody.getFile());
-        } else if (requestBody.isMultipart()) {
-            target.multipart(requestBody.getMultipart());
+        if (requestBody.type() == Body.Type.BYTES) {
+            target.body((byte[]) requestBody.content());
+        } else if (requestBody.type() == Body.Type.FILE) {
+            target.body((File) requestBody.content());
+        } else if (requestBody.type() == Body.Type.MULTIPART) {
+            target.multipart((MultipartBody) requestBody.content());
         } else {
-            throw new IllegalStateException("Illegal requestBody type! type of requestBody: " + requestBody.getType()
-                    + " , content of requestBody: " + requestBody.getContent());
+            throw new IllegalStateException("Illegal requestBody type! type of requestBody: " + requestBody.type()
+                    + " , content of requestBody: " + requestBody.content());
         }
     }
 

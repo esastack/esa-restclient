@@ -9,7 +9,7 @@ import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.GenericEntity;
+import io.esastack.restclient.codec.GenericObject;
 import io.esastack.restclient.exec.RestRequestExecutor;
 
 import java.io.File;
@@ -201,7 +201,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public ExecutableRestRequest entity(GenericEntity<?> entity) {
+    public ExecutableRestRequest entity(GenericObject<?> entity) {
         Checks.checkNotNull(entity, "entity");
         checkEntityHadSet();
         setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_JSON_UTF8);

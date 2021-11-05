@@ -1,10 +1,15 @@
 package io.esastack.restclient.codec;
 
+import esa.commons.Checks;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
+import java.util.Stack;
 
-public class GenericEntity<T> {
+public class GenericObject<T> {
 
     private final Class<?> rawType;
     private final Type type;
@@ -18,12 +23,10 @@ public class GenericEntity<T> {
      * @param entity the entity instance, must not be {@code null}.
      * @throws IllegalArgumentException if entity is {@code null}.
      */
-    protected GenericEntity(final T entity) {
-        if (entity == null) {
-            throw new IllegalArgumentException("The entity must not be null");
-        }
+    protected GenericObject(final T entity) {
+        Checks.checkNotNull(entity, "entity");
         this.entity = entity;
-        this.type = GenericType.getTypeArgument(getClass(), GenericEntity.class);
+        this.type = getTypeArgument(getClass(), GenericObject.class);
         this.rawType = entity.getClass();
     }
 
@@ -41,10 +44,9 @@ public class GenericEntity<T> {
      *                                  a variable of the supplied generic type or if entity or genericType
      *                                  is null.
      */
-    public GenericEntity(final T entity, final Type genericType) {
-        if (entity == null || genericType == null) {
-            throw new IllegalArgumentException("Arguments must not be null.");
-        }
+    public GenericObject(final T entity, final Type genericType) {
+        Checks.checkNotNull(entity, "entity");
+        Checks.checkNotNull(genericType, "genericType");
         this.entity = entity;
         this.rawType = entity.getClass();
         checkTypeCompatibility(this.rawType, genericType);
@@ -103,12 +105,63 @@ public class GenericEntity<T> {
         return entity;
     }
 
+    /**
+     * Return the value of the type parameter of {@code GenericType<T>}.
+     *
+     * @param clazz     subClass of {@code baseClass} to analyze.
+     * @param baseClass base class having the type parameter the value of which we need to retrieve
+     * @return the parameterized type of {@code GenericType<T>} (aka T)
+     */
+    private Type getTypeArgument(Class<?> clazz, Class<?> baseClass) {
+        // collect superclasses
+        Stack<Type> superclasses = new Stack<Type>();
+        Type currentType;
+        Class<?> currentClass = clazz;
+        do {
+            currentType = currentClass.getGenericSuperclass();
+            superclasses.push(currentType);
+            if (currentType instanceof Class) {
+                currentClass = (Class) currentType;
+            } else if (currentType instanceof ParameterizedType) {
+                currentClass = (Class) ((ParameterizedType) currentType).getRawType();
+            }
+        } while (!currentClass.equals(baseClass));
+
+        // find which one supplies type argument and return it
+        TypeVariable tv = baseClass.getTypeParameters()[0];
+        while (!superclasses.isEmpty()) {
+            currentType = superclasses.pop();
+
+            if (currentType instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) currentType;
+                Class<?> rawType = (Class) pt.getRawType();
+                int argIndex = Arrays.asList(rawType.getTypeParameters()).indexOf(tv);
+                if (argIndex > -1) {
+                    Type typeArg = pt.getActualTypeArguments()[argIndex];
+                    if (typeArg instanceof TypeVariable) {
+                        // type argument is another type variable - look for the value of that
+                        // variable in subclasses
+                        tv = (TypeVariable) typeArg;
+                        continue;
+                    } else {
+                        // found the value - return it
+                        return typeArg;
+                    }
+                }
+            }
+
+            // needed type argument not supplied - break and throw exception
+            break;
+        }
+        throw new IllegalArgumentException(currentType + " does not specify the type parameter T of GenericType<T>");
+    }
+
     @Override
     public boolean equals(Object obj) {
         boolean result = this == obj;
-        if (!result && obj instanceof GenericEntity) {
+        if (!result && obj instanceof GenericObject) {
             // Compare inner type for equality
-            GenericEntity<?> that = (GenericEntity<?>) obj;
+            GenericObject<?> that = (GenericObject<?>) obj;
             return this.type.equals(that.type) && this.entity.equals(that.entity);
         }
         return result;
@@ -121,6 +174,6 @@ public class GenericEntity<T> {
 
     @Override
     public String toString() {
-        return "GenericEntity{" + entity.toString() + ", " + type.toString() + "}";
+        return "GenericObject{" + entity.toString() + ", " + type.toString() + "}";
     }
 }

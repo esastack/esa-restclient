@@ -10,7 +10,7 @@ import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.GenericEntity;
+import io.esastack.restclient.codec.GenericObject;
 import io.esastack.restclient.codec.RequestBody;
 import io.netty.handler.codec.CodecException;
 
@@ -53,8 +53,8 @@ public final class EncodeContextImpl implements EncodeContext {
             return null;
         }
 
-        if (entity instanceof GenericEntity) {
-            return ((GenericEntity<?>) entity).getRawType();
+        if (entity instanceof GenericObject) {
+            return ((GenericObject<?>) entity).getRawType();
         }
 
         return entity.getClass();
@@ -66,8 +66,8 @@ public final class EncodeContextImpl implements EncodeContext {
             return null;
         }
 
-        if (entity instanceof GenericEntity) {
-            return ((GenericEntity<?>) entity).getType();
+        if (entity instanceof GenericObject) {
+            return ((GenericObject<?>) entity).getType();
         }
 
         return entity.getClass();
@@ -85,9 +85,9 @@ public final class EncodeContextImpl implements EncodeContext {
             Class<?> type = null;
             Type genericType = null;
             if (entity != null) {
-                if (entity instanceof GenericEntity) {
-                    type = ((GenericEntity<?>) entity).getRawType();
-                    genericType = ((GenericEntity<?>) entity).getType();
+                if (entity instanceof GenericObject) {
+                    type = ((GenericObject<?>) entity).getRawType();
+                    genericType = ((GenericObject<?>) entity).getType();
                 } else {
                     type = entity.getClass();
                     genericType = type;

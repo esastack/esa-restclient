@@ -4,7 +4,7 @@ import esa.commons.http.Cookie;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.GenericEntity;
+import io.esastack.restclient.codec.GenericObject;
 
 import java.io.File;
 import java.util.Map;
@@ -27,7 +27,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
      * @param entity entity
      * @return ExecutableRestRequest
      */
-    ExecutableRestRequest entity(GenericEntity<?> entity);
+    ExecutableRestRequest entity(GenericObject<?> entity);
 
     /**
      * Fills the request's entity with given content.The content will be encoded to

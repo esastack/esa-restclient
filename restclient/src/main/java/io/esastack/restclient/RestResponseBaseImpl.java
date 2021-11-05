@@ -6,10 +6,13 @@ import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.restclient.codec.DecodeContext;
-import io.esastack.restclient.codec.GenericType;
 import io.esastack.restclient.codec.impl.DecodeContextImpl;
 import io.esastack.restclient.utils.CookiesUtil;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -51,28 +54,20 @@ public class RestResponseBaseImpl implements RestResponseBase {
         return response.headers();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T bodyToEntity(Class<T> entityClass) throws Exception {
-        final DecodeContext decodeContext = new DecodeContextImpl(
-                request,
-                this,
-                clientOptions,
-                entityClass,
-                entityClass,
-                response.body().getByteBuf());
-        return (T) decodeContext.proceed();
+        return bodyToEntity((Type) entityClass);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T bodyToEntity(GenericType<T> genericType) throws Exception {
-        final DecodeContext decodeContext = new DecodeContextImpl(
+    public <T> T bodyToEntity(Type genericType) throws Exception {
+        DecodeContext decodeContext = new DecodeContextImpl(
                 request,
                 this,
                 clientOptions,
-                genericType.getRawType(),
-                genericType.getType(),
+                getClass(genericType),
+                genericType,
                 response.body().getByteBuf());
         return (T) decodeContext.proceed();
     }
@@ -86,4 +81,44 @@ public class RestResponseBaseImpl implements RestResponseBase {
     public Map<String, List<Cookie>> cookiesMap() {
         return CookiesUtil.getCookiesMap(headers(), true);
     }
+
+    /**
+     * Returns the object representing the class or interface that declared
+     * the supplied {@code type}.
+     *
+     * @param type {@code Type} to inspect.
+     * @return the class or interface that declared the supplied {@code type}.
+     */
+    private static Class<?> getClass(Type type) {
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            if (parameterizedType.getRawType() instanceof Class) {
+                return (Class<?>) parameterizedType.getRawType();
+            }
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType array = (GenericArrayType) type;
+            final Class<?> componentRawType = getClass(array.getGenericComponentType());
+            return getArrayClass(componentRawType);
+        }
+        throw new IllegalArgumentException("Type parameter " + type.toString() + " not a class or " +
+                "parameterized type whose raw type is a class");
+    }
+
+    /**
+     * Get Array class of component class.
+     *
+     * @param c the component class of the array
+     * @return the array class.
+     */
+    private static Class<?> getArrayClass(Class<?> c) {
+        try {
+            Object o = Array.newInstance(c, 0);
+            return o.getClass();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
 }

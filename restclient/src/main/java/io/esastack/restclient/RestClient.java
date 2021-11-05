@@ -1,7 +1,6 @@
 package io.esastack.restclient;
 
 import esa.commons.http.HttpMethod;
-import io.esastack.httpclient.core.HttpClientBuilder;
 
 public interface RestClient {
     /**
@@ -65,10 +64,6 @@ public interface RestClient {
 
     static RestClientBuilder create() {
         return new RestClientBuilder();
-    }
-
-    static RestClientBuilder create(HttpClientBuilder httpClientBuilder) {
-        return new RestClientBuilder(httpClientBuilder);
     }
 
 }

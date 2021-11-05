@@ -60,7 +60,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         this.httpClientBuilder = new HttpClientBuilder();
     }
 
-    RestClientBuilder(HttpClientBuilder httpClientBuilder) {
+    private RestClientBuilder(HttpClientBuilder httpClientBuilder) {
         this.httpClientBuilder = httpClientBuilder.copy();
     }
 

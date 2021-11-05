@@ -16,9 +16,9 @@
 package io.esastack.httpclient.core;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
-import esa.commons.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 
 import java.util.Collections;
 import java.util.List;

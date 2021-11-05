@@ -2,8 +2,8 @@ package io.esastack.restclient.utils;
 
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpHeaders;
 import esa.commons.netty.http.CookieImpl;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 

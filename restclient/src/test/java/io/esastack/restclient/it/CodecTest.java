@@ -1,6 +1,6 @@
 package io.esastack.restclient.it;
 
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.AcceptType;
 import io.esastack.restclient.ContentType;

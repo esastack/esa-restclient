@@ -1,6 +1,6 @@
 package io.esastack.restclient.codec.impl;
 
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.Encoder;

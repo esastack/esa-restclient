@@ -1,7 +1,7 @@
 package io.esastack.restclient.codec.impl;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;

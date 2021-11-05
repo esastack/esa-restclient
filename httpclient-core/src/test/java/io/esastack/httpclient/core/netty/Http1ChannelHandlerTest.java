@@ -674,7 +674,7 @@ class Http1ChannelHandlerTest {
         final ResponseHandle handle = new ResponseHandle(new DefaultHandle(ByteBufAllocator.DEFAULT),
                 request, ctx, tHandle, response) {
             @Override
-            public void onTrailers(esa.commons.http.HttpHeaders trailers) {
+            public void onTrailers(io.esastack.commons.net.http.HttpHeaders trailers) {
                 throw new RuntimeException();
             }
         };

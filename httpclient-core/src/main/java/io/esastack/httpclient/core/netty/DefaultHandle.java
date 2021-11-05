@@ -15,10 +15,10 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpHeaders;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.httpclient.core.Handle;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;

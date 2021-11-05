@@ -2,13 +2,13 @@ package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
 import esa.commons.netty.core.Buffer;
 import esa.commons.netty.core.BufferImpl;
 import esa.commons.netty.http.CookieImpl;
-import esa.commons.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.MultipartBody;

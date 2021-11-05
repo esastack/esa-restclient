@@ -16,7 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.collection.MultiValueMap;
-import esa.commons.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.MultipartFileItem;
 import io.esastack.httpclient.core.exec.ExecContext;
 import io.esastack.httpclient.core.util.LoggerUtils;

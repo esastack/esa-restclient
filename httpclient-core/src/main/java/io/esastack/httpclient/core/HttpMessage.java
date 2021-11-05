@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpHeaders;
 
 public interface HttpMessage {
 

@@ -47,6 +47,10 @@
             <groupId>io.esastack</groupId>
             <artifactId>commons-netty-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.esastack</groupId>
+            <artifactId>commons-net-netty</artifactId>
+        </dependency>
         <!-- need be shaded -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>

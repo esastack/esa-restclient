@@ -188,6 +188,11 @@
                 <version>${esa-commons-net.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.esastack</groupId>
+                <artifactId>commons-net-netty</artifactId>
+                <version>${esa-commons-net.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
                 <version>${netty.version}</version>

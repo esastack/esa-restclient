@@ -1,7 +1,7 @@
 package io.esastack.restclient.codec;
 
 import esa.commons.DateUtils;
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 

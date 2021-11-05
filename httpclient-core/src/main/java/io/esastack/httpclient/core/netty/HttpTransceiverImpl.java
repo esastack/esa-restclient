@@ -20,7 +20,7 @@ import esa.commons.StringUtils;
 import esa.commons.concurrent.ThreadFactories;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpHeaderValues;
-import esa.commons.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.HttpRequest;

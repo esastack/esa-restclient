@@ -17,7 +17,7 @@ package io.esastack.restclient.codec.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.codec.JsonCodec;
 

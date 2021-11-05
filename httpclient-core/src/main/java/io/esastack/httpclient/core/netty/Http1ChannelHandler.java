@@ -17,7 +17,7 @@ package io.esastack.httpclient.core.netty;
 
 import esa.commons.Checks;
 import esa.commons.netty.core.BufferImpl;
-import esa.commons.netty.http.Http1HeadersAdaptor;
+import io.esastack.commons.net.netty.http.Http1HeadersAdaptor;
 import io.esastack.httpclient.core.exception.ClosedConnectionException;
 import io.esastack.httpclient.core.exception.ContentOverSizedException;
 import io.esastack.httpclient.core.exception.ProtocolException;

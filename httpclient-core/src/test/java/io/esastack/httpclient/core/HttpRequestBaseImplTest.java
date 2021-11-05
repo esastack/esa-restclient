@@ -16,8 +16,8 @@
 package io.esastack.httpclient.core;
 
 import esa.commons.collection.MultiValueMap;
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
+import io.esastack.commons.net.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

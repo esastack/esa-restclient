@@ -16,7 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.netty.core.Buffer;
-import esa.commons.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.exception.ClosedConnectionException;
 import io.esastack.httpclient.core.exec.ExecContext;

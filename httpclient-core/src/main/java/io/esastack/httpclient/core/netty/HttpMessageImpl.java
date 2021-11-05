@@ -16,10 +16,10 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
-import esa.commons.netty.http.Http1HeadersAdaptor;
-import esa.commons.netty.http.Http2HeadersAdaptor;
+import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.netty.http.Http1HeadersAdaptor;
+import io.esastack.commons.net.netty.http.Http2HeadersAdaptor;
 import io.esastack.httpclient.core.HttpMessage;
 import io.esastack.httpclient.core.util.HttpHeadersUtils;
 import io.netty.handler.codec.http.HttpResponseStatus;

@@ -1,7 +1,7 @@
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpMethod;
+import io.esastack.commons.net.http.HttpHeaders;
 
 import java.util.List;
 import java.util.Map;

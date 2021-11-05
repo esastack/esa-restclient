@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.filter;
 
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.exec.Interceptor;

@@ -2,8 +2,8 @@ package io.esastack.restclient;
 
 import esa.commons.Checks;
 import esa.commons.http.Cookie;
-import esa.commons.http.HttpHeaders;
 import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.impl.DecodeContextImpl;

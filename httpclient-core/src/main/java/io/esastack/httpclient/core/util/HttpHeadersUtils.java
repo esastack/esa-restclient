@@ -16,9 +16,9 @@
 package io.esastack.httpclient.core.util;
 
 import esa.commons.StringUtils;
-import esa.commons.http.HttpHeaders;
-import esa.commons.netty.http.EmptyHttpHeaders;
-import esa.commons.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.http.EmptyHttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpRequest;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpHeaderNames;

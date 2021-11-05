@@ -15,11 +15,11 @@
  */
 package io.esastack.httpclient.core.util;
 
-import esa.commons.http.HttpHeaders;
-import esa.commons.netty.http.EmptyHttpHeaders;
-import esa.commons.netty.http.Http1HeadersAdaptor;
-import esa.commons.netty.http.Http1HeadersImpl;
-import esa.commons.netty.http.Http2HeadersAdaptor;
+import io.esastack.commons.net.http.EmptyHttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.netty.http.Http1HeadersAdaptor;
+import io.esastack.commons.net.netty.http.Http1HeadersImpl;
+import io.esastack.commons.net.netty.http.Http2HeadersAdaptor;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
 import io.netty.handler.codec.http2.Http2Headers;

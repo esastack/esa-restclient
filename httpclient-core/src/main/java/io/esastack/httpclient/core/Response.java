@@ -1,6 +1,6 @@
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpHeaders;
 
 public interface Response extends HttpMessage {
 

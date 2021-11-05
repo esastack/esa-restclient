@@ -1,13 +1,16 @@
 package io.esastack.restclient.codec;
 
-public final class ResponseBody<T> extends Body<T> {
+public final class ResponseBody extends Body {
 
-    private ResponseBody(Type type, T content) {
+    private ResponseBody(Type type, Object content) {
         super(type, content);
     }
 
-    public static ResponseBody<byte[]> of(byte[] result) {
-        return new ResponseBody<>(Type.BYTES, result);
+    public static ResponseBody of(byte[] result) {
+        return new ResponseBody(Type.BYTES, result);
     }
 
+    public boolean isBytes() {
+        return Type.BYTES == type();
+    }
 }

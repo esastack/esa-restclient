@@ -23,5 +23,5 @@ public interface EncodeAdvice extends Ordered {
      * @see Encoder
      * @see EncodeContext
      */
-    RequestBody<?> aroundEncode(EncodeContext context) throws Exception;
+    RequestBody aroundEncode(EncodeContext context) throws Exception;
 }

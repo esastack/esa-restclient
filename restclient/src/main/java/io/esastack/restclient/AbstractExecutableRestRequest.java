@@ -11,7 +11,6 @@ import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.util.Futures;
-import io.esastack.restclient.codec.Body;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestBody;
@@ -131,16 +130,16 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return entity() != null;
     }
 
-    private RequestBody<?> encode() throws Exception {
+    private RequestBody encode() throws Exception {
         return new EncodeContextImpl(this, entity(), clientOptions).proceed();
     }
 
-    private void fillBody(RequestBody<?> requestBody) {
-        if (requestBody.type() == Body.Type.BYTES) {
+    private void fillBody(RequestBody requestBody) {
+        if (requestBody.isBytes()) {
             target.body((byte[]) requestBody.content());
-        } else if (requestBody.type() == Body.Type.FILE) {
+        } else if (requestBody.isFile()) {
             target.body((File) requestBody.content());
-        } else if (requestBody.type() == Body.Type.MULTIPART) {
+        } else if (requestBody.isMultipart()) {
             target.multipart((MultipartBody) requestBody.content());
         } else {
             throw new IllegalStateException("Illegal requestBody type! type of requestBody: " + requestBody.type()

@@ -79,7 +79,7 @@ public final class EncodeContextImpl implements EncodeContext {
     }
 
     @Override
-    public RequestBody<?> proceed() throws Exception {
+    public RequestBody proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
 
             Class<?> type = null;
@@ -106,9 +106,9 @@ public final class EncodeContextImpl implements EncodeContext {
         return advices[adviceIndex++].aroundEncode(this);
     }
 
-    private RequestBody<?> encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
+    private RequestBody encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
                                                     Class<?> type, Type genericType) throws Exception {
-        CodecResult<RequestBody<?>> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
+        CodecResult<RequestBody> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
                 type, genericType);
 
         if (encodeResult == null) {
@@ -130,11 +130,11 @@ public final class EncodeContextImpl implements EncodeContext {
                 + " , entity of request : " + entity);
     }
 
-    private RequestBody<?> encodeByEncodersOfClient(MediaType contentType, HttpHeaders headers,
+    private RequestBody encodeByEncodersOfClient(MediaType contentType, HttpHeaders headers,
                                                     Class<?> type, Type genericType) throws Exception {
 
         for (Encoder encoder : encodersOfClient) {
-            CodecResult<RequestBody<?>> encodeResult = encoder.encode(contentType, headers, entity,
+            CodecResult<RequestBody> encodeResult = encoder.encode(contentType, headers, entity,
                     type, genericType);
 
             if (encodeResult.isSuccess()) {

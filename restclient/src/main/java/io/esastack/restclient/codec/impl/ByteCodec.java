@@ -14,8 +14,8 @@ import java.lang.reflect.Type;
 public class ByteCodec implements Encoder, Decoder {
 
     @Override
-    public CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers,
-                                              Object entity, Class<?> type, Type genericType) {
+    public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
+                                           Object entity, Class<?> type, Type genericType) {
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
             return CodecResult.success(RequestBody.of((byte[]) entity));
         }
@@ -23,11 +23,12 @@ public class ByteCodec implements Encoder, Decoder {
         return CodecResult.fail();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers,
-                                     ResponseBody<?> responseBody, Class<T> type, Type genericType) {
+                                     ResponseBody responseBody, Class<T> type, Type genericType) {
         if (responseBody.isBytes() && type.isArray() && type.getComponentType().equals(byte.class)) {
-            return CodecResult.success((T) responseBody.getBytes());
+            return CodecResult.success((T) responseBody.content());
         }
 
         return CodecResult.fail();

@@ -40,5 +40,5 @@ public interface EncodeContext {
      * @return encoded requestBody
      * @throws Exception error
      */
-    RequestBody<?> proceed() throws Exception;
+    RequestBody proceed() throws Exception;
 }

@@ -34,14 +34,14 @@ public interface DecodeContext {
      */
     void contentType(MediaType mediaType);
 
-    ResponseBody<?> responseBody();
+    ResponseBody responseBody();
 
     /**
      * set responseBody,this method is not safe for use by multiple threads
      *
      * @param responseBody responseBody
      */
-    void responseBody(ResponseBody<?> responseBody);
+    void responseBody(ResponseBody responseBody);
 
     Class<?> type();
 

@@ -48,8 +48,8 @@ public class ProtoBufCodec implements Encoder, Decoder {
     }
 
     @Override
-    public CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers,
-                                              Object entity, Class<?> type, Type genericType) {
+    public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
+                                           Object entity, Class<?> type, Type genericType) {
 
         if (PROTO_BUF.isCompatibleWith(mediaType) && Message.class.isAssignableFrom(type)) {
             Message message = (Message) entity;
@@ -69,12 +69,12 @@ public class ProtoBufCodec implements Encoder, Decoder {
     @SuppressWarnings("unchecked")
     @Override
     public <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers,
-                                     ResponseBody<?> responseBody, Class<T> type, Type genericType) throws Exception {
+                                     ResponseBody responseBody, Class<T> type, Type genericType) throws Exception {
 
         if (PROTO_BUF.isCompatibleWith(mediaType) && responseBody.isBytes()
                 && Message.class.isAssignableFrom(type)) {
             Message.Builder builder = getMessageBuilder(type);
-            builder.mergeFrom(responseBody.getBytes(), extensionRegistry);
+            builder.mergeFrom((byte[]) responseBody.content(), extensionRegistry);
             return CodecResult.success((T) builder.build());
         }
 

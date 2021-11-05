@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
 public class FileEncoder implements Encoder {
 
     @Override
-    public CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers,
+    public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
                                               Object entity, Class<?> type, Type genericType) {
 
         if (File.class.isAssignableFrom(type)) {

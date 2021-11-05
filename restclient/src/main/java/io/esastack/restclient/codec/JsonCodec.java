@@ -11,11 +11,11 @@ public interface JsonCodec extends Encoder, Decoder {
     String DEFAULT_DATE_FORMAT = DateUtils.yyyyMMddHHmmss;
 
     @Override
-    default <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseBody<?> responseBody,
+    default <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseBody responseBody,
                                       Class<T> type, Type genericType) throws Exception {
         if (responseBody.isBytes() && mediaType != null
                 && MediaTypeUtil.APPLICATION_JSON.isCompatibleWith(mediaType)) {
-            byte[] body = responseBody.getBytes();
+            byte[] body = (byte[]) responseBody.content();
             if (body == null) {
                 return CodecResult.success(null);
             }
@@ -28,7 +28,7 @@ public interface JsonCodec extends Encoder, Decoder {
                    Class<T> type, Type genericType) throws Exception;
 
     @Override
-    default CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers, Object entity,
+    default CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers, Object entity,
                                                Class<?> type, Type genericType) throws Exception {
         if (mediaType != null && MediaTypeUtil.APPLICATION_JSON.isCompatibleWith(mediaType)) {
             return CodecResult.success(RequestBody.of(

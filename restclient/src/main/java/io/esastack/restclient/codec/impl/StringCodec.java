@@ -18,7 +18,7 @@ public class StringCodec implements Encoder, Decoder {
     @SuppressWarnings("unchecked")
     @Override
     public <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers,
-                                     ResponseBody<?> responseBody, Class<T> type, Type genericType) {
+                                     ResponseBody responseBody, Class<T> type, Type genericType) {
         if (String.class.isAssignableFrom(type) && responseBody.isBytes()) {
             Charset charset = null;
             if (mediaType != null) {
@@ -34,7 +34,7 @@ public class StringCodec implements Encoder, Decoder {
     }
 
     @Override
-    public CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers,
+    public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
                                               Object entity, Class<?> type, Type genericType) {
         if (String.class.isAssignableFrom(type)) {
             Charset charset = null;

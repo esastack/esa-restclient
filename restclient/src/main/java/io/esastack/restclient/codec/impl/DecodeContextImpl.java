@@ -33,7 +33,7 @@ public class DecodeContextImpl implements DecodeContext {
     private final Type genericType;
     private int adviceIndex = 0;
     private MediaType contentType;
-    private ResponseBody<?> responseBody;
+    private ResponseBody responseBody;
 
     public DecodeContextImpl(RestRequestBase request,
                              RestResponse response,
@@ -82,12 +82,12 @@ public class DecodeContextImpl implements DecodeContext {
     }
 
     @Override
-    public ResponseBody<?> responseBody() {
+    public ResponseBody responseBody() {
         return responseBody;
     }
 
     @Override
-    public void responseBody(ResponseBody<?> responseBody) {
+    public void responseBody(ResponseBody responseBody) {
         this.responseBody = responseBody;
     }
 

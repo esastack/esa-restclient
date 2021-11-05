@@ -26,6 +26,6 @@ public interface Decoder extends Ordered {
      * @return decoded result
      * @throws Exception error
      */
-    <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseBody<?> responseBody,
+    <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseBody responseBody,
                           Class<T> type, Type genericType) throws Exception;
 }

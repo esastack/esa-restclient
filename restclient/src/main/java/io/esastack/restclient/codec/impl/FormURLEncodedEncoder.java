@@ -13,7 +13,7 @@ import java.lang.reflect.Type;
 public class FormURLEncodedEncoder implements Encoder {
 
     @Override
-    public CodecResult<RequestBody<?>> encode(MediaType mediaType, HttpHeaders headers,
+    public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
                                               Object entity, Class<?> type, Type genericType) {
 
         if (mediaType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType)

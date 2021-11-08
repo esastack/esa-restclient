@@ -1,1 +1,1 @@
-io.esastack.restclient.spi.impl.DefaultDecoderFactory
+io.esastack.restclient.spi.impl.InternalDecoderFactory

@@ -14,6 +14,8 @@ import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
 import io.esastack.httpclient.core.util.OrderedComparator;
+import io.esastack.restclient.codec.ByteDecoder;
+import io.esastack.restclient.codec.ByteEncoder;
 import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
@@ -183,9 +185,23 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
+    public RestClientBuilder addByteEncoder(ByteEncoder byteEncoder) {
+        Checks.checkNotNull(byteEncoder, "byteEncoder");
+        this.encoders.add(byteEncoder);
+        this.unmodifiableEncoders = buildUnmodifiableEncoders();
+        return self();
+    }
+
     public RestClientBuilder addEncoders(List<Encoder> encoders) {
         Checks.checkNotNull(encoders, "encoders");
         this.encoders.addAll(encoders);
+        this.unmodifiableEncoders = buildUnmodifiableEncoders();
+        return self();
+    }
+
+    public RestClientBuilder addByteEncoders(List<ByteEncoder> byteEncoders) {
+        Checks.checkNotNull(byteEncoders, "byteEncoders");
+        this.encoders.addAll(byteEncoders);
         this.unmodifiableEncoders = buildUnmodifiableEncoders();
         return self();
     }
@@ -197,9 +213,23 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
+    public RestClientBuilder addByteDecoder(ByteDecoder byteDecoder) {
+        Checks.checkNotNull(byteDecoder, "byteDecoder");
+        this.decoders.add(byteDecoder);
+        this.unmodifiableDecoders = buildUnmodifiableDecoders();
+        return self();
+    }
+
     public RestClientBuilder addDecoders(List<Decoder> decoders) {
         Checks.checkNotNull(decoders, "decoders");
         this.decoders.addAll(decoders);
+        this.unmodifiableDecoders = buildUnmodifiableDecoders();
+        return self();
+    }
+
+    public RestClientBuilder addByteDecoders(List<Decoder> byteDecoders) {
+        Checks.checkNotNull(byteDecoders, "byteDecoders");
+        this.decoders.addAll(byteDecoders);
         this.unmodifiableDecoders = buildUnmodifiableDecoders();
         return self();
     }

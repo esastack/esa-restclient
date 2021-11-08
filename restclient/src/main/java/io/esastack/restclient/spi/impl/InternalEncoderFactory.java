@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class DefaultEncoderFactory implements EncoderFactory {
+public final class InternalEncoderFactory implements EncoderFactory {
 
     @Override
     public Collection<Encoder> encoders(RestClientOptions clientOptions) {

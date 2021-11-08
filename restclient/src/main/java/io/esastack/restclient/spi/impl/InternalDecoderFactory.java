@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class DefaultDecoderFactory implements DecoderFactory {
+public final class InternalDecoderFactory implements DecoderFactory {
 
     @Override
     public Collection<Decoder> decoders(RestClientOptions clientOptions) {

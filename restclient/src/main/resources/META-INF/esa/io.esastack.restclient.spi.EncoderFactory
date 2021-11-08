@@ -1,1 +1,1 @@
-io.esastack.restclient.spi.impl.DefaultEncoderFactory
+io.esastack.restclient.spi.impl.InternalEncoderFactory

@@ -7,15 +7,15 @@ import java.io.File;
 
 public interface RequestContent extends Content {
 
-    static RequestContentImpl of(byte[] content) {
+    static RequestContent of(byte[] content) {
         return new RequestContentImpl(content);
     }
 
-    static RequestContentImpl of(File content) {
+    static RequestContent of(File content) {
         return new RequestContentImpl(content);
     }
 
-    static RequestContentImpl of(MultipartBody content) {
+    static RequestContent of(MultipartBody content) {
         return new RequestContentImpl(content);
     }
 }

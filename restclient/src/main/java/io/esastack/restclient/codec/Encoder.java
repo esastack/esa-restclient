@@ -7,7 +7,8 @@ import io.esastack.httpclient.core.util.Ordered;
 import java.lang.reflect.Type;
 
 /**
- * <code>Encoder</code> is designed for the conversion from Java type to {@link CodecResult}.
+ * <code>Encoder</code> is designed for the conversion from Java type to {@link CodecResult}.And
+ * in many scenarios, what you need is {@link ByteEncoder}
  *
  * @see CodecResult
  */
@@ -27,5 +28,5 @@ public interface Encoder extends Ordered {
      * @throws Exception error
      */
     CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers, Object entity,
-                                           Class<?> type, Type genericType) throws Exception;
+                                       Class<?> type, Type genericType) throws Exception;
 }

@@ -21,7 +21,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
 
-public class DecodeContextImpl implements DecodeContext {
+public final class DecodeContextImpl implements DecodeContext {
 
     private final RestRequest request;
     private final RestResponse response;

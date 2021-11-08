@@ -1,38 +1,28 @@
 package io.esastack.restclient.codec;
 
-public final class CodecResult<T> {
+import io.esastack.restclient.codec.impl.CodecResultImpl;
 
-    private boolean isSuccess;
-    private T result;
-
-    private CodecResult(boolean isSuccess, T result) {
-        this.isSuccess = isSuccess;
-        this.result = result;
-    }
+public interface CodecResult<T> {
 
     /**
      * Identify whether the result of codec is success
      *
      * @return whether the result of codec is success
      */
-    public boolean isSuccess() {
-        return isSuccess;
-    }
+    boolean isSuccess();
 
     /**
      * Obtain the codec result
      *
      * @return the codec result
      */
-    public T getResult() {
-        return result;
+    T getResult();
+
+    static <T> CodecResult<T> success(T result) {
+        return new CodecResultImpl<>(true, result);
     }
 
-    public static <T> CodecResult<T> success(T result) {
-        return new CodecResult<>(true, result);
-    }
-
-    public static <T> CodecResult<T> fail() {
-        return new CodecResult<>(false, null);
+    static <T> CodecResult<T> fail() {
+        return new CodecResultImpl<>(false, null);
     }
 }

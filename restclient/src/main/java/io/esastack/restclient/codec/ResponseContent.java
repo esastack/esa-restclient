@@ -4,7 +4,7 @@ import io.esastack.restclient.codec.impl.ResponseContentImpl;
 
 public interface ResponseContent extends Content {
 
-    static ResponseContentImpl of(byte[] content) {
+    static ResponseContent of(byte[] content) {
         return new ResponseContentImpl(content);
     }
 

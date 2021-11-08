@@ -307,7 +307,7 @@ public class HttpClientBuilder implements Reusable<HttpClientBuilder> {
         return resolver == null ? DEFAULT_RESOLVER : resolver;
     }
 
-    public boolean ish2ClearTextUpgrade() {
+    public boolean isH2ClearTextUpgrade() {
         return h2ClearTextUpgrade;
     }
 

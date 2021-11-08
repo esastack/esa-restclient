@@ -45,7 +45,7 @@ class RestClientBuilderTest {
         then(builder.decompression()).isEqualTo(Decompression.GZIP_DEFLATE);
 
         builder.h2ClearTextUpgrade(true);
-        then(builder.ish2ClearTextUpgrade()).isTrue();
+        then(builder.isH2ClearTextUpgrade()).isTrue();
 
         Http1Options http1Options = Http1Options.options()
                 .maxChunkSize(2)
@@ -121,7 +121,7 @@ class RestClientBuilderTest {
         then(origin.connectionPoolWaitingQueueLength()).isEqualTo(other.connectionPoolWaitingQueueLength());
         then(origin.connectTimeout()).isEqualTo(other.connectTimeout());
         then(origin.decompression()).isEqualTo(other.decompression());
-        then(origin.ish2ClearTextUpgrade()).isEqualTo(other.ish2ClearTextUpgrade());
+        then(origin.isH2ClearTextUpgrade()).isEqualTo(other.isH2ClearTextUpgrade());
         then(origin.http1Options().maxChunkSize()).isEqualTo(other.http1Options().maxChunkSize());
         then(origin.http1Options().maxHeaderSize()).isEqualTo(other.http1Options().maxHeaderSize());
         then(origin.http1Options().maxInitialLineLength()).isEqualTo(other.http1Options().maxInitialLineLength());

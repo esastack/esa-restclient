@@ -282,8 +282,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public boolean ish2ClearTextUpgrade() {
-        return httpClientBuilder.ish2ClearTextUpgrade();
+    public boolean isH2ClearTextUpgrade() {
+        return httpClientBuilder.isH2ClearTextUpgrade();
     }
 
     @Override

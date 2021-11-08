@@ -87,7 +87,7 @@ class HttpClientBuilderTest {
         builder.idleTimeoutSeconds(idleTimeoutSeconds);
 
         then(builder.resolver()).isSameAs(resolver);
-        then(builder.ish2ClearTextUpgrade()).isEqualTo(h2ClearTextUpgrade);
+        then(builder.isH2ClearTextUpgrade()).isEqualTo(h2ClearTextUpgrade);
         then(builder.connectTimeout()).isEqualTo(connectTimeout);
         then(builder.readTimeout()).isEqualTo(readTimeout);
         then(builder.isKeepAlive()).isEqualTo(keepAlive);
@@ -153,7 +153,7 @@ class HttpClientBuilderTest {
         final HttpClientBuilder builder1 = builder.copy();
 
         then(builder1.resolver()).isSameAs(resolver);
-        then(builder1.ish2ClearTextUpgrade()).isEqualTo(h2ClearTextUpgrade);
+        then(builder1.isH2ClearTextUpgrade()).isEqualTo(h2ClearTextUpgrade);
         then(builder1.connectTimeout()).isEqualTo(connectTimeout);
         then(builder1.readTimeout()).isEqualTo(readTimeout);
         then(builder1.isKeepAlive()).isEqualTo(keepAlive);

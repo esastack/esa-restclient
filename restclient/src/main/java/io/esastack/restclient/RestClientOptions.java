@@ -24,7 +24,7 @@ public interface RestClientOptions {
 
     HostResolver resolver();
 
-    boolean ish2ClearTextUpgrade();
+    boolean isH2ClearTextUpgrade();
 
     int connectTimeout();
 

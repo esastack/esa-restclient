@@ -129,7 +129,7 @@ final class ChannelInitializer {
                 builder.http1Options(),
                 builder.http2Options(),
                 ssl,
-                builder.ish2ClearTextUpgrade(),
+                builder.isH2ClearTextUpgrade(),
                 builder.isUseDecompress(),
                 initializeFuture);
 

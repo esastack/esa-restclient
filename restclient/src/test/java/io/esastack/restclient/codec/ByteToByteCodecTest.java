@@ -1,7 +1,7 @@
 package io.esastack.restclient.codec;
 
 import io.esastack.restclient.ResponseBodyContent;
-import io.esastack.restclient.codec.impl.ByteCodec;
+import io.esastack.restclient.codec.impl.ByteToByteCodec;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.BDDAssertions.then;
@@ -11,7 +11,7 @@ class ByteToByteCodecTest {
 
     @Test
     void testEncode() throws Exception {
-        ByteCodec byteCodec = new ByteCodec();
+        ByteToByteCodec byteCodec = new ByteToByteCodec();
         then(byteCodec.encode(null, null, null).content()).isEqualTo(null);
 
         assertThrows(ClassCastException.class, () ->
@@ -23,7 +23,7 @@ class ByteToByteCodecTest {
 
     @Test
     void testDecode() throws Exception {
-        ByteCodec byteCodec = new ByteCodec();
+        ByteToByteCodec byteCodec = new ByteToByteCodec();
         then((Object) byteCodec.decode(null, null, ResponseBodyContent.of(null), byte[].class))
                 .isEqualTo(null);
 

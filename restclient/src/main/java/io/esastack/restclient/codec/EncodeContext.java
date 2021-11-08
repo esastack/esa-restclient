@@ -37,8 +37,8 @@ public interface EncodeContext {
      * the call to this method in the last of the chain will invoke
      * the wrapped {@link Encoder#encode} method.
      *
-     * @return encoded requestBody
+     * @return encoded requestContent
      * @throws Exception error
      */
-    RequestBody proceed() throws Exception;
+    RequestContent proceed() throws Exception;
 }

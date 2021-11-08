@@ -18,10 +18,10 @@ public interface EncodeAdvice extends Ordered {
      * Encoder#encode} method.
      *
      * @param context encode invocation context
-     * @return encoded requestBody
+     * @return encoded requestContent
      * @throws Exception error
      * @see Encoder
      * @see EncodeContext
      */
-    RequestBody aroundEncode(EncodeContext context) throws Exception;
+    RequestContent aroundEncode(EncodeContext context) throws Exception;
 }

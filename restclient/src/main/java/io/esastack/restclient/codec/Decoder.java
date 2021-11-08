@@ -20,12 +20,12 @@ public interface Decoder extends Ordered {
      *
      * @param mediaType    the media type of the HTTP response
      * @param headers      the headers of the HTTP response
-     * @param responseBody the body of the HTTP response
+     * @param responseContent the body of the HTTP response
      * @param type         the class will be decoded from the bodyContent.
      * @param genericType  the genericType will be decoded from the bodyContent.
      * @return decoded result
      * @throws Exception error
      */
-    <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseBody responseBody,
+    <T> CodecResult<T> decode(MediaType mediaType, HttpHeaders headers, ResponseContent responseContent,
                           Class<T> type, Type genericType) throws Exception;
 }

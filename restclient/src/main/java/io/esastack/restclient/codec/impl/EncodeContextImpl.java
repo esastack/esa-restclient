@@ -11,7 +11,7 @@ import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.GenericObject;
-import io.esastack.restclient.codec.RequestBody;
+import io.esastack.restclient.codec.RequestContent;
 import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
@@ -79,7 +79,7 @@ public final class EncodeContextImpl implements EncodeContext {
     }
 
     @Override
-    public RequestBody proceed() throws Exception {
+    public RequestContent proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
 
             Class<?> type = null;
@@ -106,9 +106,9 @@ public final class EncodeContextImpl implements EncodeContext {
         return advices[adviceIndex++].aroundEncode(this);
     }
 
-    private RequestBody encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
-                                                    Class<?> type, Type genericType) throws Exception {
-        CodecResult<RequestBody> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
+    private RequestContent encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
+                                                        Class<?> type, Type genericType) throws Exception {
+        CodecResult<RequestContent> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
                 type, genericType);
 
         if (encodeResult == null) {
@@ -130,11 +130,11 @@ public final class EncodeContextImpl implements EncodeContext {
                 + " , entity of request : " + entity);
     }
 
-    private RequestBody encodeByEncodersOfClient(MediaType contentType, HttpHeaders headers,
-                                                    Class<?> type, Type genericType) throws Exception {
+    private RequestContent encodeByEncodersOfClient(MediaType contentType, HttpHeaders headers,
+                                                        Class<?> type, Type genericType) throws Exception {
 
         for (Encoder encoder : encodersOfClient) {
-            CodecResult<RequestBody> encodeResult = encoder.encode(contentType, headers, entity,
+            CodecResult<RequestContent> encodeResult = encoder.encode(contentType, headers, entity,
                     type, genericType);
 
             if (encodeResult.isSuccess()) {

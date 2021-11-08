@@ -2,7 +2,7 @@ package io.esastack.restclient.spi.impl;
 
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.impl.ByteCodec;
+import io.esastack.restclient.codec.impl.ByteToByteCodec;
 import io.esastack.restclient.codec.impl.FileEncoder;
 import io.esastack.restclient.codec.impl.FormURLEncodedEncoder;
 import io.esastack.restclient.codec.impl.JacksonCodec;
@@ -19,7 +19,7 @@ public final class DefaultEncoderFactory implements EncoderFactory {
     @Override
     public Collection<Encoder> encoders(RestClientOptions clientOptions) {
         List<Encoder> encoders = new ArrayList<>();
-        encoders.add(new ByteCodec());
+        encoders.add(new ByteToByteCodec());
         encoders.add(new FileEncoder());
         encoders.add(new FormURLEncodedEncoder());
         encoders.add(new JacksonCodec());

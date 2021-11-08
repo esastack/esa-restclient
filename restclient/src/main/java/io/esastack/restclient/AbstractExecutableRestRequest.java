@@ -13,7 +13,7 @@ import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.util.Futures;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.RequestBody;
+import io.esastack.restclient.codec.RequestContent;
 import io.esastack.restclient.codec.impl.EncodeContextImpl;
 import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.utils.CookiesUtil;
@@ -130,20 +130,21 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return entity() != null;
     }
 
-    private RequestBody encode() throws Exception {
+    private RequestContent encode() throws Exception {
         return new EncodeContextImpl(this, entity(), clientOptions).proceed();
     }
 
-    private void fillBody(RequestBody requestBody) {
-        if (requestBody.isBytes()) {
-            target.body((byte[]) requestBody.content());
-        } else if (requestBody.isFile()) {
-            target.body((File) requestBody.content());
-        } else if (requestBody.isMultipart()) {
-            target.multipart((MultipartBody) requestBody.content());
+    private void fillBody(RequestContent requestContent) {
+        Object entity = requestContent.content();
+        if (entity instanceof byte[]) {
+            target.body((byte[]) requestContent.content());
+        } else if (entity instanceof File) {
+            target.body((File) requestContent.content());
+        } else if (entity instanceof MultipartBody) {
+            target.multipart((MultipartBody) requestContent.content());
         } else {
-            throw new IllegalStateException("Illegal requestBody type! type of requestBody: " + requestBody.type()
-                    + " , content of requestBody: " + requestBody.content());
+            throw new IllegalStateException("Illegal requestContent! Content of requestContent: "
+                    + requestContent.content());
         }
     }
 

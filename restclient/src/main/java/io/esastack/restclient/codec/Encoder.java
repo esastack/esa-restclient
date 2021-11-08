@@ -26,6 +26,6 @@ public interface Encoder extends Ordered {
      * @return encoded result
      * @throws Exception error
      */
-    CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers, Object entity,
-                                       Class<?> type, Type genericType) throws Exception;
+    CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers, Object entity,
+                                           Class<?> type, Type genericType) throws Exception;
 }

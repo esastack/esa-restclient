@@ -6,19 +6,19 @@ import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.RequestBody;
+import io.esastack.restclient.codec.RequestContent;
 
 import java.lang.reflect.Type;
 
 public class MultipartEncoder implements Encoder {
 
     @Override
-    public CodecResult<RequestBody> encode(MediaType mediaType, HttpHeaders headers,
-                                              Object entity, Class<?> type, Type genericType) {
+    public CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers,
+                                                  Object entity, Class<?> type, Type genericType) {
 
         if (mediaType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType)
                 && MultipartBody.class.isAssignableFrom(type)) {
-            return CodecResult.success(RequestBody.of((MultipartBody) entity));
+            return CodecResult.success(RequestContent.of((MultipartBody) entity));
         }
 
         return CodecResult.fail();

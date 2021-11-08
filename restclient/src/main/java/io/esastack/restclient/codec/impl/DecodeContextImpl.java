@@ -13,7 +13,7 @@ import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.Decoder;
-import io.esastack.restclient.codec.ResponseBody;
+import io.esastack.restclient.codec.ResponseContent;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.CodecException;
@@ -33,7 +33,7 @@ public class DecodeContextImpl implements DecodeContext {
     private final Type genericType;
     private int adviceIndex = 0;
     private MediaType contentType;
-    private ResponseBody responseBody;
+    private ResponseContent responseContent;
 
     public DecodeContextImpl(RestRequestBase request,
                              RestResponse response,
@@ -53,7 +53,7 @@ public class DecodeContextImpl implements DecodeContext {
         this.decodersOfClient = clientOptions.unmodifiableDecoders();
         this.type = type;
         this.genericType = genericType;
-        this.responseBody = ResponseBody.of(ByteBufUtil.getBytes(byteBuf));
+        this.responseContent = ResponseContent.of(ByteBufUtil.getBytes(byteBuf));
 
         final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
         if (StringUtils.isNotBlank(mediaTypeValue)) {
@@ -82,13 +82,13 @@ public class DecodeContextImpl implements DecodeContext {
     }
 
     @Override
-    public ResponseBody responseBody() {
-        return responseBody;
+    public ResponseContent responseContent() {
+        return responseContent;
     }
 
     @Override
-    public void responseBody(ResponseBody responseBody) {
-        this.responseBody = responseBody;
+    public void responseContent(ResponseContent responseContent) {
+        this.responseContent = responseContent;
     }
 
     @Override
@@ -116,7 +116,7 @@ public class DecodeContextImpl implements DecodeContext {
 
     private Object decodeByDecoderOfRequest() throws Exception {
         HttpHeaders headers = response.headers();
-        CodecResult<?> codecResult = decoderOfRequest.decode(contentType, headers, responseBody,
+        CodecResult<?> codecResult = decoderOfRequest.decode(contentType, headers, responseContent,
                 type, genericType);
 
         if (codecResult == null) {
@@ -144,7 +144,7 @@ public class DecodeContextImpl implements DecodeContext {
         HttpHeaders headers = response.headers();
 
         for (Decoder decoder : decodersOfClient) {
-            CodecResult<?> codecResult = decoder.decode(contentType, headers, responseBody,
+            CodecResult<?> codecResult = decoder.decode(contentType, headers, responseContent,
                     type, genericType);
 
             if (codecResult.isSuccess()) {

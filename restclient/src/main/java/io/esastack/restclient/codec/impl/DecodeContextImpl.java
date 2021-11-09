@@ -1,62 +1,46 @@
 package io.esastack.restclient.codec.impl;
 
-import esa.commons.Checks;
+import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.ClientInnerComposition;
-import io.esastack.restclient.RestRequest;
-import io.esastack.restclient.RestRequestBase;
-import io.esastack.restclient.RestResponse;
-import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.ResponseContent;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
+import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-public final class DecodeContextImpl implements DecodeContext {
+final class DecodeContextImpl<T> implements DecodeContext<T> {
 
-    private final RestRequest request;
-    private final RestResponse response;
-    private final DecodeAdvice[] advices;
-    private final Decoder decoderOfRequest;
-    private final Decoder[] decodersOfClient;
-
-    private final Class<?> type;
+    private final MediaType contentType;
+    private final HttpHeaders headers;
+    private final ResponseContent responseContent;
+    private final Class<T> type;
     private final Type genericType;
-    private int adviceIndex = 0;
-    private ResponseContent responseContent;
+    private final Decoder[] decoders;
+    private int index = 0;
 
-    public DecodeContextImpl(RestRequestBase request,
-                             RestResponse response,
-                             ClientInnerComposition clientInnerComposition,
-                             Class<?> type,
-                             Type genericType,
-                             ByteBuf byteBuf) {
-        Checks.checkNotNull(request, "request");
-        Checks.checkNotNull(response, "response");
-        Checks.checkNotNull(clientInnerComposition, "clientInnerComposition");
-        Checks.checkNotNull(type, "type");
-        Checks.checkNotNull(byteBuf, "byteBuf");
-        this.request = request;
-        this.response = response;
-        this.advices = clientInnerComposition.decodeAdvices();
-        this.decoderOfRequest = request.decoder();
-        this.decodersOfClient = clientInnerComposition.decoders();
+    DecodeContextImpl(MediaType contentType,
+                      HttpHeaders headers,
+                      ResponseContent responseContent,
+                      Class<T> type,
+                      Type genericType,
+                      Decoder[] decoders) {
+        this.contentType = contentType;
+        this.headers = headers;
+        this.responseContent = responseContent;
         this.type = type;
         this.genericType = genericType;
-        this.responseContent = ResponseContent.of(ByteBufUtil.getBytes(byteBuf));
+        this.decoders = decoders;
     }
 
     @Override
-    public RestRequest request() {
-        return request;
+    public MediaType contentType() {
+        return contentType;
     }
 
     @Override
-    public RestResponse response() {
-        return response;
+    public HttpHeaders headers() {
+        return headers;
     }
 
     @Override
@@ -65,12 +49,7 @@ public final class DecodeContextImpl implements DecodeContext {
     }
 
     @Override
-    public void responseContent(ResponseContent responseContent) {
-        this.responseContent = responseContent;
-    }
-
-    @Override
-    public Class<?> type() {
+    public Class<T> type() {
         return type;
     }
 
@@ -79,33 +58,17 @@ public final class DecodeContextImpl implements DecodeContext {
         return genericType;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object proceed() throws Exception {
-        if (advices == null || adviceIndex >= advices.length) {
-            MediaType contentType = response.contentType();
-            if (decoderOfRequest != null) {
-                return new DecodeChainContextImpl<>(
-                        contentType,
-                        response.headers(),
-                        responseContent,
-                        type,
-                        genericType,
-                        new Decoder[]{decoderOfRequest}
-                ).continueToDecode();
-
-            } else {
-                return new DecodeChainContextImpl<>(
-                        contentType,
-                        response.headers(),
-                        responseContent,
-                        type,
-                        genericType,
-                        decodersOfClient
-                ).continueToDecode();
-            }
+    public T continueToDecode() throws Exception {
+        if (index < decoders.length) {
+            return (T) decoders[index++].decode(this);
         }
 
-        return advices[adviceIndex++].aroundDecode(this);
+        throw new CodecException("There is no suitable decoder for this response,"
+                + " Please set correct decoder!"
+                + " , headers of response : " + headers
+                + " , expected type : " + type
+                + " , expected genericType : " + genericType);
     }
-
 }

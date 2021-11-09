@@ -9,8 +9,8 @@ import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.restclient.codec.DecodeContext;
-import io.esastack.restclient.codec.impl.DecodeContextImpl;
+import io.esastack.restclient.codec.DecodeAdviceContext;
+import io.esastack.restclient.codec.impl.DecodeAdviceContextImpl;
 import io.esastack.restclient.utils.CookiesUtil;
 
 import java.lang.reflect.Array;
@@ -66,7 +66,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T bodyToEntity(Type genericType) throws Exception {
-        DecodeContext decodeContext = new DecodeContextImpl(
+        DecodeAdviceContext decodeContext = new DecodeAdviceContextImpl(
                 request,
                 this,
                 clientInnerComposition,

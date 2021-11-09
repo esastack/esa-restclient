@@ -14,7 +14,7 @@ import io.esastack.httpclient.core.util.Futures;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
-import io.esastack.restclient.codec.impl.EncodeContextImpl;
+import io.esastack.restclient.codec.impl.EncodeAdviceContextImpl;
 import io.esastack.restclient.utils.CookiesUtil;
 
 import java.io.File;
@@ -122,7 +122,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     private RequestContent encode() throws Exception {
-        return new EncodeContextImpl(this,
+        return new EncodeAdviceContextImpl(this,
                 entity(),
                 type(),
                 genericType(),

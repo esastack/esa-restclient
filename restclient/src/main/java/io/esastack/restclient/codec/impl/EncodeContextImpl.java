@@ -1,51 +1,46 @@
 package io.esastack.restclient.codec.impl;
 
-import esa.commons.Checks;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.RestRequest;
-import io.esastack.restclient.RestRequestBase;
-import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
-import io.esastack.restclient.utils.GenericTypeUtil;
+import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-public final class EncodeContextImpl implements EncodeContext {
+final class EncodeContextImpl implements EncodeContext {
 
-    private final RestRequest request;
-    private final EncodeAdvice[] advices;
-    private final Encoder encoderOfRequest;
-    private final Encoder[] encodersOfClient;
-    private int adviceIndex = 0;
-    private Object entity;
-    private Class<?> type;
-    private Type genericType;
+    private final MediaType contentType;
+    private final HttpHeaders headers;
+    private final Object entity;
+    private final Class<?> type;
+    private final Type genericType;
+    private final Encoder[] encoders;
+    private int index = 0;
 
-    public EncodeContextImpl(RestRequestBase request,
-                             Object entity,
-                             Class<?> type,
-                             Type geneticType,
-                             EncodeAdvice[] advices,
-                             Encoder[] encodersOfClient) {
-        Checks.checkNotNull(request, "request");
-        Checks.checkNotNull(entity, "entity");
-        Checks.checkNotNull(advices, "advices");
-        Checks.checkNotNull(encodersOfClient, "encodersOfClient");
-        this.request = request;
+    EncodeContextImpl(MediaType contentType,
+                      HttpHeaders headers,
+                      Object entity,
+                      Class<?> type,
+                      Type genericType,
+                      Encoder[] encoders) {
+        this.contentType = contentType;
+        this.headers = headers;
         this.entity = entity;
         this.type = type;
-        this.genericType = geneticType;
-        this.advices = advices;
-        this.encodersOfClient = encodersOfClient;
-        this.encoderOfRequest = request.encoder();
+        this.genericType = genericType;
+        this.encoders = encoders;
     }
 
     @Override
-    public RestRequest request() {
-        return request;
+    public MediaType contentType() {
+        return contentType;
+    }
+
+    @Override
+    public HttpHeaders headers() {
+        return headers;
     }
 
     @Override
@@ -64,50 +59,16 @@ public final class EncodeContextImpl implements EncodeContext {
     }
 
     @Override
-    public void entity(Object entity) {
-        Checks.checkNotNull(entity, "entity");
-        this.entity = entity;
-        this.type = entity.getClass();
-        this.genericType = type;
-    }
-
-    @Override
-    public void entity(Object entity, Type genericType) {
-        Checks.checkNotNull(entity, "entity");
-        Checks.checkNotNull(genericType, "genericType");
-        this.entity = entity;
-        this.type = entity.getClass();
-        GenericTypeUtil.checkTypeCompatibility(type, genericType);
-        this.genericType = type;
-    }
-
-    @Override
-    public RequestContent proceed() throws Exception {
-        if (advices == null || adviceIndex >= advices.length) {
-            MediaType contentType = request.contentType();
-            HttpHeaders headers = request.headers();
-
-            if (encoderOfRequest != null) {
-                return new EncodeChainContextImpl(
-                        contentType,
-                        headers,
-                        entity,
-                        type,
-                        genericType,
-                        new Encoder[]{encoderOfRequest}
-                ).continueToEncode();
-            } else {
-                return new EncodeChainContextImpl(
-                        contentType,
-                        headers,
-                        entity,
-                        type,
-                        genericType,
-                        encodersOfClient
-                ).continueToEncode();
-            }
+    public RequestContent continueToEncode() throws Exception {
+        if (index < encoders.length) {
+            return encoders[index++].encode(this);
         }
-        return advices[adviceIndex++].aroundEncode(this);
-    }
 
+        throw new CodecException("There is no suitable encoder for this request,"
+                + " Please set correct encoder!"
+                + " , headers of request : " + headers
+                + " , entity of request : " + entity
+                + " , type of request : " + type
+                + " , genericType of request : " + genericType);
+    }
 }

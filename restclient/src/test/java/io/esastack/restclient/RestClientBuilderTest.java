@@ -10,9 +10,9 @@ import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
 import io.esastack.restclient.codec.DecodeAdvice;
-import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.DecodeAdviceContext;
 import io.esastack.restclient.codec.EncodeAdvice;
-import io.esastack.restclient.codec.EncodeContext;
+import io.esastack.restclient.codec.EncodeAdviceContext;
 import io.esastack.restclient.exec.ClientInterceptor;
 import io.esastack.restclient.exec.InvocationChain;
 import org.junit.jupiter.api.Test;
@@ -199,7 +199,7 @@ class RestClientBuilderTest {
     private DecodeAdvice createDecodeAdvice(int order) {
         return new DecodeAdvice() {
             @Override
-            public Object aroundDecode(DecodeContext context) {
+            public Object aroundDecode(DecodeAdviceContext context) {
                 return null;
             }
 
@@ -213,7 +213,7 @@ class RestClientBuilderTest {
     private EncodeAdvice createEncodeAdvice(int order) {
         return new EncodeAdvice() {
             @Override
-            public RequestBodyContent<?> aroundEncode(EncodeContext context) {
+            public RequestBodyContent<?> aroundEncode(EncodeAdviceContext context) {
                 return null;
             }
 

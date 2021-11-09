@@ -23,5 +23,5 @@ public interface Encoder extends Ordered {
      * @return encoded result
      * @throws Exception error
      */
-    RequestContent encode(EncodeChainContext encodeChainContext) throws Exception;
+    RequestContent encode(EncodeContext encodeChainContext) throws Exception;
 }

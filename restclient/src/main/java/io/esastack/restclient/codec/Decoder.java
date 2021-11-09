@@ -24,5 +24,5 @@ public interface Decoder extends Ordered {
      * @return decoded result
      * @throws Exception error
      */
-    <T> CodecResult<T> decode(DecodeChainContext<T> decodeChainContext) throws Exception;
+    <T> CodecResult<T> decode(DecodeContext<T> decodeChainContext) throws Exception;
 }

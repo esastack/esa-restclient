@@ -47,17 +47,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private final List<Encoder> encoders = new LinkedList<>();
     private String name = CLIENT;
 
-    private DecodeAdvice[] unmodifiableDecodeAdvices
-            = buildUnmodifiableDecodeAdvices();
-    private EncodeAdvice[] unmodifiableEncodeAdvices
-            = buildUnmodifiableEncodeAdvices();
-    private ClientInterceptor[] unmodifiableInterceptors
-            = buildUnmodifiableInterceptors();
-    private Encoder[] unmodifiableEncoders
-            = buildUnmodifiableEncoders();
-    private Decoder[] unmodifiableDecoders
-            = buildUnmodifiableDecoders();
-
     RestClientBuilder() {
         this.httpClientBuilder = new HttpClientBuilder();
     }
@@ -139,98 +128,84 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public RestClientBuilder addInterceptor(ClientInterceptor interceptor) {
         Checks.checkNotNull(interceptor, "interceptor");
         this.interceptors.add(interceptor);
-        this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public RestClientBuilder addInterceptors(List<ClientInterceptor> interceptors) {
         Checks.checkNotNull(interceptors, "interceptors");
         this.interceptors.addAll(interceptors);
-        this.unmodifiableInterceptors = buildUnmodifiableInterceptors();
         return self();
     }
 
     public RestClientBuilder addEncodeAdvice(EncodeAdvice encodeAdvice) {
         Checks.checkNotNull(encodeAdvice, "encodeAdvice");
         this.encodeAdvices.add(encodeAdvice);
-        this.unmodifiableEncodeAdvices = buildUnmodifiableEncodeAdvices();
         return self();
     }
 
     public RestClientBuilder addEncodeAdvices(List<EncodeAdvice> encodeAdvices) {
         Checks.checkNotNull(encodeAdvices, "encodeAdvices");
         this.encodeAdvices.addAll(encodeAdvices);
-        this.unmodifiableEncodeAdvices = buildUnmodifiableEncodeAdvices();
         return self();
     }
 
     public RestClientBuilder addDecodeAdvice(DecodeAdvice decodeAdvice) {
         Checks.checkNotNull(decodeAdvice, "decodeAdvice");
         this.decodeAdvices.add(decodeAdvice);
-        this.unmodifiableDecodeAdvices = buildUnmodifiableDecodeAdvices();
         return self();
     }
 
     public RestClientBuilder addDecodeAdvices(List<DecodeAdvice> decodeAdvices) {
         Checks.checkNotNull(decodeAdvices, "decodeAdvices");
         this.decodeAdvices.addAll(decodeAdvices);
-        this.unmodifiableDecodeAdvices = buildUnmodifiableDecodeAdvices();
         return self();
     }
 
     public RestClientBuilder addEncoder(Encoder encoder) {
         Checks.checkNotNull(encoder, "encoder");
         this.encoders.add(encoder);
-        this.unmodifiableEncoders = buildUnmodifiableEncoders();
         return self();
     }
 
     public RestClientBuilder addByteEncoder(ByteEncoder byteEncoder) {
         Checks.checkNotNull(byteEncoder, "byteEncoder");
         this.encoders.add(byteEncoder);
-        this.unmodifiableEncoders = buildUnmodifiableEncoders();
         return self();
     }
 
     public RestClientBuilder addEncoders(List<Encoder> encoders) {
         Checks.checkNotNull(encoders, "encoders");
         this.encoders.addAll(encoders);
-        this.unmodifiableEncoders = buildUnmodifiableEncoders();
         return self();
     }
 
     public RestClientBuilder addByteEncoders(List<ByteEncoder> byteEncoders) {
         Checks.checkNotNull(byteEncoders, "byteEncoders");
         this.encoders.addAll(byteEncoders);
-        this.unmodifiableEncoders = buildUnmodifiableEncoders();
         return self();
     }
 
     public RestClientBuilder addDecoder(Decoder decoder) {
         Checks.checkNotNull(decoder, "decoder");
         this.decoders.add(decoder);
-        this.unmodifiableDecoders = buildUnmodifiableDecoders();
         return self();
     }
 
     public RestClientBuilder addByteDecoder(ByteDecoder byteDecoder) {
         Checks.checkNotNull(byteDecoder, "byteDecoder");
         this.decoders.add(byteDecoder);
-        this.unmodifiableDecoders = buildUnmodifiableDecoders();
         return self();
     }
 
     public RestClientBuilder addDecoders(List<Decoder> decoders) {
         Checks.checkNotNull(decoders, "decoders");
         this.decoders.addAll(decoders);
-        this.unmodifiableDecoders = buildUnmodifiableDecoders();
         return self();
     }
 
     public RestClientBuilder addByteDecoders(List<Decoder> byteDecoders) {
         Checks.checkNotNull(byteDecoders, "byteDecoders");
         this.decoders.addAll(byteDecoders);
-        this.unmodifiableDecoders = buildUnmodifiableDecoders();
         return self();
     }
 
@@ -377,28 +352,28 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public EncodeAdvice[] unmodifiableEncodeAdvices() {
-        return unmodifiableEncodeAdvices;
+    public List<EncodeAdvice> unmodifiableEncodeAdvices() {
+        return Collections.unmodifiableList(encodeAdvices);
     }
 
     @Override
-    public DecodeAdvice[] unmodifiableDecodeAdvices() {
-        return unmodifiableDecodeAdvices;
+    public List<DecodeAdvice> unmodifiableDecodeAdvices() {
+        return Collections.unmodifiableList(decodeAdvices);
     }
 
     @Override
-    public Encoder[] unmodifiableEncoders() {
-        return unmodifiableEncoders;
+    public List<Encoder> unmodifiableEncoders() {
+        return Collections.unmodifiableList(encoders);
     }
 
     @Override
-    public Decoder[] unmodifiableDecoders() {
-        return unmodifiableDecoders;
+    public List<Decoder> unmodifiableDecoders() {
+        return Collections.unmodifiableList(decoders);
     }
 
     @Override
-    public ClientInterceptor[] unmodifiableInterceptors() {
-        return unmodifiableInterceptors;
+    public List<ClientInterceptor> unmodifiableInterceptors() {
+        return Collections.unmodifiableList(interceptors);
     }
 
     private RestClientBuilder self() {
@@ -412,73 +387,86 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
      */
     public RestClient build() {
         RestClientBuilder copiedRestClientBuilder = copy();
+
+        copiedRestClientBuilder.loadInterceptorsFromSpi();
+        copiedRestClientBuilder.sortInterceptors();
+
+        copiedRestClientBuilder.loadDecodersFromSpi();
+        copiedRestClientBuilder.sortDecoders();
+
+        copiedRestClientBuilder.loadDecodeAdvicesFromSpi();
+        copiedRestClientBuilder.sortDecodeAdvices();
+
+        copiedRestClientBuilder.loadEncodersFromSpi();
+        copiedRestClientBuilder.sortEncoders();
+
+        copiedRestClientBuilder.loadEncodeAdvicesFromSpi();
+        copiedRestClientBuilder.sortEncodeAdvices();
+
         return new RestClientImpl(copiedRestClientBuilder,
                 copiedRestClientBuilder.httpClientBuilder.build());
     }
 
-    private DecodeAdvice[] buildUnmodifiableDecodeAdvices() {
-        final List<DecodeAdvice> decodeAdvices0 = new LinkedList<>(decodeAdvices);
-
+    private void loadDecodeAdvicesFromSpi() {
         SpiLoader.cached(DecodeAdviceFactory.class)
                 .getByGroup(name(), true)
                 .forEach(decodeAdviceFactory ->
-                        decodeAdvices0.addAll(decodeAdviceFactory.decodeAdvices(this))
+                        decodeAdvices.addAll(decodeAdviceFactory.decodeAdvices(this))
                 );
-
-        OrderedComparator.sort(decodeAdvices0);
-        return Collections.unmodifiableList(decodeAdvices0).toArray(new DecodeAdvice[0]);
+        OrderedComparator.sort(decodeAdvices);
     }
 
-    private EncodeAdvice[] buildUnmodifiableEncodeAdvices() {
-        final List<EncodeAdvice> encodeAdvices0 = new LinkedList<>(encodeAdvices);
+    private void sortDecodeAdvices() {
+        OrderedComparator.sort(decodeAdvices);
+    }
 
+    private void loadEncodeAdvicesFromSpi() {
         SpiLoader.cached(EncodeAdviceFactory.class)
                 .getByGroup(name(), true)
                 .forEach(encodeAdviceFactory ->
-                        encodeAdvices0.addAll(encodeAdviceFactory.encodeAdvices(this))
+                        encodeAdvices.addAll(encodeAdviceFactory.encodeAdvices(this))
                 );
-
-        OrderedComparator.sort(encodeAdvices0);
-        return Collections.unmodifiableList(encodeAdvices0).toArray(new EncodeAdvice[0]);
     }
 
-    private ClientInterceptor[] buildUnmodifiableInterceptors() {
-        final List<ClientInterceptor> interceptors0 = new LinkedList<>(interceptors);
+    private void sortEncodeAdvices() {
+        OrderedComparator.sort(encodeAdvices);
+    }
 
+    private void loadInterceptorsFromSpi() {
         SpiLoader.cached(ClientInterceptorFactory.class)
                 .getByGroup(name(), true)
                 .forEach(clientInterceptorFactory ->
-                        interceptors0.addAll(clientInterceptorFactory.interceptors(this))
+                        interceptors.addAll(clientInterceptorFactory.interceptors(this))
                 );
-
-        OrderedComparator.sort(interceptors0);
-        return Collections.unmodifiableList(interceptors0).toArray(new ClientInterceptor[0]);
     }
 
-    private Encoder[] buildUnmodifiableEncoders() {
-        final List<Encoder> encoders0 = new LinkedList<>(encoders);
+    private void sortInterceptors() {
+        OrderedComparator.sort(interceptors);
+    }
 
+    private void loadEncodersFromSpi() {
         SpiLoader.cached(EncoderFactory.class)
                 .getByGroup(name(), true)
                 .forEach(encoderFactory ->
-                        encoders0.addAll(encoderFactory.encoders(this))
+                        encoders.addAll(encoderFactory.encoders(this))
                 );
-
-        OrderedComparator.sort(encoders0);
-        return Collections.unmodifiableList(encoders0).toArray(new Encoder[0]);
     }
 
-    private Decoder[] buildUnmodifiableDecoders() {
-        final List<Decoder> decoders0 = new LinkedList<>(decoders);
+    private void sortEncoders() {
+        OrderedComparator.sort(encoders);
+    }
 
+
+    private void loadDecodersFromSpi() {
         SpiLoader.cached(DecoderFactory.class)
                 .getByGroup(name(), true)
                 .forEach(decoderFactory ->
-                        decoders0.addAll(decoderFactory.decoders(this))
+                        decoders.addAll(decoderFactory.decoders(this))
                 );
+    }
 
-        OrderedComparator.sort(decoders0);
-        return Collections.unmodifiableList(decoders0).toArray(new Decoder[0]);
+    private void sortDecoders() {
+        OrderedComparator.sort(decoders);
     }
 
     @Override

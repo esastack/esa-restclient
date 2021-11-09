@@ -15,7 +15,6 @@ import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 import io.esastack.restclient.codec.impl.EncodeContextImpl;
-import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.utils.CookiesUtil;
 
 import java.io.File;
@@ -27,22 +26,18 @@ import java.util.concurrent.CompletionStage;
 abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     protected final CompositeRequest target;
-    protected final RestClientOptions clientOptions;
-    protected final RestRequestExecutor requestExecutor;
+    protected final ClientInnerComposition clientInnerComposition;
     protected MediaType contentType = null;
     private MediaType[] acceptTypes = null;
     private Encoder encoder = null;
     private Decoder decoder = null;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
-                                            RestClientOptions clientOptions,
-                                            RestRequestExecutor requestExecutor) {
+                                            ClientInnerComposition clientInnerComposition) {
         Checks.checkNotNull(request, "request");
-        Checks.checkNotNull(clientOptions, "clientOptions");
-        Checks.checkNotNull(requestExecutor, "requestExecutor");
+        Checks.checkNotNull(clientInnerComposition, "clientInnerComposition");
         this.target = request;
-        this.clientOptions = clientOptions;
-        this.requestExecutor = requestExecutor;
+        this.clientInnerComposition = clientInnerComposition;
     }
 
     @Override
@@ -108,11 +103,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public CompletionStage<RestResponseBase> execute() {
-        return requestExecutor.execute(this);
-    }
-
-    RestClientOptions clientOptions() {
-        return clientOptions;
+        return clientInnerComposition.requestExecutor().execute(this);
     }
 
     CompletionStage<HttpResponse> sendRequest() {
@@ -131,7 +122,10 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     private RequestContent encode() throws Exception {
-        return new EncodeContextImpl(this, entity(), clientOptions).proceed();
+        return new EncodeContextImpl(this,
+                entity(),
+                clientInnerComposition.encodeAdvices(),
+                clientInnerComposition.encoders()).proceed();
     }
 
     private void fillBody(RequestContent requestContent) {

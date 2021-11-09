@@ -15,6 +15,8 @@ import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.ClientInterceptor;
 
+import java.util.List;
+
 /**
  * RestClientOptions is designed for wrapping the configuration of restClient
  */
@@ -62,13 +64,13 @@ public interface RestClientOptions {
 
     ChannelPoolOptionsProvider channelPoolOptionsProvider();
 
-    EncodeAdvice[] unmodifiableEncodeAdvices();
+    List<EncodeAdvice> unmodifiableEncodeAdvices();
 
-    DecodeAdvice[] unmodifiableDecodeAdvices();
+    List<DecodeAdvice> unmodifiableDecodeAdvices();
 
-    Encoder[] unmodifiableEncoders();
+    List<Encoder> unmodifiableEncoders();
 
-    Decoder[] unmodifiableDecoders();
+    List<Decoder> unmodifiableDecoders();
 
-    ClientInterceptor[] unmodifiableInterceptors();
+    List<ClientInterceptor> unmodifiableInterceptors();
 }

@@ -1,7 +1,7 @@
 package io.esastack.restclient.exec;
 
-import io.esastack.restclient.RequestInvocation;
-import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.ClientInnerComposition;
+import io.esastack.restclient.RequestTransceiver;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponseBase;
 
@@ -11,8 +11,9 @@ public final class RestRequestExecutorImpl implements RestRequestExecutor {
 
     private final InvocationChain invocationChain;
 
-    public RestRequestExecutorImpl(RestClientOptions clientOptions) {
-        this.invocationChain = buildInvokeChain(clientOptions);
+    public RestRequestExecutorImpl(ClientInnerComposition clientInnerComposition) {
+        this.invocationChain = buildInvokeChain(clientInnerComposition.interceptors(),
+                clientInnerComposition);
     }
 
     @Override
@@ -21,11 +22,9 @@ public final class RestRequestExecutorImpl implements RestRequestExecutor {
                 .thenApply(response -> (RestResponseBase) response);
     }
 
-    private InvocationChain buildInvokeChain(RestClientOptions clientOptions) {
-        InvocationChain invocationChain = new RequestInvocation();
-
-        ClientInterceptor[] orderedInterceptors = clientOptions.unmodifiableInterceptors();
-
+    private InvocationChain buildInvokeChain(ClientInterceptor[] orderedInterceptors,
+                                             ClientInnerComposition clientInnerComposition) {
+        InvocationChain invocationChain = new RequestTransceiver(clientInnerComposition);
         if (orderedInterceptors.length == 0) {
             return invocationChain;
         }

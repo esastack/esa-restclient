@@ -20,18 +20,18 @@ public class RestResponseBaseImpl implements RestResponseBase {
 
     private final RestRequestBase request;
     private final HttpResponse response;
-    private final RestClientOptions clientOptions;
+    private final ClientInnerComposition clientInnerComposition;
 
     RestResponseBaseImpl(
             RestRequestBase request,
             HttpResponse response,
-            RestClientOptions clientOptions) {
+            ClientInnerComposition clientInnerComposition) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(response, "response");
-        Checks.checkNotNull(clientOptions, "clientOptions");
+        Checks.checkNotNull(clientInnerComposition, "clientInnerComposition");
         this.request = request;
         this.response = response;
-        this.clientOptions = clientOptions;
+        this.clientInnerComposition = clientInnerComposition;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
         DecodeContext decodeContext = new DecodeContextImpl(
                 request,
                 this,
-                clientOptions,
+                clientInnerComposition,
                 getClass(genericType),
                 genericType,
                 response.body().getByteBuf());

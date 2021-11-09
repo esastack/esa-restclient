@@ -19,7 +19,7 @@ public class RequestInvocationTest {
                 mock(RestClientOptions.class), mock(RestRequestExecutor.class), "Hi".getBytes(),
                 "Hi", "aaa", "aaa");
 
-        RequestInvocation requestInvocation = new RequestInvocation();
+        RequestTransceiver requestInvocation = new RequestTransceiver();
         assertThrows(IllegalStateException.class,
                 () -> requestInvocation.proceed(mock(RestRequest.class)));
 

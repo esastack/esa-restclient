@@ -3,7 +3,6 @@ package io.esastack.restclient.codec.impl;
 import esa.commons.Checks;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.codec.CodecResult;
@@ -25,15 +24,18 @@ public final class EncodeContextImpl implements EncodeContext {
     private int adviceIndex = 0;
     private Object entity;
 
-    public EncodeContextImpl(RestRequestBase request, Object entity, RestClientOptions clientOptions) {
+    public EncodeContextImpl(RestRequestBase request,
+                             Object entity,
+                             EncodeAdvice[] advices,
+                             Encoder[] encodersOfClient) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(entity, "entity");
-        Checks.checkNotNull(clientOptions, "clientOptions");
-        this.encodersOfClient = clientOptions.unmodifiableEncoders();
+        Checks.checkNotNull(advices, "advices");
         Checks.checkNotNull(encodersOfClient, "encodersOfClient");
         this.request = request;
         this.entity = entity;
-        this.advices = clientOptions.unmodifiableEncodeAdvices();
+        this.advices = advices;
+        this.encodersOfClient = encodersOfClient;
         this.encoderOfRequest = request.encoder();
     }
 
@@ -107,7 +109,7 @@ public final class EncodeContextImpl implements EncodeContext {
     }
 
     private RequestContent encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
-                                                        Class<?> type, Type genericType) throws Exception {
+                                                    Class<?> type, Type genericType) throws Exception {
         CodecResult<RequestContent> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
                 type, genericType);
 
@@ -131,7 +133,7 @@ public final class EncodeContextImpl implements EncodeContext {
     }
 
     private RequestContent encodeByEncodersOfClient(MediaType contentType, HttpHeaders headers,
-                                                        Class<?> type, Type genericType) throws Exception {
+                                                    Class<?> type, Type genericType) throws Exception {
 
         for (Encoder encoder : encodersOfClient) {
             CodecResult<RequestContent> encodeResult = encoder.encode(contentType, headers, entity,

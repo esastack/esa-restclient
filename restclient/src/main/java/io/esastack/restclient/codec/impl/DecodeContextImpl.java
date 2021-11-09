@@ -5,7 +5,7 @@ import esa.commons.StringUtils;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.ClientInnerComposition;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -37,20 +37,20 @@ public final class DecodeContextImpl implements DecodeContext {
 
     public DecodeContextImpl(RestRequestBase request,
                              RestResponse response,
-                             RestClientOptions clientOptions,
+                             ClientInnerComposition clientInnerComposition,
                              Class<?> type,
                              Type genericType,
                              ByteBuf byteBuf) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(response, "response");
-        Checks.checkNotNull(clientOptions, "clientOptions");
+        Checks.checkNotNull(clientInnerComposition, "clientInnerComposition");
         Checks.checkNotNull(type, "type");
         Checks.checkNotNull(byteBuf, "byteBuf");
         this.request = request;
         this.response = response;
-        this.advices = clientOptions.unmodifiableDecodeAdvices();
+        this.advices = clientInnerComposition.decodeAdvices();
         this.decoderOfRequest = request.decoder();
-        this.decodersOfClient = clientOptions.unmodifiableDecoders();
+        this.decodersOfClient = clientInnerComposition.decoders();
         this.type = type;
         this.genericType = genericType;
         this.responseContent = ResponseContent.of(ByteBufUtil.getBytes(byteBuf));

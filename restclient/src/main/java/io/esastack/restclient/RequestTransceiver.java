@@ -5,7 +5,13 @@ import io.esastack.restclient.exec.InvocationChain;
 
 import java.util.concurrent.CompletionStage;
 
-public final class RequestInvocation implements InvocationChain {
+public final class RequestTransceiver implements InvocationChain {
+
+    private final ClientInnerComposition clientInnerComposition;
+
+    public RequestTransceiver(ClientInnerComposition clientInnerComposition) {
+        this.clientInnerComposition = clientInnerComposition;
+    }
 
     @Override
     public CompletionStage<RestResponse> proceed(RestRequest request) {
@@ -21,7 +27,7 @@ public final class RequestInvocation implements InvocationChain {
                 .thenApply((response) -> processResponse(executableRequest, response));
     }
 
-    private RestResponse processResponse(AbstractExecutableRestRequest request, HttpResponse response) {
-        return new RestResponseBaseImpl(request, response, request.clientOptions());
+    private RestResponse processResponse(RestRequestBase request, HttpResponse response) {
+        return new RestResponseBaseImpl(request, response, clientInnerComposition);
     }
 }

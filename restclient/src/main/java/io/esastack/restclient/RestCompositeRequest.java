@@ -10,7 +10,6 @@ import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.GenericObject;
-import io.esastack.restclient.exec.RestRequestExecutor;
 
 import java.io.File;
 import java.util.Map;
@@ -21,9 +20,8 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     private Object entity;
 
     RestCompositeRequest(CompositeRequest request,
-                         RestClientOptions clientOptions,
-                         RestRequestExecutor requestExecutor) {
-        super(request, clientOptions, requestExecutor);
+                         ClientInnerComposition clientInnerComposition) {
+        super(request, clientInnerComposition);
     }
 
     @Override

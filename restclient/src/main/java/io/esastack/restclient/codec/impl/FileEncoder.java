@@ -1,24 +1,19 @@
 package io.esastack.restclient.codec.impl;
 
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.codec.CodecResult;
+import io.esastack.restclient.codec.EncodeChainContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 
 import java.io.File;
-import java.lang.reflect.Type;
 
 public class FileEncoder implements Encoder {
 
     @Override
-    public CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers,
-                                                  Object entity, Class<?> type, Type genericType) {
+    public RequestContent encode(EncodeChainContext encodeChainContext) throws Exception {
 
-        if (File.class.isAssignableFrom(type)) {
-            return CodecResult.success(RequestContent.of((File) entity));
+        if (File.class.isAssignableFrom(encodeChainContext.type())) {
+            return RequestContent.of((File) encodeChainContext.entity());
         }
-
-        return CodecResult.fail();
+        return encodeChainContext.continueToEncode();
     }
 }

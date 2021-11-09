@@ -1,10 +1,6 @@
 package io.esastack.restclient.codec;
 
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.util.Ordered;
-
-import java.lang.reflect.Type;
 
 /**
  * <code>Encoder</code> is designed for the conversion from Java type to {@link CodecResult}.And
@@ -27,6 +23,5 @@ public interface Encoder extends Ordered {
      * @return encoded result
      * @throws Exception error
      */
-    CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers, Object entity,
-                                       Class<?> type, Type genericType) throws Exception;
+    RequestContent encode(EncodeChainContext encodeChainContext) throws Exception;
 }

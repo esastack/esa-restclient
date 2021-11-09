@@ -5,13 +5,11 @@ import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
-import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 import io.esastack.restclient.utils.GenericTypeUtil;
-import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
@@ -90,53 +88,26 @@ public final class EncodeContextImpl implements EncodeContext {
             HttpHeaders headers = request.headers();
 
             if (encoderOfRequest != null) {
-                return encodeByEncoderOfRequest(contentType, headers, type, genericType);
+                return new EncodeChainContextImpl(
+                        contentType,
+                        headers,
+                        entity,
+                        type,
+                        genericType,
+                        new Encoder[]{encoderOfRequest}
+                ).continueToEncode();
             } else {
-                return encodeByEncodersOfClient(contentType, headers, type, genericType);
+                return new EncodeChainContextImpl(
+                        contentType,
+                        headers,
+                        entity,
+                        type,
+                        genericType,
+                        encodersOfClient
+                ).continueToEncode();
             }
         }
         return advices[adviceIndex++].aroundEncode(this);
-    }
-
-    private RequestContent encodeByEncoderOfRequest(MediaType contentType, HttpHeaders headers,
-                                                    Class<?> type, Type genericType) throws Exception {
-        CodecResult<RequestContent> encodeResult = encoderOfRequest.encode(contentType, headers, entity,
-                type, genericType);
-
-        if (encodeResult == null) {
-            throw new CodecException("EncodeResult should never be null!"
-                    + " Please set correct encoder to the request!"
-                    + " encoder of request : " + encoderOfRequest
-                    + " , headers of request : " + headers
-                    + " , entity of request : " + entity);
-        }
-
-        if (encodeResult.isSuccess()) {
-            return encodeResult.getResult();
-        }
-
-        throw new CodecException("Encode is not success by encoderOfRequest,"
-                + " Please set correct encoder to the request!"
-                + " encoder of request : " + encoderOfRequest
-                + " , headers of request : " + headers
-                + " , entity of request : " + entity);
-    }
-
-    private RequestContent encodeByEncodersOfClient(MediaType contentType, HttpHeaders headers,
-                                                    Class<?> type, Type genericType) throws Exception {
-
-        for (Encoder encoder : encodersOfClient) {
-            CodecResult<RequestContent> encodeResult = encoder.encode(contentType, headers, entity,
-                    type, genericType);
-
-            if (encodeResult.isSuccess()) {
-                return encodeResult.getResult();
-            }
-        }
-        throw new CodecException("There is no suitable encoder for this request,"
-                + " Please add correct encoder to the client!"
-                + " , headers of request : " + headers
-                + " , entity of request : " + entity);
     }
 
 }

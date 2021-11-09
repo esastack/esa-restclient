@@ -1,6 +1,5 @@
 package io.esastack.restclient.codec;
 
-import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
 
@@ -20,19 +19,6 @@ public interface DecodeContext {
     RestRequest request();
 
     RestResponse response();
-
-    /**
-     * @return contentType of response
-     */
-    MediaType contentType();
-
-    /**
-     * Update contentType of response.this method is not safe for
-     * use by multiple threads
-     *
-     * @param mediaType new contentType for response
-     */
-    void contentType(MediaType mediaType);
 
     ResponseContent responseContent();
 

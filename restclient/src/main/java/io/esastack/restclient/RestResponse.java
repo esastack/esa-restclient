@@ -1,6 +1,7 @@
 package io.esastack.restclient;
 
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.Response;
 
 import java.util.List;
@@ -11,4 +12,9 @@ public interface RestResponse extends Response {
     List<Cookie> cookies(String name);
 
     Map<String, List<Cookie>> cookiesMap();
+
+    /**
+     * @return contentType of response
+     */
+    MediaType contentType();
 }

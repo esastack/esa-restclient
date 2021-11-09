@@ -1,9 +1,13 @@
 package io.esastack.restclient;
 
 import esa.commons.Checks;
+import esa.commons.StringUtils;
 import esa.commons.http.Cookie;
+import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpVersion;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.MediaType;
+import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.impl.DecodeContextImpl;
@@ -80,6 +84,15 @@ public class RestResponseBaseImpl implements RestResponseBase {
     @Override
     public Map<String, List<Cookie>> cookiesMap() {
         return CookiesUtil.getCookiesMap(headers(), true);
+    }
+
+    @Override
+    public MediaType contentType() {
+        String contentType = headers().get(HttpHeaderNames.CONTENT_TYPE);
+        if (StringUtils.isNotBlank(contentType)) {
+            return MediaTypeUtil.parseMediaType(contentType);
+        }
+        return null;
     }
 
     /**

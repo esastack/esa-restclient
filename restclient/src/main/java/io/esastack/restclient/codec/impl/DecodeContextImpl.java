@@ -1,10 +1,8 @@
 package io.esastack.restclient.codec.impl;
 
 import esa.commons.Checks;
-import esa.commons.StringUtils;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.ClientInnerComposition;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
@@ -17,7 +15,6 @@ import io.esastack.restclient.codec.ResponseContent;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.CodecException;
-import io.netty.handler.codec.http.HttpHeaderNames;
 
 import java.lang.reflect.Type;
 
@@ -32,7 +29,6 @@ public final class DecodeContextImpl implements DecodeContext {
     private final Class<?> type;
     private final Type genericType;
     private int adviceIndex = 0;
-    private MediaType contentType;
     private ResponseContent responseContent;
 
     public DecodeContextImpl(RestRequestBase request,
@@ -54,26 +50,11 @@ public final class DecodeContextImpl implements DecodeContext {
         this.type = type;
         this.genericType = genericType;
         this.responseContent = ResponseContent.of(ByteBufUtil.getBytes(byteBuf));
-
-        final String mediaTypeValue = response.headers().get(HttpHeaderNames.CONTENT_TYPE);
-        if (StringUtils.isNotBlank(mediaTypeValue)) {
-            this.contentType = MediaTypeUtil.parseMediaType(mediaTypeValue);
-        }
     }
 
     @Override
     public RestRequest request() {
         return request;
-    }
-
-    @Override
-    public MediaType contentType() {
-        return contentType;
-    }
-
-    @Override
-    public void contentType(MediaType mediaType) {
-        this.contentType = mediaType;
     }
 
     @Override
@@ -104,17 +85,18 @@ public final class DecodeContextImpl implements DecodeContext {
     @Override
     public Object proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
+            MediaType contentType = response.contentType();
             if (decoderOfRequest != null) {
-                return decodeByDecoderOfRequest();
+                return decodeByDecoderOfRequest(contentType);
             } else {
-                return decodeByDecodersOfClient();
+                return decodeByDecodersOfClient(contentType);
             }
         }
 
         return advices[adviceIndex++].aroundDecode(this);
     }
 
-    private Object decodeByDecoderOfRequest() throws Exception {
+    private Object decodeByDecoderOfRequest(MediaType contentType) throws Exception {
         HttpHeaders headers = response.headers();
         CodecResult<?> codecResult = decoderOfRequest.decode(contentType, headers, responseContent,
                 type, genericType);
@@ -140,7 +122,7 @@ public final class DecodeContextImpl implements DecodeContext {
                 + " , genericType : " + genericType);
     }
 
-    private Object decodeByDecodersOfClient() throws Exception {
+    private Object decodeByDecodersOfClient(MediaType contentType) throws Exception {
         HttpHeaders headers = response.headers();
 
         for (Decoder decoder : decodersOfClient) {

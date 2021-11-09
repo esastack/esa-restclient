@@ -6,10 +6,25 @@ import io.esastack.httpclient.core.RequestBaseConfigure;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
+
+    /**
+     * @return The entity of request.
+     */
     Object entity();
+
+    /**
+     * @return The type of entity.
+     */
+    Class<?> type();
+
+    /**
+     * @return The genericType of entity.
+     */
+    Type genericType();
 
     @Override
     RestRequestBase readTimeout(long readTimeout);

@@ -31,6 +31,13 @@ public interface EncodeContext {
     void entity(Object entity);
 
     /**
+     * set entity and genericType,this method is not safe for use by multiple threads
+     * @param entity entity
+     * @param genericType genericType
+     */
+    void entity(Object entity,Type genericType);
+
+    /**
      * Proceed to the next advice in the chain.
      * <p>
      * Advice MUST explicitly call this method to continue the execution chain;

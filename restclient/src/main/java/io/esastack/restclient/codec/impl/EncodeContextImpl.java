@@ -9,8 +9,8 @@ import io.esastack.restclient.codec.CodecResult;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.GenericObject;
 import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.utils.GenericTypeUtil;
 import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
@@ -23,9 +23,13 @@ public final class EncodeContextImpl implements EncodeContext {
     private final Encoder[] encodersOfClient;
     private int adviceIndex = 0;
     private Object entity;
+    private Class<?> type;
+    private Type genericType;
 
     public EncodeContextImpl(RestRequestBase request,
                              Object entity,
+                             Class<?> type,
+                             Type geneticType,
                              EncodeAdvice[] advices,
                              Encoder[] encodersOfClient) {
         Checks.checkNotNull(request, "request");
@@ -34,6 +38,8 @@ public final class EncodeContextImpl implements EncodeContext {
         Checks.checkNotNull(encodersOfClient, "encodersOfClient");
         this.request = request;
         this.entity = entity;
+        this.type = type;
+        this.genericType = geneticType;
         this.advices = advices;
         this.encodersOfClient = encodersOfClient;
         this.encoderOfRequest = request.encoder();
@@ -51,51 +57,35 @@ public final class EncodeContextImpl implements EncodeContext {
 
     @Override
     public Class<?> type() {
-        if (entity == null) {
-            return null;
-        }
-
-        if (entity instanceof GenericObject) {
-            return ((GenericObject<?>) entity).getRawType();
-        }
-
-        return entity.getClass();
+        return type;
     }
 
     @Override
     public Type genericType() {
-        if (entity == null) {
-            return null;
-        }
-
-        if (entity instanceof GenericObject) {
-            return ((GenericObject<?>) entity).getType();
-        }
-
-        return entity.getClass();
+        return genericType;
     }
 
     @Override
     public void entity(Object entity) {
+        Checks.checkNotNull(entity, "entity");
         this.entity = entity;
+        this.type = entity.getClass();
+        this.genericType = type;
+    }
+
+    @Override
+    public void entity(Object entity, Type genericType) {
+        Checks.checkNotNull(entity, "entity");
+        Checks.checkNotNull(genericType, "genericType");
+        this.entity = entity;
+        this.type = entity.getClass();
+        GenericTypeUtil.checkTypeCompatibility(type, genericType);
+        this.genericType = type;
     }
 
     @Override
     public RequestContent proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
-
-            Class<?> type = null;
-            Type genericType = null;
-            if (entity != null) {
-                if (entity instanceof GenericObject) {
-                    type = ((GenericObject<?>) entity).getRawType();
-                    genericType = ((GenericObject<?>) entity).getType();
-                } else {
-                    type = entity.getClass();
-                    genericType = type;
-                }
-            }
-
             MediaType contentType = request.contentType();
             HttpHeaders headers = request.headers();
 

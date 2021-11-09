@@ -124,6 +124,8 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     private RequestContent encode() throws Exception {
         return new EncodeContextImpl(this,
                 entity(),
+                type(),
+                genericType(),
                 clientInnerComposition.encodeAdvices(),
                 clientInnerComposition.encoders()).proceed();
     }

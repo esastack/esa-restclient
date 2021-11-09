@@ -9,15 +9,18 @@ import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.GenericObject;
+import io.esastack.restclient.utils.GenericTypeUtil;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public class RestCompositeRequest extends AbstractExecutableRestRequest
         implements RestRequestFacade, RestFileRequest, RestMultipartRequest {
 
     private Object entity;
+    private Class<?> type;
+    private Type genericType;
 
     RestCompositeRequest(CompositeRequest request,
                          ClientInnerComposition clientInnerComposition) {
@@ -27,6 +30,16 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     @Override
     public Object entity() {
         return entity;
+    }
+
+    @Override
+    public Class<?> type() {
+        return type;
+    }
+
+    @Override
+    public Type genericType() {
+        return genericType;
     }
 
     @Override
@@ -199,11 +212,13 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public ExecutableRestRequest entity(GenericObject<?> entity) {
+    public ExecutableRestRequest entity(Object entity, Type genericType) {
         Checks.checkNotNull(entity, "entity");
-        checkEntityHadSet();
-        setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        Checks.checkNotNull(genericType, "genericType");
         this.entity = entity;
+        this.type = entity.getClass();
+        GenericTypeUtil.checkTypeCompatibility(type, genericType);
+        this.genericType = genericType;
         return self();
     }
 

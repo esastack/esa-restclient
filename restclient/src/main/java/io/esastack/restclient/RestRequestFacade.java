@@ -4,9 +4,9 @@ import esa.commons.http.Cookie;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.GenericObject;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public interface RestRequestFacade extends ExecutableRestRequest {
@@ -23,11 +23,12 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     /**
      * Fills the request's entity with given entity.The entity will be encoded to
      * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
-     *
+     * And you can deliver generic information through genericType.
      * @param entity entity
+     * @param genericType genericType
      * @return ExecutableRestRequest
      */
-    ExecutableRestRequest entity(GenericObject<?> entity);
+    ExecutableRestRequest entity(Object entity, Type genericType);
 
     /**
      * Fills the request's entity with given content.The content will be encoded to

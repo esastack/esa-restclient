@@ -9,7 +9,7 @@ import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-public class EncodeChainContextImpl implements EncodeChainContext {
+final class EncodeChainContextImpl implements EncodeChainContext {
 
     private final MediaType contentType;
     private final HttpHeaders headers;
@@ -19,12 +19,12 @@ public class EncodeChainContextImpl implements EncodeChainContext {
     private final Encoder[] encoders;
     private int index = 0;
 
-    public EncodeChainContextImpl(MediaType contentType,
-                                  HttpHeaders headers,
-                                  Object entity,
-                                  Class<?> type,
-                                  Type genericType,
-                                  Encoder[] encoders) {
+    EncodeChainContextImpl(MediaType contentType,
+                           HttpHeaders headers,
+                           Object entity,
+                           Class<?> type,
+                           Type genericType,
+                           Encoder[] encoders) {
         this.contentType = contentType;
         this.headers = headers;
         this.entity = entity;

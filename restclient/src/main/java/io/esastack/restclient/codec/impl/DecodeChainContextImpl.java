@@ -9,7 +9,7 @@ import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-public class DecodeChainContextImpl<T> implements DecodeChainContext<T> {
+final class DecodeChainContextImpl<T> implements DecodeChainContext<T> {
 
     private final MediaType contentType;
     private final HttpHeaders headers;
@@ -19,12 +19,12 @@ public class DecodeChainContextImpl<T> implements DecodeChainContext<T> {
     private final Decoder[] decoders;
     private int index = 0;
 
-    public DecodeChainContextImpl(MediaType contentType,
-                                  HttpHeaders headers,
-                                  ResponseContent responseContent,
-                                  Class<T> type,
-                                  Type genericType,
-                                  Decoder[] decoders) {
+    DecodeChainContextImpl(MediaType contentType,
+                           HttpHeaders headers,
+                           ResponseContent responseContent,
+                           Class<T> type,
+                           Type genericType,
+                           Decoder[] decoders) {
         this.contentType = contentType;
         this.headers = headers;
         this.responseContent = responseContent;

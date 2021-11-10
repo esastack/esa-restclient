@@ -7,10 +7,10 @@ import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 
-public class MultipartEncoder implements Encoder<MultipartBody> {
+public class MultipartEncoder implements Encoder {
 
     @Override
-    public RequestContent<MultipartBody> encode(EncodeContext<MultipartBody> encodeContext) throws Exception {
+    public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
         MediaType contentType = encodeContext.contentType();
         if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(encodeContext.type())) {

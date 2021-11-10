@@ -1,23 +1,11 @@
 package io.esastack.restclient.codec;
 
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
-
-import java.lang.reflect.Type;
-
-public interface ByteEncoder extends Encoder {
+public interface ByteEncoder extends Encoder<byte[]> {
 
     @Override
-    default CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers,
-                                                   Object entity, Class<?> type, Type genericType) throws Exception {
-
-        CodecResult<byte[]> codecResult = doEncode(mediaType, headers, entity, type, genericType);
-        if (codecResult.isSuccess()) {
-            return CodecResult.success(RequestContent.of(codecResult.getResult()));
-        }
-        return CodecResult.fail();
+    default RequestContent<byte[]> encode(EncodeContext<byte[]> encodeContext) throws Exception {
+        return doEncode(encodeContext);
     }
 
-    CodecResult<byte[]> doEncode(MediaType mediaType, HttpHeaders headers,
-                                 Object entity, Class<?> type, Type genericType) throws Exception;
+    RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception;
 }

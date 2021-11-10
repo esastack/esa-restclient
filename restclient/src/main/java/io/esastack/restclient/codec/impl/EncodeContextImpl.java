@@ -9,14 +9,14 @@ import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-final class EncodeContextImpl implements EncodeContext {
+final class EncodeContextImpl<V> implements EncodeContext<V> {
 
     private final MediaType contentType;
     private final HttpHeaders headers;
     private final Object entity;
     private final Class<?> type;
     private final Type genericType;
-    private final Encoder[] encoders;
+    private final Encoder<V>[] encoders;
     private int index = 0;
 
     EncodeContextImpl(MediaType contentType,
@@ -24,7 +24,7 @@ final class EncodeContextImpl implements EncodeContext {
                       Object entity,
                       Class<?> type,
                       Type genericType,
-                      Encoder[] encoders) {
+                      Encoder<V>[] encoders) {
         this.contentType = contentType;
         this.headers = headers;
         this.entity = entity;
@@ -59,7 +59,7 @@ final class EncodeContextImpl implements EncodeContext {
     }
 
     @Override
-    public RequestContent continueToEncode() throws Exception {
+    public RequestContent<V> next() throws Exception {
         if (index < encoders.length) {
             return encoders[index++].encode(this);
         }

@@ -17,11 +17,10 @@ package io.esastack.restclient.codec.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
+import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.JsonCodec;
-
-import java.lang.reflect.Type;
+import io.esastack.restclient.codec.RequestContent;
 
 public class FastJsonCodec implements JsonCodec {
 
@@ -32,15 +31,12 @@ public class FastJsonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] encodeToJson(MediaType mediaType, HttpHeaders headers,
-                           Object entity, Class<?> type, Type genericType) {
-        return JSON.toJSONBytes(entity);
+    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) {
+        return RequestContent.of(JSON.toJSONBytes(encodeContext.entity()));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T decodeFromJson(MediaType mediaType, HttpHeaders headers, byte[] body,
-                          Class<T> type, Type genericType) {
-        return (T) JSON.parseObject(body, type);
+    public Object decodeFromJson(DecodeContext<byte[]> decodeContext) {
+        return JSON.parseObject(decodeContext.content().value(), decodeContext.genericType());
     }
 }

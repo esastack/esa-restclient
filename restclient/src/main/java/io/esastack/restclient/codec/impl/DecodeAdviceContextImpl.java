@@ -20,13 +20,13 @@ public final class DecodeAdviceContextImpl implements DecodeAdviceContext {
     private final RestRequest request;
     private final RestResponse response;
     private final DecodeAdvice[] advices;
-    private final Decoder decoderOfRequest;
-    private final Decoder[] decodersOfClient;
+    private final Decoder<?> decoderOfRequest;
+    private final Decoder<?>[] decodersOfClient;
 
     private final Class<?> type;
     private final Type genericType;
     private int adviceIndex = 0;
-    private ResponseContent responseContent;
+    private ResponseContent<?> responseContent;
 
     public DecodeAdviceContextImpl(RestRequestBase request,
                                    RestResponse response,
@@ -60,12 +60,12 @@ public final class DecodeAdviceContextImpl implements DecodeAdviceContext {
     }
 
     @Override
-    public ResponseContent responseContent() {
+    public ResponseContent<?> content() {
         return responseContent;
     }
 
     @Override
-    public void responseContent(ResponseContent responseContent) {
+    public void content(ResponseContent<?> responseContent) {
         this.responseContent = responseContent;
     }
 
@@ -84,24 +84,24 @@ public final class DecodeAdviceContextImpl implements DecodeAdviceContext {
         if (advices == null || adviceIndex >= advices.length) {
             MediaType contentType = response.contentType();
             if (decoderOfRequest != null) {
-                return new DecodeContextImpl<>(
+                return new DecodeContextImpl(
                         contentType,
                         response.headers(),
                         responseContent,
                         type,
                         genericType,
                         new Decoder[]{decoderOfRequest}
-                ).continueToDecode();
+                ).next();
 
             } else {
-                return new DecodeContextImpl<>(
+                return new DecodeContextImpl(
                         contentType,
                         response.headers(),
                         responseContent,
                         type,
                         genericType,
                         decodersOfClient
-                ).continueToDecode();
+                ).next();
             }
         }
 

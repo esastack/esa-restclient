@@ -1,26 +1,23 @@
 package io.esastack.restclient.codec.impl;
 
-import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.MultipartBody;
-import io.esastack.restclient.codec.CodecResult;
+import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 
-import java.lang.reflect.Type;
-
-public class FormURLEncodedEncoder implements Encoder {
+public class FormURLEncodedEncoder implements Encoder<MultipartBody> {
 
     @Override
-    public CodecResult<RequestContent> encode(MediaType mediaType, HttpHeaders headers,
-                                                  Object entity, Class<?> type, Type genericType) {
-
-        if (mediaType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType)
+    public RequestContent<MultipartBody> encode(EncodeContext<MultipartBody> encodeContext) throws Exception {
+        MediaType contentType = encodeContext.contentType();
+        Class<?> type = encodeContext.type();
+        if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(type)) {
-            return CodecResult.success(RequestContent.of((MultipartBody) entity));
+            return RequestContent.of((MultipartBody) encodeContext.entity());
         }
 
-        return CodecResult.fail();
+        return encodeContext.next();
     }
 }

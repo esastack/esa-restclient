@@ -18,8 +18,8 @@ public class ClientInnerCompositionImpl implements ClientInnerComposition {
     private final ClientInterceptor[] interceptors;
     private final DecodeAdvice[] decodeAdvices;
     private final EncodeAdvice[] encodeAdvices;
-    private final Decoder[] decoders;
-    private final Encoder[] encoders;
+    private final Decoder<?>[] decoders;
+    private final Encoder<?>[] encoders;
 
     public ClientInnerCompositionImpl(RestClientOptions clientOptions,
                                       HttpClient httpClient) {
@@ -51,12 +51,12 @@ public class ClientInnerCompositionImpl implements ClientInnerComposition {
     }
 
     @Override
-    public Decoder[] decoders() {
+    public Decoder<?>[] decoders() {
         return decoders;
     }
 
     @Override
-    public Encoder[] encoders() {
+    public Encoder<?>[] encoders() {
         return encoders;
     }
 

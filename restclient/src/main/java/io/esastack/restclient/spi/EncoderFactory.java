@@ -8,5 +8,5 @@ import java.util.Collection;
 
 @SPI
 public interface EncoderFactory {
-    Collection<Encoder> encoders(RestClientOptions clientOptions);
+    Collection<Encoder<?>> encoders(RestClientOptions clientOptions);
 }

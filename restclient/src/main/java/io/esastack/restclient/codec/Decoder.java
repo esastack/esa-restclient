@@ -3,26 +3,20 @@ package io.esastack.restclient.codec;
 import io.esastack.httpclient.core.util.Ordered;
 
 /**
- * <code>Decoder</code> is designed for the conversion from {@code bodyContent} to {@link CodecResult}.And
+ * <code>Decoder</code> is designed for the conversion from {@code decodeContext.content()} to object.And
  * in many scenarios, what you need is {@link ByteDecoder} which makes it unnecessary for you to understand
  * the {@link ResponseContent}.
- *
- * @see CodecResult
  */
-public interface Decoder extends Ordered {
+public interface Decoder<V> extends Ordered {
 
     /**
-     * Decode the bodyContent to {@link CodecResult}.The call of {@code CodecResult.isSuccess()} will return false
-     * when the Decoder can,t decode the bodyContent,otherwise it will return true,and the decoded result
-     * can be get by {@code CodecResult.getResult()}
+     * Decode the {@code decodeContext.content()} to object.If this decoder can decode the {@code decodeContext.content()},
+     * it will directly decode and return object.Otherwise, it will call {@code decodeContext.next()} to hand over the
+     * decoding work to the next decoder.
      *
-     * @param mediaType       the media type of the HTTP response
-     * @param headers         the headers of the HTTP response
-     * @param responseContent the body of the HTTP response
-     * @param type            the class will be decoded from the bodyContent.
-     * @param genericType     the genericType will be decoded from the bodyContent.
-     * @return decoded result
+     * @param decodeContext which is to save variables required during decoding
+     * @return object
      * @throws Exception error
      */
-    <T> CodecResult<T> decode(DecodeContext<T> decodeChainContext) throws Exception;
+    Object decode(DecodeContext<V> decodeContext) throws Exception;
 }

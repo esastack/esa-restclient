@@ -58,9 +58,9 @@ public interface ExecutableRestRequest extends RestRequestBase {
     ExecutableRestRequest removeHeader(CharSequence name);
 
     @Override
-    ExecutableRestRequest encoder(Encoder encoder);
+    ExecutableRestRequest encoder(Encoder<?> encoder);
 
     @Override
-    ExecutableRestRequest decoder(Decoder decoder);
+    ExecutableRestRequest decoder(Decoder<?> decoder);
 
 }

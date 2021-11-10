@@ -3,25 +3,20 @@ package io.esastack.restclient.codec;
 import io.esastack.httpclient.core.util.Ordered;
 
 /**
- * <code>Encoder</code> is designed for the conversion from Java type to {@link CodecResult}.And
- * in many scenarios, what you need is {@link ByteEncoder}
- *
- * @see CodecResult
+ * <code>Encoder</code> is designed for the conversion from Java type to {@link RequestContent}.And
+ * in many scenarios, what you need is {@link ByteEncoder} which makes it unnecessary for you to understand
+ * the {@link RequestContent}.
  */
-public interface Encoder extends Ordered {
+public interface Encoder<V> extends Ordered {
 
     /**
-     * Encode the object to {@link CodecResult}.The call of {@code CodecResult.isSuccess()} will return false
-     * when the Encoder can,t encode the entity,otherwise it will return true,and the encoded result
-     * can be get by {@code CodecResult.getResult()}
+     * Encode the {@code encodeContext.entity()} to {@link RequestContent}.If this encoder can encode the entity,
+     * it will directly encode and return {@link RequestContent}. Otherwise, it will call {@code encodeContext.next()
+     * to hand over the encoding work to the next encoder
      *
-     * @param mediaType   mediaType the media type of the HTTP request
-     * @param headers     headers the headers of the HTTP request
-     * @param entity      the entity need to be encode
-     * @param type        the class of entity
-     * @param genericType the genericType of entity
-     * @return encoded result
+     * @param encodeContext which is to save variables required during encoding
+     * @return RequestContent
      * @throws Exception error
      */
-    RequestContent encode(EncodeContext encodeChainContext) throws Exception;
+    RequestContent<V> encode(EncodeContext<V> encodeContext) throws Exception;
 }

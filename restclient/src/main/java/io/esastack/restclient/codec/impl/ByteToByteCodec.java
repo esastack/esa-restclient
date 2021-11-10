@@ -1,37 +1,36 @@
 package io.esastack.restclient.codec.impl;
 
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.util.Ordered;
 import io.esastack.restclient.codec.ByteCodec;
-import io.esastack.restclient.codec.CodecResult;
-
-import java.lang.reflect.Type;
+import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.EncodeContext;
+import io.esastack.restclient.codec.RequestContent;
 
 public class ByteToByteCodec implements ByteCodec {
 
     @Override
-    public CodecResult<byte[]> doEncode(MediaType mediaType, HttpHeaders headers,
-                                        Object entity, Class<?> type, Type genericType) {
+    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
+        Class<?> type = encodeContext.type();
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
-            return CodecResult.success((byte[]) entity);
+            return RequestContent.of((byte[]) encodeContext.entity());
         }
 
-        return CodecResult.fail();
+        return encodeContext.next();
     }
 
     @Override
-    public <T> CodecResult<T> doDecode(MediaType mediaType, HttpHeaders headers,
-                                       byte[] content, Class<T> type, Type genericType) {
+    public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
+        Class<?> type = decodeContext.type();
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
-            return CodecResult.success((T) content);
+            return decodeContext.content().value();
         }
 
-        return CodecResult.fail();
+        return decodeContext.next();
     }
 
     @Override
     public int getOrder() {
         return Ordered.LOWER_PRECEDENCE;
     }
+
 }

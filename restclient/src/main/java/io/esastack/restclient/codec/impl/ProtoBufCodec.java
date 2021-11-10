@@ -7,11 +7,12 @@ import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.codec.ByteCodec;
-import io.esastack.restclient.codec.CodecResult;
+import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.EncodeContext;
+import io.esastack.restclient.codec.RequestContent;
 import io.netty.util.AsciiString;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +36,6 @@ public class ProtoBufCodec implements ByteCodec {
      */
     public static final AsciiString X_PROTOBUF_MESSAGE_HEADER = AsciiString.cached("X-Protobuf-Message");
 
-
     public ProtoBufCodec() {
         this(ExtensionRegistry.newInstance());
     }
@@ -45,36 +45,35 @@ public class ProtoBufCodec implements ByteCodec {
     }
 
     @Override
-    public CodecResult<byte[]> doEncode(MediaType mediaType, HttpHeaders headers,
-                                        Object entity, Class<?> type, Type genericType) {
-
-        if (PROTO_BUF.isCompatibleWith(mediaType) && Message.class.isAssignableFrom(type)) {
-            Message message = (Message) entity;
+    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
+        if (PROTO_BUF.isCompatibleWith(encodeContext.contentType()) &&
+                Message.class.isAssignableFrom(encodeContext.type())) {
+            Message message = (Message) encodeContext.entity();
             Descriptors.Descriptor descriptor = message.getDescriptorForType();
             if (descriptor != null) {
+                HttpHeaders headers = encodeContext.headers();
                 headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
                 Descriptors.FileDescriptor fileDescriptor = message.getDescriptorForType().getFile();
                 if (fileDescriptor != null) {
                     headers.set(X_PROTOBUF_SCHEMA_HEADER, message.getDescriptorForType().getFile().getName());
                 }
             }
-            return CodecResult.success(message.toByteArray());
+            return RequestContent.of(message.toByteArray());
         }
-        return CodecResult.fail();
+        return encodeContext.next();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> CodecResult<T> doDecode(MediaType mediaType, HttpHeaders headers,
-                                       byte[] content, Class<T> type, Type genericType) throws Exception {
-
-        if (PROTO_BUF.isCompatibleWith(mediaType) && Message.class.isAssignableFrom(type)) {
+    public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
+        Class<?> type = decodeContext.type();
+        if (PROTO_BUF.isCompatibleWith(decodeContext.contentType())
+                && Message.class.isAssignableFrom(type)) {
             Message.Builder builder = getMessageBuilder(type);
-            builder.mergeFrom(content, extensionRegistry);
-            return CodecResult.success((T) builder.build());
+            builder.mergeFrom(decodeContext.content().value(), extensionRegistry);
+            return builder.build();
         }
 
-        return CodecResult.fail();
+        return decodeContext.next();
     }
 
     private Message.Builder getMessageBuilder(Class<?> clazz) throws Exception {
@@ -85,4 +84,5 @@ public class ProtoBufCodec implements ByteCodec {
         }
         return (Message.Builder) method.invoke(clazz);
     }
+
 }

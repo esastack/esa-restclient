@@ -9,25 +9,25 @@ import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-final class DecodeContextImpl<T> implements DecodeContext<T> {
+final class DecodeContextImpl<V> implements DecodeContext<V> {
 
     private final MediaType contentType;
     private final HttpHeaders headers;
-    private final ResponseContent responseContent;
-    private final Class<T> type;
+    private final ResponseContent<V> content;
+    private final Class<?> type;
     private final Type genericType;
-    private final Decoder[] decoders;
+    private final Decoder<V>[] decoders;
     private int index = 0;
 
     DecodeContextImpl(MediaType contentType,
                       HttpHeaders headers,
-                      ResponseContent responseContent,
-                      Class<T> type,
+                      ResponseContent<V> content,
+                      Class<?> type,
                       Type genericType,
-                      Decoder[] decoders) {
+                      Decoder<V>[] decoders) {
         this.contentType = contentType;
         this.headers = headers;
-        this.responseContent = responseContent;
+        this.content = content;
         this.type = type;
         this.genericType = genericType;
         this.decoders = decoders;
@@ -44,12 +44,12 @@ final class DecodeContextImpl<T> implements DecodeContext<T> {
     }
 
     @Override
-    public ResponseContent responseContent() {
-        return responseContent;
+    public ResponseContent<V> content() {
+        return content;
     }
 
     @Override
-    public Class<T> type() {
+    public Class<?> type() {
         return type;
     }
 
@@ -58,11 +58,10 @@ final class DecodeContextImpl<T> implements DecodeContext<T> {
         return genericType;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public T continueToDecode() throws Exception {
+    public Object next() throws Exception {
         if (index < decoders.length) {
-            return (T) decoders[index++].decode(this);
+            return decoders[index++].decode(this);
         }
 
         throw new CodecException("There is no suitable decoder for this response,"

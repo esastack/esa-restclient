@@ -1,7 +1,7 @@
 package io.esastack.restclient.codec;
 
-public interface Content {
+public interface Content<V> {
 
-    Object content();
+    V value();
 
 }

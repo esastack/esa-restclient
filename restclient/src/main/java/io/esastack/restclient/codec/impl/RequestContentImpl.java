@@ -2,10 +2,10 @@ package io.esastack.restclient.codec.impl;
 
 import io.esastack.restclient.codec.RequestContent;
 
-public final class RequestContentImpl extends ContentImpl implements RequestContent {
+public final class RequestContentImpl<V> extends ContentImpl<V> implements RequestContent<V> {
 
-    public RequestContentImpl(Object content) {
-        super(content);
+    public RequestContentImpl(V value) {
+        super(value);
     }
 
 }

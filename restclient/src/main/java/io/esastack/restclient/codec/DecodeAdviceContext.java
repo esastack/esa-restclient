@@ -20,14 +20,14 @@ public interface DecodeAdviceContext {
 
     RestResponse response();
 
-    ResponseContent responseContent();
+    ResponseContent<?> content();
 
     /**
      * set responseContent,this method is not safe for use by multiple threads
      *
      * @param responseContent responseContent
      */
-    void responseContent(ResponseContent responseContent);
+    void content(ResponseContent<?> responseContent);
 
     Class<?> type();
 

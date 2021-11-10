@@ -12,8 +12,7 @@ import java.util.Map;
 public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
-     * Fills the request's entity with given entity.The entity will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
+     * Fills the request's entity with given entity.
      *
      * @param entity entity
      * @return ExecutableRestRequest
@@ -21,9 +20,9 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     ExecutableRestRequest entity(Object entity);
 
     /**
-     * Fills the request's entity with given entity.The entity will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
-     * And you can deliver generic information through genericType.
+     * Fills the request's entity with given entity.And you can deliver generic
+     * information through genericType.
+     *
      * @param entity entity
      * @param genericType genericType
      * @return ExecutableRestRequest
@@ -31,8 +30,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     ExecutableRestRequest entity(Object entity, Type genericType);
 
     /**
-     * Fills the request's entity with given content.The content will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
+     * Fills the request's entity with given content.
      *
      * @param content content
      * @return ExecutableRestRequest
@@ -40,8 +38,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     ExecutableRestRequest entity(String content);
 
     /**
-     * Fills the request's entity with given data.The data will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
+     * Fills the request's entity with given data.
      *
      * @param data data
      * @return ExecutableRestRequest
@@ -49,8 +46,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     ExecutableRestRequest entity(byte[] data);
 
     /**
-     * Fills the request's entity with given file.The file will be encoded to
-     * be request,s {@link io.esastack.restclient.codec.CodecResult} by {@link Encoder#encode}.
+     * Fills the request's entity with given file.
      *
      * @param file data
      * @return RestFileRequest
@@ -111,10 +107,10 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade maxRetries(int maxRetries);
 
     @Override
-    RestRequestFacade encoder(Encoder encoder);
+    RestRequestFacade encoder(Encoder<?> encoder);
 
     @Override
-    RestRequestFacade decoder(Decoder decoder);
+    RestRequestFacade decoder(Decoder<?> decoder);
 
 
 }

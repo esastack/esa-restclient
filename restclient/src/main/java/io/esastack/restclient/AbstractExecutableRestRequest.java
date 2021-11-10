@@ -29,8 +29,8 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     protected final ClientInnerComposition clientInnerComposition;
     protected MediaType contentType = null;
     private MediaType[] acceptTypes = null;
-    private Encoder encoder = null;
-    private Decoder decoder = null;
+    private Encoder<?> encoder = null;
+    private Decoder<?> decoder = null;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             ClientInnerComposition clientInnerComposition) {
@@ -121,7 +121,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return entity() != null;
     }
 
-    private RequestContent encode() throws Exception {
+    private RequestContent<?> encode() throws Exception {
         return new EncodeAdviceContextImpl(this,
                 entity(),
                 type(),
@@ -130,17 +130,17 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
                 clientInnerComposition.encoders()).proceed();
     }
 
-    private void fillBody(RequestContent requestContent) {
-        Object entity = requestContent.content();
+    private void fillBody(RequestContent<?> requestContent) {
+        Object entity = requestContent.value();
         if (entity instanceof byte[]) {
-            target.body((byte[]) requestContent.content());
+            target.body((byte[]) entity);
         } else if (entity instanceof File) {
-            target.body((File) requestContent.content());
+            target.body((File) entity);
         } else if (entity instanceof MultipartBody) {
-            target.multipart((MultipartBody) requestContent.content());
+            target.multipart((MultipartBody) entity);
         } else {
-            throw new IllegalStateException("Illegal requestContent! Content of requestContent: "
-                    + requestContent.content());
+            throw new IllegalStateException("Illegal requestContent! Value of requestContent: "
+                    + entity);
         }
     }
 
@@ -285,24 +285,24 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public ExecutableRestRequest encoder(Encoder encoder) {
+    public ExecutableRestRequest encoder(Encoder<?> encoder) {
         this.encoder = encoder;
         return self();
     }
 
     @Override
-    public Encoder encoder() {
+    public Encoder<?> encoder() {
         return encoder;
     }
 
     @Override
-    public ExecutableRestRequest decoder(Decoder decoder) {
+    public ExecutableRestRequest decoder(Decoder<?> decoder) {
         this.decoder = decoder;
         return self();
     }
 
     @Override
-    public Decoder decoder() {
+    public Decoder<?> decoder() {
         return decoder;
     }
 

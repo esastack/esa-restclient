@@ -258,13 +258,13 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest encoder(Encoder encoder) {
+    public RestCompositeRequest encoder(Encoder<?> encoder) {
         super.encoder(encoder);
         return self();
     }
 
     @Override
-    public RestCompositeRequest decoder(Decoder decoder) {
+    public RestCompositeRequest decoder(Decoder<?> decoder) {
         super.decoder(decoder);
         return self();
     }

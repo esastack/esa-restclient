@@ -43,8 +43,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private final List<ClientInterceptor> interceptors = new LinkedList<>();
     private final List<DecodeAdvice> decodeAdvices = new LinkedList<>();
     private final List<EncodeAdvice> encodeAdvices = new LinkedList<>();
-    private final List<Decoder> decoders = new LinkedList<>();
-    private final List<Encoder> encoders = new LinkedList<>();
+    private final List<Decoder<?>> decoders = new LinkedList<>();
+    private final List<Encoder<?>> encoders = new LinkedList<>();
     private String name = CLIENT;
 
     RestClientBuilder() {
@@ -161,7 +161,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addEncoder(Encoder encoder) {
+    public RestClientBuilder addEncoder(Encoder<?> encoder) {
         Checks.checkNotNull(encoder, "encoder");
         this.encoders.add(encoder);
         return self();
@@ -173,7 +173,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addEncoders(List<Encoder> encoders) {
+    public RestClientBuilder addEncoders(List<Encoder<?>> encoders) {
         Checks.checkNotNull(encoders, "encoders");
         this.encoders.addAll(encoders);
         return self();
@@ -185,7 +185,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addDecoder(Decoder decoder) {
+    public RestClientBuilder addDecoder(Decoder<?> decoder) {
         Checks.checkNotNull(decoder, "decoder");
         this.decoders.add(decoder);
         return self();
@@ -197,13 +197,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addDecoders(List<Decoder> decoders) {
+    public RestClientBuilder addDecoders(List<Decoder<?>> decoders) {
         Checks.checkNotNull(decoders, "decoders");
         this.decoders.addAll(decoders);
         return self();
     }
 
-    public RestClientBuilder addByteDecoders(List<Decoder> byteDecoders) {
+    public RestClientBuilder addByteDecoders(List<ByteDecoder> byteDecoders) {
         Checks.checkNotNull(byteDecoders, "byteDecoders");
         this.decoders.addAll(byteDecoders);
         return self();
@@ -362,12 +362,12 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<Encoder> unmodifiableEncoders() {
+    public List<Encoder<?>> unmodifiableEncoders() {
         return Collections.unmodifiableList(encoders);
     }
 
     @Override
-    public List<Decoder> unmodifiableDecoders() {
+    public List<Decoder<?>> unmodifiableDecoders() {
         return Collections.unmodifiableList(decoders);
     }
 

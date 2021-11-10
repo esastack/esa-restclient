@@ -17,11 +17,12 @@ package io.esastack.restclient.codec.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
+import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.JsonCodec;
+import io.esastack.restclient.codec.RequestContent;
 
-import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -42,31 +43,33 @@ public class GsonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] encodeToJson(MediaType mediaType, HttpHeaders headers,
-                           Object entity, Class<?> type, Type genericType) {
+    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) {
+        MediaType contentType = encodeContext.contentType();
         Charset charset = null;
-        if (mediaType != null) {
-            charset = mediaType.charset();
+        if (contentType != null) {
+            charset = contentType.charset();
         }
         if (charset == null) {
-            return gson.toJson(entity).getBytes(StandardCharsets.UTF_8);
+            return RequestContent.of(gson.toJson(encodeContext.entity()).getBytes(StandardCharsets.UTF_8));
         } else {
-            return gson.toJson(entity).getBytes(charset);
+            return RequestContent.of(gson.toJson(encodeContext.entity()).getBytes(charset));
         }
     }
 
     @Override
-    public <T> T decodeFromJson(MediaType mediaType, HttpHeaders headers, byte[] body,
-                           Class<T> type, Type genericType) {
+    public Object decodeFromJson(DecodeContext<byte[]> decodeContext) {
+        MediaType contentType = decodeContext.contentType();
         Charset charset = null;
-        if (mediaType != null) {
-            charset = mediaType.charset();
+        if (contentType != null) {
+            charset = contentType.charset();
         }
 
         if (charset == null) {
-            return gson.fromJson(new String(body, StandardCharsets.UTF_8), type);
+            return gson.fromJson(
+                    new String(decodeContext.content().value(), StandardCharsets.UTF_8), decodeContext.genericType());
         } else {
-            return gson.fromJson(new String(body, charset), type);
+            return gson.fromJson(
+                    new String(decodeContext.content().value(), charset), decodeContext.genericType());
         }
     }
 }

@@ -5,7 +5,8 @@ import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 
-public interface EncodeContext {
+public interface EncodeContext<V> {
+
     MediaType contentType();
 
     HttpHeaders headers();
@@ -16,5 +17,5 @@ public interface EncodeContext {
 
     Type genericType();
 
-    RequestContent continueToEncode() throws Exception;
+    RequestContent<V> next() throws Exception;
 }

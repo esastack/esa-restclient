@@ -5,17 +5,17 @@ import io.esastack.commons.net.http.MediaType;
 
 import java.lang.reflect.Type;
 
-public interface DecodeContext<T> {
+public interface DecodeContext<V> {
 
     MediaType contentType();
 
     HttpHeaders headers();
 
-    ResponseContent responseContent();
+    ResponseContent<V> content();
 
-    Class<T> type();
+    Class<?> type();
 
     Type genericType();
 
-    T continueToDecode() throws Exception;
+    Object next() throws Exception;
 }

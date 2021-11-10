@@ -113,9 +113,9 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
     RestMultipartRequest maxRetries(int maxRetries);
 
     @Override
-    RestMultipartRequest encoder(Encoder encoder);
+    RestMultipartRequest encoder(Encoder<?> encoder);
 
     @Override
-    RestMultipartRequest decoder(Decoder decoder);
+    RestMultipartRequest decoder(Decoder<?> decoder);
 
 }

@@ -24,9 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import esa.commons.Checks;
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
+import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.JsonCodec;
+import io.esastack.restclient.codec.RequestContent;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -48,15 +49,13 @@ public class JacksonCodec implements JsonCodec {
     }
 
     @Override
-    public byte[] encodeToJson(MediaType mediaType, HttpHeaders headers,
-                           Object entity, Class<?> type, Type genericType) throws JsonProcessingException {
-        return objectMapper.writeValueAsBytes(entity);
+    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) throws JsonProcessingException {
+        return RequestContent.of(objectMapper.writeValueAsBytes(encodeContext.entity()));
     }
 
     @Override
-    public <T> T decodeFromJson(MediaType mediaType, HttpHeaders headers, byte[] body,
-                          Class<T> type, Type genericType) throws IOException {
-        return objectMapper.readValue(body, getJavaType(type));
+    public Object decodeFromJson(DecodeContext<byte[]> decodeContext) throws IOException {
+        return objectMapper.readValue(decodeContext.content().value(), getJavaType(decodeContext.genericType()));
     }
 
     public static synchronized ObjectMapper getDefaultMapper() {

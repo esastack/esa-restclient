@@ -17,8 +17,8 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
 
     private final RestRequest request;
     private final EncodeAdvice[] advices;
-    private final Encoder encoderOfRequest;
-    private final Encoder[] encodersOfClient;
+    private final Encoder<?> encoderOfRequest;
+    private final Encoder<?>[] encodersOfClient;
     private int adviceIndex = 0;
     private Object entity;
     private Class<?> type;
@@ -29,7 +29,7 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
                                    Class<?> type,
                                    Type geneticType,
                                    EncodeAdvice[] advices,
-                                   Encoder[] encodersOfClient) {
+                                   Encoder<?>[] encodersOfClient) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(entity, "entity");
         Checks.checkNotNull(advices, "advices");
@@ -82,7 +82,7 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
     }
 
     @Override
-    public RequestContent proceed() throws Exception {
+    public RequestContent<?> proceed() throws Exception {
         if (advices == null || adviceIndex >= advices.length) {
             MediaType contentType = request.contentType();
             HttpHeaders headers = request.headers();
@@ -95,7 +95,7 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
                         type,
                         genericType,
                         new Encoder[]{encoderOfRequest}
-                ).continueToEncode();
+                ).next();
             } else {
                 return new EncodeContextImpl(
                         contentType,
@@ -104,7 +104,7 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
                         type,
                         genericType,
                         encodersOfClient
-                ).continueToEncode();
+                ).next();
             }
         }
         return advices[adviceIndex++].aroundEncode(this);

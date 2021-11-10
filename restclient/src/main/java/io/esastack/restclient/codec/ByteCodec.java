@@ -1,4 +1,4 @@
 package io.esastack.restclient.codec;
 
-public interface ByteCodec extends ByteDecoder, ByteEncoder {
+public interface ByteCodec extends ByteEncoder, ByteDecoder {
 }

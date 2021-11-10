@@ -6,14 +6,14 @@ import io.esastack.restclient.codec.RequestContent;
 
 import java.io.File;
 
-public class FileEncoder implements Encoder {
+public class FileEncoder implements Encoder<File> {
 
     @Override
-    public RequestContent encode(EncodeContext encodeChainContext) throws Exception {
+    public RequestContent<File> encode(EncodeContext<File> encodeContext) throws Exception {
 
-        if (File.class.isAssignableFrom(encodeChainContext.type())) {
-            return RequestContent.of((File) encodeChainContext.entity());
+        if (File.class.isAssignableFrom(encodeContext.type())) {
+            return RequestContent.of((File) encodeContext.entity());
         }
-        return encodeChainContext.continueToEncode();
+        return encodeContext.next();
     }
 }

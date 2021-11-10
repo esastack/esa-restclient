@@ -3,16 +3,18 @@ package io.esastack.restclient.codec.impl;
 import esa.commons.Checks;
 import io.esastack.restclient.codec.Content;
 
-public class ContentImpl implements Content {
+public class ContentImpl<V> implements Content<V> {
 
-    private Object content;
+    private V value;
 
-    protected ContentImpl(Object content) {
-        Checks.checkNotNull(content, "content");
-        this.content = content;
+    protected ContentImpl(V value) {
+        Checks.checkNotNull(value, "value");
+        this.value = value;
     }
 
-    public Object content() {
-        return content;
+    @Override
+    public V value() {
+        return value;
     }
+
 }

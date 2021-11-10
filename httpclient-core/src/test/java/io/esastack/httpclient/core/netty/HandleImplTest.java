@@ -15,10 +15,10 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Handle;
 import io.esastack.httpclient.core.Handler;
@@ -115,7 +115,7 @@ class HandleImplTest {
 
         final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
         response.message(message);
-        response.body(Buffers.buffer(data));
+        response.body(BufferUtil.buffer(data));
 
         final HandleImpl handle = new HandleImpl(response);
         then(handle.body().readableBytes()).isEqualTo(data.length);

@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.config.Decompression;
 import io.esastack.httpclient.core.config.Http1Options;
 import io.esastack.httpclient.core.config.Http2Options;

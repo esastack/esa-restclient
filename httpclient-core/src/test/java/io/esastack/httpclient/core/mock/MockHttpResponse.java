@@ -15,10 +15,10 @@
  */
 package io.esastack.httpclient.core.mock;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpResponse;
 
@@ -48,7 +48,7 @@ public class MockHttpResponse implements HttpResponse {
 
     @Override
     public Buffer body() {
-        return Buffers.EMPTY_BUFFER;
+        return BufferUtil.empty();
     }
 
     @Override

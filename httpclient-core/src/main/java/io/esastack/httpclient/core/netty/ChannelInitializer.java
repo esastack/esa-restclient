@@ -157,7 +157,7 @@ final class ChannelInitializer {
     }
 
     private void addHandlers(Channel channel,
-                             esa.commons.http.HttpVersion version,
+                             io.esastack.commons.net.http.HttpVersion version,
                              Http1Options http1Options,
                              Http2Options http2Options,
                              boolean ssl,
@@ -186,7 +186,7 @@ final class ChannelInitializer {
             pipeline.addLast(new ApplicationProtocolNegotiationHandler(ApplicationProtocolNames.HTTP_1_1) {
                 @Override
                 protected void configurePipeline(ChannelHandlerContext ctx, String protocol) {
-                    if (esa.commons.http.HttpVersion.HTTP_2 == version
+                    if (io.esastack.commons.net.http.HttpVersion.HTTP_2 == version
                             && ApplicationProtocolNames.HTTP_2.equals(protocol)) {
                         if (LoggerUtils.logger().isDebugEnabled()) {
                             LoggerUtils.logger().debug("Negotiated to use http2 successfully, connection: {}",
@@ -194,7 +194,7 @@ final class ChannelInitializer {
                         }
                         addH2Handlers(ctx.pipeline(), http2Options, decompression);
                         initializeFuture.setSuccess();
-                    } else if (esa.commons.http.HttpVersion.HTTP_2 != (version) &&
+                    } else if (io.esastack.commons.net.http.HttpVersion.HTTP_2 != (version) &&
                             ApplicationProtocolNames.HTTP_1_1.equals(protocol)) {
                         if (LoggerUtils.logger().isDebugEnabled()) {
                             LoggerUtils.logger().debug("Negotiated to use http1.1 successfully, connection: {}",
@@ -218,7 +218,7 @@ final class ChannelInitializer {
                 }
             });
         } else {
-            if (esa.commons.http.HttpVersion.HTTP_2 == version) {
+            if (io.esastack.commons.net.http.HttpVersion.HTTP_2 == version) {
                 if (h2ClearTextUpgrade) {
                     addH2cHandlers(pipeline,
                             http1Options,

@@ -2,7 +2,7 @@ package io.esastack.restclient;
 
 import esa.commons.Checks;
 import esa.commons.StringUtils;
-import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;

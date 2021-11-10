@@ -15,10 +15,10 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
@@ -84,9 +84,9 @@ class DefaultHandleTest {
 
         final byte[] data = "Hello World!".getBytes();
         nHandle2.onMessage(message2);
-        nHandle2.onData(Buffers.buffer().writeBytes(data));
-        nHandle2.onData(Buffers.buffer().writeBytes(data));
-        nHandle2.onData(Buffers.buffer().writeBytes(data));
+        nHandle2.onData(BufferUtil.buffer().writeBytes(data));
+        nHandle2.onData(BufferUtil.buffer().writeBytes(data));
+        nHandle2.onData(BufferUtil.buffer().writeBytes(data));
 
         final HttpHeaders trailers = new Http1HeadersImpl();
         trailers.add("D", "E");

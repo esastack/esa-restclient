@@ -33,7 +33,7 @@ interface ExecutableRequest extends HttpRequestBase {
      *     try {
      *         client.execute();
      *     } catch (Throwable th) {
-     *         buffer.getByteBuf().release();
+     *         BufferUtils.toByteBuf(buffer).release();
      *     }
      * </pre>
      *

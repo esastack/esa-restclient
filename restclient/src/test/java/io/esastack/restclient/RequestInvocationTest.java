@@ -1,6 +1,6 @@
 package io.esastack.restclient;
 
-import esa.commons.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.exec.RestRequestExecutor;
 import org.junit.jupiter.api.Test;

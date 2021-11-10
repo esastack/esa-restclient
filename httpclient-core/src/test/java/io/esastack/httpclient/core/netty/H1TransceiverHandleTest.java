@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
@@ -62,7 +62,7 @@ class H1TransceiverHandleTest {
         final HttpResponse response = mock(HttpResponse.class);
 
         final HttpHeaders headers = new Http1HeadersImpl();
-        headers.add(esa.commons.http.HttpHeaderNames.CONNECTION, "Close");
+        headers.add(io.esastack.commons.net.http.HttpHeaderNames.CONNECTION, "Close");
         when(response.headers()).thenReturn(headers);
 
         // Case 1: close if necessary and release onCompleted.

@@ -1,8 +1,8 @@
 package io.esastack.restclient;
 
-import esa.commons.http.Cookie;
-import esa.commons.http.HttpHeaderNames;
 import esa.commons.netty.http.CookieImpl;
+import io.esastack.commons.net.http.Cookie;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.httpclient.core.MultipartBody;
 import org.junit.jupiter.api.Test;
 

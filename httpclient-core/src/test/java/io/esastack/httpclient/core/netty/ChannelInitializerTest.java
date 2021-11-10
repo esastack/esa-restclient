@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.config.Http2Options;

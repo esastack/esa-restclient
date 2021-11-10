@@ -16,7 +16,7 @@
 package io.esastack.httpclient.core;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.config.CacheOptions;
 import io.esastack.httpclient.core.config.ChannelPoolOptions;
 import io.esastack.httpclient.core.config.Decompression;

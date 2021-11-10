@@ -1,6 +1,6 @@
 package io.esastack.restclient;
 
-import esa.commons.http.HttpMethod;
+import io.esastack.commons.net.http.HttpMethod;
 
 public interface RestClient {
     /**

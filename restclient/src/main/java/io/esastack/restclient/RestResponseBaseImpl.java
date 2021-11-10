@@ -2,13 +2,14 @@ package io.esastack.restclient;
 
 import esa.commons.Checks;
 import esa.commons.StringUtils;
-import esa.commons.http.Cookie;
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.Cookie;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.HttpResponse;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.esastack.restclient.codec.DecodeAdviceContext;
 import io.esastack.restclient.codec.impl.DecodeChainImpl;
 import io.esastack.restclient.utils.CookiesUtil;
@@ -72,7 +73,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
                 clientOptions,
                 getClass(genericType),
                 genericType,
-                response.body().getByteBuf());
+                BufferUtils.toByteBuf(response.body()));
         return (T) decodeContext.next();
     }
 

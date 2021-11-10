@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpHeaderValues;
+import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.exec.ExecContext;
@@ -75,8 +75,8 @@ class MultipartWriterTest extends Http2ConnectionHelper {
 
             HttpRequest req = channel.readOutbound();
             then(req.method()).isSameAs(HttpMethod.POST);
-            then(req.headers().get(esa.commons.http.HttpHeaderNames.CONTENT_TYPE)
-                    .contains(esa.commons.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
+            then(req.headers().get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_TYPE)
+                    .contains(io.esastack.commons.net.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
             then(req.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1");
             then(req.protocolVersion()).isSameAs(HttpVersion.HTTP_1_1);
 
@@ -115,7 +115,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
 
         HttpRequest req = channel.readOutbound();
         then(req.method()).isSameAs(HttpMethod.POST);
-        then(req.headers().get(esa.commons.http.HttpHeaderNames.CONTENT_TYPE))
+        then(req.headers().get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_TYPE))
                 .isEqualTo(HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED);
         then(req.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1");
         then(req.protocolVersion()).isSameAs(HttpVersion.HTTP_1_1);
@@ -160,8 +160,8 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             HttpRequest req = channel.readOutbound();
             then(req).isNotNull();
             then(req.method()).isSameAs(HttpMethod.POST);
-            then(req.headers().get(esa.commons.http.HttpHeaderNames.CONTENT_TYPE)
-                    .contains(esa.commons.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
+            then(req.headers().get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_TYPE)
+                    .contains(io.esastack.commons.net.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
             then(req.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1");
             then(req.protocolVersion()).isSameAs(HttpVersion.HTTP_1_1);
 
@@ -262,7 +262,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             then(header.streamId).isEqualTo(STREAM_ID);
             then(header.headers.method()).isEqualTo(HttpMethod.POST.asciiName());
             then(header.headers.get(HttpHeaderNames.CONTENT_TYPE).toString()
-                    .contains(esa.commons.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
+                    .contains(io.esastack.commons.net.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
             then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
             int dataCount = 0;
@@ -357,7 +357,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             then(header.streamId).isEqualTo(STREAM_ID);
             then(header.headers.method()).isEqualTo(HttpMethod.POST.asciiName());
             then(header.headers.get(HttpHeaderNames.CONTENT_TYPE).toString()
-                    .contains(esa.commons.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
+                    .contains(io.esastack.commons.net.http.HttpHeaderValues.MULTIPART_FORM_DATA)).isTrue();
             then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
             Object chunked = channel.readOutbound();

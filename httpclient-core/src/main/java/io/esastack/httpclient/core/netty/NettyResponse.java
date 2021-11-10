@@ -15,10 +15,10 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpMessage;
 import io.esastack.httpclient.core.HttpResponse;
@@ -29,7 +29,7 @@ public class NettyResponse implements HttpResponse {
     private final boolean aggregated;
 
     private volatile HttpMessage message;
-    private volatile Buffer body = Buffers.buffer(0);
+    private volatile Buffer body = BufferUtil.buffer(0);
 
     public NettyResponse(boolean aggregated) {
         this.aggregated = aggregated;
@@ -47,7 +47,7 @@ public class NettyResponse implements HttpResponse {
 
     @Override
     public Buffer body() {
-        return body == null ? Buffers.EMPTY_BUFFER : body;
+        return body == null ? BufferUtil.empty() : body;
     }
 
     @Override

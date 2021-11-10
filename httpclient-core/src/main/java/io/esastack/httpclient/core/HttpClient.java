@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpMethod;
+import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.httpclient.core.metrics.MetricPoint;
 
 import java.io.Closeable;

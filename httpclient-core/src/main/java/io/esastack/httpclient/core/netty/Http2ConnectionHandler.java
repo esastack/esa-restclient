@@ -15,7 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -113,12 +114,12 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                     data,
                     endStream,
                     promise).addListener(future -> {
-                        if (future.isSuccess()) {
-                            promise0.setSuccess();
-                        } else {
-                            promise0.setFailure(future.cause());
-                        }
-                    });
+                if (future.isSuccess()) {
+                    promise0.setSuccess();
+                } else {
+                    promise0.setFailure(future.cause());
+                }
+            });
 
             ctx.channel().eventLoop().execute(runnable);
             return promise0;
@@ -168,12 +169,12 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                     headers,
                     endStream,
                     promise).addListener(future -> {
-                        if (future.isSuccess()) {
-                            promise0.setSuccess();
-                        } else {
-                            promise0.setFailure(future.cause());
-                        }
-                    });
+                if (future.isSuccess()) {
+                    promise0.setSuccess();
+                } else {
+                    promise0.setFailure(future.cause());
+                }
+            });
 
             ctx.channel().eventLoop().execute(runnable);
             return promise0;
@@ -188,12 +189,12 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                 writeAscii(ctx.alloc(),
                         "Stream IDs exhausted on local stream creation"),
                 promise).addListener(future -> {
-                    if (future.isSuccess()) {
-                        promise0.setSuccess();
-                    } else {
-                        promise0.setFailure(future.cause());
-                    }
-                });
+            if (future.isSuccess()) {
+                promise0.setSuccess();
+            } else {
+                promise0.setFailure(future.cause());
+            }
+        });
 
         if (inEventLoop()) {
             runnable.run();
@@ -255,7 +256,7 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             buf.writeBytes((byte[]) data);
             return buf;
         } else if (data instanceof Buffer) {
-            return ((Buffer) data).getByteBuf();
+            return BufferUtils.toByteBuf(((Buffer) data));
         } else {
             throw new IllegalArgumentException("Unsupported writable data format: " + data.getClass()
                     + "(expected ByteBuf, Buffer, byte[])");

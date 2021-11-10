@@ -16,7 +16,7 @@
 package io.esastack.httpclient.core;
 
 import esa.commons.collection.MultiValueMap;
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
 
 import java.io.File;
 import java.util.List;

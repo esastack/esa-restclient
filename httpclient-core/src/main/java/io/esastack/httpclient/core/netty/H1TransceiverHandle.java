@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpHeaderValues;
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpHeaderValues;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
@@ -85,13 +85,13 @@ class H1TransceiverHandle extends TransceiverHandle {
         }
 
         private static boolean closeNow(HttpResponse response, HttpVersion version) {
-            if (response.headers().contains(esa.commons.http.HttpHeaderNames.CONNECTION,
+            if (response.headers().contains(io.esastack.commons.net.http.HttpHeaderNames.CONNECTION,
                     HttpHeaderValues.CLOSE, true)) {
                 return true;
             }
 
             return !(HttpVersion.HTTP_1_1 == version ||
-                    response.headers().contains(esa.commons.http.HttpHeaderNames.CONNECTION,
+                    response.headers().contains(io.esastack.commons.net.http.HttpHeaderNames.CONNECTION,
                             HttpHeaderValues.KEEP_ALIVE, true));
         }
     }

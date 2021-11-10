@@ -16,7 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.Checks;
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.httpclient.core.HttpMessage;
 import io.esastack.httpclient.core.HttpRequest;

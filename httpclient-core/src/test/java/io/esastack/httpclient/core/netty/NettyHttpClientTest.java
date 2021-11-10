@@ -15,9 +15,9 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpMethod;
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpMethod;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpClientBuilder;
@@ -34,6 +34,7 @@ import io.esastack.httpclient.core.metrics.CallbackExecutorMetric;
 import io.esastack.httpclient.core.metrics.IoThreadGroupMetric;
 import io.esastack.httpclient.core.metrics.IoThreadMetric;
 import io.esastack.httpclient.core.spi.SslEngineFactory;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -133,12 +134,12 @@ class NettyHttpClientTest {
                 null, null, null));
         final HttpRequest request = client.post("http://127.0.0.1:8080").body("Hello World!".getBytes());
 
-        request.buffer().getByteBuf().retain().retain().retain();
-        then(request.buffer().getByteBuf().refCnt()).isEqualTo(4);
+        BufferUtils.toByteBuf(request.buffer()).retain().retain().retain();
+        then(BufferUtils.toByteBuf(request.buffer()).refCnt()).isEqualTo(4);
         CompletableFuture<HttpResponse> rsp = client.execute(request, new Context(), null, null);
         then(rsp).isNotSameAs(response);
         response.completeExceptionally(new IOException());
-        then(request.buffer().getByteBuf().refCnt()).isEqualTo(3);
+        then(BufferUtils.toByteBuf(request.buffer()).refCnt()).isEqualTo(3);
     }
 
     @Test

@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core;
 
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
 
 import java.util.function.Consumer;

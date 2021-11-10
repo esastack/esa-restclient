@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
@@ -225,7 +225,7 @@ class ResponseHandleTest {
 
         nHandle.onError(new RuntimeException());
         nHandle.onMessage(new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl()));
-        nHandle.onData(Buffers.buffer("Hello".getBytes()));
+        nHandle.onData(BufferUtil.buffer("Hello".getBytes()));
         nHandle.onTrailers(new Http1HeadersImpl());
         nHandle.onEnd();
 
@@ -253,7 +253,7 @@ class ResponseHandleTest {
         nHandle.onEnd();
 
         nHandle.onMessage(new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl()));
-        nHandle.onData(Buffers.buffer("Hello".getBytes()));
+        nHandle.onData(BufferUtil.buffer("Hello".getBytes()));
         nHandle.onTrailers(new Http1HeadersImpl());
         nHandle.onError(new RuntimeException());
 

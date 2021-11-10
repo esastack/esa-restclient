@@ -15,9 +15,9 @@
  */
 package io.esastack.httpclient.core.exec;
 
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.BufferImpl;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.SegmentRequest;

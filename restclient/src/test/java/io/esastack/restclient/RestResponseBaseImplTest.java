@@ -1,11 +1,11 @@
 package io.esastack.restclient;
 
-import esa.commons.http.Cookie;
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffers;
 import esa.commons.netty.http.CookieImpl;
+import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.http.Cookie;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpResponse;
@@ -194,7 +194,7 @@ class RestResponseBaseImplTest {
         RestResponseBase restResponse = new RestResponseBaseImpl(request, response, clientOptions);
         HttpHeaders headers = new Http1HeadersImpl();
         when(response.headers()).thenReturn(headers);
-        when(response.body()).thenReturn(Buffers.buffer("Hello".getBytes(StandardCharsets.UTF_8)));
+        when(response.body()).thenReturn(BufferUtil.buffer("Hello".getBytes(StandardCharsets.UTF_8)));
         //acceptTypes is null
         assertThrows(NullPointerException.class, () -> restResponse.bodyToEntity(String.class));
 

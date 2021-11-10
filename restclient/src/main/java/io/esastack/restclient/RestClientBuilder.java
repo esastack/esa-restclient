@@ -1,8 +1,8 @@
 package io.esastack.restclient;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpVersion;
 import esa.commons.spi.SpiLoader;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.HttpClientBuilder;
 import io.esastack.httpclient.core.Reusable;
 import io.esastack.httpclient.core.config.Decompression;

@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;

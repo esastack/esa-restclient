@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
@@ -118,7 +118,7 @@ class Http1ChannelHandlerTest {
         then(rsp.status()).isEqualTo(HttpResponseStatus.BAD_REQUEST.code());
         then(rsp.trailers().get("M")).isEqualTo("N");
         then(rsp.body().readableBytes()).isEqualTo(DATA.length);
-        then(rsp.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
+        then(rsp.version()).isEqualTo(io.esastack.commons.net.http.HttpVersion.HTTP_1_0);
 
         then(registry.get(requestId)).isNull();
         channel.finishAndReleaseAll();
@@ -174,7 +174,7 @@ class Http1ChannelHandlerTest {
 
         then(response.isDone()).isTrue();
         final HttpResponse rsp = response.get();
-        then(rsp.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
+        then(rsp.version()).isEqualTo(io.esastack.commons.net.http.HttpVersion.HTTP_1_0);
         then(rsp.body().readableBytes()).isEqualTo(0);
         then(rsp.headers().size()).isEqualTo(1);
         then(rsp.headers().contains(HttpHeadersUtils.TTFB)).isTrue();
@@ -346,7 +346,7 @@ class Http1ChannelHandlerTest {
         then(rsp1.status()).isEqualTo(HttpResponseStatus.BAD_REQUEST.code());
         then(rsp1.trailers().get("M")).isEqualTo("N");
         then(rsp1.body().readableBytes()).isEqualTo(DATA.length);
-        then(rsp1.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
+        then(rsp1.version()).isEqualTo(io.esastack.commons.net.http.HttpVersion.HTTP_1_0);
 
         then(registry.get(requestId1)).isNull();
         channel1.finishAndReleaseAll();
@@ -391,7 +391,7 @@ class Http1ChannelHandlerTest {
         then(rsp2.status()).isEqualTo(HttpResponseStatus.BAD_REQUEST.code());
         then(rsp2.trailers().get("M")).isEqualTo("N");
         then(rsp2.body().readableBytes()).isEqualTo(DATA.length);
-        then(rsp2.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
+        then(rsp2.version()).isEqualTo(io.esastack.commons.net.http.HttpVersion.HTTP_1_0);
 
         then(registry.get(requestId2)).isNull();
         channel2.finishAndReleaseAll();
@@ -472,7 +472,7 @@ class Http1ChannelHandlerTest {
         then(rsp1.status()).isEqualTo(HttpResponseStatus.BAD_REQUEST.code());
         then(rsp1.trailers().get("M")).isEqualTo("N");
         then(rsp1.body().readableBytes()).isEqualTo(DATA.length);
-        then(rsp1.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
+        then(rsp1.version()).isEqualTo(io.esastack.commons.net.http.HttpVersion.HTTP_1_0);
 
         then(registry.get(requestId1)).isNull();
         channel1.finishAndReleaseAll();
@@ -516,7 +516,7 @@ class Http1ChannelHandlerTest {
         then(rsp2.status()).isEqualTo(HttpResponseStatus.BAD_REQUEST.code());
         then(rsp2.trailers().get("M")).isEqualTo("N");
         then(rsp2.body().readableBytes()).isEqualTo(DATA.length);
-        then(rsp2.version()).isEqualTo(esa.commons.http.HttpVersion.HTTP_1_0);
+        then(rsp2.version()).isEqualTo(io.esastack.commons.net.http.HttpVersion.HTTP_1_0);
 
         then(registry.get(requestId2)).isNull();
         channel2.finishAndReleaseAll();

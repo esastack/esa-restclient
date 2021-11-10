@@ -15,9 +15,9 @@
  */
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpHeaderValues;
-import esa.commons.http.HttpMethod;
-import esa.commons.netty.core.BufferImpl;
+import io.esastack.commons.net.http.HttpHeaderValues;
+import io.esastack.commons.net.http.HttpMethod;
+import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.netty.NettyHttpClient;
 import io.esastack.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;

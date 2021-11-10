@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core;
 
-import esa.commons.http.HttpHeaderValues;
+import io.esastack.commons.net.http.HttpHeaderValues;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

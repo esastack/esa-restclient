@@ -15,9 +15,9 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
@@ -128,7 +128,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(Buffers.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -200,7 +200,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(Buffers.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -252,7 +252,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(Buffers.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -400,7 +400,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(Buffers.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();

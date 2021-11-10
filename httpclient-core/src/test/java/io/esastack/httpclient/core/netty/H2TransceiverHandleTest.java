@@ -15,9 +15,9 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpHeaderValues;
-import esa.commons.http.HttpVersion;
+import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
@@ -61,7 +61,7 @@ class H2TransceiverHandleTest {
         final HttpResponse response = mock(HttpResponse.class);
 
         final HttpHeaders headers = new Http1HeadersImpl();
-        headers.add(esa.commons.http.HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        headers.add(io.esastack.commons.net.http.HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         when(response.headers()).thenReturn(headers);
 
         // release on Error

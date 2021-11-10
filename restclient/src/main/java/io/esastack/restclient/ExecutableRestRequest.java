@@ -1,6 +1,6 @@
 package io.esastack.restclient;
 
-import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;

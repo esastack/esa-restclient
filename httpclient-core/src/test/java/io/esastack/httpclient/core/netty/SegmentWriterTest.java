@@ -15,9 +15,9 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.BufferImpl;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;

@@ -173,7 +173,7 @@ class RequestMethodsTest {
 
     private void assertExpectCookie(RestResponse response) {
         for (Cookie expectCookie : EXPECTED_RESPONSE_COOKIES) {
-            List<esa.commons.http.Cookie> cookies = response.cookies(expectCookie.getName().toString());
+            List<io.esastack.commons.net.http.Cookie> cookies = response.cookies(expectCookie.getName().toString());
             then(cookies.size()).isEqualTo(1);
             then(cookies.get(0).value()).isEqualTo(expectCookie.getValue().toString());
         }

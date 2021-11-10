@@ -18,8 +18,8 @@ package io.esastack.httpclient.core;
 import esa.commons.Checks;
 import esa.commons.collection.MultiMaps;
 import esa.commons.collection.MultiValueMap;
-import esa.commons.http.HttpMethod;
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.httpclient.core.netty.NettyHttpClient;
 import io.esastack.httpclient.core.util.MultiValueMapUtils;
 

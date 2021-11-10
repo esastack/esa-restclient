@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.exec;
 
-import esa.commons.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
@@ -81,7 +81,7 @@ public class ExpectContinueInterceptor implements Interceptor {
             return request.files().isEmpty() && request.attrs().isEmpty();
         }
         return request.file() == null
-                && (request.buffer() == null || !request.buffer().isReadable());
+                && (request.buffer() == null || !(request.buffer().readableBytes() > 0));
     }
 
 }

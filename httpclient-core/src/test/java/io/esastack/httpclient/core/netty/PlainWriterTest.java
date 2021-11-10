@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.netty.core.BufferImpl;
+import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.exec.ExecContext;
@@ -62,7 +62,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
 
         HttpRequest req = channel.readOutbound();
         then(req.method()).isSameAs(HttpMethod.PUT);
-        then(req.headers().getInt(esa.commons.http.HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(DATA.length);
+        then(req.headers().getInt(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(DATA.length);
         then(req.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1");
         then(req.protocolVersion()).isSameAs(HttpVersion.HTTP_1_1);
 
@@ -95,7 +95,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
 
         HttpRequest req = channel.readOutbound();
         then(req.method()).isSameAs(HttpMethod.PUT);
-        then(req.headers().getInt(esa.commons.http.HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(DATA.length);
+        then(req.headers().getInt(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isEqualTo(DATA.length);
         then(req.headers().get(HttpHeaderNames.HOST)).isEqualTo("127.0.0.1");
         then(req.protocolVersion()).isSameAs(HttpVersion.HTTP_1_1);
 
@@ -138,7 +138,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
         then(header).isNotNull();
         then(header.streamId).isEqualTo(STREAM_ID);
         then(header.headers.method()).isEqualTo(HttpMethod.PUT.asciiName());
-        then(header.headers.get(esa.commons.http.HttpHeaderNames.CONTENT_LENGTH)).isNull();
+        then(header.headers.get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isNull();
         then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
         Helper.DataFrame data = channel.readOutbound();
@@ -177,7 +177,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
         then(header).isNotNull();
         then(header.streamId).isEqualTo(STREAM_ID);
         then(header.headers.method()).isEqualTo(HttpMethod.PUT.asciiName());
-        then(header.headers.get(esa.commons.http.HttpHeaderNames.CONTENT_LENGTH)).isNull();
+        then(header.headers.get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isNull();
         then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
         Helper.DataFrame data = channel.readOutbound();

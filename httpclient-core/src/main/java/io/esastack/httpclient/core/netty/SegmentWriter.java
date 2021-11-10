@@ -16,11 +16,12 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.StringUtils;
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.exec.ExecContext;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.esastack.httpclient.core.util.HttpHeadersUtils;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -130,7 +131,7 @@ class SegmentWriter extends RequestWriterImpl {
             // Note: retained the buffer so that channel can release it normally which has
             // no effect to us when we release the buffer after ending the write.
 
-            buf = ((Buffer) data).getByteBuf().retain();
+            buf = BufferUtils.toByteBuf(((Buffer) data)).retain();
         } else if (data instanceof byte[]) {
             buf = channel.alloc().buffer(length);
             buf.writeBytes((byte[]) data, offset, length);

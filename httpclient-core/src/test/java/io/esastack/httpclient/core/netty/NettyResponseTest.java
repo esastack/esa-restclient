@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.http.HttpVersion;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpMessage;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class NettyResponseTest {
         final NettyResponse response = new NettyResponse(aggregated);
         final HttpMessage message = new HttpMessageImpl(status, HttpVersion.HTTP_2, new Http1HeadersImpl());
         response.message(message);
-        response.body(Buffers.buffer(data));
+        response.body(BufferUtil.buffer(data));
 
         response.headers().add("A", "B");
         response.trailers().add("X", "Y");

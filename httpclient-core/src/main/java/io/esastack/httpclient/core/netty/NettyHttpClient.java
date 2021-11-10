@@ -20,11 +20,11 @@ import esa.commons.ExceptionUtils;
 import esa.commons.Platforms;
 import esa.commons.annotation.Internal;
 import esa.commons.concurrent.ThreadPools;
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpMethod;
-import esa.commons.http.HttpVersion;
 import esa.commons.reflect.BeanUtils;
 import esa.commons.spi.SpiLoader;
+import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpMethod;
+import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.Handle;
@@ -52,6 +52,7 @@ import io.esastack.httpclient.core.metrics.ConnectionPoolMetricProvider;
 import io.esastack.httpclient.core.metrics.IoThreadGroupMetric;
 import io.esastack.httpclient.core.metrics.IoThreadMetric;
 import io.esastack.httpclient.core.spi.SslEngineFactory;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.esastack.httpclient.core.util.Futures;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.channel.EventLoopGroup;
@@ -211,7 +212,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      * Executes the given {@link HttpRequest} and obtains the {@link HttpResponse}. If both {@code handle}
      * and {@code handler} are null, the default {@link DefaultHandle} will be used to aggregate the inbound
      * message to a {@link HttpResponse}.
-     *
+     * <p>
      * Be aware that, if the {@link CompletableFuture} is returned, which means that we will release
      * the {@link HttpRequest#buffer()} automatically even if it's an exceptionally {@code future}.
      * Besides, you should manage the {@link HttpRequest#buffer()} by yourself. eg:
@@ -220,7 +221,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      *     try {
      *         client.execute();
      *     } catch (Throwable th) {
-     *         buffer.getByteBuf().release();
+     *         BufferUtils.toByteBuf(buffer).release();
      *     }
      * </pre>
      *
@@ -243,7 +244,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
         CompletableFuture<HttpResponse> response = executor.execute(request,
                 new ExecContext(ctx, listener, handle, handler));
         if (request.buffer() != null) {
-            response = response.whenComplete((rsp, th) -> Utils.tryRelease(request.buffer().getByteBuf()));
+            response = response.whenComplete((rsp, th) -> Utils.tryRelease(BufferUtils.toByteBuf(request.buffer())));
         }
 
         if (callbackExecutor.origin() == null) {
@@ -436,8 +437,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     /**
      * Build a {@link RequestExecutor} to execute given {@link HttpRequest} with given {@link Listener}.
      *
-     * @param ioThreads            ioThreads
-     * @param channelPools         channel pool map
+     * @param ioThreads    ioThreads
+     * @param channelPools channel pool map
      * @return executor
      */
     protected RequestExecutor build(EventLoopGroup ioThreads,
@@ -456,7 +457,7 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
      * Builds a {@link ThreadPoolExecutor} which to handle the callback logic with specified
      * {@link CallbackThreadPoolOptions}.
      *
-     * @param options       options
+     * @param options options
      * @return executor
      */
     static ThreadPoolExecutor newCallbackExecutor(CallbackThreadPoolOptions options) {
@@ -509,8 +510,8 @@ public class NettyHttpClient implements HttpClient, ModifiableClient<NettyHttpCl
     /**
      * Package visibility for unit test.
      *
-     * @param sslOptions        sslOptions
-     * @return                  factory
+     * @param sslOptions sslOptions
+     * @return factory
      */
     protected SslEngineFactory loadSslEngineFactory(SslOptions sslOptions) {
         List<SslEngineFactory> sslEngineFactories = SpiLoader.getAll(SslEngineFactory.class);

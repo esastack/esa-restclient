@@ -17,11 +17,11 @@ package io.esastack.httpclient.core.exec;
 
 import esa.commons.StringUtils;
 import esa.commons.collection.MultiValueMap;
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpMethod;
 import esa.commons.logging.Logger;
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.httpclient.core.DelegatingRequest;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;

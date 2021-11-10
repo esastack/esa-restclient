@@ -16,9 +16,9 @@
 package io.esastack.httpclient.core.netty;
 
 import esa.commons.Checks;
-import esa.commons.http.HttpMethod;
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.httpclient.core.Handle;
 import io.esastack.httpclient.core.Handler;
 import io.esastack.httpclient.core.HttpClientBuilder;
@@ -27,6 +27,7 @@ import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.ListenerProxy;
 import io.esastack.httpclient.core.SegmentRequest;
 import io.esastack.httpclient.core.exec.RequestExecutor;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.esastack.httpclient.core.util.Futures;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -207,7 +208,7 @@ public class SegmentRequestImpl extends HttpRequestBaseImpl implements SegmentRe
         }
 
         if (data instanceof Buffer) {
-            return future.whenComplete((rsp, th) -> Utils.tryRelease(((Buffer) data).getByteBuf()));
+            return future.whenComplete((rsp, th) -> Utils.tryRelease((BufferUtils.toByteBuf((Buffer) data))));
         } else {
             return future;
         }

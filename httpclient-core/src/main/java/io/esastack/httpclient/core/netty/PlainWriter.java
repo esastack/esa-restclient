@@ -15,11 +15,12 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.netty.core.Buffer;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.exception.ClosedConnectionException;
 import io.esastack.httpclient.core.exec.ExecContext;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.esastack.httpclient.core.util.HttpHeadersUtils;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
@@ -50,7 +51,7 @@ class PlainWriter extends RequestWriterImpl {
                                  boolean uriEncodeEnabled) {
         addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
 
-        if (request.buffer() == null || !request.buffer().isReadable()) {
+        if (request.buffer() == null || !(request.buffer().readableBytes() > 0)) {
             final DefaultFullHttpRequest req = new DefaultFullHttpRequest(version,
                     HttpMethod.valueOf(request.method().name()),
                     request.uri().relative(uriEncodeEnabled),
@@ -97,7 +98,7 @@ class PlainWriter extends RequestWriterImpl {
             return;
         }
 
-        final ByteBuf buf = content.getByteBuf().retainedSlice();
+        final ByteBuf buf = BufferUtils.toByteBuf(content).retainedSlice();
         channel.writeAndFlush(new DefaultLastHttpContent(buf), endPromise);
     }
 
@@ -125,7 +126,7 @@ class PlainWriter extends RequestWriterImpl {
         // slice the buffer so that we can reRead the original buffer for
         // retrying\redirecting and other purpose.
         final ByteBuf data = request.buffer() == null
-                ? Unpooled.EMPTY_BUFFER : request.buffer().getByteBuf().retainedSlice();
+                ? Unpooled.EMPTY_BUFFER : BufferUtils.toByteBuf(request.buffer()).retainedSlice();
         final ChannelPromise endPromise = channel.newPromise();
         if (writeContentNow(execCtx, request)) {
             doWriteContent2(channel,

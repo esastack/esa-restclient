@@ -15,11 +15,12 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import esa.commons.netty.core.Buffer;
-import esa.commons.netty.core.BufferImpl;
-import esa.commons.netty.core.Buffers;
+import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.Handle;
+import io.esastack.httpclient.core.util.BufferUtils;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
@@ -38,17 +39,17 @@ class DefaultHandle extends HandleImpl {
         super(new NettyResponse(true));
 
         this.data = (d) -> {
-            if (d.isReadable()) {
+            if (d.readableBytes() > 0) {
                 if (body == null) {
                     body = alloc.compositeBuffer(MAX_COMPOSITE_BUFFER_COMPONENTS);
                 }
-                body.addComponent(true, d.getByteBuf().retain());
+                body.addComponent(true, BufferUtils.toByteBuf(d).retain());
             }
         };
 
         this.end = (v) -> {
             if (body == null) {
-                super.underlying.body(Buffers.EMPTY_BUFFER);
+                super.underlying.body(BufferUtil.empty());
             } else {
                 super.underlying.body(new BufferImpl(Unpooled.copiedBuffer(body)));
             }

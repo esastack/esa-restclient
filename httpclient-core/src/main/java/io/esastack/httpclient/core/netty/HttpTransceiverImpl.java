@@ -18,8 +18,8 @@ package io.esastack.httpclient.core.netty;
 import esa.commons.Checks;
 import esa.commons.StringUtils;
 import esa.commons.concurrent.ThreadFactories;
-import esa.commons.http.HttpHeaderNames;
-import esa.commons.http.HttpHeaderValues;
+import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpClientBuilder;
@@ -191,12 +191,12 @@ class HttpTransceiverImpl implements HttpTransceiver {
         execCtx.listener().onConnectionAcquired(request, execCtx.ctx(), address);
 
         boolean http2 = isHttp2(channel);
-        esa.commons.http.HttpVersion version;
+        io.esastack.commons.net.http.HttpVersion version;
         if (http2) {
-            version = esa.commons.http.HttpVersion.HTTP_2;
+            version = io.esastack.commons.net.http.HttpVersion.HTTP_2;
         } else {
-            version = (esa.commons.http.HttpVersion.HTTP_1_0 == builder.version()
-                    ? esa.commons.http.HttpVersion.HTTP_1_0 : esa.commons.http.HttpVersion.HTTP_1_1);
+            version = (io.esastack.commons.net.http.HttpVersion.HTTP_1_0 == builder.version()
+                    ? io.esastack.commons.net.http.HttpVersion.HTTP_1_0 : io.esastack.commons.net.http.HttpVersion.HTTP_1_1);
         }
 
         if (!channel.isActive()) {
@@ -262,7 +262,7 @@ class HttpTransceiverImpl implements HttpTransceiver {
     protected void doWrite(HttpRequest request,
                            ExecContext execCtx,
                            boolean http2,
-                           esa.commons.http.HttpVersion version,
+                           io.esastack.commons.net.http.HttpVersion version,
                            Channel channel,
                            ChannelPool channelPool,
                            HandleRegistry registry,
@@ -285,7 +285,7 @@ class HttpTransceiverImpl implements HttpTransceiver {
                     execCtx,
                     headFuture,
                     request.uriEncode(),
-                    esa.commons.http.HttpVersion.HTTP_1_1 == version
+                    io.esastack.commons.net.http.HttpVersion.HTTP_1_1 == version
                             ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,
                     http2);
 
@@ -469,10 +469,10 @@ class HttpTransceiverImpl implements HttpTransceiver {
                                              Channel channel,
                                              ChannelPool channelPool,
                                              Listener delegate,
-                                             esa.commons.http.HttpVersion version) {
+                                             io.esastack.commons.net.http.HttpVersion version) {
         if (http2) {
             return H2_HANDLE.buildTimeoutHandle(channel, channelPool, delegate,
-                    esa.commons.http.HttpVersion.HTTP_2);
+                    io.esastack.commons.net.http.HttpVersion.HTTP_2);
         }
 
         return H1_HANDLE.buildTimeoutHandle(channel, channelPool, delegate, version);
@@ -531,8 +531,8 @@ class HttpTransceiverImpl implements HttpTransceiver {
      * @param headers   headers
      * @param version   version
      */
-    private void setKeepAliveIfNecessary(Http1HeadersImpl headers, esa.commons.http.HttpVersion version) {
-        if (esa.commons.http.HttpVersion.HTTP_2 == builder.version()) {
+    private void setKeepAliveIfNecessary(Http1HeadersImpl headers, io.esastack.commons.net.http.HttpVersion version) {
+        if (io.esastack.commons.net.http.HttpVersion.HTTP_2 == builder.version()) {
             headers.remove(HttpHeaderNames.CONNECTION);
         }
 
@@ -542,7 +542,7 @@ class HttpTransceiverImpl implements HttpTransceiver {
 
         final boolean keepAlive = builder.isKeepAlive();
         HttpUtil.setKeepAlive(headers,
-                esa.commons.http.HttpVersion.HTTP_1_1 == version
+                io.esastack.commons.net.http.HttpVersion.HTTP_1_1 == version
                         ? HttpVersion.HTTP_1_1 : HttpVersion.HTTP_1_0,
                 keepAlive);
     }

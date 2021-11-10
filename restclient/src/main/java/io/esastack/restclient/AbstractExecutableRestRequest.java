@@ -17,6 +17,7 @@ import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 import io.esastack.restclient.codec.impl.EncodeChainImpl;
+import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.utils.CookiesUtil;
 
 import java.io.File;
@@ -28,16 +29,20 @@ import java.util.concurrent.CompletionStage;
 abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     protected final CompositeRequest target;
-    protected final ClientInnerComposition clientInnerComposition;
+    protected final RestClientOptions clientOptions;
+    protected final RestRequestExecutor requestExecutor;
     private Encoder encoder = null;
     private Decoder decoder = null;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
-                                            ClientInnerComposition clientInnerComposition) {
+                                            RestClientOptions clientOptions,
+                                            RestRequestExecutor requestExecutor) {
         Checks.checkNotNull(request, "request");
-        Checks.checkNotNull(clientInnerComposition, "clientInnerComposition");
+        Checks.checkNotNull(clientOptions, "clientOptions");
+        Checks.checkNotNull(requestExecutor, "requestExecutor");
         this.target = request;
-        this.clientInnerComposition = clientInnerComposition;
+        this.clientOptions = clientOptions;
+        this.requestExecutor = requestExecutor;
     }
 
     @Override
@@ -103,7 +108,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     @Override
     public CompletionStage<RestResponseBase> execute() {
-        return clientInnerComposition.requestExecutor().execute(this);
+        return requestExecutor.execute(this);
     }
 
     CompletionStage<HttpResponse> sendRequest() {
@@ -126,8 +131,8 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
                 entity(),
                 type(),
                 genericType(),
-                clientInnerComposition.encodeAdvices(),
-                clientInnerComposition.encoders()).next();
+                clientOptions.unmodifiableEncodeAdvices(),
+                clientOptions.unmodifiableEncoders()).next();
     }
 
     private void fillBody(RequestContent<?> requestContent) {

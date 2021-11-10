@@ -3,7 +3,7 @@ package io.esastack.restclient.codec.impl;
 import esa.commons.Checks;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.restclient.ClientInnerComposition;
+import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -17,13 +17,17 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.List;
 
 public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext {
 
     private final RestRequest request;
     private final RestResponse response;
-    private final DecodeAdvice[] advices;
-    private final Decoder[] decoders;
+    private final List<DecodeAdvice> advices;
+    private final int advicesSize;
+    private final List<Decoder> decoders;
+    private final int decodersSize;
     private final Class<?> type;
     private final Type genericType;
     private int adviceIndex = 0;
@@ -33,26 +37,29 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
 
     public DecodeChainImpl(RestRequestBase request,
                            RestResponse response,
-                           ClientInnerComposition clientInnerComposition,
+                           RestClientOptions clientOptions,
                            Class<?> type,
                            Type genericType,
                            ByteBuf byteBuf) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(response, "response");
-        Checks.checkNotNull(clientInnerComposition, "clientInnerComposition");
+        Checks.checkNotNull(clientOptions, "clientOptions");
         Checks.checkNotNull(type, "type");
         Checks.checkNotNull(byteBuf, "byteBuf");
         this.request = request;
         this.response = response;
-        this.advices = clientInnerComposition.decodeAdvices();
+        this.advices = clientOptions.unmodifiableDecodeAdvices();
+        this.advicesSize = this.advices.size();
         this.type = type;
         this.genericType = genericType;
         this.responseContent = ResponseContent.of(ByteBufUtil.getBytes(byteBuf));
         Decoder decoderOfRequest = request.decoder();
         if (decoderOfRequest == null) {
-            this.decoders = clientInnerComposition.decoders();
+            this.decoders = clientOptions.unmodifiableDecoders();
+            this.decodersSize = this.decoders.size();
         } else {
-            this.decoders = new Decoder[]{decoderOfRequest};
+            this.decoders = Collections.singletonList(decoderOfRequest);
+            this.decodersSize = 1;
         }
     }
 
@@ -102,17 +109,17 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
             return decode();
         }
 
-        if (advices == null || adviceIndex >= advices.length) {
+        if (adviceIndex >= advicesSize) {
             this.decodeHadStart = true;
             return decode();
         }
 
-        return advices[adviceIndex++].aroundDecode(this);
+        return advices.get(adviceIndex++).aroundDecode(this);
     }
 
     private Object decode() throws Exception {
-        if (decodeIndex < decoders.length) {
-            return decoders[decodeIndex++].decode(this);
+        if (decodeIndex < decodersSize) {
+            return decoders.get(decodeIndex++).decode(this);
         }
 
         throw new CodecException("There is no suitable decoder for this response,"

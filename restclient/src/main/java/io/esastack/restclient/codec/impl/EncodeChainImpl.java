@@ -14,12 +14,16 @@ import io.esastack.restclient.utils.GenericTypeUtil;
 import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.List;
 
 public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext {
 
     private final RestRequest request;
-    private final EncodeAdvice[] advices;
-    private final Encoder[] encoders;
+    private final List<EncodeAdvice> advices;
+    private final int advicesSize;
+    private final List<Encoder> encoders;
+    private final int encodersSize;
     private int adviceIndex = 0;
     private int encodeIndex = 0;
     private boolean encodeHadStart = false;
@@ -31,8 +35,8 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
                            Object entity,
                            Class<?> type,
                            Type geneticType,
-                           EncodeAdvice[] advices,
-                           Encoder[] encodersOfClient) {
+                           List<EncodeAdvice> advices,
+                           List<Encoder> encodersOfClient) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(entity, "entity");
         Checks.checkNotNull(advices, "advices");
@@ -42,11 +46,14 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
         this.type = type;
         this.genericType = geneticType;
         this.advices = advices;
+        this.advicesSize = this.advices.size();
         Encoder encoderOfRequest = request.encoder();
         if (encoderOfRequest == null) {
-            encoders = encodersOfClient;
+            this.encoders = encodersOfClient;
+            this.encodersSize = this.encoders.size();
         } else {
-            encoders = new Encoder[]{encoderOfRequest};
+            this.encoders = Collections.singletonList(encoderOfRequest);
+            this.encodersSize = 1;
         }
     }
 
@@ -104,16 +111,16 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
             return encode();
         }
 
-        if (advices == null || adviceIndex >= advices.length) {
+        if (adviceIndex >= advicesSize) {
             this.encodeHadStart = true;
             return encode();
         }
-        return advices[adviceIndex++].aroundEncode(this);
+        return advices.get(adviceIndex++).aroundEncode(this);
     }
 
     private RequestContent<?> encode() throws Exception {
-        if (encodeIndex < encoders.length) {
-            return encoders[encodeIndex++].encode(this);
+        if (encodeIndex < encodersSize) {
+            return encoders.get(encodeIndex++).encode(this);
         }
 
         throw new CodecException("There is no suitable encoder for this request,"

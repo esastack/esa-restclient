@@ -27,8 +27,8 @@ import io.esastack.restclient.spi.DecoderFactory;
 import io.esastack.restclient.spi.EncodeAdviceFactory;
 import io.esastack.restclient.spi.EncoderFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,11 +40,11 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     public static final String CLIENT = "RestClient";
 
     private final HttpClientBuilder httpClientBuilder;
-    private final List<ClientInterceptor> interceptors = new LinkedList<>();
-    private final List<DecodeAdvice> decodeAdvices = new LinkedList<>();
-    private final List<EncodeAdvice> encodeAdvices = new LinkedList<>();
-    private final List<Decoder> decoders = new LinkedList<>();
-    private final List<Encoder> encoders = new LinkedList<>();
+    private final List<ClientInterceptor> interceptors = new ArrayList<>();
+    private final List<DecodeAdvice> decodeAdvices = new ArrayList<>();
+    private final List<EncodeAdvice> encodeAdvices = new ArrayList<>();
+    private final List<Decoder> decoders = new ArrayList<>();
+    private final List<Encoder> encoders = new ArrayList<>();
     private String name = CLIENT;
 
     RestClientBuilder() {

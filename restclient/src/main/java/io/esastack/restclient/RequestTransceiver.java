@@ -7,10 +7,10 @@ import java.util.concurrent.CompletionStage;
 
 public final class RequestTransceiver implements InvocationChain {
 
-    private final ClientInnerComposition clientInnerComposition;
+    private final RestClientOptions clientOptions;
 
-    public RequestTransceiver(ClientInnerComposition clientInnerComposition) {
-        this.clientInnerComposition = clientInnerComposition;
+    public RequestTransceiver(RestClientOptions clientOptions) {
+        this.clientOptions = clientOptions;
     }
 
     @Override
@@ -28,6 +28,6 @@ public final class RequestTransceiver implements InvocationChain {
     }
 
     private RestResponse processResponse(RestRequestBase request, HttpResponse response) {
-        return new RestResponseBaseImpl(request, response, clientInnerComposition);
+        return new RestResponseBaseImpl(request, response, clientOptions);
     }
 }

@@ -68,9 +68,9 @@ public interface RestClientOptions {
 
     List<DecodeAdvice> unmodifiableDecodeAdvices();
 
-    List<Encoder<?>> unmodifiableEncoders();
+    List<Encoder> unmodifiableEncoders();
 
-    List<Decoder<?>> unmodifiableDecoders();
+    List<Decoder> unmodifiableDecoders();
 
     List<ClientInterceptor> unmodifiableInterceptors();
 }

@@ -58,9 +58,9 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest maxRetries(int maxRetries);
 
     @Override
-    RestFileRequest encoder(Encoder<?> encoder);
+    RestFileRequest encoder(Encoder encoder);
 
     @Override
-    RestFileRequest decoder(Decoder<?> decoder);
+    RestFileRequest decoder(Decoder decoder);
 
 }

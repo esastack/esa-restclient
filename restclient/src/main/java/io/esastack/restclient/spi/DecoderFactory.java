@@ -8,5 +8,5 @@ import java.util.Collection;
 
 @SPI
 public interface DecoderFactory {
-    Collection<Decoder<?>> decoders(RestClientOptions clientOptions);
+    Collection<Decoder> decoders(RestClientOptions clientOptions);
 }

@@ -13,7 +13,7 @@ public interface EncodeAdvice extends Ordered {
      * Method wrapping calls to {@link Encoder#encode} method.
      * <p>
      * The parameters of the wrapped method called are available from context. Implementations
-     * of this method SHOULD explicitly call {@link EncodeAdviceContext#proceed()} to invoke the
+     * of this method SHOULD explicitly call {@link EncodeAdviceContext#next()} to invoke the
      * next <code>EncodeAdvice</code> in the chain, and ultimately the wrapped {@link
      * Encoder#encode} method.
      *
@@ -23,5 +23,5 @@ public interface EncodeAdvice extends Ordered {
      * @see Encoder
      * @see EncodeAdviceContext
      */
-    RequestContent aroundEncode(EncodeAdviceContext context) throws Exception;
+    RequestContent<?> aroundEncode(EncodeAdviceContext context) throws Exception;
 }

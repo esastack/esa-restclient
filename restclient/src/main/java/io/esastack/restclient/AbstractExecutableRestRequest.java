@@ -1,11 +1,13 @@
 package io.esastack.restclient;
 
 import esa.commons.Checks;
+import esa.commons.StringUtils;
 import esa.commons.http.Cookie;
 import esa.commons.http.HttpHeaderNames;
 import esa.commons.http.HttpMethod;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
+import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
@@ -14,7 +16,7 @@ import io.esastack.httpclient.core.util.Futures;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
-import io.esastack.restclient.codec.impl.EncodeAdviceContextImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.utils.CookiesUtil;
 
 import java.io.File;
@@ -27,10 +29,8 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
 
     protected final CompositeRequest target;
     protected final ClientInnerComposition clientInnerComposition;
-    protected MediaType contentType = null;
-    private MediaType[] acceptTypes = null;
-    private Encoder<?> encoder = null;
-    private Decoder<?> decoder = null;
+    private Encoder encoder = null;
+    private Decoder decoder = null;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             ClientInnerComposition clientInnerComposition) {
@@ -122,12 +122,12 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     private RequestContent<?> encode() throws Exception {
-        return new EncodeAdviceContextImpl(this,
+        return new EncodeChainImpl(this,
                 entity(),
                 type(),
                 genericType(),
                 clientInnerComposition.encodeAdvices(),
-                clientInnerComposition.encoders()).proceed();
+                clientInnerComposition.encoders()).next();
     }
 
     private void fillBody(RequestContent<?> requestContent) {
@@ -216,34 +216,31 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     @Override
     public ExecutableRestRequest contentType(MediaType contentType) {
         Checks.checkNotNull(contentType, "contentType");
-
-        this.contentType = contentType;
         headers().set(HttpHeaderNames.CONTENT_TYPE, contentType.value());
         return self();
     }
 
     @Override
     public MediaType contentType() {
-        return contentType;
+        String contentTypeString = headers().get(HttpHeaderNames.CONTENT_TYPE);
+        if (StringUtils.isBlank(contentTypeString)) {
+            return null;
+        }
+
+        return MediaTypeUtil.valueOf(contentTypeString);
     }
 
     @Override
     public ExecutableRestRequest accept(MediaType... acceptTypes) {
         Checks.checkNotNull(acceptTypes, "acceptTypes");
-        this.acceptTypes = acceptTypes;
-        processAcceptHeader();
-        return self();
-    }
-
-    private void processAcceptHeader() {
-        if (this.acceptTypes == null || this.acceptTypes.length == 0) {
+        if (acceptTypes.length == 0) {
             headers().remove(HttpHeaderNames.ACCEPT);
-            return;
+            return self();
         }
-        StringBuilder acceptBuilder = new StringBuilder();
 
-        for (int i = 0; i < this.acceptTypes.length; i++) {
-            MediaType acceptType = this.acceptTypes[i];
+        StringBuilder acceptBuilder = new StringBuilder();
+        for (int i = 0; i < acceptTypes.length; i++) {
+            MediaType acceptType = acceptTypes[i];
             if (acceptType == null) {
                 throw new NullPointerException("acceptType is null when index is equal to" + i);
             }
@@ -259,11 +256,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         } else if (acceptBuilder.length() > 0) {
             headers().set(HttpHeaderNames.ACCEPT, acceptBuilder.toString());
         }
-    }
-
-    @Override
-    public MediaType[] acceptTypes() {
-        return acceptTypes;
+        return self();
     }
 
     @Override
@@ -285,24 +278,24 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public ExecutableRestRequest encoder(Encoder<?> encoder) {
+    public ExecutableRestRequest encoder(Encoder encoder) {
         this.encoder = encoder;
         return self();
     }
 
     @Override
-    public Encoder<?> encoder() {
+    public Encoder encoder() {
         return encoder;
     }
 
     @Override
-    public ExecutableRestRequest decoder(Decoder<?> decoder) {
+    public ExecutableRestRequest decoder(Decoder decoder) {
         this.decoder = decoder;
         return self();
     }
 
     @Override
-    public Decoder<?> decoder() {
+    public Decoder decoder() {
         return decoder;
     }
 

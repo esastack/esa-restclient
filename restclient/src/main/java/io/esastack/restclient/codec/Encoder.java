@@ -7,7 +7,7 @@ import io.esastack.httpclient.core.util.Ordered;
  * in many scenarios, what you need is {@link ByteEncoder} which makes it unnecessary for you to understand
  * the {@link RequestContent}.
  */
-public interface Encoder<V> extends Ordered {
+public interface Encoder extends Ordered {
 
     /**
      * Encode the {@code encodeContext.entity()} to {@link RequestContent}.If this encoder can encode the entity,
@@ -18,5 +18,5 @@ public interface Encoder<V> extends Ordered {
      * @return RequestContent
      * @throws Exception error
      */
-    RequestContent<V> encode(EncodeContext<V> encodeContext) throws Exception;
+    RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception;
 }

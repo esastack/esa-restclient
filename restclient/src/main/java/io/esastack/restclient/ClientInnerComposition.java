@@ -15,9 +15,9 @@ public interface ClientInnerComposition {
 
     EncodeAdvice[] encodeAdvices();
 
-    Decoder<?>[] decoders();
+    Decoder[] decoders();
 
-    Encoder<?>[] encoders();
+    Encoder[] encoders();
 
     RestRequestExecutor requestExecutor();
 

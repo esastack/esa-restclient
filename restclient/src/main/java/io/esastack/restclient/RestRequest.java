@@ -42,6 +42,4 @@ public interface RestRequest extends Request {
     Map<String, List<Cookie>> cookiesMap();
 
     MediaType contentType();
-
-    MediaType[] acceptTypes();
 }

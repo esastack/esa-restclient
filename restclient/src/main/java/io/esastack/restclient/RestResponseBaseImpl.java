@@ -10,7 +10,7 @@ import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.restclient.codec.DecodeAdviceContext;
-import io.esastack.restclient.codec.impl.DecodeAdviceContextImpl;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
 import io.esastack.restclient.utils.CookiesUtil;
 
 import java.lang.reflect.Array;
@@ -66,14 +66,14 @@ public class RestResponseBaseImpl implements RestResponseBase {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T bodyToEntity(Type genericType) throws Exception {
-        DecodeAdviceContext decodeContext = new DecodeAdviceContextImpl(
+        DecodeAdviceContext decodeContext = new DecodeChainImpl(
                 request,
                 this,
                 clientInnerComposition,
                 getClass(genericType),
                 genericType,
                 response.body().getByteBuf());
-        return (T) decodeContext.proceed();
+        return (T) decodeContext.next();
     }
 
     @Override

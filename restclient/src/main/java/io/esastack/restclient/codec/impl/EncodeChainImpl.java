@@ -7,29 +7,32 @@ import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeAdviceContext;
+import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
 import io.esastack.restclient.utils.GenericTypeUtil;
+import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
 
-public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
+public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext {
 
     private final RestRequest request;
     private final EncodeAdvice[] advices;
-    private final Encoder<?> encoderOfRequest;
-    private final Encoder<?>[] encodersOfClient;
+    private final Encoder[] encoders;
     private int adviceIndex = 0;
+    private int encodeIndex = 0;
+    private boolean encodeHadStart = false;
     private Object entity;
     private Class<?> type;
     private Type genericType;
 
-    public EncodeAdviceContextImpl(RestRequestBase request,
-                                   Object entity,
-                                   Class<?> type,
-                                   Type geneticType,
-                                   EncodeAdvice[] advices,
-                                   Encoder<?>[] encodersOfClient) {
+    public EncodeChainImpl(RestRequestBase request,
+                           Object entity,
+                           Class<?> type,
+                           Type geneticType,
+                           EncodeAdvice[] advices,
+                           Encoder[] encodersOfClient) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(entity, "entity");
         Checks.checkNotNull(advices, "advices");
@@ -39,13 +42,27 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
         this.type = type;
         this.genericType = geneticType;
         this.advices = advices;
-        this.encodersOfClient = encodersOfClient;
-        this.encoderOfRequest = request.encoder();
+        Encoder encoderOfRequest = request.encoder();
+        if (encoderOfRequest == null) {
+            encoders = encodersOfClient;
+        } else {
+            encoders = new Encoder[]{encoderOfRequest};
+        }
     }
 
     @Override
     public RestRequest request() {
         return request;
+    }
+
+    @Override
+    public MediaType contentType() {
+        return request.contentType();
+    }
+
+    @Override
+    public HttpHeaders headers() {
+        return request.headers();
     }
 
     @Override
@@ -82,32 +99,29 @@ public final class EncodeAdviceContextImpl implements EncodeAdviceContext {
     }
 
     @Override
-    public RequestContent<?> proceed() throws Exception {
-        if (advices == null || adviceIndex >= advices.length) {
-            MediaType contentType = request.contentType();
-            HttpHeaders headers = request.headers();
+    public RequestContent<?> next() throws Exception {
+        if (encodeHadStart) {
+            return encode();
+        }
 
-            if (encoderOfRequest != null) {
-                return new EncodeContextImpl(
-                        contentType,
-                        headers,
-                        entity,
-                        type,
-                        genericType,
-                        new Encoder[]{encoderOfRequest}
-                ).next();
-            } else {
-                return new EncodeContextImpl(
-                        contentType,
-                        headers,
-                        entity,
-                        type,
-                        genericType,
-                        encodersOfClient
-                ).next();
-            }
+        if (advices == null || adviceIndex >= advices.length) {
+            this.encodeHadStart = true;
+            return encode();
         }
         return advices[adviceIndex++].aroundEncode(this);
+    }
+
+    private RequestContent<?> encode() throws Exception {
+        if (encodeIndex < encoders.length) {
+            return encoders[encodeIndex++].encode(this);
+        }
+
+        throw new CodecException("There is no suitable encoder for this request,"
+                + " Please set correct encoder!"
+                + " , headers of request : " + headers()
+                + " , entity of request : " + entity
+                + " , type of request : " + type
+                + " , genericType of request : " + genericType);
     }
 
 }

@@ -1,11 +1,12 @@
 package io.esastack.restclient.codec;
 
-public interface ByteDecoder extends Decoder<byte[]> {
+public interface ByteDecoder extends Decoder {
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Object decode(DecodeContext<byte[]> decodeContext) throws Exception {
+    default Object decode(DecodeContext<?> decodeContext) throws Exception {
         if (decodeContext.content().value() instanceof byte[]) {
-            return doDecode(decodeContext);
+            return doDecode((DecodeContext<byte[]>) decodeContext);
         }
         return decodeContext.next();
     }

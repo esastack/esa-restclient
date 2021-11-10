@@ -7,7 +7,7 @@ import io.esastack.httpclient.core.util.Ordered;
  * in many scenarios, what you need is {@link ByteDecoder} which makes it unnecessary for you to understand
  * the {@link ResponseContent}.
  */
-public interface Decoder<V> extends Ordered {
+public interface Decoder extends Ordered {
 
     /**
      * Decode the {@code decodeContext.content()} to object.If this decoder can decode the {@code decodeContext.content()},
@@ -18,5 +18,5 @@ public interface Decoder<V> extends Ordered {
      * @return object
      * @throws Exception error
      */
-    Object decode(DecodeContext<V> decodeContext) throws Exception;
+    Object decode(DecodeContext<?> decodeContext) throws Exception;
 }

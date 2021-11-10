@@ -13,15 +13,9 @@ import java.lang.reflect.Type;
  * @see Encoder
  * @see EncodeAdvice
  */
-public interface EncodeAdviceContext {
+public interface EncodeAdviceContext extends EncodeChain {
 
     RestRequest request();
-
-    Object entity();
-
-    Class<?> type();
-
-    Type genericType();
 
     /**
      * set entity,this method is not safe for use by multiple threads
@@ -32,20 +26,9 @@ public interface EncodeAdviceContext {
 
     /**
      * set entity and genericType,this method is not safe for use by multiple threads
-     * @param entity entity
+     *
+     * @param entity      entity
      * @param genericType genericType
      */
-    void entity(Object entity,Type genericType);
-
-    /**
-     * Proceed to the next advice in the chain.
-     * <p>
-     * Advice MUST explicitly call this method to continue the execution chain;
-     * the call to this method in the last of the chain will invoke
-     * the wrapped {@link Encoder#encode} method.
-     *
-     * @return encoded requestContent
-     * @throws Exception error
-     */
-    RequestContent proceed() throws Exception;
+    void entity(Object entity, Type genericType);
 }

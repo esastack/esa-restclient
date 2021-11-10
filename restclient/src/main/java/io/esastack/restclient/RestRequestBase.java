@@ -71,11 +71,11 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     @Override
     RestRequestBase accept(MediaType... acceptTypes);
 
-    RestRequestBase encoder(Encoder<?> encoder);
+    RestRequestBase encoder(Encoder encoder);
 
-    Encoder<?> encoder();
+    Encoder encoder();
 
-    RestRequestBase decoder(Decoder<?> decoder);
+    RestRequestBase decoder(Decoder decoder);
 
-    Decoder<?> decoder();
+    Decoder decoder();
 }

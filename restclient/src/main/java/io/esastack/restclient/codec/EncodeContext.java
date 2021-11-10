@@ -1,21 +1,11 @@
 package io.esastack.restclient.codec;
 
 import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.MediaType;
 
-import java.lang.reflect.Type;
-
-public interface EncodeContext<V> {
-
-    MediaType contentType();
+public interface EncodeContext<V> extends EncodeChain {
 
     HttpHeaders headers();
 
-    Object entity();
-
-    Class<?> type();
-
-    Type genericType();
-
+    @Override
     RequestContent<V> next() throws Exception;
 }

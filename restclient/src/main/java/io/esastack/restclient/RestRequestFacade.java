@@ -107,10 +107,10 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade maxRetries(int maxRetries);
 
     @Override
-    RestRequestFacade encoder(Encoder<?> encoder);
+    RestRequestFacade encoder(Encoder encoder);
 
     @Override
-    RestRequestFacade decoder(Decoder<?> decoder);
+    RestRequestFacade decoder(Decoder decoder);
 
 
 }

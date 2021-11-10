@@ -14,8 +14,8 @@ import java.util.List;
 public final class InternalDecoderFactory implements DecoderFactory {
 
     @Override
-    public Collection<Decoder<?>> decoders(RestClientOptions clientOptions) {
-        List<Decoder<?>> decoders = new ArrayList<>();
+    public Collection<Decoder> decoders(RestClientOptions clientOptions) {
+        List<Decoder> decoders = new ArrayList<>();
         decoders.add(new ByteToByteCodec());
         decoders.add(new JacksonCodec());
         decoders.add(new StringCodec());

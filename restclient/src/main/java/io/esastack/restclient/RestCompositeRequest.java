@@ -1,7 +1,9 @@
 package io.esastack.restclient;
 
 import esa.commons.Checks;
+import esa.commons.StringUtils;
 import esa.commons.http.Cookie;
+import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.CompositeRequest;
@@ -258,13 +260,13 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest encoder(Encoder<?> encoder) {
+    public RestCompositeRequest encoder(Encoder encoder) {
         super.encoder(encoder);
         return self();
     }
 
     @Override
-    public RestCompositeRequest decoder(Decoder<?> decoder) {
+    public RestCompositeRequest decoder(Decoder decoder) {
         super.decoder(decoder);
         return self();
     }
@@ -276,7 +278,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     private void setContentTypeIfAbsent(MediaType contentType) {
-        if (this.contentType == null) {
+        if (StringUtils.isBlank(headers().get(HttpHeaderNames.CONTENT_TYPE))) {
             contentType(contentType);
         }
     }

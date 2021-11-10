@@ -1,10 +1,11 @@
 package io.esastack.restclient.codec;
 
-public interface ByteEncoder extends Encoder<byte[]> {
+public interface ByteEncoder extends Encoder {
 
+    @SuppressWarnings("unchecked")
     @Override
-    default RequestContent<byte[]> encode(EncodeContext<byte[]> encodeContext) throws Exception {
-        return doEncode(encodeContext);
+    default RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
+        return doEncode((EncodeContext<byte[]>) encodeContext);
     }
 
     RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception;

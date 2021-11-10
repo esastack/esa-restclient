@@ -13,7 +13,7 @@ public interface DecodeAdvice extends Ordered {
      * Method wrapping calls to {@link Decoder#decode}. method.
      * <p>
      * The parameters of the wrapped method called are available from context. Implementations
-     * of this method SHOULD explicitly call {@link DecodeAdviceContext#proceed()} to invoke the
+     * of this method SHOULD explicitly call {@link DecodeAdviceContext#next()} to invoke the
      * next <code>DecodeAdvice</code> in the chain, and ultimately the wrapped
      * {@link Decoder#decode}. method.
      *

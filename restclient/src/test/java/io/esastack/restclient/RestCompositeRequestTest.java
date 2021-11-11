@@ -15,9 +15,9 @@
  */
 package io.esastack.restclient;
 
-import esa.commons.netty.http.CookieImpl;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.netty.http.CookieImpl;
 import io.esastack.httpclient.core.MultipartBody;
 import org.junit.jupiter.api.Test;
 

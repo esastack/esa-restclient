@@ -19,6 +19,9 @@ import io.esastack.commons.net.http.HttpHeaders;
 
 public interface DecodeContext<V> extends DecodeChain {
 
+    /**
+     * @return The headers of response
+     */
     HttpHeaders headers();
 
     @Override

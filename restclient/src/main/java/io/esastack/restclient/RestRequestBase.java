@@ -86,11 +86,31 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     @Override
     RestRequestBase accept(MediaType... acceptTypes);
 
+    /**
+     * set a specific encoder for the request. The request will encode with this encoder
+     * and will no longer use the encoders in the client
+     *
+     * @param encoder specific encoder
+     * @return RestRequestBase
+     */
     RestRequestBase encoder(Encoder encoder);
 
+    /**
+     * @return The specific encoder of request
+     */
     Encoder encoder();
 
+    /**
+     * set a specific decoder for the request. The request will decode with this decoder
+     * and will no longer use the decoders in the client
+     *
+     * @param decoder specific decoder
+     * @return RestRequestBase
+     */
     RestRequestBase decoder(Decoder decoder);
 
+    /**
+     * @return The specific decoder of request
+     */
     Decoder decoder();
 }

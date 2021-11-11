@@ -21,12 +21,24 @@ import java.lang.reflect.Type;
 
 public interface DecodeChain {
 
+    /**
+     * @return The contentType of response
+     */
     MediaType contentType();
 
+    /**
+     * @return The content of response
+     */
     ResponseContent<?> content();
 
+    /**
+     * @return The type of target
+     */
     Class<?> type();
 
+    /**
+     * @return The genericType of target
+     */
     Type genericType();
 
     /**

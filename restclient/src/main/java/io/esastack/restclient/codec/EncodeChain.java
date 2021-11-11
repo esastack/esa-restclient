@@ -22,12 +22,24 @@ import java.lang.reflect.Type;
 
 public interface EncodeChain {
 
+    /**
+     * @return The contentType of request
+     */
     MediaType contentType();
 
+    /**
+     * @return The entity of request
+     */
     Object entity();
 
+    /**
+     * @return The type of entity
+     */
     Class<?> type();
 
+    /**
+     * @return The genericType of entity
+     */
     Type genericType();
 
     /**

@@ -15,36 +15,71 @@
  */
 package io.esastack.restclient.codec;
 
+import com.alibaba.fastjson.JSON;
 import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.JacksonCodec;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JacksonCodecTest {
     @Test
     void testEncode() throws Exception {
         JacksonCodec jacksonCodec = new JacksonCodec();
-        then(jacksonCodec.encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, null).content())
-                .isEqualTo("null".getBytes(StandardCharsets.UTF_8));
+        RestRequestBase request = mock(RestRequestBase.class);
+        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
-        Person person = new Person("LiMing", "boy");
-        then(jacksonCodec.encode(null, null, person).content())
+        Person person = new Person("Bob", "boy");
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                person,
+                Person.class,
+                Person.class,
+                mock(List.class),
+                mock(List.class)
+        );
+
+        assertThrows(CodecException.class, () ->
+                jacksonCodec.encode(encodeContext));
+
+        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+
+        then(jacksonCodec.encode(encodeContext).value())
                 .isEqualTo(JacksonCodec.getDefaultMapper().writeValueAsBytes(person));
     }
 
     @Test
     void testDecode() throws Exception {
         JacksonCodec jacksonCodec = new JacksonCodec();
-        then((Object) jacksonCodec.decode(null, null, ResponseBodyContent.of(null), null))
-                .isEqualTo(null);
+        Person person = new Person("Bob", "boy");
 
-        Person person = new Person("LiMing", "boy");
-        byte[] bytes = JacksonCodec.getDefaultMapper().writeValueAsBytes(person);
-        then((Object) jacksonCodec.decode(null, null, ResponseBodyContent.of(bytes), Person.class))
-                .isEqualTo(person);
+        RestResponse response = mock(RestResponse.class);
+        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        DecodeContext decodeContext = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                Person.class,
+                Person.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(JSON.toJSONBytes(person))
+        );
+
+        assertThrows(CodecException.class, () ->
+                jacksonCodec.decode(decodeContext));
+
+        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(jacksonCodec.decode(decodeContext)).isEqualTo(person);
     }
 }

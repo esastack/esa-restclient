@@ -15,21 +15,47 @@
  */
 package io.esastack.restclient.codec;
 
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.FileEncoder;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.List;
+
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 class FileToFileEncoderTest {
 
     @Test
-    void testEncode() {
+    void testEncode() throws Exception {
         FileEncoder fileEncoder = new FileEncoder();
-        then(fileEncoder.encode(null, null, null).content())
-                .isEqualTo(null);
+        RestRequestBase request = mock(RestRequestBase.class);
 
         File file = new File("test");
-        then(fileEncoder.encode(null, null, file).content())
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                file,
+                String.class,
+                String.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        assertThrows(CodecException.class, () ->
+                fileEncoder.encode(encodeContext));
+
+        EncodeContext encodeContext1 = new EncodeChainImpl(
+                request,
+                file,
+                File.class,
+                File.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        then(fileEncoder.encode(encodeContext1).value())
                 .isEqualTo(file);
     }
 

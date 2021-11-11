@@ -16,24 +16,19 @@
 package io.esastack.restclient;
 
 import io.esastack.commons.net.buffer.BufferUtil;
-import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpVersion;
-import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.commons.net.netty.http.CookieImpl;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.restclient.codec.DecodeAdvice;
+import io.esastack.restclient.codec.impl.StringCodec;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +36,7 @@ class RestResponseBaseImplTest {
 
     @Test
     void testStatus() {
-        RestRequest request = mock(RestRequest.class);
+        RestRequestBase request = mock(RestRequestBase.class);
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponse restResponse = new RestResponseBaseImpl(request, response, clientOptions);
@@ -59,7 +54,7 @@ class RestResponseBaseImplTest {
 
     @Test
     void testHeaders() {
-        RestRequest request = mock(RestRequest.class);
+        RestRequestBase request = mock(RestRequestBase.class);
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponse restResponse = new RestResponseBaseImpl(request, response, clientOptions);
@@ -79,7 +74,7 @@ class RestResponseBaseImplTest {
 
     @Test
     void testTrailers() {
-        RestRequest request = mock(RestRequest.class);
+        RestRequestBase request = mock(RestRequestBase.class);
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponse restResponse = new RestResponseBaseImpl(request, response, clientOptions);
@@ -99,7 +94,7 @@ class RestResponseBaseImplTest {
 
     @Test
     void testVersion() {
-        RestRequest request = mock(RestRequest.class);
+        RestRequestBase request = mock(RestRequestBase.class);
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponse restResponse = new RestResponseBaseImpl(request, response, clientOptions);
@@ -113,7 +108,7 @@ class RestResponseBaseImplTest {
 
     @Test
     void testCookieOperate() {
-        RestRequest request = mock(RestRequest.class);
+        RestRequestBase request = mock(RestRequestBase.class);
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponseBase restResponse = new RestResponseBaseImpl(request, response, clientOptions);
@@ -141,112 +136,35 @@ class RestResponseBaseImplTest {
         then(restResponse.cookies("ccc").get(0).value()).isEqualTo("ccc1");
         then(restResponse.cookies("ccc").get(1).value()).isEqualTo("ccc2");
         then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(6);
-
-        //test remove cookies
-        List<Cookie> cookies = restResponse.removeCookies("aaa");
-        then(cookies.size()).isEqualTo(2);
-        then(cookies.get(0).value()).isEqualTo("aaa1");
-        then(cookies.get(1).value()).isEqualTo("aaa2");
-        then(restResponse.cookiesMap().size()).isEqualTo(2);
-        then(restResponse.cookies("aaa").size()).isEqualTo(0);
-        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("bbb").get(0).value()).isEqualTo("bbb1");
-        then(restResponse.cookiesMap().get("bbb").get(1).value()).isEqualTo("bbb2");
-        then(restResponse.cookiesMap().get("ccc").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("ccc").get(0).value()).isEqualTo("ccc1");
-        then(restResponse.cookiesMap().get("ccc").get(1).value()).isEqualTo("ccc2");
-        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(4);
-
-        //test remove cookies when the name of cookie is null
-        cookies = restResponse.removeCookies(null);
-        then(cookies.size()).isEqualTo(0);
-        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("bbb").get(0).value()).isEqualTo("bbb1");
-        then(restResponse.cookiesMap().get("bbb").get(1).value()).isEqualTo("bbb2");
-        then(restResponse.cookiesMap().get("ccc").size()).isEqualTo(2);
-        then(restResponse.cookiesMap().get("ccc").get(0).value()).isEqualTo("ccc1");
-        then(restResponse.cookiesMap().get("ccc").get(1).value()).isEqualTo("ccc2");
-
-        //test set cookie by cookie(cookie)
-        assertDoesNotThrow(() ->
-                restResponse.cookie(null)
-        );
-        restResponse.cookie(new CookieImpl("bbb", "bbb3"));
-        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(3);
-        then(restResponse.cookiesMap().get("bbb").get(2).value()).isEqualTo("bbb3");
-        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(5);
-
-        //test set cookie by cookie(name, value)
-        assertThrows(NullPointerException.class, () ->
-                restResponse.cookie(null, "bbb4"));
-        assertThrows(NullPointerException.class, () ->
-                restResponse.cookie("bbb", null));
-        restResponse.cookie("bbb", "bbb4");
-        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(4);
-        then(restResponse.cookiesMap().get("bbb").get(3).value()).isEqualTo("bbb4");
-        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(6);
-
-        //test set cookies by cookies(cookies)
-        assertDoesNotThrow(() ->
-                restResponse.cookies((List<Cookie>) null)
-        );
-        List<Cookie> cookieList = new ArrayList<>();
-        cookieList.add(new CookieImpl("bbb", "bbb5"));
-        restResponse.cookies(cookieList);
-        then(restResponse.cookiesMap().get("bbb").size()).isEqualTo(5);
-        then(restResponse.cookiesMap().get("bbb").get(4).value()).isEqualTo("bbb5");
-        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(7);
-
-        //test remove cookie by cookiesMap().remove(name)
-        assertThrows(UnsupportedOperationException.class, () -> restResponse.cookiesMap().remove("aaa"));
     }
 
     @Test
     void testBodyToEntity() throws Exception {
-        RestRequest request = mock(RestRequest.class);
+        RestRequestBase request = mock(RestRequestBase.class);
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponseBase restResponse = new RestResponseBaseImpl(request, response, clientOptions);
         HttpHeaders headers = new Http1HeadersImpl();
         when(response.headers()).thenReturn(headers);
         when(response.body()).thenReturn(BufferUtil.buffer("Hello".getBytes(StandardCharsets.UTF_8)));
-        //acceptTypes is null
-        assertThrows(NullPointerException.class, () -> restResponse.bodyToEntity(String.class));
+        when(request.decoder()).thenReturn(new StringCodec());
 
-        //acceptTypes is empty
-        when(request.acceptTypes()).thenReturn(new AcceptType[]{});
-        assertThrows(IllegalStateException.class, () -> restResponse.bodyToEntity(String.class));
-
-        //acceptTypes is not empty but contentType is null
-        when(request.acceptTypes()).thenReturn(new AcceptType[]{AcceptType.TEXT_PLAIN});
-        assertThrows(IllegalStateException.class, () -> restResponse.bodyToEntity(String.class));
-
-        //acceptTypes is not match to contentType
-        headers.add(HttpHeaderNames.CONTENT_TYPE, MediaTypeUtil.APPLICATION_JSON);
-        when(request.acceptTypes()).thenReturn(new AcceptType[]{AcceptType.TEXT_PLAIN});
-        assertThrows(IllegalStateException.class, () -> restResponse.bodyToEntity(String.class));
-
-        //acceptTypes is match to contentType
-        headers.set(HttpHeaderNames.CONTENT_TYPE, MediaTypeUtil.TEXT_PLAIN);
-        when(request.acceptTypes()).thenReturn(new AcceptType[]{AcceptType.TEXT_PLAIN});
+        //decodeAdvices is empty
+        when(clientOptions.unmodifiableDecodeAdvices()).thenReturn(Collections.emptyList());
         then(restResponse.bodyToEntity(String.class)).isEqualTo("Hello");
 
-        //acceptTypes is right and decodeAdvices is empty
-        when(clientOptions.unmodifiableDecodeAdvices()).thenReturn(new DecodeAdvice[]{});
-        then(restResponse.bodyToEntity(String.class)).isEqualTo("Hello");
-
-        //acceptTypes is right and decodeAdvices is not null
+        //decodeAdvices is not empty
         when(clientOptions.unmodifiableDecodeAdvices())
-                .thenReturn(new DecodeAdvice[]{
+                .thenReturn(Arrays.asList(
                         context -> {
-                            String result = (String) context.proceed();
+                            String result = (String) context.next();
                             return result + " Test1";
                         },
                         context -> {
-                            String result = (String) context.proceed();
+                            String result = (String) context.next();
                             return result + " Test2";
                         }
-                });
+                ));
         then(restResponse.bodyToEntity(String.class)).isEqualTo("Hello Test2 Test1");
     }
 }

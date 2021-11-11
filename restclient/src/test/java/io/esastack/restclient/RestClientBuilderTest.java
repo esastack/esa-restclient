@@ -24,10 +24,17 @@ import io.esastack.httpclient.core.config.RetryOptions;
 import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
+import io.esastack.restclient.codec.ByteDecoder;
+import io.esastack.restclient.codec.ByteEncoder;
 import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.DecodeAdviceContext;
+import io.esastack.restclient.codec.DecodeContext;
+import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.EncodeAdviceContext;
+import io.esastack.restclient.codec.EncodeContext;
+import io.esastack.restclient.codec.Encoder;
+import io.esastack.restclient.codec.RequestContent;
 import io.esastack.restclient.exec.ClientInterceptor;
 import io.esastack.restclient.exec.InvocationChain;
 import org.junit.jupiter.api.Test;
@@ -158,9 +165,37 @@ class RestClientBuilderTest {
         then(origin.version()).isEqualTo(other.version());
         then(origin.isUseDecompress()).isEqualTo(other.isUseDecompress());
         then(origin.isUseExpectContinue()).isEqualTo(other.isUseExpectContinue());
-        then(origin.unmodifiableDecodeAdvices()[0]).isEqualTo(other.unmodifiableDecodeAdvices()[0]);
-        then(origin.unmodifiableEncodeAdvices()[0]).isEqualTo(other.unmodifiableEncodeAdvices()[0]);
-        then(origin.unmodifiableInterceptors()[0]).isEqualTo(other.unmodifiableInterceptors()[0]);
+        then(origin.unmodifiableDecodeAdvices().get(0)).isEqualTo(other.unmodifiableDecodeAdvices().get(0));
+        then(origin.unmodifiableEncodeAdvices().get(0)).isEqualTo(other.unmodifiableEncodeAdvices().get(0));
+        then(origin.unmodifiableInterceptors().get(0)).isEqualTo(other.unmodifiableInterceptors().get(0));
+    }
+
+    @Test
+    void testAddEncoder() {
+        RestClientBuilder builder = new RestClientBuilder();
+        ByteEncoder encoder1 = createByteEncoder(3);
+        builder.addByteEncoder(encoder1);
+        ByteEncoder encoder2 = createByteEncoder(-1);
+        ByteEncoder encoder3 = createByteEncoder(1);
+        List<ByteEncoder> encoders = Arrays.asList(encoder2, encoder3);
+        builder.addByteEncoders(encoders);
+
+        List<Encoder> orderedEncoders = builder.unmodifiableEncoders();
+        then(orderedEncoders.size()).isEqualTo(3);
+    }
+
+    @Test
+    void testAddDecoder() {
+        RestClientBuilder builder = new RestClientBuilder();
+        ByteDecoder decoder1 = createByteDecoder(3);
+        builder.addByteDecoder(decoder1);
+        ByteDecoder decoder2 = createByteDecoder(-1);
+        ByteDecoder decoder3 = createByteDecoder(1);
+        List<ByteDecoder> decoders = Arrays.asList(decoder2, decoder3);
+        builder.addByteDecoders(decoders);
+
+        List<Decoder> orderedDecoders = builder.unmodifiableDecoders();
+        then(orderedDecoders.size()).isEqualTo(3);
     }
 
     @Test
@@ -173,10 +208,8 @@ class RestClientBuilderTest {
         List<DecodeAdvice> decodeAdvices = Arrays.asList(decodeAdvice2, decodeAdvice3);
         builder.addDecodeAdvices(decodeAdvices);
 
-        DecodeAdvice[] orderedDecodeAdvices = builder.unmodifiableDecodeAdvices();
-        then(orderedDecodeAdvices[0]).isEqualTo(decodeAdvice2);
-        then(orderedDecodeAdvices[1]).isEqualTo(decodeAdvice3);
-        then(orderedDecodeAdvices[2]).isEqualTo(decodeAdvice1);
+        List<DecodeAdvice> orderedDecodeAdvices = builder.unmodifiableDecodeAdvices();
+        then(orderedDecodeAdvices.size()).isEqualTo(3);
     }
 
     @Test
@@ -189,10 +222,8 @@ class RestClientBuilderTest {
         List<EncodeAdvice> encodeAdvices = Arrays.asList(encodeAdvice2, encodeAdvice3);
         builder.addEncodeAdvices(encodeAdvices);
 
-        EncodeAdvice[] orderedEncodeAdvices = builder.unmodifiableEncodeAdvices();
-        then(orderedEncodeAdvices[0]).isEqualTo(encodeAdvice2);
-        then(orderedEncodeAdvices[1]).isEqualTo(encodeAdvice3);
-        then(orderedEncodeAdvices[2]).isEqualTo(encodeAdvice1);
+        List<EncodeAdvice> orderedEncodeAdvices = builder.unmodifiableEncodeAdvices();
+        then(orderedEncodeAdvices.size()).isEqualTo(3);
     }
 
     @Test
@@ -205,10 +236,36 @@ class RestClientBuilderTest {
         List<ClientInterceptor> interceptors = Arrays.asList(interceptor2, interceptor3);
         builder.addInterceptors(interceptors);
 
-        ClientInterceptor[] orderedInterceptors = builder.unmodifiableInterceptors();
-        then(orderedInterceptors[0]).isEqualTo(interceptor2);
-        then(orderedInterceptors[1]).isEqualTo(interceptor3);
-        then(orderedInterceptors[2]).isEqualTo(interceptor1);
+        List<ClientInterceptor> orderedInterceptors = builder.unmodifiableInterceptors();
+        then(orderedInterceptors.size()).isEqualTo(3);
+    }
+
+    private ByteEncoder createByteEncoder(int order) {
+        return new ByteEncoder() {
+            @Override
+            public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) {
+                return null;
+            }
+
+            @Override
+            public int getOrder() {
+                return order;
+            }
+        };
+    }
+
+    private ByteDecoder createByteDecoder(int order) {
+        return new ByteDecoder() {
+            @Override
+            public Object doDecode(DecodeContext<byte[]> decodeContext) {
+                return null;
+            }
+
+            @Override
+            public int getOrder() {
+                return order;
+            }
+        };
     }
 
     private DecodeAdvice createDecodeAdvice(int order) {
@@ -228,7 +285,7 @@ class RestClientBuilderTest {
     private EncodeAdvice createEncodeAdvice(int order) {
         return new EncodeAdvice() {
             @Override
-            public RequestBodyContent<?> aroundEncode(EncodeAdviceContext context) {
+            public RequestContent<?> aroundEncode(EncodeAdviceContext context) {
                 return null;
             }
 

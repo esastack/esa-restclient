@@ -25,7 +25,7 @@ File file = new File("xxxxx");
 final MultipartRequest request = client.post("http://127.0.0.1:9997/file/upload")
         .multipart()
         .file("file", file)
-        .attr("name", "LiMing")
+        .attr("name", "Bob")
         .attr("address", "China");
 
 HttpResponse response = request.execute().get();

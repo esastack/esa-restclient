@@ -17,36 +17,68 @@ package io.esastack.restclient.codec;
 
 import com.alibaba.fastjson.JSON;
 import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.FastJsonCodec;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FastJsonCodecTest {
 
     @Test
     void testEncode() throws Exception {
         FastJsonCodec fastJsonCodec = new FastJsonCodec();
-        then(fastJsonCodec.encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, null).content())
-                .isEqualTo("null".getBytes(StandardCharsets.UTF_8));
+        RestRequestBase request = mock(RestRequestBase.class);
+        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
-        Person person = new Person("LiMing", "boy");
-        then(fastJsonCodec.encode(null, null, person).content())
+        Person person = new Person("Bob", "boy");
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                person,
+                Person.class,
+                Person.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        assertThrows(CodecException.class, () ->
+                fastJsonCodec.encode(encodeContext));
+
+        when(encodeContext.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(fastJsonCodec.encode(encodeContext).value())
                 .isEqualTo(JSON.toJSONBytes(person));
     }
 
     @Test
     void testDecode() throws Exception {
         FastJsonCodec fastJsonCodec = new FastJsonCodec();
-        then((Object) fastJsonCodec.decode(null, null, ResponseBodyContent.of(null), null))
-                .isEqualTo(null);
+        Person person = new Person("Bob", "boy");
 
-        Person person = new Person("LiMing", "boy");
-        byte[] bytes = JSON.toJSONBytes(person);
-        then((Object) fastJsonCodec.decode(null, null, ResponseBodyContent.of(bytes), Person.class))
+        RestResponse response = mock(RestResponse.class);
+        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        DecodeContext decodeContext = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                Person.class,
+                Person.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(JSON.toJSONBytes(person))
+        );
+        assertThrows(CodecException.class, () ->
+                fastJsonCodec.decode(decodeContext));
+
+        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(fastJsonCodec.decode(decodeContext))
                 .isEqualTo(person);
     }
 

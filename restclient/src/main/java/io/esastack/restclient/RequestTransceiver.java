@@ -22,10 +22,7 @@ import java.util.concurrent.CompletionStage;
 
 public final class RequestTransceiver implements InvocationChain {
 
-    private final RestClientOptions clientOptions;
-
-    public RequestTransceiver(RestClientOptions clientOptions) {
-        this.clientOptions = clientOptions;
+    public RequestTransceiver() {
     }
 
     @Override
@@ -39,10 +36,10 @@ public final class RequestTransceiver implements InvocationChain {
         final AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;
 
         return executableRequest.sendRequest()
-                .thenApply((response) -> processResponse(executableRequest, response));
+                .thenApply((response) -> processResponse(executableRequest, response, executableRequest.clientOptions));
     }
 
-    private RestResponse processResponse(RestRequestBase request, HttpResponse response) {
+    private RestResponse processResponse(RestRequestBase request, HttpResponse response, RestClientOptions clientOptions) {
         return new RestResponseBaseImpl(request, response, clientOptions);
     }
 }

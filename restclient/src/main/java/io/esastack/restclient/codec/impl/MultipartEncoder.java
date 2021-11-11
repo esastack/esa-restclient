@@ -27,7 +27,7 @@ public class MultipartEncoder implements Encoder {
     @Override
     public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
         MediaType contentType = encodeContext.contentType();
-        if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
+        if (contentType != null && MediaTypeUtil.MULTIPART_FORM_DATA.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(encodeContext.type())) {
             return RequestContent.of((MultipartBody) encodeContext.entity());
         }

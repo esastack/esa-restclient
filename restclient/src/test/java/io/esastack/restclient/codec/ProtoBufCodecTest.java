@@ -15,26 +15,60 @@
  */
 package io.esastack.restclient.codec;
 
-import io.esastack.restclient.ContentType;
-import io.esastack.restclient.ResponseBodyContent;
+import com.alibaba.fastjson.JSON;
+import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.ProtoBufCodec;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ProtoBufCodecTest {
 
     @Test
-    void testEncode() throws Exception {
+    void testEncode() {
         ProtoBufCodec protoBufCodec = new ProtoBufCodec();
-        then(protoBufCodec.encode(ContentType.PROTOBUF.mediaType(), null, null).content())
-                .isEqualTo(null);
+
+        RestRequestBase request = mock(RestRequestBase.class);
+        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                "aaa",
+                String.class,
+                String.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        assertThrows(CodecException.class, () ->
+                protoBufCodec.encode(encodeContext));
     }
 
     @Test
-    void testDecode() throws Exception {
+    void testDecode() {
         ProtoBufCodec protoBufCodec = new ProtoBufCodec();
-        then((Object) protoBufCodec.decode(null, null, ResponseBodyContent.of(null), null))
-                .isEqualTo(null);
+
+        RestResponse response = mock(RestResponse.class);
+        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        DecodeContext decodeContext = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                String.class,
+                String.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(JSON.toJSONBytes("aaa"))
+        );
+        assertThrows(CodecException.class, () ->
+                protoBufCodec.decode(decodeContext));
     }
 }

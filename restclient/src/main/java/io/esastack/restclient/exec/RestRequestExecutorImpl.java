@@ -28,8 +28,7 @@ public final class RestRequestExecutorImpl implements RestRequestExecutor {
     private final InvocationChain invocationChain;
 
     public RestRequestExecutorImpl(RestClientOptions clientOptions) {
-        this.invocationChain = buildInvokeChain(clientOptions.unmodifiableInterceptors(),
-                clientOptions);
+        this.invocationChain = buildInvokeChain(clientOptions.unmodifiableInterceptors());
     }
 
     @Override
@@ -38,9 +37,8 @@ public final class RestRequestExecutorImpl implements RestRequestExecutor {
                 .thenApply(response -> (RestResponseBase) response);
     }
 
-    private InvocationChain buildInvokeChain(List<ClientInterceptor> orderedInterceptors,
-                                             RestClientOptions clientOptions) {
-        InvocationChain invocationChain = new RequestTransceiver(clientOptions);
+    private InvocationChain buildInvokeChain(List<ClientInterceptor> orderedInterceptors) {
+        InvocationChain invocationChain = new RequestTransceiver();
         int size = orderedInterceptors.size();
         if (size == 0) {
             return invocationChain;

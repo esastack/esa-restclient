@@ -15,22 +15,43 @@
  */
 package io.esastack.restclient.codec;
 
+import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.MultipartEncoder;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MultipartToMultipartEncoderTest {
 
     @Test
-    void testEncode() {
+    void testEncode() throws Exception {
         MultipartEncoder encoder = new MultipartEncoder();
-        then(encoder.encode(null, null, null).content())
-                .isEqualTo(null);
+        RestRequestBase request = mock(RestRequestBase.class);
+        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
         MultipartBody multipartBody = new MultipartBodyImpl();
-        then(encoder.encode(null, null, multipartBody).content())
-                .isEqualTo(multipartBody);
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                multipartBody,
+                MultipartBody.class,
+                MultipartBody.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        assertThrows(CodecException.class, () -> encoder.encode(encodeContext));
+
+        when(request.contentType()).thenReturn(MediaTypeUtil.MULTIPART_FORM_DATA);
+        then(((MultipartBody) encoder.encode(encodeContext).value()).multipartEncode()).isTrue();
     }
 
 }

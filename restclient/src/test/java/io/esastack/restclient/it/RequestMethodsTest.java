@@ -15,13 +15,12 @@
  */
 package io.esastack.restclient.it;
 
-import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.restclient.ContentType;
-import io.esastack.restclient.RequestBodyContent;
 import io.esastack.restclient.RestClient;
 import io.esastack.restclient.RestClientBuilder;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.codec.impl.JacksonCodec;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Cookie;
@@ -107,19 +106,13 @@ class RequestMethodsTest {
         mockServer.when(
                 request().withMethod(method)
                         .withPath(path)
-                        .withBody((byte[]) (
-                                ContentType.APPLICATION_JSON_UTF8.encoder()
-                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, body)
-                                        .content()))
+                        .withBody(JacksonCodec.getDefaultMapper().writeValueAsBytes(body))
                         .withCookies(EXPECTED_REQUEST_COOKIES)
         ).respond(
                 response().withStatusCode(200)
                         .withCookies(EXPECTED_RESPONSE_COOKIES)
                         .withContentType(MediaType.APPLICATION_JSON_UTF_8)
-                        .withBody(
-                                (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
-                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, body)
-                                        .content()))
+                        .withBody(JacksonCodec.getDefaultMapper().writeValueAsBytes(body))
         );
     }
 
@@ -133,10 +126,7 @@ class RequestMethodsTest {
                 response().withStatusCode(200)
                         .withCookies(EXPECTED_RESPONSE_COOKIES)
                         .withContentType(MediaType.APPLICATION_JSON_UTF_8)
-                        .withBody(
-                                (byte[]) (ContentType.APPLICATION_JSON_UTF8.encoder()
-                                        .encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, body)
-                                        .content()))
+                        .withBody(JacksonCodec.getDefaultMapper().writeValueAsBytes(body))
         );
     }
 
@@ -166,7 +156,7 @@ class RequestMethodsTest {
 
     private void addAssertRequestBodyAdvice(RestClientBuilder builder) {
         builder.addEncodeAdvice(encodeContext -> {
-            RequestBodyContent<?> content = encodeContext.proceed();
+            RequestContent<?> content = encodeContext.next();
             then(encodeContext.entity()).isEqualTo(body);
             return content;
         });
@@ -174,7 +164,7 @@ class RequestMethodsTest {
 
     private void addAssertResponseBodyAdvice(RestClientBuilder builder) {
         builder.addDecodeAdvice(decodeContext -> {
-            Person body = (Person) decodeContext.proceed();
+            Person body = (Person) decodeContext.next();
             then(body).isEqualTo(body);
             return body;
         });

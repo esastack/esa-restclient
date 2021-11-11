@@ -20,15 +20,18 @@ import io.esastack.restclient.RequestMockUtil;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestCompositeRequest;
 import io.esastack.restclient.RestResponse;
-import io.esastack.restclient.codec.EncodeAdvice;
+import io.esastack.restclient.codec.impl.ByteToByteCodec;
+import io.esastack.restclient.codec.impl.FileEncoder;
+import io.esastack.restclient.codec.impl.MultipartEncoder;
+import io.esastack.restclient.codec.impl.StringCodec;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,11 +40,9 @@ class RestRequestExecutorTest {
     @Test
     void testExecute() throws ExecutionException, InterruptedException {
         RestClientOptions clientOptions = mock(RestClientOptions.class);
-        assertThrows(NullPointerException.class, () ->
-                new RestRequestExecutorImpl(clientOptions));
 
         AtomicInteger passInterceptorNum = new AtomicInteger();
-        when(clientOptions.unmodifiableInterceptors()).thenReturn(new ClientInterceptor[]{
+        when(clientOptions.unmodifiableInterceptors()).thenReturn(Arrays.asList(
                 (request, next) -> {
                     passInterceptorNum.addAndGet(1);
                     return next.proceed(request);
@@ -49,26 +50,32 @@ class RestRequestExecutorTest {
                 (request, next) -> {
                     passInterceptorNum.addAndGet(1);
                     return next.proceed(request);
-                }
-        });
+                })
+        );
 
         AtomicInteger passEncodeAdviceNum = new AtomicInteger();
-        when(clientOptions.unmodifiableEncodeAdvices()).thenReturn(new EncodeAdvice[]{
+        when(clientOptions.unmodifiableEncodeAdvices()).thenReturn(Arrays.asList(
                 context -> {
                     passEncodeAdviceNum.addAndGet(1);
-                    return context.proceed();
+                    return context.next();
                 },
                 context -> {
                     passEncodeAdviceNum.addAndGet(1);
-                    return context.proceed();
-                }
-        });
+                    return context.next();
+                })
+        );
         RestRequestExecutor requestExecutor = new RestRequestExecutorImpl(clientOptions);
 
         //entity is byte[]
         RestCompositeRequest request = RequestMockUtil.mockRequest(
-                clientOptions, requestExecutor, "Hi".getBytes(),
-                "Hi", "bbb", "bbb");
+                clientOptions,
+                requestExecutor,
+                new ByteToByteCodec(),
+                new StringCodec(),
+                "Hi".getBytes(),
+                "Hi",
+                "bbb",
+                "bbb");
         RestResponse response = request.execute().toCompletableFuture().get();
         then(response.cookies("bbb").get(0).value()).isEqualTo("bbb");
         then(passInterceptorNum.get()).isEqualTo(2);
@@ -76,8 +83,14 @@ class RestRequestExecutorTest {
 
         //entity is file
         request = RequestMockUtil.mockRequest(
-                clientOptions, requestExecutor, new File("Test"),
-                "Hi", "bbb", "bbb");
+                clientOptions,
+                requestExecutor,
+                new FileEncoder(),
+                new StringCodec(),
+                new File("Test"),
+                "Hi",
+                "bbb",
+                "bbb");
         response = request.execute().toCompletableFuture().get();
         then(response.cookies("bbb").get(0).value()).isEqualTo("bbb");
         then(passInterceptorNum.get()).isEqualTo(4);
@@ -85,8 +98,14 @@ class RestRequestExecutorTest {
 
         //entity is multipartBody
         request = RequestMockUtil.mockRequest(
-                clientOptions, requestExecutor, new MultipartBodyImpl(),
-                "Hi", "bbb", "bbb");
+                clientOptions,
+                requestExecutor,
+                new MultipartEncoder(),
+                new StringCodec(),
+                new MultipartBodyImpl(),
+                "Hi",
+                "bbb",
+                "bbb");
         response = request.execute().toCompletableFuture().get();
         then(response.cookies("bbb").get(0).value()).isEqualTo("bbb");
         then(passInterceptorNum.get()).isEqualTo(6);

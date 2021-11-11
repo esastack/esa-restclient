@@ -15,36 +15,77 @@
  */
 package io.esastack.restclient.codec;
 
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.codec.impl.ByteToByteCodec;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 class ByteToByteCodecTest {
 
     @Test
     void testEncode() throws Exception {
         ByteToByteCodec byteCodec = new ByteToByteCodec();
-        then(byteCodec.encode(null, null, null).content()).isEqualTo(null);
+        byte[] bytes = "hello".getBytes();
+        EncodeContext encodeContext = new EncodeChainImpl(
+                mock(RestRequestBase.class),
+                bytes,
+                byte[].class,
+                byte[].class,
+                mock(List.class),
+                mock(List.class)
+        );
+        then(byteCodec.encode(encodeContext).value()).isEqualTo(bytes);
 
-        assertThrows(ClassCastException.class, () ->
-                byteCodec.encode(null, null, "Hello"));
+        EncodeContext encodeContext1 = new EncodeChainImpl(
+                mock(RestRequestBase.class),
+                "content",
+                String.class,
+                String.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        assertThrows(CodecException.class, () ->
+                byteCodec.encode(encodeContext1));
 
-        byte[] bytes = "Hello".getBytes();
-        then(byteCodec.encode(null, null, bytes).content()).isEqualTo(bytes);
     }
 
     @Test
     void testDecode() throws Exception {
         ByteToByteCodec byteCodec = new ByteToByteCodec();
-        then((Object) byteCodec.decode(null, null, ResponseBodyContent.of(null), byte[].class))
-                .isEqualTo(null);
-
-        byte[] bytes = "Hello".getBytes();
-        then((Object) byteCodec.decode(null, null, ResponseBodyContent.of(bytes), byte[].class))
+        byte[] bytes = "hello".getBytes();
+        DecodeContext decodeContext = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                mock(RestResponse.class),
+                mock(RestClientOptions.class),
+                byte[].class,
+                byte[].class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(bytes)
+        );
+        then(byteCodec.decode(decodeContext))
                 .isEqualTo(bytes);
+
+        DecodeContext decodeContext1 = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                mock(RestResponse.class),
+                mock(RestClientOptions.class),
+                String.class,
+                String.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(bytes)
+        );
+
+        assertThrows(CodecException.class, () ->
+                byteCodec.decode(decodeContext1));
     }
 
 }

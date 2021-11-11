@@ -16,13 +16,23 @@
 package io.esastack.restclient.codec;
 
 import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.StringCodec;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class StringCodecTest {
 
@@ -30,33 +40,87 @@ class StringCodecTest {
     void testEncode() throws Exception {
 
         StringCodec codec = new StringCodec();
-        then(codec.encode(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16),
-                null, null).content()).isEqualTo(null);
 
-        String content = "content";
-        byte[] bytes = content.getBytes(StandardCharsets.UTF_16);
-        then(codec.encode(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16),
-                null, content).content()).isEqualTo(bytes);
+        RestRequestBase request = mock(RestRequestBase.class);
+        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
+        String data = "data";
 
-        bytes = content.getBytes(StandardCharsets.UTF_8);
-        then(codec.encode(MediaTypeUtil.of("text", "plain"),
-                null, content).content()).isEqualTo(bytes);
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                data,
+                Person.class,
+                Person.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        assertThrows(CodecException.class, () ->
+                codec.encode(encodeContext));
 
+        EncodeContext encodeContext1 = new EncodeChainImpl(
+                request,
+                data,
+                String.class,
+                String.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        then(codec.encode(encodeContext1).value())
+                .isEqualTo(data.getBytes(StandardCharsets.UTF_8));
+
+        EncodeContext encodeContext2 = new EncodeChainImpl(
+                request,
+                data,
+                String.class,
+                String.class,
+                mock(List.class),
+                mock(List.class)
+        );
+        when(request.contentType()).thenReturn(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16));
+        then(codec.encode(encodeContext2).value())
+                .isEqualTo(data.getBytes(StandardCharsets.UTF_16));
     }
 
     @Test
     void testDecode() throws Exception {
         StringCodec codec = new StringCodec();
-        then((String) codec.decode(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16),
-                null, ResponseBodyContent.of(null), String.class)).isEqualTo(null);
 
-        String content = "content";
-        byte[] bytes = content.getBytes(StandardCharsets.UTF_16);
-        then((String) codec.decode(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16),
-                null, ResponseBodyContent.of(bytes), String.class)).isEqualTo(content);
+        String data = "data";
 
-        bytes = content.getBytes(StandardCharsets.UTF_8);
-        then((String) codec.decode(MediaTypeUtil.of("text", "plain"),
-                null, ResponseBodyContent.of(bytes), String.class)).isEqualTo(content);
+        RestResponse response = mock(RestResponse.class);
+        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        DecodeContext decodeContext = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                Person.class,
+                Person.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(data.getBytes())
+        );
+        assertThrows(CodecException.class, () -> codec.decode(decodeContext));
+
+        DecodeContext decodeContext1 = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                String.class,
+                String.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(data.getBytes(StandardCharsets.UTF_8))
+        );
+        when(response.contentType()).thenReturn(
+                MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_8));
+        then(codec.decode(decodeContext1)).isEqualTo(data);
+
+        DecodeContext decodeContext2 = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                String.class,
+                String.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(data.getBytes(StandardCharsets.UTF_16))
+        );
+        when(response.contentType()).thenReturn(
+                MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16));
+        then(codec.decode(decodeContext2)).isEqualTo(data);
     }
 }

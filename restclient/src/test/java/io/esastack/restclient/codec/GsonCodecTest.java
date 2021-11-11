@@ -18,13 +18,23 @@ package io.esastack.restclient.codec;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.restclient.ResponseBodyContent;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.RestRequestBase;
+import io.esastack.restclient.RestResponse;
+import io.esastack.restclient.codec.impl.DecodeChainImpl;
+import io.esastack.restclient.codec.impl.EncodeChainImpl;
 import io.esastack.restclient.codec.impl.GsonCodec;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GsonCodecTest {
 
@@ -33,32 +43,66 @@ class GsonCodecTest {
     @Test
     void testEncode() throws Exception {
         GsonCodec gsonCodec = new GsonCodec();
-        then(gsonCodec.encode(MediaTypeUtil.APPLICATION_JSON_UTF8, null, null).content())
-                .isEqualTo("null".getBytes(StandardCharsets.UTF_8));
+        RestRequestBase request = mock(RestRequestBase.class);
+        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
-        Person person = new Person("LiMing", "boy");
-        then(gsonCodec.encode(null, null, person).content())
+        Person person = new Person("Bob", "boy");
+        EncodeContext encodeContext = new EncodeChainImpl(
+                request,
+                person,
+                Person.class,
+                Person.class,
+                mock(List.class),
+                mock(List.class)
+        );
+
+        assertThrows(CodecException.class, () ->
+                gsonCodec.encode(encodeContext));
+
+        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(gsonCodec.encode(encodeContext).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_8));
 
-        then(gsonCodec.encode(MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16),
-                null, person).content())
+        when(request.contentType()).thenReturn(MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16));
+        then(gsonCodec.encode(encodeContext).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_16));
     }
 
     @Test
     void testDecode() throws Exception {
         GsonCodec gsonCodec = new GsonCodec();
-        then((Object) gsonCodec.decode(null, null, ResponseBodyContent.of(null), null))
-                .isEqualTo(null);
+        Person person = new Person("Bob", "boy");
 
-        Person person = new Person("LiMing", "boy");
-        byte[] bytes = gson.toJson(person).getBytes(StandardCharsets.UTF_8);
-        then((Object) gsonCodec.decode(null, null, ResponseBodyContent.of(bytes), Person.class))
+        RestResponse response = mock(RestResponse.class);
+        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        DecodeContext decodeContext = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                Person.class,
+                Person.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(gson.toJson(person).getBytes(StandardCharsets.UTF_8))
+        );
+
+        assertThrows(CodecException.class, () ->
+                gsonCodec.decode(decodeContext));
+
+        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(gsonCodec.decode(decodeContext))
                 .isEqualTo(person);
 
-        bytes = gson.toJson(person).getBytes(StandardCharsets.UTF_16);
-        then((Object) gsonCodec.decode(MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16),
-                null, ResponseBodyContent.of(bytes), Person.class))
-                .isEqualTo(person);
+        DecodeContext decodeContext1 = new DecodeChainImpl(
+                mock(RestRequestBase.class),
+                response,
+                mock(RestClientOptions.class),
+                Person.class,
+                Person.class,
+                ByteBufAllocator.DEFAULT.buffer().writeBytes(
+                        gson.toJson(person).getBytes(StandardCharsets.UTF_16))
+        );
+        when(response.contentType()).thenReturn(
+                MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16));
+
+        then(gsonCodec.decode(decodeContext1)).isEqualTo(person);
     }
 }

@@ -30,7 +30,9 @@ public class FormURLEncodedEncoder implements Encoder {
         Class<?> type = encodeContext.type();
         if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(type)) {
-            return RequestContent.of((MultipartBody) encodeContext.entity());
+            MultipartBody formBody = (MultipartBody) encodeContext.entity();
+            formBody.multipartEncode(false);
+            return RequestContent.of(formBody);
         }
 
         return encodeContext.next();

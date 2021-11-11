@@ -27,6 +27,8 @@ import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.MultipartBody;
+import io.esastack.restclient.codec.Decoder;
+import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.RestRequestExecutor;
 
 import java.io.File;
@@ -45,11 +47,17 @@ public class RequestMockUtil {
     public static RestCompositeRequest mockRequest(
             RestClientOptions clientOptions,
             RestRequestExecutor requestExecutor,
+            Encoder encoder,
+            Decoder decoder,
             Object requestContent,
-            String responseContent, String responseCookieName, String responseCookieValue) {
+            String responseContent,
+            String responseCookieName,
+            String responseCookieValue) {
         CompositeRequest request = mock(CompositeRequest.class);
         when(request.headers()).thenReturn(new Http1HeadersImpl());
         RestCompositeRequest restRequest = new RestCompositeRequest(request, clientOptions, requestExecutor);
+        restRequest.encoder(encoder);
+        restRequest.decoder(decoder);
         if (requestContent instanceof byte[]) {
             restRequest.entity((byte[]) requestContent);
         } else if (requestContent instanceof File) {

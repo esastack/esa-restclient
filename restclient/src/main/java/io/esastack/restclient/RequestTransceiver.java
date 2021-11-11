@@ -39,7 +39,9 @@ public final class RequestTransceiver implements InvocationChain {
                 .thenApply((response) -> processResponse(executableRequest, response, executableRequest.clientOptions));
     }
 
-    private RestResponse processResponse(RestRequestBase request, HttpResponse response, RestClientOptions clientOptions) {
+    private RestResponse processResponse(RestRequestBase request,
+                                         HttpResponse response,
+                                         RestClientOptions clientOptions) {
         return new RestResponseBaseImpl(request, response, clientOptions);
     }
 }

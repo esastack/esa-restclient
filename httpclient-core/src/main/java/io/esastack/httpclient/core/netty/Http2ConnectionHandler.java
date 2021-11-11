@@ -113,13 +113,14 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             final Runnable runnable = () -> writeData0(streamId,
                     data,
                     endStream,
-                    promise).addListener(future -> {
-                if (future.isSuccess()) {
-                    promise0.setSuccess();
-                } else {
-                    promise0.setFailure(future.cause());
-                }
-            });
+                    promise)
+                    .addListener(future -> {
+                        if (future.isSuccess()) {
+                            promise0.setSuccess();
+                        } else {
+                            promise0.setFailure(future.cause());
+                        }
+                    });
 
             ctx.channel().eventLoop().execute(runnable);
             return promise0;
@@ -168,13 +169,14 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
             final Runnable runnable = () -> writeHeaders0(streamId,
                     headers,
                     endStream,
-                    promise).addListener(future -> {
-                if (future.isSuccess()) {
-                    promise0.setSuccess();
-                } else {
-                    promise0.setFailure(future.cause());
-                }
-            });
+                    promise)
+                    .addListener(future -> {
+                        if (future.isSuccess()) {
+                            promise0.setSuccess();
+                        } else {
+                            promise0.setFailure(future.cause());
+                        }
+                    });
 
             ctx.channel().eventLoop().execute(runnable);
             return promise0;
@@ -187,14 +189,14 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
         final Runnable runnable = () -> encoder().writeGoAway(ctx, Integer.MAX_VALUE - 1,
                 NO_ERROR.code(),
                 writeAscii(ctx.alloc(),
-                        "Stream IDs exhausted on local stream creation"),
-                promise).addListener(future -> {
-            if (future.isSuccess()) {
-                promise0.setSuccess();
-            } else {
-                promise0.setFailure(future.cause());
-            }
-        });
+                        "Stream IDs exhausted on local stream creation"), promise)
+                .addListener(future -> {
+                    if (future.isSuccess()) {
+                        promise0.setSuccess();
+                    } else {
+                        promise0.setFailure(future.cause());
+                    }
+                });
 
         if (inEventLoop()) {
             runnable.run();

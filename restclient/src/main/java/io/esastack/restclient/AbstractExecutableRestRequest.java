@@ -46,8 +46,8 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     protected final CompositeRequest target;
     protected final RestClientOptions clientOptions;
     protected final RestRequestExecutor requestExecutor;
-    private Encoder encoder = null;
-    private Decoder decoder = null;
+    private Encoder encoder;
+    private Decoder decoder;
 
     protected AbstractExecutableRestRequest(CompositeRequest request,
                                             RestClientOptions clientOptions,

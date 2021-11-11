@@ -196,7 +196,8 @@ class HttpTransceiverImpl implements HttpTransceiver {
             version = io.esastack.commons.net.http.HttpVersion.HTTP_2;
         } else {
             version = (io.esastack.commons.net.http.HttpVersion.HTTP_1_0 == builder.version()
-                    ? io.esastack.commons.net.http.HttpVersion.HTTP_1_0 : io.esastack.commons.net.http.HttpVersion.HTTP_1_1);
+                    ? io.esastack.commons.net.http.HttpVersion.HTTP_1_0 :
+                    io.esastack.commons.net.http.HttpVersion.HTTP_1_1);
         }
 
         if (!channel.isActive()) {

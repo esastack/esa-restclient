@@ -25,12 +25,13 @@ import io.esastack.httpclient.core.util.Ordered;
 public interface Decoder extends Ordered {
 
     /**
-     * Decode the {@code decodeContext.content()} to object.If this decoder can decode the {@code decodeContext.content()},
-     * it will directly decode and return object.Otherwise, it will call {@code decodeContext.next()} to hand over the
-     * decoding work to the next decoder.
+     * Decode the {@code decodeContext.content()} to object.If this decoder can decode the
+     * {@code decodeContext.content()},it will directly decode and return object.Otherwise,
+     * it will call {@code decodeContext.next()} to hand over the decoding work to the next
+     * decoder.
      *
      * @param decodeContext which is to save variables required during decoding
-     * @return object
+     * @return decoded object
      * @throws Exception error
      */
     Object decode(DecodeContext<?> decodeContext) throws Exception;

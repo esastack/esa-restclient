@@ -55,7 +55,7 @@ public class JacksonCodec implements JsonCodec {
 
     @Override
     public Object decodeFromJson(DecodeContext<byte[]> decodeContext) throws IOException {
-        return objectMapper.readValue(decodeContext.content().value(), getJavaType(decodeContext.genericType()));
+        return objectMapper.readValue(decodeContext.content().value(), getJavaType(decodeContext.targetGenericType()));
     }
 
     public static synchronized ObjectMapper getDefaultMapper() {

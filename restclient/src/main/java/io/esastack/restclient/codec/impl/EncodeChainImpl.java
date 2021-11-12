@@ -93,12 +93,12 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
     }
 
     @Override
-    public Class<?> type() {
+    public Class<?> entityType() {
         return type;
     }
 
     @Override
-    public Type genericType() {
+    public Type entityGenericType() {
         return genericType;
     }
 

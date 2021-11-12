@@ -62,7 +62,7 @@ public class ProtoBufCodec implements ByteCodec {
     @Override
     public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
         if (PROTO_BUF.isCompatibleWith(encodeContext.contentType()) &&
-                Message.class.isAssignableFrom(encodeContext.type())) {
+                Message.class.isAssignableFrom(encodeContext.entityType())) {
             Message message = (Message) encodeContext.entity();
             Descriptors.Descriptor descriptor = message.getDescriptorForType();
             if (descriptor != null) {
@@ -80,7 +80,7 @@ public class ProtoBufCodec implements ByteCodec {
 
     @Override
     public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        Class<?> type = decodeContext.type();
+        Class<?> type = decodeContext.targetType();
         if (PROTO_BUF.isCompatibleWith(decodeContext.contentType())
                 && Message.class.isAssignableFrom(type)) {
             Message.Builder builder = getMessageBuilder(type);

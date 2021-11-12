@@ -25,7 +25,7 @@ public class ByteToByteCodec implements ByteCodec {
 
     @Override
     public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
-        Class<?> type = encodeContext.type();
+        Class<?> type = encodeContext.entityType();
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
             return RequestContent.of((byte[]) encodeContext.entity());
         }
@@ -35,7 +35,7 @@ public class ByteToByteCodec implements ByteCodec {
 
     @Override
     public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        Class<?> type = decodeContext.type();
+        Class<?> type = decodeContext.targetType();
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
             return decodeContext.content().value();
         }

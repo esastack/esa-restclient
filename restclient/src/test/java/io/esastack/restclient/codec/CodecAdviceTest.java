@@ -56,19 +56,19 @@ public class CodecAdviceTest {
                 Collections.singletonList(
                         context -> {
                             then(context.entity()).isEqualTo(person);
-                            then(context.type()).isEqualTo(Person.class);
-                            then(context.genericType()).isEqualTo(Person.class);
+                            then(context.entityType()).isEqualTo(Person.class);
+                            then(context.entityGenericType()).isEqualTo(Person.class);
 
                             context.entity(data);
                             then(context.entity()).isEqualTo(data);
-                            then(context.type()).isEqualTo(String.class);
-                            then(context.genericType()).isEqualTo(String.class);
+                            then(context.entityType()).isEqualTo(String.class);
+                            then(context.entityGenericType()).isEqualTo(String.class);
 
                             context.entity(stringList, new TypeReference<List<String>>() {
                             }.getType());
                             then(context.entity()).isEqualTo(stringList);
-                            then(context.type()).isEqualTo(ArrayList.class);
-                            then(context.genericType()).isEqualTo(new TypeReference<List<String>>() {
+                            then(context.entityType()).isEqualTo(ArrayList.class);
+                            then(context.entityGenericType()).isEqualTo(new TypeReference<List<String>>() {
                             }.getType());
                             return context.next();
                         }

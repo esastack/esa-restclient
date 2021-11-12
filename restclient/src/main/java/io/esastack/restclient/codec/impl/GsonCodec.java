@@ -66,10 +66,11 @@ public class GsonCodec implements JsonCodec {
 
         if (charset == null) {
             return gson.fromJson(
-                    new String(decodeContext.content().value(), StandardCharsets.UTF_8), decodeContext.genericType());
+                    new String(decodeContext.content().value(), StandardCharsets.UTF_8),
+                    decodeContext.targetGenericType());
         } else {
             return gson.fromJson(
-                    new String(decodeContext.content().value(), charset), decodeContext.genericType());
+                    new String(decodeContext.content().value(), charset), decodeContext.targetGenericType());
         }
     }
 }

@@ -29,7 +29,7 @@ public class StringCodec implements ByteCodec {
 
     @Override
     public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
-        if (String.class.isAssignableFrom(encodeContext.type())) {
+        if (String.class.isAssignableFrom(encodeContext.entityType())) {
             MediaType contentType = encodeContext.contentType();
             Charset charset = null;
             if (contentType != null) {
@@ -46,7 +46,7 @@ public class StringCodec implements ByteCodec {
 
     @Override
     public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        if (String.class.isAssignableFrom(decodeContext.type())) {
+        if (String.class.isAssignableFrom(decodeContext.targetType())) {
             MediaType contentType = decodeContext.contentType();
             Charset charset = null;
             if (contentType != null) {

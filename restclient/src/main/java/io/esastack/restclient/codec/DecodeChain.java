@@ -34,12 +34,12 @@ public interface DecodeChain {
     /**
      * @return The type of target
      */
-    Class<?> type();
+    Class<?> targetType();
 
     /**
      * @return The genericType of target
      */
-    Type genericType();
+    Type targetGenericType();
 
     /**
      * Proceed to the next member in the chain.

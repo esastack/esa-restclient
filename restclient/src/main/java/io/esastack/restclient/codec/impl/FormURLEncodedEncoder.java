@@ -27,7 +27,7 @@ public class FormURLEncodedEncoder implements Encoder {
     @Override
     public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
         MediaType contentType = encodeContext.contentType();
-        Class<?> type = encodeContext.type();
+        Class<?> type = encodeContext.entityType();
         if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(type)) {
             MultipartBody formBody = (MultipartBody) encodeContext.entity();

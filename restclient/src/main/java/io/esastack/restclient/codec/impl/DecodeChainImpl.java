@@ -110,12 +110,12 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
     }
 
     @Override
-    public Class<?> type() {
+    public Class<?> targetType() {
         return type;
     }
 
     @Override
-    public Type genericType() {
+    public Type targetGenericType() {
         return genericType;
     }
 

@@ -26,7 +26,7 @@ public class FileEncoder implements Encoder {
     @Override
     public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
 
-        if (File.class.isAssignableFrom(encodeContext.type())) {
+        if (File.class.isAssignableFrom(encodeContext.entityType())) {
             return RequestContent.of((File) encodeContext.entity());
         }
         return encodeContext.next();

@@ -15,5 +15,11 @@
  */
 package io.esastack.restclient.codec;
 
+import io.esastack.restclient.utils.Constants;
+
 public interface ByteCodec extends ByteEncoder, ByteDecoder {
+    @Override
+    default int getOrder() {
+        return Constants.ORDER.NORMAL;
+    }
 }

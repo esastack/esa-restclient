@@ -235,9 +235,10 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         Checks.checkNotNull(entity, "entity");
         Checks.checkNotNull(genericType, "genericType");
         checkEntityHadSet();
-        GenericTypeUtil.checkTypeCompatibility(type, genericType);
+        Class<?> typeTem = entity.getClass();
+        GenericTypeUtil.checkTypeCompatibility(typeTem, genericType);
         setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        fillEntity(entity, genericType);
+        fillEntity(entity, typeTem, genericType);
         return self();
     }
 
@@ -300,9 +301,9 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         this.genericType = this.type;
     }
 
-    private void fillEntity(Object entity, Type genericType) {
+    private void fillEntity(Object entity, Class<?> type, Type genericType) {
         this.entity = entity;
-        this.type = entity.getClass();
+        this.type = type;
         this.genericType = genericType;
     }
 

@@ -15,16 +15,19 @@
  */
 package io.esastack.restclient;
 
+import com.alibaba.fastjson.TypeReference;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.commons.net.netty.http.CookieImpl;
 import io.esastack.httpclient.core.MultipartBody;
+import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -237,6 +240,54 @@ class RestCompositeRequestTest {
         );
 
         assertThrows(NullPointerException.class, () -> finalRequest3.contentType(null));
+    }
+
+    @Test
+    void testEntity() {
+        RestRequestFacade request = RestClient.ofDefault().post("aaa");
+        List<String> stringList = new ArrayList<>();
+        request.entity(stringList, new TypeReference<List<String>>() {
+        }.getType());
+        then(request.entity()).isEqualTo(stringList);
+        then(request.type()).isEqualTo(ArrayList.class);
+        then(request.genericType()).isEqualTo(new TypeReference<List<String>>() {
+        }.getType());
+        final RestRequestFacade finalRequest1 = request;
+        assertThrows(IllegalStateException.class, () ->
+                finalRequest1.entity(new Object())
+        );
+
+        final RestRequestFacade finalRequest2 = RestClient.ofDefault().post("aaaa");
+        assertThrows(IllegalArgumentException.class, () ->
+                finalRequest2.entity(stringList, new TypeReference<Map<String, String>>() {
+                }.getType())
+        );
+
+        request = RestClient.ofDefault().post("aaaa");
+        request.entity(stringList);
+        then(request.entity()).isEqualTo(stringList);
+        then(request.type()).isEqualTo(ArrayList.class);
+        then(request.genericType()).isEqualTo(ArrayList.class);
+
+        request = RestClient.ofDefault().post("aaaa");
+        String data = "data";
+        request.entity(data);
+        then(request.entity()).isEqualTo(data);
+        then(request.type()).isEqualTo(String.class);
+        then(request.genericType()).isEqualTo(String.class);
+
+        request = RestClient.ofDefault().post("aaaa");
+        File dataFile = new File("data");
+        request.entity(dataFile);
+        then(request.entity()).isEqualTo(dataFile);
+        then(request.type()).isEqualTo(File.class);
+        then(request.genericType()).isEqualTo(File.class);
+
+        request = RestClient.ofDefault().post("aaaa");
+        request.multipart();
+        then(request.entity()).isInstanceOf(MultipartBody.class);
+        then(request.type()).isEqualTo(MultipartBodyImpl.class);
+        then(request.genericType()).isEqualTo(MultipartBodyImpl.class);
     }
 
     @Test

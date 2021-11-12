@@ -114,10 +114,11 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
     public void entity(Object entity, Type genericType) {
         Checks.checkNotNull(entity, "entity");
         Checks.checkNotNull(genericType, "genericType");
+        Class<?> typeTem = entity.getClass();
+        GenericTypeUtil.checkTypeCompatibility(typeTem, genericType);
         this.entity = entity;
-        this.type = entity.getClass();
-        GenericTypeUtil.checkTypeCompatibility(type, genericType);
-        this.genericType = type;
+        this.type = typeTem;
+        this.genericType = genericType;
     }
 
     @Override

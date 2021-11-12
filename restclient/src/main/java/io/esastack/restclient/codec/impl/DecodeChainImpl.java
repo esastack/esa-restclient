@@ -105,6 +105,7 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
 
     @Override
     public void content(ResponseContent<?> responseContent) {
+        Checks.checkNotNull(responseContent, "responseContent");
         this.responseContent = responseContent;
     }
 

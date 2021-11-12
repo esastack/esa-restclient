@@ -59,7 +59,7 @@ class GsonCodecTest {
         assertThrows(CodecException.class, () ->
                 gsonCodec.encode(encodeContext));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
         then(gsonCodec.encode(encodeContext).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_8));
 
@@ -87,7 +87,7 @@ class GsonCodecTest {
         assertThrows(CodecException.class, () ->
                 gsonCodec.decode(decodeContext));
 
-        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
         then(gsonCodec.decode(decodeContext))
                 .isEqualTo(person);
 

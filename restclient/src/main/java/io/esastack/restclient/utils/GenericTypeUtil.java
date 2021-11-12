@@ -19,7 +19,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class GenericTypeUtil {
+public final class GenericTypeUtil {
 
     private GenericTypeUtil() {
     }

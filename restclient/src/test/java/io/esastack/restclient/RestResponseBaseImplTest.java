@@ -115,27 +115,18 @@ class RestResponseBaseImplTest {
         HttpHeaders headers = new Http1HeadersImpl();
 
         when(response.headers()).thenReturn(headers);
-        then(restResponse.cookiesMap().size()).isEqualTo(0);
+        then(restResponse.cookies().size()).isEqualTo(0);
         then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(0);
 
         headers.add(HttpHeaderNames.SET_COOKIE, "aaa=aaa1");
-        headers.add(HttpHeaderNames.SET_COOKIE, "aaa=aaa2");
         headers.add(HttpHeaderNames.SET_COOKIE, "bbb=bbb1");
-        headers.add(HttpHeaderNames.SET_COOKIE, "bbb=bbb2");
         headers.add(HttpHeaderNames.SET_COOKIE, "ccc=ccc1");
-        headers.add(HttpHeaderNames.SET_COOKIE, "ccc=ccc2");
 
         //test get cookies
-        then(restResponse.cookies("aaa").size()).isEqualTo(2);
-        then(restResponse.cookies("aaa").get(0).value()).isEqualTo("aaa1");
-        then(restResponse.cookies("aaa").get(1).value()).isEqualTo("aaa2");
-        then(restResponse.cookies("bbb").size()).isEqualTo(2);
-        then(restResponse.cookies("bbb").get(0).value()).isEqualTo("bbb1");
-        then(restResponse.cookies("bbb").get(1).value()).isEqualTo("bbb2");
-        then(restResponse.cookies("ccc").size()).isEqualTo(2);
-        then(restResponse.cookies("ccc").get(0).value()).isEqualTo("ccc1");
-        then(restResponse.cookies("ccc").get(1).value()).isEqualTo("ccc2");
-        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(6);
+        then(restResponse.cookie("aaa").value()).isEqualTo("aaa1");
+        then(restResponse.cookie("bbb").value()).isEqualTo("bbb1");
+        then(restResponse.cookie("ccc").value()).isEqualTo("ccc1");
+        then(restResponse.headers().getAll(HttpHeaderNames.SET_COOKIE).size()).isEqualTo(3);
     }
 
     @Test

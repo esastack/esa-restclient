@@ -50,9 +50,9 @@ public class RequestTransceiverTest {
         then(response.status()).isEqualTo(200);
         then(response.headers().get(HttpHeaderNames.CONTENT_TYPE))
                 .isEqualTo(MediaTypeUtil.TEXT_PLAIN.toString());
-        then(response.cookiesMap().size())
+        then(response.cookies().size())
                 .isEqualTo(1);
-        then(response.cookies("aaa").get(0).value())
+        then(response.cookies().iterator().next().value())
                 .isEqualTo("aaa");
     }
 }

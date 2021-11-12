@@ -33,8 +33,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class RestResponseBaseImpl implements RestResponseBase {
 
@@ -93,13 +92,13 @@ public class RestResponseBaseImpl implements RestResponseBase {
     }
 
     @Override
-    public List<Cookie> cookies(String name) {
-        return CookiesUtil.getCookies(name, headers(), true);
+    public Cookie cookie(String name) {
+        return CookiesUtil.getCookie(name, headers(), true);
     }
 
     @Override
-    public Map<String, List<Cookie>> cookiesMap() {
-        return CookiesUtil.getCookiesMap(headers(), true);
+    public Set<Cookie> cookies() {
+        return CookiesUtil.getCookieSet(headers(), true);
     }
 
     @Override

@@ -180,14 +180,14 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public RestCompositeRequest cookie(String name, String value) {
-        super.cookie(name, value);
+    public RestCompositeRequest addCookie(String name, String value) {
+        super.addCookie(name, value);
         return self();
     }
 
     @Override
-    public RestCompositeRequest cookie(Cookie... cookies) {
-        super.cookie(cookies);
+    public RestCompositeRequest addCookie(Cookie... cookies) {
+        super.addCookie(cookies);
         return self();
     }
 

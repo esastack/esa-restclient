@@ -49,10 +49,10 @@ public interface ExecutableRestRequest extends RestRequestBase {
     ExecutableRestRequest addParam(String name, String value);
 
     @Override
-    ExecutableRestRequest cookie(String name, String value);
+    ExecutableRestRequest addCookie(String name, String value);
 
     @Override
-    ExecutableRestRequest cookie(Cookie... cookies);
+    ExecutableRestRequest addCookie(Cookie... cookies);
 
     @Override
     ExecutableRestRequest contentType(MediaType contentType);

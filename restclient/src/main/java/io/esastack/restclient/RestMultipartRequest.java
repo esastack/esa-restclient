@@ -89,10 +89,10 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
     RestMultipartRequest addParam(String name, String value);
 
     @Override
-    RestMultipartRequest cookie(String name, String value);
+    RestMultipartRequest addCookie(String name, String value);
 
     @Override
-    RestMultipartRequest cookie(Cookie... cookies);
+    RestMultipartRequest addCookie(Cookie... cookies);
 
     @Override
     RestMultipartRequest contentType(MediaType contentType);

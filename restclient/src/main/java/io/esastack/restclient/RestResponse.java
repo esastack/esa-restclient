@@ -19,14 +19,13 @@ import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.Response;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public interface RestResponse extends Response {
 
-    List<Cookie> cookies(String name);
+    Cookie cookie(String name);
 
-    Map<String, List<Cookie>> cookiesMap();
+    Set<Cookie> cookies();
 
     /**
      * @return contentType of response

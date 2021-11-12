@@ -75,10 +75,10 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     RestRequestBase removeHeader(CharSequence name);
 
     @Override
-    RestRequestBase cookie(String name, String value);
+    RestRequestBase addCookie(String name, String value);
 
     @Override
-    RestRequestBase cookie(Cookie... cookies);
+    RestRequestBase addCookie(Cookie... cookies);
 
     @Override
     RestRequestBase contentType(MediaType contentType);

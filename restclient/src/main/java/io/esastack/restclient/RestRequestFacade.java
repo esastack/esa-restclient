@@ -38,7 +38,7 @@ public interface RestRequestFacade extends ExecutableRestRequest {
      * Fills the request's entity with given entity.And you can deliver generic
      * information through genericType.
      *
-     * @param entity entity
+     * @param entity      entity
      * @param genericType genericType
      * @return ExecutableRestRequest
      */
@@ -83,10 +83,10 @@ public interface RestRequestFacade extends ExecutableRestRequest {
     RestRequestFacade addParam(String name, String value);
 
     @Override
-    RestRequestFacade cookie(String name, String value);
+    RestRequestFacade addCookie(String name, String value);
 
     @Override
-    RestRequestFacade cookie(Cookie... cookies);
+    RestRequestFacade addCookie(Cookie... cookies);
 
     @Override
     RestRequestFacade contentType(MediaType contentType);

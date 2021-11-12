@@ -15,6 +15,7 @@
  */
 package io.esastack.restclient.utils;
 
+import esa.commons.Checks;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
@@ -22,21 +23,21 @@ import io.esastack.commons.net.netty.http.CookieImpl;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-public class CookiesUtil {
+public final class CookiesUtil {
 
     private CookiesUtil() {
     }
 
-    private static void cookie(Cookie cookie, HttpHeaders headers, boolean isResponse) {
+    private static void addCookie(Cookie cookie, HttpHeaders headers, boolean isResponse) {
         if (cookie == null) {
             return;
         }
+
         if (isResponse) {
             headers.add(HttpHeaderNames.SET_COOKIE, cookie.encode(true));
         } else {
@@ -44,62 +45,35 @@ public class CookiesUtil {
         }
     }
 
-    public static void cookie(String name, String value, HttpHeaders headers, boolean isResponse) {
-        cookie(new CookieImpl(name, value), headers, isResponse);
+    public static void addCookie(String name, String value, HttpHeaders headers, boolean isResponse) {
+        Checks.checkNotNull(name, "name");
+        Checks.checkNotNull(value, "value");
+        Checks.checkNotNull(headers, "headers");
+        addCookie(new CookieImpl(name, value), headers, isResponse);
     }
 
-    public static void cookie(HttpHeaders headers, boolean isResponse, Cookie... cookies) {
+    public static void addCookies(HttpHeaders headers, boolean isResponse, Cookie... cookies) {
         if (cookies == null || cookies.length == 0) {
             return;
         }
-
+        Checks.checkNotNull(headers, "headers");
         for (Cookie cookie : cookies) {
-            cookie(cookie, headers, isResponse);
+            addCookie(cookie, headers, isResponse);
         }
     }
 
-    public static List<Cookie> getCookies(String name, HttpHeaders headers, boolean isResponse) {
-        List<Cookie> cookies = getCookiesMap(headers, isResponse).get(name);
-        return cookies == null ? Collections.emptyList() : Collections.unmodifiableList(cookies);
-    }
-
-    public static Map<String, List<Cookie>> getCookiesMap(HttpHeaders headers, boolean isResponse) {
-        return Collections.unmodifiableMap(getModifiableCookiesMap(headers, isResponse));
-    }
-
-    public static List<Cookie> removeCookies(String name, HttpHeaders headers, boolean isResponse) {
-        if (name == null) {
-            return Collections.emptyList();
-        }
-        Map<String, List<Cookie>> cookiesMap = getModifiableCookiesMap(headers, isResponse);
-        List<Cookie> cookiesWithName = cookiesMap.remove(name);
-        List<Cookie> allCookies = new ArrayList<>();
-        cookiesMap.values().forEach(allCookies::addAll);
-        coverAllCookies(allCookies, headers, isResponse);
-        return cookiesWithName == null ? Collections.emptyList() : Collections.unmodifiableList(cookiesWithName);
-    }
-
-    private static void coverAllCookies(List<Cookie> cookies, HttpHeaders headers, boolean isResponse) {
-        if (isResponse) {
-            headers.remove(HttpHeaderNames.SET_COOKIE);
-            if (cookies == null) {
-                return;
-            }
-            for (Cookie cookie : cookies) {
-                cookie(cookie, headers, true);
-            }
-        } else {
-            headers.remove(HttpHeaderNames.COOKIE);
-            if (cookies == null) {
-                return;
-            }
-            for (Cookie cookie : cookies) {
-                cookie(cookie, headers, false);
+    public static Cookie getCookie(String name, HttpHeaders headers, boolean isResponse) {
+        Checks.checkNotNull(name, "name");
+        for (Cookie cookie : getCookieSet(headers, isResponse)) {
+            if (name.equals(cookie.name())) {
+                return cookie;
             }
         }
+        return null;
     }
 
-    private static Map<String, List<Cookie>> getModifiableCookiesMap(HttpHeaders headers, boolean isResponse) {
+    public static Set<Cookie> getCookieSet(HttpHeaders headers, boolean isResponse) {
+        Checks.checkNotNull(headers, "headers");
         List<String> cookieHeaders;
         if (isResponse) {
             cookieHeaders = headers.getAll(HttpHeaderNames.SET_COOKIE);
@@ -107,30 +81,29 @@ public class CookiesUtil {
             cookieHeaders = headers.getAll(HttpHeaderNames.COOKIE);
         }
         if (cookieHeaders == null || cookieHeaders.size() == 0) {
-            return Collections.emptyMap();
+            return Collections.emptySet();
         }
-        Map<String, List<Cookie>> cookiesMap = new HashMap<>();
+        Set<Cookie> cookieSet = new HashSet<>();
         for (String cookieHeader : cookieHeaders) {
-            decodeAndFillToMap(cookieHeader, cookiesMap, isResponse);
+            decodeAndFillToSet(cookieHeader, cookieSet, isResponse);
         }
-        return cookiesMap;
+        return cookieSet;
     }
 
-    private static void decodeAndFillToMap(String cookieHeader,
-                                           Map<String, List<Cookie>> cookiesMap, boolean isResponse) {
+    private static void decodeAndFillToSet(String cookieHeader,
+                                           Set<Cookie> cookieSet, boolean isResponse) {
         if (isResponse) {
             ServerCookieDecoder.STRICT.decodeAll(cookieHeader)
-                    .forEach(cookie -> fillCookieToMap(new CookieImpl(cookie), cookiesMap));
+                    .forEach(cookie -> fillCookieToSet(new CookieImpl(cookie), cookieSet));
         } else {
             String[] cookieStrings = cookieHeader.split(";");
             for (String cookieString : cookieStrings) {
-                fillCookieToMap(new CookieImpl(ClientCookieDecoder.STRICT.decode(cookieString)), cookiesMap);
+                fillCookieToSet(new CookieImpl(ClientCookieDecoder.STRICT.decode(cookieString)), cookieSet);
             }
         }
     }
 
-    private static void fillCookieToMap(Cookie cookie, Map<String, List<Cookie>> cookiesMap) {
-        List<Cookie> cookies = cookiesMap.computeIfAbsent(cookie.name(), (name) -> new ArrayList<>());
-        cookies.add(cookie);
+    private static void fillCookieToSet(Cookie cookie, Set<Cookie> cookieSet) {
+        cookieSet.add(cookie);
     }
 }

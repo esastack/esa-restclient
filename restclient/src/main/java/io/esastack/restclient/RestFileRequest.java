@@ -34,10 +34,10 @@ public interface RestFileRequest extends ExecutableRestRequest {
     RestFileRequest addParam(String name, String value);
 
     @Override
-    RestFileRequest cookie(String name, String value);
+    RestFileRequest addCookie(String name, String value);
 
     @Override
-    RestFileRequest cookie(Cookie... cookies);
+    RestFileRequest addCookie(Cookie... cookies);
 
     @Override
     RestFileRequest contentType(MediaType contentType);

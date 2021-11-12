@@ -19,8 +19,8 @@ import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.Request;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface RestRequest extends Request {
 
@@ -42,19 +42,17 @@ public interface RestRequest extends Request {
     @Override
     RestRequest removeHeader(CharSequence name);
 
-    RestRequest cookie(String name, String value);
+    RestRequest addCookie(String name, String value);
 
-    RestRequest cookie(Cookie... cookies);
+    RestRequest addCookie(Cookie... cookies);
 
     RestRequest contentType(MediaType contentType);
 
     RestRequest accept(MediaType... acceptTypes);
 
-    List<Cookie> removeCookies(String name);
+    Cookie cookie(String name);
 
-    List<Cookie> cookies(String name);
-
-    Map<String, List<Cookie>> cookiesMap();
+    Set<Cookie> cookies();
 
     MediaType contentType();
 }

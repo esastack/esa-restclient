@@ -77,7 +77,7 @@ class RestRequestExecutorTest {
                 "bbb",
                 "bbb");
         RestResponse response = request.execute().toCompletableFuture().get();
-        then(response.cookies("bbb").get(0).value()).isEqualTo("bbb");
+        then(response.cookie("bbb").value()).isEqualTo("bbb");
         then(passInterceptorNum.get()).isEqualTo(2);
         then(passEncodeAdviceNum.get()).isEqualTo(2);
 
@@ -92,7 +92,7 @@ class RestRequestExecutorTest {
                 "bbb",
                 "bbb");
         response = request.execute().toCompletableFuture().get();
-        then(response.cookies("bbb").get(0).value()).isEqualTo("bbb");
+        then(response.cookie("bbb").value()).isEqualTo("bbb");
         then(passInterceptorNum.get()).isEqualTo(4);
         then(passEncodeAdviceNum.get()).isEqualTo(4);
 
@@ -107,7 +107,7 @@ class RestRequestExecutorTest {
                 "bbb",
                 "bbb");
         response = request.execute().toCompletableFuture().get();
-        then(response.cookies("bbb").get(0).value()).isEqualTo("bbb");
+        then(response.cookie("bbb").value()).isEqualTo("bbb");
         then(passInterceptorNum.get()).isEqualTo(6);
         then(passEncodeAdviceNum.get()).isEqualTo(6);
     }

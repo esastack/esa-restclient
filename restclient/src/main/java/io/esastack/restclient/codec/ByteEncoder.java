@@ -19,9 +19,9 @@ public interface ByteEncoder extends Encoder {
 
     @SuppressWarnings("unchecked")
     @Override
-    default RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
-        return doEncode((EncodeContext<byte[]>) encodeContext);
+    default RequestContent<?> encode(EncodeContext<?> ctx) throws Exception {
+        return doEncode((EncodeContext<byte[]>) ctx);
     }
 
-    RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception;
+    RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) throws Exception;
 }

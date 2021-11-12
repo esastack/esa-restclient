@@ -23,29 +23,29 @@ public interface JsonCodec extends ByteCodec {
     String DEFAULT_DATE_FORMAT = DateUtils.yyyyMMddHHmmss;
 
     @Override
-    default RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
-        MediaType contentType = encodeContext.contentType();
+    default RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) throws Exception {
+        MediaType contentType = ctx.contentType();
         if (contentType != null && MediaTypeUtil.APPLICATION_JSON.isCompatibleWith(contentType)) {
-            return encodeToJson(encodeContext);
+            return encodeToJson(ctx);
         }
 
-        return encodeContext.next();
+        return ctx.next();
     }
 
-    RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) throws Exception;
+    RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> ctx) throws Exception;
 
     @Override
-    default Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        MediaType contentType = decodeContext.contentType();
+    default Object doDecode(DecodeContext<byte[]> ctx) throws Exception {
+        MediaType contentType = ctx.contentType();
         if (contentType != null && MediaTypeUtil.APPLICATION_JSON.isCompatibleWith(contentType)) {
-            byte[] content = decodeContext.content().value();
+            byte[] content = ctx.content().value();
             if (content == null) {
                 return null;
             }
-            return decodeFromJson(decodeContext);
+            return decodeFromJson(ctx);
         }
-        return decodeContext.next();
+        return ctx.next();
     }
 
-    Object decodeFromJson(DecodeContext<byte[]> decodeContext) throws Exception;
+    Object decodeFromJson(DecodeContext<byte[]> ctx) throws Exception;
 }

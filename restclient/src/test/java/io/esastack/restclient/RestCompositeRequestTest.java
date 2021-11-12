@@ -278,7 +278,7 @@ class RestCompositeRequestTest {
 
     @Test
     void testSetDecoder() {
-        Encoder encoder = encodeContext -> null;
+        Encoder encoder = ctx -> null;
         RestRequestFacade request = RestClient.ofDefault()
                 .post("http://localhost:8080/test")
                 .readTimeout(9000)
@@ -290,7 +290,7 @@ class RestCompositeRequestTest {
 
     @Test
     void testSetEncoder() {
-        Decoder decoder = decodeContext -> null;
+        Decoder decoder = ctx -> null;
         RestRequestFacade request = RestClient.ofDefault()
                 .post("http://localhost:8080/test")
                 .readTimeout(9000)

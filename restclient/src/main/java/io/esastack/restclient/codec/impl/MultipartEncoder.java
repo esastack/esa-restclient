@@ -25,13 +25,13 @@ import io.esastack.restclient.codec.RequestContent;
 public class MultipartEncoder implements Encoder {
 
     @Override
-    public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
-        MediaType contentType = encodeContext.contentType();
+    public RequestContent<?> encode(EncodeContext<?> ctx) throws Exception {
+        MediaType contentType = ctx.contentType();
         if (contentType != null && MediaTypeUtil.MULTIPART_FORM_DATA.isCompatibleWith(contentType)
-                && MultipartBody.class.isAssignableFrom(encodeContext.entityType())) {
-            return RequestContent.of((MultipartBody) encodeContext.entity());
+                && MultipartBody.class.isAssignableFrom(ctx.entityType())) {
+            return RequestContent.of((MultipartBody) ctx.entity());
         }
 
-        return encodeContext.next();
+        return ctx.next();
     }
 }

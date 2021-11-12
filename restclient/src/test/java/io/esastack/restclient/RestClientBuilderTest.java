@@ -243,7 +243,7 @@ class RestClientBuilderTest {
     private ByteEncoder createByteEncoder(int order) {
         return new ByteEncoder() {
             @Override
-            public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) {
+            public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) {
                 return null;
             }
 
@@ -257,7 +257,7 @@ class RestClientBuilderTest {
     private ByteDecoder createByteDecoder(int order) {
         return new ByteDecoder() {
             @Override
-            public Object doDecode(DecodeContext<byte[]> decodeContext) {
+            public Object doDecode(DecodeContext<byte[]> ctx) {
                 return null;
             }
 

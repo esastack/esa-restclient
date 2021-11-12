@@ -25,16 +25,16 @@ import io.esastack.restclient.codec.RequestContent;
 public class FormURLEncodedEncoder implements Encoder {
 
     @Override
-    public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
-        MediaType contentType = encodeContext.contentType();
-        Class<?> type = encodeContext.entityType();
+    public RequestContent<?> encode(EncodeContext<?> ctx) throws Exception {
+        MediaType contentType = ctx.contentType();
+        Class<?> type = ctx.entityType();
         if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(type)) {
-            MultipartBody formBody = (MultipartBody) encodeContext.entity();
+            MultipartBody formBody = (MultipartBody) ctx.entity();
             formBody.multipartEncode(false);
             return RequestContent.of(formBody);
         }
 
-        return encodeContext.next();
+        return ctx.next();
     }
 }

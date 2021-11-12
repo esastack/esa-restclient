@@ -25,13 +25,13 @@ import io.esastack.httpclient.core.util.Ordered;
 public interface Encoder extends Ordered {
 
     /**
-     * Encode the {@code encodeContext.entity()} to {@link RequestContent}.If this encoder can encode
+     * Encode the {@code ctx.entity()} to {@link RequestContent}.If this encoder can encode
      * the entity,it will directly encode and return {@link RequestContent}. Otherwise, it will call
-     * {@code encodeContext.next()} to hand over the encoding work to the next encoder.
+     * {@code ctx.next()} to hand over the encoding work to the next encoder.
      *
-     * @param encodeContext which is to save variables required during encoding
+     * @param ctx which is to save variables required during encoding
      * @return encoded requestContent
      * @throws Exception error
      */
-    RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception;
+    RequestContent<?> encode(EncodeContext<?> ctx) throws Exception;
 }

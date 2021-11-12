@@ -36,7 +36,7 @@ class FileToFileEncoderTest {
         RestRequestBase request = mock(RestRequestBase.class);
 
         File file = new File("test");
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 file,
                 String.class,
@@ -45,9 +45,9 @@ class FileToFileEncoderTest {
                 mock(List.class)
         );
         assertThrows(CodecException.class, () ->
-                fileEncoder.encode(encodeContext));
+                fileEncoder.encode(ctx));
 
-        EncodeContext encodeContext1 = new EncodeChainImpl(
+        EncodeContext ctx1 = new EncodeChainImpl(
                 request,
                 file,
                 File.class,
@@ -55,7 +55,7 @@ class FileToFileEncoderTest {
                 mock(List.class),
                 mock(List.class)
         );
-        then(fileEncoder.encode(encodeContext1).value())
+        then(fileEncoder.encode(ctx1).value())
                 .isEqualTo(file);
     }
 

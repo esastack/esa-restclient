@@ -24,11 +24,11 @@ import java.io.File;
 public class FileEncoder implements Encoder {
 
     @Override
-    public RequestContent<?> encode(EncodeContext<?> encodeContext) throws Exception {
+    public RequestContent<?> encode(EncodeContext<?> ctx) throws Exception {
 
-        if (File.class.isAssignableFrom(encodeContext.entityType())) {
-            return RequestContent.of((File) encodeContext.entity());
+        if (File.class.isAssignableFrom(ctx.entityType())) {
+            return RequestContent.of((File) ctx.entity());
         }
-        return encodeContext.next();
+        return ctx.next();
     }
 }

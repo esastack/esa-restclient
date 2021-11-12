@@ -32,11 +32,11 @@ public interface DecodeAdvice extends Ordered {
      * next <code>DecodeAdvice</code> in the chain, and ultimately the wrapped
      * {@link Decoder#decode}. method.
      *
-     * @param context decode invocation context
+     * @param ctx decode invocation context
      * @return decoded object
      * @throws Exception error
      * @see Decoder
      * @see DecodeAdviceContext
      */
-    Object aroundDecode(DecodeAdviceContext context) throws Exception;
+    Object aroundDecode(DecodeAdviceContext ctx) throws Exception;
 }

@@ -32,11 +32,11 @@ public interface EncodeAdvice extends Ordered {
      * next <code>EncodeAdvice</code> in the chain, and ultimately the wrapped {@link
      * Encoder#encode} method.
      *
-     * @param context encode invocation context
+     * @param ctx encode invocation context
      * @return encoded requestContent
      * @throws Exception error
      * @see Encoder
      * @see EncodeAdviceContext
      */
-    RequestContent<?> aroundEncode(EncodeAdviceContext context) throws Exception;
+    RequestContent<?> aroundEncode(EncodeAdviceContext ctx) throws Exception;
 }

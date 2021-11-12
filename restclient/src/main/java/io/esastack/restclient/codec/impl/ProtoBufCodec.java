@@ -60,13 +60,13 @@ public class ProtoBufCodec implements ByteCodec {
     }
 
     @Override
-    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
-        if (PROTO_BUF.isCompatibleWith(encodeContext.contentType()) &&
-                Message.class.isAssignableFrom(encodeContext.entityType())) {
-            Message message = (Message) encodeContext.entity();
+    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) throws Exception {
+        if (PROTO_BUF.isCompatibleWith(ctx.contentType()) &&
+                Message.class.isAssignableFrom(ctx.entityType())) {
+            Message message = (Message) ctx.entity();
             Descriptors.Descriptor descriptor = message.getDescriptorForType();
             if (descriptor != null) {
-                HttpHeaders headers = encodeContext.headers();
+                HttpHeaders headers = ctx.headers();
                 headers.set(X_PROTOBUF_MESSAGE_HEADER, message.getDescriptorForType().getFullName());
                 Descriptors.FileDescriptor fileDescriptor = message.getDescriptorForType().getFile();
                 if (fileDescriptor != null) {
@@ -75,20 +75,20 @@ public class ProtoBufCodec implements ByteCodec {
             }
             return RequestContent.of(message.toByteArray());
         }
-        return encodeContext.next();
+        return ctx.next();
     }
 
     @Override
-    public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        Class<?> type = decodeContext.targetType();
-        if (PROTO_BUF.isCompatibleWith(decodeContext.contentType())
+    public Object doDecode(DecodeContext<byte[]> ctx) throws Exception {
+        Class<?> type = ctx.targetType();
+        if (PROTO_BUF.isCompatibleWith(ctx.contentType())
                 && Message.class.isAssignableFrom(type)) {
             Message.Builder builder = getMessageBuilder(type);
-            builder.mergeFrom(decodeContext.content().value(), extensionRegistry);
+            builder.mergeFrom(ctx.content().value(), extensionRegistry);
             return builder.build();
         }
 
-        return decodeContext.next();
+        return ctx.next();
     }
 
     private Message.Builder getMessageBuilder(Class<?> clazz) throws Exception {

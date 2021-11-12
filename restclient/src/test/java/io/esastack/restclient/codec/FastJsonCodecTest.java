@@ -43,7 +43,7 @@ public class FastJsonCodecTest {
         when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 person,
                 Person.class,
@@ -52,10 +52,10 @@ public class FastJsonCodecTest {
                 mock(List.class)
         );
         assertThrows(CodecException.class, () ->
-                fastJsonCodec.encode(encodeContext));
+                fastJsonCodec.encode(ctx));
 
-        when(encodeContext.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        then(fastJsonCodec.encode(encodeContext).value())
+        when(ctx.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(fastJsonCodec.encode(ctx).value())
                 .isEqualTo(JSON.toJSONBytes(person));
     }
 
@@ -66,7 +66,7 @@ public class FastJsonCodecTest {
 
         RestResponse response = mock(RestResponse.class);
         when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
-        DecodeContext decodeContext = new DecodeChainImpl(
+        DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
                 mock(RestClientOptions.class),
@@ -75,10 +75,10 @@ public class FastJsonCodecTest {
                 ByteBufAllocator.DEFAULT.buffer().writeBytes(JSON.toJSONBytes(person))
         );
         assertThrows(CodecException.class, () ->
-                fastJsonCodec.decode(decodeContext));
+                fastJsonCodec.decode(ctx));
 
         when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        then(fastJsonCodec.decode(decodeContext))
+        then(fastJsonCodec.decode(ctx))
                 .isEqualTo(person);
     }
 

@@ -47,7 +47,7 @@ class GsonCodecTest {
         when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 person,
                 Person.class,
@@ -57,14 +57,14 @@ class GsonCodecTest {
         );
 
         assertThrows(CodecException.class, () ->
-                gsonCodec.encode(encodeContext));
+                gsonCodec.encode(ctx));
 
         when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
-        then(gsonCodec.encode(encodeContext).value())
+        then(gsonCodec.encode(ctx).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_8));
 
         when(request.contentType()).thenReturn(MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16));
-        then(gsonCodec.encode(encodeContext).value())
+        then(gsonCodec.encode(ctx).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_16));
     }
 
@@ -75,7 +75,7 @@ class GsonCodecTest {
 
         RestResponse response = mock(RestResponse.class);
         when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
-        DecodeContext decodeContext = new DecodeChainImpl(
+        DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
                 mock(RestClientOptions.class),
@@ -85,13 +85,13 @@ class GsonCodecTest {
         );
 
         assertThrows(CodecException.class, () ->
-                gsonCodec.decode(decodeContext));
+                gsonCodec.decode(ctx));
 
         when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
-        then(gsonCodec.decode(decodeContext))
+        then(gsonCodec.decode(ctx))
                 .isEqualTo(person);
 
-        DecodeContext decodeContext1 = new DecodeChainImpl(
+        DecodeContext ctx1 = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
                 mock(RestClientOptions.class),
@@ -103,6 +103,6 @@ class GsonCodecTest {
         when(response.contentType()).thenReturn(
                 MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16));
 
-        then(gsonCodec.decode(decodeContext1)).isEqualTo(person);
+        then(gsonCodec.decode(ctx1)).isEqualTo(person);
     }
 }

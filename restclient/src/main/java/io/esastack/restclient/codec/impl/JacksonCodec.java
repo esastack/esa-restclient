@@ -49,13 +49,13 @@ public class JacksonCodec implements JsonCodec {
     }
 
     @Override
-    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) throws JsonProcessingException {
-        return RequestContent.of(objectMapper.writeValueAsBytes(encodeContext.entity()));
+    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> ctx) throws JsonProcessingException {
+        return RequestContent.of(objectMapper.writeValueAsBytes(ctx.entity()));
     }
 
     @Override
-    public Object decodeFromJson(DecodeContext<byte[]> decodeContext) throws IOException {
-        return objectMapper.readValue(decodeContext.content().value(), getJavaType(decodeContext.targetGenericType()));
+    public Object decodeFromJson(DecodeContext<byte[]> ctx) throws IOException {
+        return objectMapper.readValue(ctx.content().value(), getJavaType(ctx.targetGenericType()));
     }
 
     public static synchronized ObjectMapper getDefaultMapper() {

@@ -40,7 +40,7 @@ class MultipartToMultipartEncoderTest {
         when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
         MultipartBody multipartBody = new MultipartBodyImpl();
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 multipartBody,
                 MultipartBody.class,
@@ -48,10 +48,10 @@ class MultipartToMultipartEncoderTest {
                 mock(List.class),
                 mock(List.class)
         );
-        assertThrows(CodecException.class, () -> encoder.encode(encodeContext));
+        assertThrows(CodecException.class, () -> encoder.encode(ctx));
 
         when(request.contentType()).thenReturn(MediaTypeUtil.MULTIPART_FORM_DATA);
-        then(((MultipartBody) encoder.encode(encodeContext).value()).multipartEncode()).isTrue();
+        then(((MultipartBody) encoder.encode(ctx).value()).multipartEncode()).isTrue();
     }
 
 }

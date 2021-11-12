@@ -24,23 +24,23 @@ import io.esastack.restclient.codec.RequestContent;
 public class ByteToByteCodec implements ByteCodec {
 
     @Override
-    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
-        Class<?> type = encodeContext.entityType();
+    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) throws Exception {
+        Class<?> type = ctx.entityType();
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
-            return RequestContent.of((byte[]) encodeContext.entity());
+            return RequestContent.of((byte[]) ctx.entity());
         }
 
-        return encodeContext.next();
+        return ctx.next();
     }
 
     @Override
-    public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        Class<?> type = decodeContext.targetType();
+    public Object doDecode(DecodeContext<byte[]> ctx) throws Exception {
+        Class<?> type = ctx.targetType();
         if (type.isArray() && type.getComponentType().equals(byte.class)) {
-            return decodeContext.content().value();
+            return ctx.content().value();
         }
 
-        return decodeContext.next();
+        return ctx.next();
     }
 
     @Override

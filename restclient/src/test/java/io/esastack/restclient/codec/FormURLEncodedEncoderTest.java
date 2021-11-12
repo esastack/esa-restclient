@@ -40,7 +40,7 @@ class FormURLEncodedEncoderTest {
         when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
         MultipartBody multipartBody = new MultipartBodyImpl();
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 multipartBody,
                 MultipartBody.class,
@@ -49,10 +49,10 @@ class FormURLEncodedEncoderTest {
                 mock(List.class)
         );
         assertThrows(CodecException.class, () ->
-                encoder.encode(encodeContext));
+                encoder.encode(ctx));
 
         when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
-        then(((MultipartBody) encoder.encode(encodeContext).value()).multipartEncode()).isFalse();
+        then(((MultipartBody) encoder.encode(ctx).value()).multipartEncode()).isFalse();
     }
 
 }

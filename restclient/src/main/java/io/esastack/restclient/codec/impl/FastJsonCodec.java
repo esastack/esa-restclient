@@ -31,12 +31,12 @@ public class FastJsonCodec implements JsonCodec {
     }
 
     @Override
-    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) {
-        return RequestContent.of(JSON.toJSONBytes(encodeContext.entity()));
+    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> ctx) {
+        return RequestContent.of(JSON.toJSONBytes(ctx.entity()));
     }
 
     @Override
-    public Object decodeFromJson(DecodeContext<byte[]> decodeContext) {
-        return JSON.parseObject(decodeContext.content().value(), decodeContext.targetGenericType());
+    public Object decodeFromJson(DecodeContext<byte[]> ctx) {
+        return JSON.parseObject(ctx.content().value(), ctx.targetGenericType());
     }
 }

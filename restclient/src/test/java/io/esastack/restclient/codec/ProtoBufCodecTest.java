@@ -42,7 +42,7 @@ class ProtoBufCodecTest {
         RestRequestBase request = mock(RestRequestBase.class);
         when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 "aaa",
                 String.class,
@@ -51,7 +51,7 @@ class ProtoBufCodecTest {
                 mock(List.class)
         );
         assertThrows(CodecException.class, () ->
-                protoBufCodec.encode(encodeContext));
+                protoBufCodec.encode(ctx));
     }
 
     @Test
@@ -60,7 +60,7 @@ class ProtoBufCodecTest {
 
         RestResponse response = mock(RestResponse.class);
         when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
-        DecodeContext decodeContext = new DecodeChainImpl(
+        DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
                 mock(RestClientOptions.class),
@@ -69,6 +69,6 @@ class ProtoBufCodecTest {
                 ByteBufAllocator.DEFAULT.buffer().writeBytes(JSON.toJSONBytes("aaa"))
         );
         assertThrows(CodecException.class, () ->
-                protoBufCodec.decode(decodeContext));
+                protoBufCodec.decode(ctx));
     }
 }

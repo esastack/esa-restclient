@@ -43,22 +43,22 @@ public class GsonCodec implements JsonCodec {
     }
 
     @Override
-    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> encodeContext) {
-        MediaType contentType = encodeContext.contentType();
+    public RequestContent<byte[]> encodeToJson(EncodeContext<byte[]> ctx) {
+        MediaType contentType = ctx.contentType();
         Charset charset = null;
         if (contentType != null) {
             charset = contentType.charset();
         }
         if (charset == null) {
-            return RequestContent.of(gson.toJson(encodeContext.entity()).getBytes(StandardCharsets.UTF_8));
+            return RequestContent.of(gson.toJson(ctx.entity()).getBytes(StandardCharsets.UTF_8));
         } else {
-            return RequestContent.of(gson.toJson(encodeContext.entity()).getBytes(charset));
+            return RequestContent.of(gson.toJson(ctx.entity()).getBytes(charset));
         }
     }
 
     @Override
-    public Object decodeFromJson(DecodeContext<byte[]> decodeContext) {
-        MediaType contentType = decodeContext.contentType();
+    public Object decodeFromJson(DecodeContext<byte[]> ctx) {
+        MediaType contentType = ctx.contentType();
         Charset charset = null;
         if (contentType != null) {
             charset = contentType.charset();
@@ -66,11 +66,11 @@ public class GsonCodec implements JsonCodec {
 
         if (charset == null) {
             return gson.fromJson(
-                    new String(decodeContext.content().value(), StandardCharsets.UTF_8),
-                    decodeContext.targetGenericType());
+                    new String(ctx.content().value(), StandardCharsets.UTF_8),
+                    ctx.targetGenericType());
         } else {
             return gson.fromJson(
-                    new String(decodeContext.content().value(), charset), decodeContext.targetGenericType());
+                    new String(ctx.content().value(), charset), ctx.targetGenericType());
         }
     }
 }

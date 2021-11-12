@@ -155,16 +155,16 @@ class RequestMethodsTest {
     }
 
     private void addAssertRequestBodyAdvice(RestClientBuilder builder) {
-        builder.addEncodeAdvice(encodeContext -> {
-            RequestContent<?> content = encodeContext.next();
-            then(encodeContext.entity()).isEqualTo(body);
+        builder.addEncodeAdvice(ctx -> {
+            RequestContent<?> content = ctx.next();
+            then(ctx.entity()).isEqualTo(body);
             return content;
         });
     }
 
     private void addAssertResponseBodyAdvice(RestClientBuilder builder) {
-        builder.addDecodeAdvice(decodeContext -> {
-            Person body = (Person) decodeContext.next();
+        builder.addDecodeAdvice(ctx -> {
+            Person body = (Person) ctx.next();
             then(body).isEqualTo(body);
             return body;
         });

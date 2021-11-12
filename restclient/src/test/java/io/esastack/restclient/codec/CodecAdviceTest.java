@@ -48,7 +48,7 @@ public class CodecAdviceTest {
         Person person = new Person("Bob", "boy");
         String data = "data";
         List<String> stringList = new ArrayList<>();
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 person,
                 Person.class,
@@ -77,11 +77,11 @@ public class CodecAdviceTest {
         );
 
         assertThrows(CodecException.class, () ->
-                jacksonCodec.encode(encodeContext));
+                jacksonCodec.encode(ctx));
 
         when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
 
-        then(jacksonCodec.encode(encodeContext).value())
+        then(jacksonCodec.encode(ctx).value())
                 .isEqualTo(JacksonCodec.getDefaultMapper().writeValueAsBytes(stringList));
 
     }
@@ -107,7 +107,7 @@ public class CodecAdviceTest {
                 )
         );
 
-        DecodeContext decodeContext = new DecodeChainImpl(
+        DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
                 clientOptions,
@@ -117,10 +117,10 @@ public class CodecAdviceTest {
         );
 
         assertThrows(CodecException.class, () ->
-                jacksonCodec.decode(decodeContext));
+                jacksonCodec.decode(ctx));
 
         when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        then(jacksonCodec.decode(decodeContext)).isEqualTo(person1);
+        then(jacksonCodec.decode(ctx)).isEqualTo(person1);
 
 
     }

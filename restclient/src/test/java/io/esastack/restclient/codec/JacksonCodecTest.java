@@ -42,7 +42,7 @@ public class JacksonCodecTest {
         when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 request,
                 person,
                 Person.class,
@@ -52,11 +52,11 @@ public class JacksonCodecTest {
         );
 
         assertThrows(CodecException.class, () ->
-                jacksonCodec.encode(encodeContext));
+                jacksonCodec.encode(ctx));
 
         when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
 
-        then(jacksonCodec.encode(encodeContext).value())
+        then(jacksonCodec.encode(ctx).value())
                 .isEqualTo(JacksonCodec.getDefaultMapper().writeValueAsBytes(person));
     }
 
@@ -67,7 +67,7 @@ public class JacksonCodecTest {
 
         RestResponse response = mock(RestResponse.class);
         when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
-        DecodeContext decodeContext = new DecodeChainImpl(
+        DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
                 mock(RestClientOptions.class),
@@ -77,9 +77,9 @@ public class JacksonCodecTest {
         );
 
         assertThrows(CodecException.class, () ->
-                jacksonCodec.decode(decodeContext));
+                jacksonCodec.decode(ctx));
 
         when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        then(jacksonCodec.decode(decodeContext)).isEqualTo(person);
+        then(jacksonCodec.decode(ctx)).isEqualTo(person);
     }
 }

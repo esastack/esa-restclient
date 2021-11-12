@@ -28,37 +28,37 @@ import java.nio.charset.StandardCharsets;
 public class StringCodec implements ByteCodec {
 
     @Override
-    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> encodeContext) throws Exception {
-        if (String.class.isAssignableFrom(encodeContext.entityType())) {
-            MediaType contentType = encodeContext.contentType();
+    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) throws Exception {
+        if (String.class.isAssignableFrom(ctx.entityType())) {
+            MediaType contentType = ctx.contentType();
             Charset charset = null;
             if (contentType != null) {
                 charset = contentType.charset();
             }
             if (charset == null) {
-                return RequestContent.of(((String) encodeContext.entity()).getBytes(StandardCharsets.UTF_8));
+                return RequestContent.of(((String) ctx.entity()).getBytes(StandardCharsets.UTF_8));
             } else {
-                return RequestContent.of(((String) encodeContext.entity()).getBytes(charset));
+                return RequestContent.of(((String) ctx.entity()).getBytes(charset));
             }
         }
-        return encodeContext.next();
+        return ctx.next();
     }
 
     @Override
-    public Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception {
-        if (String.class.isAssignableFrom(decodeContext.targetType())) {
-            MediaType contentType = decodeContext.contentType();
+    public Object doDecode(DecodeContext<byte[]> ctx) throws Exception {
+        if (String.class.isAssignableFrom(ctx.targetType())) {
+            MediaType contentType = ctx.contentType();
             Charset charset = null;
             if (contentType != null) {
                 charset = contentType.charset();
             }
             if (charset == null) {
-                return new String(decodeContext.content().value(), StandardCharsets.UTF_8);
+                return new String(ctx.content().value(), StandardCharsets.UTF_8);
             } else {
-                return new String(decodeContext.content().value(), charset);
+                return new String(ctx.content().value(), charset);
             }
         }
-        return decodeContext.next();
+        return ctx.next();
     }
 
     @Override

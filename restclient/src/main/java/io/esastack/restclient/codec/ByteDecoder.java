@@ -19,13 +19,13 @@ public interface ByteDecoder extends Decoder {
 
     @SuppressWarnings("unchecked")
     @Override
-    default Object decode(DecodeContext<?> decodeContext) throws Exception {
-        if (decodeContext.content().value() instanceof byte[]) {
-            return doDecode((DecodeContext<byte[]>) decodeContext);
+    default Object decode(DecodeContext<?> ctx) throws Exception {
+        if (ctx.content().value() instanceof byte[]) {
+            return doDecode((DecodeContext<byte[]>) ctx);
         }
-        return decodeContext.next();
+        return ctx.next();
     }
 
-    Object doDecode(DecodeContext<byte[]> decodeContext) throws Exception;
+    Object doDecode(DecodeContext<byte[]> ctx) throws Exception;
 
 }

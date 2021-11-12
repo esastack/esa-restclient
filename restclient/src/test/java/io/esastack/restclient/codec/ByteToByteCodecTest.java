@@ -37,7 +37,7 @@ class ByteToByteCodecTest {
     void testEncode() throws Exception {
         ByteToByteCodec byteCodec = new ByteToByteCodec();
         byte[] bytes = "hello".getBytes();
-        EncodeContext encodeContext = new EncodeChainImpl(
+        EncodeContext ctx = new EncodeChainImpl(
                 mock(RestRequestBase.class),
                 bytes,
                 byte[].class,
@@ -45,9 +45,9 @@ class ByteToByteCodecTest {
                 mock(List.class),
                 mock(List.class)
         );
-        then(byteCodec.encode(encodeContext).value()).isEqualTo(bytes);
+        then(byteCodec.encode(ctx).value()).isEqualTo(bytes);
 
-        EncodeContext encodeContext1 = new EncodeChainImpl(
+        EncodeContext ctx1 = new EncodeChainImpl(
                 mock(RestRequestBase.class),
                 "content",
                 String.class,
@@ -56,7 +56,7 @@ class ByteToByteCodecTest {
                 mock(List.class)
         );
         assertThrows(CodecException.class, () ->
-                byteCodec.encode(encodeContext1));
+                byteCodec.encode(ctx1));
 
     }
 
@@ -64,7 +64,7 @@ class ByteToByteCodecTest {
     void testDecode() throws Exception {
         ByteToByteCodec byteCodec = new ByteToByteCodec();
         byte[] bytes = "hello".getBytes();
-        DecodeContext decodeContext = new DecodeChainImpl(
+        DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 mock(RestResponse.class),
                 mock(RestClientOptions.class),
@@ -72,10 +72,10 @@ class ByteToByteCodecTest {
                 byte[].class,
                 ByteBufAllocator.DEFAULT.buffer().writeBytes(bytes)
         );
-        then(byteCodec.decode(decodeContext))
+        then(byteCodec.decode(ctx))
                 .isEqualTo(bytes);
 
-        DecodeContext decodeContext1 = new DecodeChainImpl(
+        DecodeContext ctx1 = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 mock(RestResponse.class),
                 mock(RestClientOptions.class),
@@ -85,7 +85,7 @@ class ByteToByteCodecTest {
         );
 
         assertThrows(CodecException.class, () ->
-                byteCodec.decode(decodeContext1));
+                byteCodec.decode(ctx1));
     }
 
 }

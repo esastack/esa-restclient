@@ -16,6 +16,7 @@
 package io.esastack.restclient.codec;
 
 import io.esastack.httpclient.core.util.Ordered;
+import io.esastack.restclient.utils.Constants;
 
 /**
  * <code>Decoder</code> is designed for the conversion from {@code ctx.content()} to object.And
@@ -35,4 +36,8 @@ public interface Decoder extends Ordered {
      * @throws Exception error
      */
     Object decode(DecodeContext<?> ctx) throws Exception;
+
+    default int getOrder() {
+        return Constants.ORDER.NORMAL;
+    }
 }

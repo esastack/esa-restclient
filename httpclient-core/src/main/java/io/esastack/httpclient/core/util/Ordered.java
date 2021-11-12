@@ -31,12 +31,6 @@ public interface Ordered {
      */
     int LOWEST_PRECEDENCE = Integer.MAX_VALUE;
 
-    int HIGHER_PRECEDENCE = -2048;
-
-    int MIDDLE_PRECEDENCE = 0;
-
-    int LOWER_PRECEDENCE = 2048;
-
     /**
      * Default to use the {@link #LOWEST_PRECEDENCE}.
      *

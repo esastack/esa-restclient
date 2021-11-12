@@ -15,11 +15,11 @@
  */
 package io.esastack.restclient.codec.impl;
 
-import io.esastack.httpclient.core.util.Ordered;
 import io.esastack.restclient.codec.ByteCodec;
 import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.utils.Constants;
 
 public class ByteToByteCodec implements ByteCodec {
 
@@ -45,7 +45,7 @@ public class ByteToByteCodec implements ByteCodec {
 
     @Override
     public int getOrder() {
-        return Ordered.LOWER_PRECEDENCE;
+        return Constants.ORDER.BYTE_CODEC;
     }
 
 }

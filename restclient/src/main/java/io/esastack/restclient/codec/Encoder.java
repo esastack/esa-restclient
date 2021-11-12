@@ -16,6 +16,7 @@
 package io.esastack.restclient.codec;
 
 import io.esastack.httpclient.core.util.Ordered;
+import io.esastack.restclient.utils.Constants;
 
 /**
  * <code>Encoder</code> is designed for the conversion from Java type to {@link RequestContent}.And
@@ -34,4 +35,8 @@ public interface Encoder extends Ordered {
      * @throws Exception error
      */
     RequestContent<?> encode(EncodeContext<?> ctx) throws Exception;
+
+    default int getOrder() {
+        return Constants.ORDER.NORMAL;
+    }
 }

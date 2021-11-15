@@ -40,10 +40,10 @@ public interface EncodeAdviceContext extends EncodeChain {
     void entity(Object entity);
 
     /**
-     * set entity and genericType,this method is not safe for use by multiple threads
+     * set entity and generics,this method is not safe for use by multiple threads
      *
      * @param entity      entity
-     * @param genericType genericType
+     * @param generics generics
      */
-    void entity(Object entity, Type genericType);
+    void entity(Object entity, Type generics);
 }

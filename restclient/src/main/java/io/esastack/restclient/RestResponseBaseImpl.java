@@ -80,13 +80,13 @@ public class RestResponseBaseImpl implements RestResponseBase {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T bodyToEntity(Type genericType) throws Exception {
+    public <T> T bodyToEntity(Type generics) throws Exception {
         DecodeAdviceContext ctx = new DecodeChainImpl(
                 request,
                 this,
                 clientOptions,
-                getClass(genericType),
-                genericType,
+                getClass(generics),
+                generics,
                 BufferUtils.toByteBuf(response.body()));
         return (T) ctx.next();
     }

@@ -145,7 +145,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         return new EncodeChainImpl(this,
                 entity(),
                 type(),
-                genericType(),
+                generics(),
                 clientOptions.unmodifiableEncodeAdvices(),
                 clientOptions.unmodifiableEncoders()).next();
     }

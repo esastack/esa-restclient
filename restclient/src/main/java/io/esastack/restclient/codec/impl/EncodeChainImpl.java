@@ -27,7 +27,7 @@ import io.esastack.restclient.codec.EncodeAdviceContext;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
-import io.esastack.restclient.utils.GenericTypeUtil;
+import io.esastack.restclient.utils.GenericsUtil;
 import io.netty.handler.codec.CodecException;
 
 import java.lang.reflect.Type;
@@ -47,7 +47,7 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
     private boolean encodeHadStart = false;
     private Object entity;
     private Class<?> type;
-    private Type genericType;
+    private Type generics;
 
     public EncodeChainImpl(RestRequestBase request,
                            Object entity,
@@ -62,7 +62,7 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
         this.request = request;
         this.entity = entity;
         this.type = type;
-        this.genericType = geneticType;
+        this.generics = geneticType;
         this.advices = advices;
         this.advicesSize = this.advices.size();
         Encoder encoderOfRequest = request.encoder();
@@ -101,8 +101,8 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
     }
 
     @Override
-    public Type entityGenericType() {
-        return genericType;
+    public Type entityGenerics() {
+        return generics;
     }
 
     @Override
@@ -110,18 +110,18 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
         Checks.checkNotNull(entity, "entity");
         this.entity = entity;
         this.type = entity.getClass();
-        this.genericType = type;
+        this.generics = type;
     }
 
     @Override
-    public void entity(Object entity, Type genericType) {
+    public void entity(Object entity, Type generics) {
         Checks.checkNotNull(entity, "entity");
-        Checks.checkNotNull(genericType, "genericType");
+        Checks.checkNotNull(generics, "generics");
         Class<?> typeTem = entity.getClass();
-        GenericTypeUtil.checkTypeCompatibility(typeTem, genericType);
+        GenericsUtil.checkTypeCompatibility(typeTem, generics);
         this.entity = entity;
         this.type = typeTem;
-        this.genericType = genericType;
+        this.generics = generics;
     }
 
     @Override
@@ -148,13 +148,13 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
                     + " Uri of request : " + request.uri().toString()
                     + " , headers of request : " + request.headers()
                     + " , type of entity : " + type
-                    + " , genericType of entity : " + genericType);
+                    + " , generics of entity : " + generics);
         }
 
         throw new CodecException("There is no suitable encoder for this request,"
                 + " Please set correct encoder!"
                 + " type of entity : " + type
-                + " , genericType of entity : " + genericType);
+                + " , generics of entity : " + generics);
     }
 
 }

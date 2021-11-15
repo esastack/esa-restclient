@@ -204,7 +204,7 @@ class RestCompositeRequestTest {
         }.getType());
         then(request.entity()).isEqualTo(stringList);
         then(request.type()).isEqualTo(ArrayList.class);
-        then(request.genericType()).isEqualTo(new TypeReference<List<String>>() {
+        then(request.generics()).isEqualTo(new TypeReference<List<String>>() {
         }.getType());
         final RestRequestFacade finalRequest1 = request;
         assertThrows(IllegalStateException.class, () ->
@@ -221,27 +221,27 @@ class RestCompositeRequestTest {
         request.entity(stringList);
         then(request.entity()).isEqualTo(stringList);
         then(request.type()).isEqualTo(ArrayList.class);
-        then(request.genericType()).isEqualTo(ArrayList.class);
+        then(request.generics()).isEqualTo(ArrayList.class);
 
         request = RestClient.ofDefault().post("aaaa");
         String data = "data";
         request.entity(data);
         then(request.entity()).isEqualTo(data);
         then(request.type()).isEqualTo(String.class);
-        then(request.genericType()).isEqualTo(String.class);
+        then(request.generics()).isEqualTo(String.class);
 
         request = RestClient.ofDefault().post("aaaa");
         File dataFile = new File("data");
         request.entity(dataFile);
         then(request.entity()).isEqualTo(dataFile);
         then(request.type()).isEqualTo(File.class);
-        then(request.genericType()).isEqualTo(File.class);
+        then(request.generics()).isEqualTo(File.class);
 
         request = RestClient.ofDefault().post("aaaa");
         request.multipart();
         then(request.entity()).isInstanceOf(MultipartBody.class);
         then(request.type()).isEqualTo(MultipartBodyImpl.class);
-        then(request.genericType()).isEqualTo(MultipartBodyImpl.class);
+        then(request.generics()).isEqualTo(MultipartBodyImpl.class);
     }
 
     @Test

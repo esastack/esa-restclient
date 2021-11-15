@@ -57,18 +57,18 @@ public class CodecAdviceTest {
                         context -> {
                             then(context.entity()).isEqualTo(person);
                             then(context.entityType()).isEqualTo(Person.class);
-                            then(context.entityGenericType()).isEqualTo(Person.class);
+                            then(context.entityGenerics()).isEqualTo(Person.class);
 
                             context.entity(data);
                             then(context.entity()).isEqualTo(data);
                             then(context.entityType()).isEqualTo(String.class);
-                            then(context.entityGenericType()).isEqualTo(String.class);
+                            then(context.entityGenerics()).isEqualTo(String.class);
 
                             context.entity(stringList, new TypeReference<List<String>>() {
                             }.getType());
                             then(context.entity()).isEqualTo(stringList);
                             then(context.entityType()).isEqualTo(ArrayList.class);
-                            then(context.entityGenericType()).isEqualTo(new TypeReference<List<String>>() {
+                            then(context.entityGenerics()).isEqualTo(new TypeReference<List<String>>() {
                             }.getType());
                             return context.next();
                         }

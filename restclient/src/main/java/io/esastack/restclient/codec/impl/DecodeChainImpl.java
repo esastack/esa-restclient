@@ -47,7 +47,7 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
     private final List<Decoder> decoders;
     private final int decodersSize;
     private final Class<?> type;
-    private final Type genericType;
+    private final Type generics;
     private int adviceIndex = 0;
     private int decodeIndex = 0;
     private boolean decodeHadStart = false;
@@ -57,7 +57,7 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
                            RestResponse response,
                            RestClientOptions clientOptions,
                            Class<?> type,
-                           Type genericType,
+                           Type generics,
                            ByteBuf byteBuf) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(response, "response");
@@ -69,7 +69,7 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
         this.advices = clientOptions.unmodifiableDecodeAdvices();
         this.advicesSize = this.advices.size();
         this.type = type;
-        this.genericType = genericType;
+        this.generics = generics;
         this.responseContent = ResponseContent.of(ByteBufUtil.getBytes(byteBuf));
         Decoder decoderOfRequest = request.decoder();
         if (decoderOfRequest == null) {
@@ -118,8 +118,8 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
     }
 
     @Override
-    public Type targetGenericType() {
-        return genericType;
+    public Type targetGenerics() {
+        return generics;
     }
 
     @Override
@@ -148,13 +148,13 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
                     + " , headers of request : " + request.headers()
                     + " , headers of response : " + headers()
                     + " , expected type : " + type
-                    + " , expected genericType : " + genericType);
+                    + " , expected generics : " + generics);
         }
 
         throw new CodecException("There is no suitable decoder for this response,"
                 + " Please set correct decoder!"
                 + " , expected type : " + type
-                + " , expected genericType : " + genericType);
+                + " , expected generics : " + generics);
     }
 
 }

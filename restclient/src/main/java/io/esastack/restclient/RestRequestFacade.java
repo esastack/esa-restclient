@@ -36,13 +36,13 @@ public interface RestRequestFacade extends ExecutableRestRequest {
 
     /**
      * Fills the request's entity with given entity.And you can deliver generic
-     * information through genericType.
+     * information through generics.
      *
      * @param entity      entity
-     * @param genericType genericType
+     * @param generics generics
      * @return ExecutableRestRequest
      */
-    ExecutableRestRequest entity(Object entity, Type genericType);
+    ExecutableRestRequest entity(Object entity, Type generics);
 
     /**
      * Fills the request's entity with given content.

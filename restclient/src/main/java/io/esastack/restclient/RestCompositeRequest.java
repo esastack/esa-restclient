@@ -27,7 +27,7 @@ import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.RestRequestExecutor;
-import io.esastack.restclient.utils.GenericTypeUtil;
+import io.esastack.restclient.utils.GenericsUtil;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -38,7 +38,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
 
     private Object entity;
     private Class<?> type;
-    private Type genericType;
+    private Type generics;
 
     RestCompositeRequest(CompositeRequest request,
                          RestClientOptions clientOptions,
@@ -57,8 +57,8 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public Type genericType() {
-        return genericType;
+    public Type generics() {
+        return generics;
     }
 
     @Override
@@ -231,14 +231,14 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public ExecutableRestRequest entity(Object entity, Type genericType) {
+    public ExecutableRestRequest entity(Object entity, Type generics) {
         Checks.checkNotNull(entity, "entity");
-        Checks.checkNotNull(genericType, "genericType");
+        Checks.checkNotNull(generics, "generics");
         checkEntityHadSet();
         Class<?> typeTem = entity.getClass();
-        GenericTypeUtil.checkTypeCompatibility(typeTem, genericType);
+        GenericsUtil.checkTypeCompatibility(typeTem, generics);
         setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        fillEntity(entity, typeTem, genericType);
+        fillEntity(entity, typeTem, generics);
         return self();
     }
 
@@ -292,19 +292,19 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     private void fillMultipartBody() {
         this.entity = new MultipartBodyImpl();
         this.type = MultipartBodyImpl.class;
-        this.genericType = MultipartBodyImpl.class;
+        this.generics = MultipartBodyImpl.class;
     }
 
     private void fillEntity(Object entity) {
         this.entity = entity;
         this.type = entity.getClass();
-        this.genericType = this.type;
+        this.generics = this.type;
     }
 
-    private void fillEntity(Object entity, Class<?> type, Type genericType) {
+    private void fillEntity(Object entity, Class<?> type, Type generics) {
         this.entity = entity;
         this.type = type;
-        this.genericType = genericType;
+        this.generics = generics;
     }
 
     private void checkEntityHadSet() {

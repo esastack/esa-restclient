@@ -37,6 +37,6 @@ public class FastJsonCodec implements JsonCodec {
 
     @Override
     public Object decodeFromJson(DecodeContext<byte[]> ctx) {
-        return JSON.parseObject(ctx.content().value(), ctx.targetGenericType());
+        return JSON.parseObject(ctx.content().value(), ctx.targetGenerics());
     }
 }

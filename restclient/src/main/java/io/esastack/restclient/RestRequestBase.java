@@ -37,9 +37,9 @@ public interface RestRequestBase extends RestRequest, RequestBaseConfigure {
     Class<?> type();
 
     /**
-     * @return The genericType of entity.
+     * @return The generics of entity.
      */
-    Type genericType();
+    Type generics();
 
     @Override
     RestRequestBase readTimeout(long readTimeout);

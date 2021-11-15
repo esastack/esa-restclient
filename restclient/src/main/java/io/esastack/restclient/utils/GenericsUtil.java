@@ -19,29 +19,29 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public final class GenericTypeUtil {
+public final class GenericsUtil {
 
-    private GenericTypeUtil() {
+    private GenericsUtil() {
     }
 
-    public static void checkTypeCompatibility(final Class<?> type, final Type genericType) {
-        if (genericType instanceof Class) {
-            Class<?> classType = (Class<?>) genericType;
+    public static void checkTypeCompatibility(final Class<?> type, final Type generics) {
+        if (generics instanceof Class) {
+            Class<?> classType = (Class<?>) generics;
             if (classType.isAssignableFrom(type)) {
                 return;
             }
-        } else if (genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+        } else if (generics instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) generics;
             Type rawType = parameterizedType.getRawType();
             checkTypeCompatibility(type, rawType);
             return;
-        } else if (type.isArray() && (genericType instanceof GenericArrayType)) {
-            GenericArrayType at = (GenericArrayType) genericType;
+        } else if (type.isArray() && (generics instanceof GenericArrayType)) {
+            GenericArrayType at = (GenericArrayType) generics;
             Type rawType = at.getGenericComponentType();
             checkTypeCompatibility(type.getComponentType(), rawType);
             return;
         }
         throw new IllegalArgumentException(
-                "The genericType(" + genericType + ") is incompatible with the type(" + type + ").");
+                "The generics(" + generics + ") is incompatible with the type(" + type + ").");
     }
 }

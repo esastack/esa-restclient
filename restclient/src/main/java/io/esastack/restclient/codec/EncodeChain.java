@@ -38,9 +38,9 @@ public interface EncodeChain {
     Class<?> entityType();
 
     /**
-     * @return The genericType of entity
+     * @return The generics of entity
      */
-    Type entityGenericType();
+    Type entityGenerics();
 
     /**
      * Proceed to the next member in the chain.

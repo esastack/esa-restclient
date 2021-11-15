@@ -37,9 +37,9 @@ public interface DecodeChain {
     Class<?> targetType();
 
     /**
-     * @return The genericType of target
+     * @return The generics of target
      */
-    Type targetGenericType();
+    Type targetGenerics();
 
     /**
      * Proceed to the next member in the chain.

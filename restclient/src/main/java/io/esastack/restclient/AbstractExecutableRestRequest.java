@@ -159,8 +159,9 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         } else if (entity instanceof MultipartBody) {
             target.multipart((MultipartBody) entity);
         } else {
-            throw new IllegalStateException("Illegal requestContent! Value of requestContent: "
-                    + entity);
+            throw new IllegalStateException("Illegal type("
+                    + (entity == null ? null : entity.getClass())
+                    + ") of requestContent's value!");
         }
     }
 
@@ -257,7 +258,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         for (int i = 0; i < acceptTypes.length; i++) {
             MediaType acceptType = acceptTypes[i];
             if (acceptType == null) {
-                throw new NullPointerException("acceptType is null when index is equal to" + i);
+                throw new NullPointerException("acceptType is null when index is equal to " + i);
             }
             if (acceptBuilder.length() > 0) {
                 acceptBuilder.append(",");

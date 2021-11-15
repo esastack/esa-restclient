@@ -28,9 +28,9 @@ public final class RequestTransceiver implements InvocationChain {
     @Override
     public CompletionStage<RestResponse> proceed(RestRequest request) {
         if (!(request instanceof AbstractExecutableRestRequest)) {
-            throw new IllegalStateException("The type of the request is not AbstractExecutableRestRequest!" +
-                    "RequestType:" + request.getClass() + "," +
-                    "Request:" + request);
+            throw new IllegalStateException("The type(" + request.getClass()
+                    + ") of the request is not AbstractExecutableRestRequest!" +
+                    "The host of request : " + request.uri().host());
         }
 
         final AbstractExecutableRestRequest executableRequest = (AbstractExecutableRestRequest) request;

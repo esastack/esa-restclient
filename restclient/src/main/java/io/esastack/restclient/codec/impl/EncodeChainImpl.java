@@ -16,8 +16,10 @@
 package io.esastack.restclient.codec.impl;
 
 import esa.commons.Checks;
+import esa.commons.logging.Logger;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
+import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.codec.EncodeAdvice;
@@ -34,6 +36,7 @@ import java.util.List;
 
 public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext {
 
+    private static final Logger logger = LoggerUtils.logger();
     private final RestRequest request;
     private final List<EncodeAdvice> advices;
     private final int advicesSize;
@@ -139,12 +142,19 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
             return encoders.get(encodeIndex++).encode(this);
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("There is no suitable encoder for this request,"
+                    + " Please set correct encoder!"
+                    + " Uri of request : " + request.uri().toString()
+                    + " , headers of request : " + request.headers()
+                    + " , type of entity : " + type
+                    + " , genericType of entity : " + genericType);
+        }
+
         throw new CodecException("There is no suitable encoder for this request,"
                 + " Please set correct encoder!"
-                + " , headers of request : " + headers()
-                + " , entity of request : " + entity
-                + " , type of request : " + type
-                + " , genericType of request : " + genericType);
+                + " type of entity : " + type
+                + " , genericType of entity : " + genericType);
     }
 
 }

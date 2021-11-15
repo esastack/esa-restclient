@@ -41,6 +41,7 @@ public final class GenericTypeUtil {
             checkTypeCompatibility(type.getComponentType(), rawType);
             return;
         }
-        throw new IllegalArgumentException("The genericType is incompatible with the type.");
+        throw new IllegalArgumentException(
+                "The genericType(" + genericType + ") is incompatible with the type(" + type + ").");
     }
 }

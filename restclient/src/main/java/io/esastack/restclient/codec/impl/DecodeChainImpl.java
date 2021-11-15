@@ -16,8 +16,10 @@
 package io.esastack.restclient.codec.impl;
 
 import esa.commons.Checks;
+import esa.commons.logging.Logger;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
+import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestRequestBase;
@@ -37,6 +39,7 @@ import java.util.List;
 
 public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext {
 
+    private static final Logger logger = LoggerUtils.logger();
     private final RestRequest request;
     private final RestResponse response;
     private final List<DecodeAdvice> advices;
@@ -138,9 +141,18 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
             return decoders.get(decodeIndex++).decode(this);
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("There is no suitable decoder for this response,"
+                    + " Please set correct decoder!"
+                    + " Uri of request : " + request.uri().toString()
+                    + " , headers of request : " + request.headers()
+                    + " , headers of response : " + headers()
+                    + " , expected type : " + type
+                    + " , expected genericType : " + genericType);
+        }
+
         throw new CodecException("There is no suitable decoder for this response,"
                 + " Please set correct decoder!"
-                + " , headers of response : " + headers()
                 + " , expected type : " + type
                 + " , expected genericType : " + genericType);
     }

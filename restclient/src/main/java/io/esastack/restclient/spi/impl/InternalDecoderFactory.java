@@ -30,7 +30,7 @@ public final class InternalDecoderFactory implements DecoderFactory {
 
     @Override
     public Collection<Decoder> decoders(RestClientOptions clientOptions) {
-        List<Decoder> decoders = new ArrayList<>();
+        List<Decoder> decoders = new ArrayList<>(3);
         decoders.add(new ByteToByteCodec());
         decoders.add(new JacksonCodec());
         decoders.add(new StringCodec());

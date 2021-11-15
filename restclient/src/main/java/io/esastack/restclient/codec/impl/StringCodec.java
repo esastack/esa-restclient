@@ -66,5 +66,4 @@ public class StringCodec implements ByteCodec {
         return Constants.Order.STRING_CODEC;
     }
 
-
 }

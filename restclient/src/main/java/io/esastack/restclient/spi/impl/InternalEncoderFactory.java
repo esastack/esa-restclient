@@ -33,7 +33,7 @@ public final class InternalEncoderFactory implements EncoderFactory {
 
     @Override
     public Collection<Encoder> encoders(RestClientOptions clientOptions) {
-        List<Encoder> encoders = new ArrayList<>();
+        List<Encoder> encoders = new ArrayList<>(6);
         encoders.add(new ByteToByteCodec());
         encoders.add(new FileEncoder());
         encoders.add(new FormURLEncodedEncoder());

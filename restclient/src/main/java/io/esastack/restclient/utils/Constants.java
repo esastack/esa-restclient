@@ -20,7 +20,7 @@ public final class Constants {
     private Constants() {
     }
 
-    public static final class ORDER {
+    public static final class Order {
         public static final int NORMAL = 0;
         public static final int BYTE_CODEC = 2048;
         public static final int STRING_CODEC = 2048;

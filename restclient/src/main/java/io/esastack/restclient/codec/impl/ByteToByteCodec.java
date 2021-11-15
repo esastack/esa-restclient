@@ -45,7 +45,7 @@ public class ByteToByteCodec implements ByteCodec {
 
     @Override
     public int getOrder() {
-        return Constants.ORDER.BYTE_CODEC;
+        return Constants.Order.BYTE_CODEC;
     }
 
 }

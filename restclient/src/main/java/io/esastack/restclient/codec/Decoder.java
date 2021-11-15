@@ -38,6 +38,6 @@ public interface Decoder extends Ordered {
     Object decode(DecodeContext<?> ctx) throws Exception;
 
     default int getOrder() {
-        return Constants.ORDER.NORMAL;
+        return Constants.Order.NORMAL;
     }
 }

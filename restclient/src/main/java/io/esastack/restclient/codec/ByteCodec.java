@@ -21,7 +21,7 @@ public interface ByteCodec extends ByteEncoder, ByteDecoder {
 
     @Override
     default int getOrder() {
-        return Constants.ORDER.NORMAL;
+        return Constants.Order.NORMAL;
     }
 
 }

@@ -37,6 +37,6 @@ public interface Encoder extends Ordered {
     RequestContent<?> encode(EncodeContext<?> ctx) throws Exception;
 
     default int getOrder() {
-        return Constants.ORDER.NORMAL;
+        return Constants.Order.NORMAL;
     }
 }

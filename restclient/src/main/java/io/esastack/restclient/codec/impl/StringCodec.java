@@ -63,7 +63,7 @@ public class StringCodec implements ByteCodec {
 
     @Override
     public int getOrder() {
-        return Constants.ORDER.STRING_CODEC;
+        return Constants.Order.STRING_CODEC;
     }
 
 

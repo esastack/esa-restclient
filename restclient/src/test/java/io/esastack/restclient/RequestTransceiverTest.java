@@ -17,6 +17,7 @@ package io.esastack.restclient;
 
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.httpclient.core.HttpUri;
 import io.esastack.restclient.codec.impl.ByteToByteCodec;
 import io.esastack.restclient.codec.impl.StringCodec;
 import io.esastack.restclient.exec.RestRequestExecutor;
@@ -27,11 +28,18 @@ import java.util.concurrent.ExecutionException;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RequestTransceiverTest {
 
     @Test
     void testProceed() throws ExecutionException, InterruptedException {
+        RequestTransceiver requestTransceiver = new RequestTransceiver();
+        RestRequest request0 = mock(RestRequest.class);
+        when(request0.uri()).thenReturn(new HttpUri("aaa"));
+        assertThrows(IllegalStateException.class,
+                () -> requestTransceiver.proceed(request0));
+
         RestCompositeRequest request = RequestMockUtil.mockRequest(
                 mock(RestClientOptions.class),
                 mock(RestRequestExecutor.class),
@@ -41,11 +49,6 @@ public class RequestTransceiverTest {
                 "Hi",
                 "aaa",
                 "aaa");
-
-        RequestTransceiver requestTransceiver = new RequestTransceiver();
-        assertThrows(IllegalStateException.class,
-                () -> requestTransceiver.proceed(mock(RestRequest.class)));
-
         RestResponse response = requestTransceiver.proceed(request).toCompletableFuture().get();
         then(response.status()).isEqualTo(200);
         then(response.headers().get(HttpHeaderNames.CONTENT_TYPE))

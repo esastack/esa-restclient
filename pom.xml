@@ -51,6 +51,12 @@
 
     <profiles>
         <profile>
+            <id>it_test</id>
+            <properties>
+                <excludes-tests>nothing</excludes-tests>
+            </properties>
+        </profile>
+        <profile>
             <id>release</id>
             <build>
                 <plugins>
@@ -101,6 +107,7 @@
 
     <modules>
         <module>httpclient-core</module>
+        <module>restclient</module>
     </modules>
 
     <properties>
@@ -109,7 +116,8 @@
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
-        <esa-commons.version>0.1.0</esa-commons.version>
+        <esa-commons.version>0.1.1</esa-commons.version>
+        <esa-commons-net.version>0.0.1-SNAPSHOT</esa-commons-net.version>
         <esa-commons-build.version>1.0</esa-commons-build.version>
         <netty.version>4.1.52.Final</netty.version>
         <netty-tcnative.version>2.0.34.Final</netty-tcnative.version>
@@ -117,6 +125,12 @@
         <junit.version>5.4.2</junit.version>
         <assertj.version>3.9.1</assertj.version>
         <mockito.version>3.6.0</mockito.version>
+        <fastjson.version>1.2.73</fastjson.version>
+        <jackson.version>2.10.1</jackson.version>
+        <gson.version>2.8.5</gson.version>
+        <protobuf.version>3.6.1</protobuf.version>
+        <mock-server.version>5.11.2</mock-server.version>
+        <excludes-tests>**/it/**Test.java</excludes-tests>
     </properties>
 
     <dependencies>
@@ -136,6 +150,12 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-netty</artifactId>
+            <version>${mock-server.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -163,6 +183,16 @@
                 <version>${esa-commons.version}</version>
             </dependency>
             <dependency>
+                <groupId>io.esastack</groupId>
+                <artifactId>commons-net-core</artifactId>
+                <version>${esa-commons-net.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.esastack</groupId>
+                <artifactId>commons-net-netty</artifactId>
+                <version>${esa-commons-net.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
                 <version>${netty.version}</version>
@@ -178,6 +208,45 @@
                 <groupId>com.jcraft</groupId>
                 <artifactId>jzlib</artifactId>
                 <version>${jzlib.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -215,6 +284,7 @@
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
                     </includes>
+                    <excludes>${excludes-tests}</excludes>
                 </configuration>
             </plugin>
             <plugin>

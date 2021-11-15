@@ -47,6 +47,10 @@
             <groupId>io.esastack</groupId>
             <artifactId>commons-netty-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.esastack</groupId>
+            <artifactId>commons-net-netty</artifactId>
+        </dependency>
         <!-- need be shaded -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
@@ -154,7 +158,7 @@
                                 <relocation>
                                     <pattern>com.github.benmanes.caffeine</pattern>
                                     <shadedPattern>
-                                        esa.httpclient.cache.shaded.com.github.benmanes.caffeine
+                                        io.esastack.httpclient.cache.shaded.com.github.benmanes.caffeine
                                     </shadedPattern>
                                 </relocation>
                             </relocations>

@@ -16,6 +16,7 @@
 package io.esastack.restclient;
 
 import esa.commons.Checks;
+import esa.commons.logging.Logger;
 import esa.commons.spi.SpiLoader;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.HttpClientBuilder;
@@ -28,6 +29,7 @@ import io.esastack.httpclient.core.config.RetryOptions;
 import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
+import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.httpclient.core.util.OrderedComparator;
 import io.esastack.restclient.codec.ByteDecoder;
 import io.esastack.restclient.codec.ByteEncoder;
@@ -43,6 +45,7 @@ import io.esastack.restclient.spi.EncodeAdviceFactory;
 import io.esastack.restclient.spi.EncoderFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,6 +57,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     public static final String CLIENT = "RestClient";
 
+    private static final Logger logger = LoggerUtils.logger();
     private final HttpClientBuilder httpClientBuilder;
     private final List<ClientInterceptor> interceptors = new ArrayList<>();
     private final List<DecodeAdvice> decodeAdvices = new ArrayList<>();
@@ -425,9 +429,16 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private void loadDecodeAdvicesFromSpi() {
         SpiLoader.cached(DecodeAdviceFactory.class)
                 .getByGroup(name(), true)
-                .forEach(decodeAdviceFactory ->
-                        decodeAdvices.addAll(decodeAdviceFactory.decodeAdvices(this))
-                );
+                .forEach(decodeAdviceFactory -> {
+                    Collection<DecodeAdvice> decodeAdvicesFromSpi =
+                            decodeAdviceFactory.decodeAdvices(this);
+                    decodeAdvices.addAll(decodeAdvicesFromSpi);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Load decodeAdvices({}) from decodeAdviceFactory({}) success.",
+                                decodeAdvicesFromSpi, decodeAdviceFactory);
+                    }
+                });
         OrderedComparator.sort(decodeAdvices);
     }
 
@@ -438,9 +449,16 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private void loadEncodeAdvicesFromSpi() {
         SpiLoader.cached(EncodeAdviceFactory.class)
                 .getByGroup(name(), true)
-                .forEach(encodeAdviceFactory ->
-                        encodeAdvices.addAll(encodeAdviceFactory.encodeAdvices(this))
-                );
+                .forEach(encodeAdviceFactory -> {
+                    Collection<EncodeAdvice> encodeAdvicesFromSpi =
+                            encodeAdviceFactory.encodeAdvices(this);
+                    encodeAdvices.addAll(encodeAdvicesFromSpi);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Load encodeAdvices({}) from encodeAdviceFactory({}) success.",
+                                encodeAdvicesFromSpi, encodeAdviceFactory);
+                    }
+                });
     }
 
     private void sortEncodeAdvices() {
@@ -450,9 +468,16 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private void loadInterceptorsFromSpi() {
         SpiLoader.cached(ClientInterceptorFactory.class)
                 .getByGroup(name(), true)
-                .forEach(clientInterceptorFactory ->
-                        interceptors.addAll(clientInterceptorFactory.interceptors(this))
-                );
+                .forEach(clientInterceptorFactory -> {
+                    Collection<ClientInterceptor> interceptorsFromSpi =
+                            clientInterceptorFactory.interceptors(this);
+                    interceptors.addAll(interceptorsFromSpi);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Load clientInterceptors({}) from clientInterceptorFactory({}) success.",
+                                interceptorsFromSpi, clientInterceptorFactory);
+                    }
+                });
     }
 
     private void sortInterceptors() {
@@ -462,22 +487,35 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     private void loadEncodersFromSpi() {
         SpiLoader.cached(EncoderFactory.class)
                 .getByGroup(name(), true)
-                .forEach(encoderFactory ->
-                        encoders.addAll(encoderFactory.encoders(this))
-                );
+                .forEach(encoderFactory -> {
+                    Collection<Encoder> encodersFromSpi =
+                            encoderFactory.encoders(this);
+                    encoders.addAll(encodersFromSpi);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Load encoders({}) from encoderFactory({}) success.",
+                                encodersFromSpi, encoderFactory);
+                    }
+                });
     }
 
     private void sortEncoders() {
         OrderedComparator.sort(encoders);
     }
 
-
     private void loadDecodersFromSpi() {
         SpiLoader.cached(DecoderFactory.class)
                 .getByGroup(name(), true)
-                .forEach(decoderFactory ->
-                        decoders.addAll(decoderFactory.decoders(this))
-                );
+                .forEach(decoderFactory -> {
+                    Collection<Decoder> decodersFromSpi =
+                            decoderFactory.decoders(this);
+                    decoders.addAll(decodersFromSpi);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Load decoders({}) from decoderFactory({}) success.",
+                                decodersFromSpi, decoderFactory);
+                    }
+                });
     }
 
     private void sortDecoders() {

@@ -143,12 +143,17 @@ public final class DecodeChainImpl implements DecodeAdviceContext, DecodeContext
 
         if (logger.isDebugEnabled()) {
             logger.debug("There is no suitable decoder for this response,"
-                    + " Please set correct decoder!"
-                    + " Uri of request : " + request.uri().toString()
-                    + " , headers of request : " + request.headers()
-                    + " , headers of response : " + headers()
-                    + " , expected type : " + type
-                    + " , expected generics : " + generics);
+                            + " Please set correct decoder!"
+                            + " Uri of request : {}"
+                            + " , headers of request : {}"
+                            + " , headers of response : {}"
+                            + " , expected type : {}"
+                            + " , expected generics : {}",
+                    request.uri().toString(),
+                    request.headers(),
+                    headers(),
+                    type,
+                    generics);
         }
 
         throw new CodecException("There is no suitable decoder for this response,"

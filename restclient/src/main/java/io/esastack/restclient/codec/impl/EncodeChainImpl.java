@@ -144,11 +144,15 @@ public final class EncodeChainImpl implements EncodeAdviceContext, EncodeContext
 
         if (logger.isDebugEnabled()) {
             logger.debug("There is no suitable encoder for this request,"
-                    + " Please set correct encoder!"
-                    + " Uri of request : " + request.uri().toString()
-                    + " , headers of request : " + request.headers()
-                    + " , type of entity : " + type
-                    + " , generics of entity : " + generics);
+                            + " Please set correct encoder!"
+                            + " Uri of request : {}"
+                            + " , headers of request : {}"
+                            + " , type of entity : {}"
+                            + " , generics of entity : {}",
+                    request.uri().toString(),
+                    request.headers(),
+                    type,
+                    generics);
         }
 
         throw new CodecException("There is no suitable encoder for this request,"

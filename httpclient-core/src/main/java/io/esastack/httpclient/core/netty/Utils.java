@@ -61,8 +61,8 @@ final class Utils {
         boolean hasLogged = false;
         if (cause instanceof ClosedConnectionException) {
             if (logger.isDebugEnabled()) {
-                logger.debug("ClosedConnectionException occurred in connection: {}",
-                        channel, cause);
+                logger.debug("ClosedConnectionException occurred in connection: {}, maybe server has closed" +
+                        " connection", channel);
             }
             hasLogged = true;
         } else if (cause instanceof IOException) {

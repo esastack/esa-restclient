@@ -132,6 +132,9 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                                      boolean endStream,
                                      ChannelPromise promise) {
         if (checkIfEnded(streamId, false, promise)) {
+            if (data instanceof ByteBuf) {
+                Utils.tryRelease((ByteBuf) data);
+            }
             return promise;
         }
 

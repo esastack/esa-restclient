@@ -39,9 +39,6 @@ class PlainWriter extends RequestWriterImpl {
 
     private static final PlainWriter INSTANCE = new PlainWriter();
 
-    private PlainWriter() {
-    }
-
     @Override
     ChannelFuture writeAndFlush1(HttpRequest request,
                                  Channel channel,
@@ -110,6 +107,8 @@ class PlainWriter extends RequestWriterImpl {
                                  Http2ConnectionHandler handler,
                                  int streamId,
                                  boolean uriEncodeEnabled) {
+        addContentLengthIfAbsent(request, v -> request.buffer() == null ? 0L : request.buffer().readableBytes());
+
         final ChannelFuture future = checkAndWriteH2Headers(channel,
                 handler,
                 HttpHeadersUtils.toHttp2Headers(request, (Http1HeadersImpl) request.headers(), uriEncodeEnabled),
@@ -154,6 +153,9 @@ class PlainWriter extends RequestWriterImpl {
                 true,
                 endPromise);
         channel.flush();
+    }
+
+    private PlainWriter() {
     }
 
     static PlainWriter singleton() {

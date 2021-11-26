@@ -23,6 +23,7 @@ import io.esastack.httpclient.core.exception.ContentOverSizedException;
 import io.esastack.httpclient.core.exception.ProtocolException;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpContent;
@@ -41,6 +42,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     private final HandleRegistry registry;
     private final long maxContentLength;
     private volatile ChannelHandlerContext ctx;
+    private volatile Channel channel;
 
     private int reusableRequestId;
     private boolean continue100Received;
@@ -55,6 +57,7 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         this.ctx = ctx;
+        this.channel = ctx.channel();
         super.handlerAdded(ctx);
     }
 
@@ -193,13 +196,25 @@ class Http1ChannelHandler extends SimpleChannelInboundHandler<HttpObject> {
         // Note: a request which has a 'Expect: 100-continue' will receive two full http response
         // and only the last one is the common response to the request
         final int status = msg.status().code();
-        if (status == HttpResponseStatus.CONTINUE.code()) {
-            continue100Received = true;
-            final Runnable runnable = handle.ctx().remove100ContinueCallback();
-            if (runnable != null) {
+        Runnable runnable = handle.ctx().remove100ContinueCallback();
+        if (runnable != null) {
+            if (status == HttpResponseStatus.CONTINUE.code()) {
+                continue100Received = true;
                 runnable.run();
+
+                // ignore the 100-continue' preface response
+                return;
+            } else {
+                // fix https://github.com/esastack/esa-httpclient/issues/109
+
+                // We must write a LastHttpContent to end the current request even if
+                // all the response messages, contents have received and the ResponseHandle
+                // has ended. If we don't do this, a IllegalStateException has message
+                // 'unexpected message type: xxx, state: 1' will be thrown when you want to
+                // send the next request ont current channel. See HttpObjectEncoder#encode()
+                // to get more information.
+                channel.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
             }
-            return;
         }
 
         // If maxContentLength != -1, validate contentLength firstly.

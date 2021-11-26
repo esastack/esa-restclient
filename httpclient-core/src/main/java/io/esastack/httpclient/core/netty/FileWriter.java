@@ -45,9 +45,6 @@ class FileWriter extends RequestWriterImpl {
     private static final String MODE_READ = "r";
     private static final FileWriter INSTANCE = new FileWriter();
 
-    private FileWriter() {
-    }
-
     @Override
     public ChannelFuture writeAndFlush(HttpRequest request,
                                        Channel channel,
@@ -57,6 +54,7 @@ class FileWriter extends RequestWriterImpl {
                                        HttpVersion version,
                                        boolean http2) throws IOException {
         addContentTypeIfAbsent(request, () -> HttpHeaderValues.APPLICATION_OCTET_STREAM);
+        addContentLengthIfAbsent(request, v -> request.file() == null ? 0L : request.file().length());
 
         return super.writeAndFlush(request, channel, execCtx, headFuture, useUriEncode, version, http2);
     }
@@ -68,8 +66,6 @@ class FileWriter extends RequestWriterImpl {
                                  ChannelPromise headFuture,
                                  HttpVersion version,
                                  boolean uriEncodeEnabled) {
-        addContentLengthIfAbsent(request, v -> request.file() == null ? 0L : request.file().length());
-
         final DefaultHttpRequest req = new DefaultHttpRequest(version,
                 HttpMethod.valueOf(request.method().name()),
                 request.uri().relative(uriEncodeEnabled),
@@ -212,6 +208,9 @@ class FileWriter extends RequestWriterImpl {
                 LoggerUtils.logger().error("Error while closing chunked input", ex);
             }
         }
+    }
+
+    private FileWriter() {
     }
 
     static FileWriter singleton() {

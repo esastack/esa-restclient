@@ -18,6 +18,7 @@ package io.esastack.httpclient.core.netty;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
+import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.Listener;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
@@ -68,6 +69,19 @@ class H2TransceiverHandle extends TransceiverHandle {
             }
 
             super.onWriteDone(request, ctx);
+        }
+
+        @Override
+        public void onCompleted(HttpRequest request, Context ctx, HttpResponse response) {
+            // see https://github.com/esastack/esa-httpclient/issues/111
+            // if we send a request with 100-continue and the remote server send a 413 or 417
+            // frame then the request will be ended but the onWriteDone() or onError() haven't
+            // been invoked before. In this case, we must release connection here.
+            if (released.compareAndSet(false, true)) {
+                channelPool.release(channel);
+            }
+
+            super.onCompleted(request, ctx, response);
         }
 
         @Override

@@ -73,6 +73,10 @@ class H2TransceiverHandle extends TransceiverHandle {
 
         @Override
         public void onCompleted(HttpRequest request, Context ctx, HttpResponse response) {
+            // see https://github.com/esastack/esa-httpclient/issues/111
+            // if we send a request with 100-continue and the remote server send a 413 or 417
+            // frame then the request will be ended but the onWriteDone() or onError() haven't
+            // been invoked before. In this case, we must release connection here.
             if (released.compareAndSet(false, true)) {
                 channelPool.release(channel);
             }

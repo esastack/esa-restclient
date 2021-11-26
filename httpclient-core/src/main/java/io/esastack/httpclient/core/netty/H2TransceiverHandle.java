@@ -18,6 +18,7 @@ package io.esastack.httpclient.core.netty;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpRequest;
+import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.Listener;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPool;
@@ -68,6 +69,15 @@ class H2TransceiverHandle extends TransceiverHandle {
             }
 
             super.onWriteDone(request, ctx);
+        }
+
+        @Override
+        public void onCompleted(HttpRequest request, Context ctx, HttpResponse response) {
+            if (released.compareAndSet(false, true)) {
+                channelPool.release(channel);
+            }
+
+            super.onCompleted(request, ctx, response);
         }
 
         @Override

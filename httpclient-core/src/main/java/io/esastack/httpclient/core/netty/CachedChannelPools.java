@@ -61,6 +61,8 @@ public class CachedChannelPools implements ConnectionPoolMetricProvider {
 
         // make sure the connection pool closed timely, see more information from
         // https://github.com/esastack/esa-httpclient/issues/102
+        // in fact, the caffeine cache uses lazy clean which means only the next hit occurs
+        // the expire items can removed.
         CLOSE_CONNECTION_POOL_SCHEDULER.scheduleAtFixedRate(() -> {
             try {
                 cachedPools.cleanUp();

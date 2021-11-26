@@ -138,7 +138,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
         then(header).isNotNull();
         then(header.streamId).isEqualTo(STREAM_ID);
         then(header.headers.method()).isEqualTo(HttpMethod.PUT.asciiName());
-        then(header.headers.get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isNull();
+        then(header.headers.get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isNotNull();
         then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
         Helper.DataFrame data = channel.readOutbound();
@@ -177,7 +177,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
         then(header).isNotNull();
         then(header.streamId).isEqualTo(STREAM_ID);
         then(header.headers.method()).isEqualTo(HttpMethod.PUT.asciiName());
-        then(header.headers.get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isNull();
+        then(header.headers.get(io.esastack.commons.net.http.HttpHeaderNames.CONTENT_LENGTH)).isNotNull();
         then(header.headers.authority().toString()).isEqualTo("127.0.0.1");
 
         Helper.DataFrame data = channel.readOutbound();

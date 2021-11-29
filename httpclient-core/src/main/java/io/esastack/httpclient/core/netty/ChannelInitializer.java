@@ -295,6 +295,11 @@ final class ChannelInitializer {
                 // Remove itself from the pipeline after writing first request.
                 ctx.pipeline().remove(this);
             }
+
+            @Override
+            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                initializeFuture.setFailure(cause);
+            }
         });
 
         /*

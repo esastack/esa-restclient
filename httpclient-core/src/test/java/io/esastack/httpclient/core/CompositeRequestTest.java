@@ -15,6 +15,8 @@
  */
 package io.esastack.httpclient.core;
 
+import esa.commons.collection.HashMultiValueMap;
+import esa.commons.collection.MultiValueMap;
 import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.commons.net.netty.buffer.BufferImpl;
@@ -24,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,9 +70,23 @@ class CompositeRequestTest {
         then(multipart.multipartEncode()).isTrue();
         multipart.multipartEncode(false);
         then(multipart.multipartEncode()).isFalse();
+        multipart.multipartEncode(true);
 
         then(request.attrs().size()).isEqualTo(3);
         then(request.files().size()).isEqualTo(5);
+
+        MultiValueMap<String, String> attrs = new HashMultiValueMap<>();
+        attrs.add("a1", "c");
+        attrs.add("x1", "z");
+        attrs.add("xxxxx1", "mmmmmmmm");
+        multipart.attrs(attrs);
+
+        then(request.attrs().size()).isEqualTo(6);
+        List<MultipartFileItem> items = new LinkedList<>();
+        items.add(new MultipartFileItem("abc", new File("/xyz")));
+        items.add(new MultipartFileItem("xyz", new File("/abc")));
+        multipart.files(items);
+        then(request.files().size()).isEqualTo(7);
 
         assertThrows(IllegalStateException.class, request::segment);
 

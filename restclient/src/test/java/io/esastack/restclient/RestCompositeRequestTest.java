@@ -16,12 +16,16 @@
 package io.esastack.restclient;
 
 import com.alibaba.fastjson.TypeReference;
+import esa.commons.collection.HashMultiValueMap;
+import esa.commons.collection.MultiValueMap;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.commons.net.netty.http.CookieImpl;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
+import io.esastack.httpclient.core.MultipartFileItem;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import org.junit.jupiter.api.Test;
@@ -29,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +73,36 @@ class RestCompositeRequestTest {
         List<String> paramValues = request.getParams("aaa");
         then(paramValues.get(0)).isEqualTo("aaa");
         then(paramValues.get(1)).isEqualTo("aaa1");
+
+        RestMultipartRequest multipart = request.multipart();
+        multipart.attr("a", "b");
+        multipart.attr("x", "y");
+        multipart.attr("xxxxx", "mmmmmmm");
+
+        final File file = new File("/abc");
+        multipart.file("a1", file);
+        multipart.file("a2", file, HttpHeaderValues.APPLICATION_OCTET_STREAM);
+        multipart.file("a3", file, "xxx", true);
+        multipart.file("a4", "file1", file, HttpHeaderValues.TEXT_PLAIN, true);
+        multipart.file("xxxx", new File("/def"), "mmm", true);
+
+        MultipartBody multipartBody = (MultipartBody) request.entity();
+        then(multipartBody.multipartEncode()).isTrue();
+        then(multipartBody.attrs().size()).isEqualTo(3);
+        then(multipartBody.files().size()).isEqualTo(5);
+
+        MultiValueMap<String, String> attrs = new HashMultiValueMap<>();
+        attrs.add("a1", "c");
+        attrs.add("x1", "z");
+        attrs.add("xxxxx1", "mmmmmmmm");
+        multipart.attrs(attrs);
+
+        then(multipartBody.attrs().size()).isEqualTo(6);
+        List<MultipartFileItem> items = new LinkedList<>();
+        items.add(new MultipartFileItem("abc", new File("/xyz")));
+        items.add(new MultipartFileItem("xyz", new File("/abc")));
+        multipart.files(items);
+        then(multipartBody.files().size()).isEqualTo(7);
     }
 
     @Test

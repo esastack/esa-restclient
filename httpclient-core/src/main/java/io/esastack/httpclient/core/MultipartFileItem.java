@@ -21,19 +21,32 @@ import java.io.File;
 
 public class MultipartFileItem {
 
+    static final String DEFAULT_BINARY_CONTENT_TYPE = "application/octet-stream";
+    static final String DEFAULT_TEXT_CONTENT_TYPE = "text/plain";
+
     private final String name;
     private final String filename;
     private final File file;
     private final String contentType;
     private final boolean isText;
 
-    MultipartFileItem(String name,
-                      String filename,
-                      File file,
-                      String contentType,
-                      boolean isText) {
+    public MultipartFileItem(String name, File file) {
+        this(name, file.getName(), file, DEFAULT_BINARY_CONTENT_TYPE, false);
+    }
+
+    public MultipartFileItem(String name, File file, String contentType) {
+        this(name, file.getName(), file, contentType, DEFAULT_TEXT_CONTENT_TYPE.equalsIgnoreCase(contentType));
+    }
+
+    public MultipartFileItem(String name, File file, String contentType, boolean isText) {
+        this(name, file.getName(), file, contentType, isText);
+    }
+
+    public MultipartFileItem(String name, String filename, File file, String contentType, boolean isText) {
         Checks.checkNotNull(name, "name");
+        Checks.checkNotNull(filename, "fileName");
         Checks.checkNotNull(file, "file");
+        Checks.checkNotNull(contentType, "contentType");
         this.name = name;
         this.filename = filename;
         this.file = file;

@@ -15,14 +15,16 @@
  */
 package io.esastack.httpclient.core;
 
+import esa.commons.collection.MultiValueMap;
+
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public interface MultipartRequest extends ExecutableRequest, MultipartConfigure {
 
     MultipartRequest multipartEncode(boolean multipartEncode);
-
 
     /**
      * add multipart attribute,this method is not thread-safe.
@@ -33,6 +35,15 @@ public interface MultipartRequest extends ExecutableRequest, MultipartConfigure 
      */
     @Override
     MultipartRequest attr(String name, String value);
+
+    /**
+     * add multipart attributes, this method is not thread-safe.
+     *
+     * @param values    values
+     * @return  this
+     */
+    @Override
+    MultipartRequest attrs(MultiValueMap<String, String> values);
 
     /**
      * add multipart file,this method is not thread-safe.
@@ -79,6 +90,15 @@ public interface MultipartRequest extends ExecutableRequest, MultipartConfigure 
      */
     @Override
     MultipartRequest file(String name, String filename, File file, String contentType, boolean isText);
+
+    /**
+     * add multipart files, this method is not thread-safe.
+     *
+     * @param files files
+     * @return  self
+     */
+    @Override
+    MultipartRequest files(List<MultipartFileItem> files);
 
     @Override
     MultipartRequest enableUriEncode();

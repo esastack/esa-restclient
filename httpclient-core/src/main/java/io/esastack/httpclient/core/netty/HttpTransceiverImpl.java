@@ -327,36 +327,39 @@ class HttpTransceiverImpl implements HttpTransceiver {
                 TimeUnit.NANOSECONDS);
         handle.addTimeoutTask(timeout);
 
-        headFuture.addListener(future -> endFuture.addListener(future1 ->
-                onWriteDone(request, execCtx, requestId, registry, headFuture.channel(),
-                        future, future1, handle, response)));
+        headFuture.addListener(future -> {
+            if (!headFuture.isSuccess()) {
+                // If we failed to write headers to channel, then we build a connect exception
+                // so that we can default to retry again.
+                Throwable cause = new ConnectException(headFuture.cause().getMessage());
+                handle.onWriteFailed(request, execCtx.ctx(), headFuture.cause());
+                tryToCleanAndEndExceptionally(request, execCtx, requestId, registry, handle, response, cause);
+            } else {
+                endFuture.addListener(future1 ->
+                        onWriteDone(request, execCtx, requestId, registry, headFuture.channel(),
+                                future, future1, handle, response));
+            }
+        });
     }
 
-    protected void onWriteDone(HttpRequest request,
-                               ExecContext execCtx,
-                               int requestId,
-                               HandleRegistry registry,
-                               Channel channel,
-                               Future<?> headFuture,
-                               Future<?> endFuture,
-                               TimeoutHandle handle,
-                               CompletableFuture<HttpResponse> response) {
+    private void onWriteDone(HttpRequest request,
+                             ExecContext execCtx,
+                             int requestId,
+                             HandleRegistry registry,
+                             Channel channel,
+                             Future<?> headFuture,
+                             Future<?> endFuture,
+                             TimeoutHandle handle,
+                             CompletableFuture<HttpResponse> response) {
         if (headFuture.isSuccess() && endFuture.isSuccess()) {
             handle.onWriteDone(request, execCtx.ctx());
             return;
         }
 
-        final Throwable cause;
-        if (!headFuture.isSuccess()) {
-            // If we failed to write headers to channel, then we build a connect exception
-            // so that we can default to retry again.
-            cause = new ConnectException(headFuture.cause().getMessage());
-        } else {
-            // If we has wrote headers successfully but failed to write data, then we won't
-            // use default retry corresponding idempotence.
-            cause = new IOException("Failed to write request: " + request + " to connection: "
-                    + channel, endFuture.cause());
-        }
+        // If we have wrote headers successfully but failed to write data, then we won't
+        // use default retry corresponding idempotence.
+        Throwable cause = new IOException("Failed to write request: " + request + " to connection: "
+                + channel, endFuture.cause());
 
         handle.onWriteFailed(request, execCtx.ctx(), endFuture.cause());
         tryToCleanAndEndExceptionally(request, execCtx, requestId, registry, handle, response, cause);

@@ -25,7 +25,6 @@ import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
 import io.esastack.httpclient.core.Listener;
-import io.esastack.httpclient.core.NoopListener;
 import io.esastack.httpclient.core.config.ChannelPoolOptions;
 import io.esastack.httpclient.core.config.SslOptions;
 import io.esastack.httpclient.core.exec.ExecContext;
@@ -53,7 +52,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -428,26 +426,7 @@ class HttpTransceiverImplTest {
         final HttpTransceiverImpl transceiver = setUp();
         final HttpRequest request = mock(HttpRequest.class);
         when(request.uri()).thenReturn(new HttpUri("/abc"));
-
-        final Listener listener = mock(Listener.class);
-        final ExecContext ctx = ExecContextUtil.from(new Context(), listener);
-        final CompletableFuture<HttpResponse> response = new CompletableFuture<>();
-        final Channel channel = new EmbeddedChannel();
-
-        final HandleRegistry registry = new HandleRegistry(1, 0);
-        final TimeoutHandle handle = new TimeoutHandle(NoopListener.INSTANCE);
-
-        transceiver.afterWriting(1, request, ctx, FileWriter.singleton(),
-                channel.newSucceededFuture(), channel.newSucceededFuture(), handle, registry, response);
-        assertNotNull(handle.task);
-    }
-
-    @Test
-    void testOnWriteDone() {
-        // case1: head and data success
-        final HttpTransceiverImpl transceiver = setUp();
-        final HttpRequest request = mock(HttpRequest.class);
-        when(request.uri()).thenReturn(new HttpUri("/abc"));
+        when(request.readTimeout()).thenReturn(Long.MAX_VALUE);
 
         final Listener listener1 = mock(Listener.class);
         final ExecContext ctx1 = ExecContextUtil.from(new Context(), listener1);
@@ -456,50 +435,75 @@ class HttpTransceiverImplTest {
 
         final HandleRegistry registry1 = new HandleRegistry(1, 0);
         final TimeoutHandle handle1 = mock(TimeoutHandle.class);
-        final ChannelFuture headFuture1 = channel1.newSucceededFuture();
-        final ChannelFuture dataFuture1 = channel1.newSucceededFuture();
+        registry1.put(new ResponseHandle(new HandleImpl(new NettyResponse(true)),
+                request, ctx1, handle1, response1));
 
-        transceiver.onWriteDone(request, ctx1, 1, registry1, channel1, headFuture1,
-                dataFuture1, handle1, response1);
+        // case1: all success
+        transceiver.afterWriting(1, request, ctx1, FileWriter.singleton(),
+                channel1.newSucceededFuture(), channel1.newSucceededFuture(), handle1, registry1, response1);
         verify(handle1).onWriteDone(any(), any());
         verify(listener1, never()).onError(any(), any(), any());
         assertFalse(response1.isCompletedExceptionally());
 
-        // case2: head fails
+        // case2: head fails and data success
         final ExecContext ctx2 = ExecContextUtil.from(new Context(), listener1);
         final CompletableFuture<HttpResponse> response2 = new CompletableFuture<>();
         final Channel channel2 = new EmbeddedChannel();
 
         final HandleRegistry registry2 = new HandleRegistry(1, 0);
         final TimeoutHandle handle2 = mock(TimeoutHandle.class);
-        final ChannelFuture headFuture2 = channel1.newFailedFuture(new IOException());
-        final ChannelFuture dataFuture2 = channel1.newSucceededFuture();
+        final ChannelFuture headFuture2 = channel2.newFailedFuture(new IOException());
+        final ChannelFuture dataFuture2 = channel2.newSucceededFuture();
+        registry2.put(new ResponseHandle(new HandleImpl(new NettyResponse(true)),
+                request, ctx2, handle2, response2));
 
-        transceiver.onWriteDone(request, ctx2, -1, registry2, channel2, headFuture2,
-                dataFuture2, handle2, response2);
+        transceiver.afterWriting(1, request, ctx2, FileWriter.singleton(),
+                headFuture2, dataFuture2, handle2, registry2, response2);
         verify(handle2, never()).onWriteDone(any(), any());
         verify(handle2).onWriteFailed(any(), any(), any());
         verify(handle2).onError(any(), any(), any());
         assertTrue(response2.isCompletedExceptionally());
         assertTrue(Futures.getCause(response2) instanceof ConnectException);
 
-        // case3: data fails
+        // case3: head fails and data fails
         final ExecContext ctx3 = ExecContextUtil.from(new Context(), listener1);
         final CompletableFuture<HttpResponse> response3 = new CompletableFuture<>();
         final Channel channel3 = new EmbeddedChannel();
 
         final HandleRegistry registry3 = new HandleRegistry(1, 0);
         final TimeoutHandle handle3 = mock(TimeoutHandle.class);
-        final ChannelFuture headFuture3 = channel1.newSucceededFuture();
-        final ChannelFuture dataFuture3 = channel1.newFailedFuture(new IllegalStateException());
+        final ChannelFuture headFuture3 = channel3.newFailedFuture(new IOException());
+        final ChannelFuture dataFuture3 = channel3.newFailedFuture(new RuntimeException());
+        registry3.put(new ResponseHandle(new HandleImpl(new NettyResponse(true)),
+                request, ctx3, handle3, response3));
 
-        transceiver.onWriteDone(request, ctx3, -1, registry3, channel3, headFuture3,
-                dataFuture3, handle3, response3);
+        transceiver.afterWriting(1, request, ctx3, FileWriter.singleton(),
+                headFuture3, dataFuture3, handle3, registry3, response3);
         verify(handle3, never()).onWriteDone(any(), any());
         verify(handle3).onWriteFailed(any(), any(), any());
         verify(handle3).onError(any(), any(), any());
         assertTrue(response3.isCompletedExceptionally());
-        assertTrue(Futures.getCause(response3) instanceof IOException);
+        assertTrue(Futures.getCause(response3) instanceof ConnectException);
+
+        // case4: head success and data fails
+        final ExecContext ctx4 = ExecContextUtil.from(new Context(), listener1);
+        final CompletableFuture<HttpResponse> response4 = new CompletableFuture<>();
+        final Channel channel4 = new EmbeddedChannel();
+
+        final HandleRegistry registry4 = new HandleRegistry(1, 0);
+        final TimeoutHandle handle4 = mock(TimeoutHandle.class);
+        final ChannelFuture headFuture4 = channel4.newSucceededFuture();
+        final ChannelFuture dataFuture4 = channel4.newFailedFuture(new IllegalStateException());
+        registry4.put(new ResponseHandle(new HandleImpl(new NettyResponse(true)),
+                request, ctx4, handle4, response4));
+
+        transceiver.afterWriting(1, request, ctx4, FileWriter.singleton(),
+                headFuture4, dataFuture4, handle4, registry4, response4);
+        verify(handle4, never()).onWriteDone(any(), any());
+        verify(handle4).onWriteFailed(any(), any(), any());
+        verify(handle4).onError(any(), any(), any());
+        assertTrue(response4.isCompletedExceptionally());
+        assertTrue(Futures.getCause(response4) instanceof IOException);
     }
 
     @Test

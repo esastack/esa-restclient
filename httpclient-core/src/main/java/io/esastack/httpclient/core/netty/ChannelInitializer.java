@@ -316,6 +316,10 @@ final class ChannelInitializer {
                 }
             }
 
+            // fix https://github.com/esastack/esa-httpclient/issues/115
+
+            // We must caught the exception happened in the process of upgrade to H2,
+            // otherwise the future of the response will never be ended.
             @Override
             public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
                 initializeFuture.setFailure(cause);

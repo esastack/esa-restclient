@@ -15,13 +15,13 @@ It's so easy to get start with `ESA RestClient`.
 <dependency>
     <groupId>io.esastack</groupId>
     <artifactId>restclient</artifactId>
-    <version>${esa-restclient.version}</version>
+    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
 #### Step 2: Send a request and handle response
 > **Note：执行请求得到的CompletionStage<RestResponseBase\>直接由IO线程执行，请勿在该线程内做其他耗时操作，以免阻塞IO线程**
- 
+
 ```java
 final RestClient client = RestClient.ofDefault();
 
@@ -31,6 +31,6 @@ final String entity = client.post("http://127.0.0.1:8081/")
                         .retry(3)               //重试次数
                         .readTimeout(3000)      //读超时
                         .get()
-                        .bodyToEntity(String.class );
+                        .bodyToEntity(String.class);
 // handle response here...
 ```

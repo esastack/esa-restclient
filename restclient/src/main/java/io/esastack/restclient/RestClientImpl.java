@@ -18,8 +18,13 @@ package io.esastack.restclient;
 import esa.commons.Checks;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.HttpClient;
+import io.esastack.httpclient.core.metrics.CallbackExecutorMetric;
+import io.esastack.httpclient.core.metrics.ConnectionPoolMetricProvider;
+import io.esastack.httpclient.core.metrics.IoThreadGroupMetric;
 import io.esastack.restclient.exec.RestRequestExecutor;
 import io.esastack.restclient.exec.RestRequestExecutorImpl;
+
+import java.io.IOException;
 
 public class RestClientImpl implements RestClient {
 
@@ -76,4 +81,23 @@ public class RestClientImpl implements RestClient {
         return clientOptions;
     }
 
+    @Override
+    public ConnectionPoolMetricProvider connectionPoolMetric() {
+        return httpClient.connectionPoolMetric();
+    }
+
+    @Override
+    public IoThreadGroupMetric ioThreadsMetric() {
+        return httpClient.ioThreadsMetric();
+    }
+
+    @Override
+    public CallbackExecutorMetric callbackExecutorMetric() {
+        return httpClient.callbackExecutorMetric();
+    }
+
+    @Override
+    public void close() throws IOException {
+        httpClient.close();
+    }
 }

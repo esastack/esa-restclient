@@ -16,8 +16,11 @@
 package io.esastack.restclient;
 
 import io.esastack.commons.net.http.HttpMethod;
+import io.esastack.httpclient.core.metrics.MetricPoint;
 
-public interface RestClient {
+import java.io.Closeable;
+
+public interface RestClient extends Closeable, MetricPoint {
     /**
      * An easy way to build {@link HttpMethod#GET} request.
      *

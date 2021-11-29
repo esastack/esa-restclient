@@ -16,6 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.httpclient.core.util.BufferUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -132,9 +133,7 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
                                      boolean endStream,
                                      ChannelPromise promise) {
         if (checkIfEnded(streamId, false, promise)) {
-            if (data instanceof ByteBuf) {
-                Utils.tryRelease((ByteBuf) data);
-            }
+            releaseIfNeed(data);
             return promise;
         }
 
@@ -251,6 +250,17 @@ class Http2ConnectionHandler extends io.netty.handler.codec.http2.Http2Connectio
 
     private boolean inEventLoop() {
         return ctx.channel().eventLoop().inEventLoop();
+    }
+
+    private void releaseIfNeed(Object data) {
+        if (data instanceof ByteBuf) {
+            Utils.tryRelease((ByteBuf) data);
+        } else if (data instanceof Buffer) {
+            Object unwrap = BufferUtil.unwrap((Buffer) data);
+            if (unwrap instanceof ByteBuf) {
+                Utils.tryRelease((ByteBuf) unwrap);
+            }
+        }
     }
 
     private ByteBuf format(Object data) {

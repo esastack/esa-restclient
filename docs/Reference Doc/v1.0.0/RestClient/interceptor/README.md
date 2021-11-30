@@ -2,7 +2,7 @@
 sort: 2
 ---
 
-# interceptor
+# Interceptor
 `RestClient`支持通过builder配置和SPI加载两种方式配置`ClientInterceptor`。
 
 ## Builder配置
@@ -25,4 +25,4 @@ final RestClient client = RestClient.create()
 ```
 
 ## 执行时机
-见[请求处理完整流程](../customize_handle/)中的`ClientInterceptor`。
+见[请求处理完整流程](../process_of_restclient/)中的`ClientInterceptor`。

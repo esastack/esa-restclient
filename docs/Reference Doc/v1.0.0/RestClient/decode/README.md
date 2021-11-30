@@ -1,8 +1,8 @@
 ---
-sort: 2
+sort: 4
 ---
 
-# 编解码
+# 反序列化
 `RestClient`支持通过builder配置和SPI加载两种方式配置`ClientInterceptor`。
 
 ## Builder配置

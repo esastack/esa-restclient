@@ -1,5 +1,5 @@
 ---
-sort: 3
+sort: 2
 ---
 
 # interceptor
@@ -25,4 +25,4 @@ final RestClient client = RestClient.create()
 ```
 
 ## 执行时机
-见[RestClient请求处理完整流程](../customize_handle/)中的`ClientInterceptor`。
+见[请求处理完整流程](../customize_handle/)中的`ClientInterceptor`。

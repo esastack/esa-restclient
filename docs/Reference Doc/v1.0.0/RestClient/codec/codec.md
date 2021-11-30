@@ -2,7 +2,7 @@
 sort: 1
 ---
 
-# 序列化
+# 序列化器
 RestClient内置了下面这些序列化器：
 - Json
     - jackson(默认)
@@ -22,3 +22,5 @@ RestClient内置了下面这些序列化器：
 #### SPI
 
 #### 直接绑定Request
+
+## 执行时机

@@ -15,7 +15,7 @@ It's so easy to get start with `ESA RestClient`.
 <dependency>
     <groupId>io.esastack</groupId>
     <artifactId>restclient</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${esa-restclient.version}</version>
 </dependency>
 ```
 

@@ -1,8 +1,8 @@
 ---
-sort: 3
+sort: 2
 ---
 
-# interceptor
+# 编解码
 `RestClient`支持通过builder配置和SPI加载两种方式配置`ClientInterceptor`。
 
 ## Builder配置
@@ -25,4 +25,4 @@ final RestClient client = RestClient.create()
 ```
 
 ## 执行时机
-![ClientInterceptor](../../../../img/process_of_restclient.svg)
+![ClientInterceptor](../../../../img/ClientInterceptor.png)

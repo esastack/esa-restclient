@@ -2,7 +2,7 @@
 sort: 2
 ---
 
-# Interceptor
+# interceptor
 
 在`HttpRequest`处理过程中，有时可能需要执行Retry、Redirect、Cache等操作，使用拦截器可以实现类似功能。与`Filter`不同的是，在`Interceptor`中
 可以同时获取`HttpRequest`及经过处理后的`HttpResponse`，甚至可以替换原始的`HttpRequest`及处理后的`HttpResponse`。更多与`Filter`的不同如下：

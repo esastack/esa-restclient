@@ -134,5 +134,98 @@ final RestResponseBase response = client.post(url)
 - 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法编码该请求的Entity，则`RestClient`将会抛出CodecExceptiony异常。
 ```
 
-### 执行时机
+### 编码器执行时机
 见[请求处理完整流程](../process_of_restclient/)中的`Encoder`。
+
+## 编码器埋点
+用户可以通过```EncodeAdvice```在编码前后进行埋点来插入业务逻辑。
+### 示例
+```java
+public class EncodeAdviceImpl implements EncodeAdvice {
+    @Override
+    public RequestContent<?> aroundEncode(EncodeAdviceContext ctx) throws Exception {
+        //...before encode
+        RequestContent<?> requestContent = ctx.next();
+        //...after encode
+        return requestContent;
+    }
+}
+```
+#### EncodeAdviceContext
+`RestClient`将编码埋点过程所需要的数据均封装到```EncodeAdviceContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对编码埋点的上下文进行扩展时，也不会影响到用户的业务逻辑。
+调用`EncodeAdviceContext.next()`，该方法的返回值为编码后的结果，调用该方法通常意味着使用下一个`EncodeAdvice`，最后一个`EncodeAdvice`将会开始执行编码流程。具体接口内容如下:
+```java
+public interface EncodeAdviceContext extends EncodeChain {
+
+    RestRequest request();
+
+    /**
+     * set entity,this method is not safe for use by multiple threads
+     *
+     * @param entity entity
+     */
+    void entity(Object entity);
+
+    /**
+     * set entity and generics,this method is not safe for use by multiple threads
+     *
+     * @param entity      entity
+     * @param generics generics
+     */
+    void entity(Object entity, Type generics);
+}
+
+public interface EncodeChain {
+
+    /**
+     * @return The contentType of request
+     */
+    MediaType contentType();
+
+    /**
+     * @return The entity of request
+     */
+    Object entity();
+
+    /**
+     * @return The type of entity
+     */
+    Class<?> entityType();
+
+    /**
+     * @return The generics of entity
+     */
+    Type entityGenerics();
+
+    /**
+     * Proceed to the next member in the chain.
+     *
+     * @return encoded requestContent
+     * @throws Exception error
+     */
+    RequestContent<?> next() throws Exception;
+}
+```
+
+### 配置方式
+#### Builder
+在构造`RestClient`时传入自定义的`EncodeAdvice`实例，如：
+```java
+final RestClient client = RestClient.create()
+                      .addEncodeAdvice(ctx ->{
+                          //...before encode
+                          RequestContent<?> requestContent = ctx.next();
+                          //...after encode
+                          return requestContent;
+                      })
+                      .build();
+```
+#### SPI
+`RestClient`支持通过Spi的方式加载`EncodeAdvice`接口的实现类，使用时只需要按照SPI的加载规则将自定义的`EncodeAdvice`放入指定的目录下即可。
+
+```tip
+- 多个EncodeAdvice之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
+```
+
+### 执行时机
+见[请求处理完整流程](../process_of_restclient/)中的`EncodeAdvice`。

@@ -25,4 +25,4 @@ final RestClient client = RestClient.create()
 ```
 
 ## 执行时机
-![ClientInterceptor](../../../../img/process_of_restclient.svg)
+见[RestClient请求处理完整流程](../customize_handle/)中的`ClientInterceptor`。

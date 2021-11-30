@@ -16,7 +16,7 @@ sort: 1
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 ```
 
-## 自定义编解码器
+## 自定义编码器
 ### Encoder
 `Encoder`将用户设置的请求`Entity`编码成```RequestContent```。```RequestContent```负责将`RestClient`编码后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
 - 编码成```byte[]```：底层的`HttpClient`将```byte[]```直接当做请求体发送。

@@ -167,6 +167,15 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
+    public MultipartRequest attrs(Map<String, String> attrMap) {
+        Checks.checkNotNull(attrMap, "attrMap");
+        checkStarted();
+        checkMultipartBodyNotNull();
+        multipartBody.attrs(attrMap);
+        return self();
+    }
+
+    @Override
     public MultipartRequest file(String name, File file) {
         if (illegalArgs(name, file)) {
             return self();
@@ -312,7 +321,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         super.addParam(name, value);
         return self();
     }
-    
+
     @Override
     public CompositeRequest addParams(Map<String, String> params) {
         checkStarted();

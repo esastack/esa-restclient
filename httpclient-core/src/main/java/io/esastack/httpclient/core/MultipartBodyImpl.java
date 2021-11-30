@@ -4,6 +4,7 @@ import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiValueMap;
 
 import java.io.File;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,25 @@ public class MultipartBodyImpl implements MultipartBody {
     public MultipartBody attr(String name, String value) {
         checkAttrsNotNull();
         attrs.add(name, value);
+        return self();
+    }
+
+    @Override
+    public MultipartConfigure attrs(Map<String, String> attrMap) {
+        checkAttrsNotNull();
+        for (Map.Entry<String, String> entry : attrMap.entrySet()) {
+            String name;
+            String value;
+            try {
+                name = entry.getKey();
+                value = entry.getValue();
+            } catch (IllegalStateException ise) {
+                // this usually means the entry is no longer in the map.
+                throw new ConcurrentModificationException(ise);
+            }
+            attrs.add(name, value);
+        }
+
         return self();
     }
 

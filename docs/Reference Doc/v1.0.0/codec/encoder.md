@@ -21,7 +21,7 @@ sort: 1
 ### Encoder
 `Encoder`将用户设置的请求`Entity`编码成```RequestContent```。```RequestContent```负责将`RestClient`编码后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
 - Encode to ```byte[]```：底层的`HttpClient`将```byte[]```直接当做请求体发送。
-- Encode to ```MultipartBody```：底层的`HttpClient`将`MultipartBody`Encode to Multipart的形式发送。
+- Encode to ```MultipartBody```：底层的`HttpClient`将`MultipartBody` 以Multipart的形式发送。
 - Encode to ```File```：底层的`HttpClient`将使用`NIO`的`FileChannel`来进行0拷贝传输，传输更加快速的同时避免文件过大造成的OOM。
 
 由于大多数用户最常用的是将请求体编码成```byte[]```，因此下面仅以Encode to ```byte[]```作为示例。

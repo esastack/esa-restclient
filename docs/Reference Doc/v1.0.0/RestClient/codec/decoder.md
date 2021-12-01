@@ -99,7 +99,6 @@ public interface DecodeChain {
 final RestClient client = RestClient.create()
                 .addDecoder(ctx -> {
                     //解码...
-                    //如果该解码器无法解码该类型，则调用下一个解码器
                     return ctx.next();
                 })
                 .build();
@@ -128,11 +127,11 @@ final RestResponseBase response = client.post(url)
 - 当`Request`绑定了`Decoder`，该Client中设置的所有`Decoder`将对该请求失效。即：如果当前`Decoder`无法解码该响应，则`RestClient`将会抛出CodecException异常。
 ```
 
-### 解码器执行时机
+### 执行时机
 见[请求处理完整流程](../process_of_restclient/)中的`Decoder`。
 
 ## 解码器埋点
-用户可以通过`DecodeAdvice`在解码前后进行埋点来插入业务逻辑，来对要解码的 `ResponseContent` 或者 编码后的对象 进行修改替换等操作。
+用户可以通过`DecodeAdvice`在解码前后进行埋点来插入业务逻辑，来对要解码的 `ResponseContent` 或者 解码后的对象 进行修改替换等操作。
 ### 示例
 ```java
 public class DecodeAdviceImpl implements DecodeAdvice {

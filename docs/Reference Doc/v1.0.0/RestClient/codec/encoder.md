@@ -125,7 +125,6 @@ final RestResponseBase response = client.post(url)
                         .entity(new File("aaa"))
                         .encoder(ctx -> {
                             //编码...
-                            //如果该编码器无法编码该类型，则调用下一个编码器
                             return ctx.next();
                         })
                         .execute()
@@ -136,7 +135,7 @@ final RestResponseBase response = client.post(url)
 - 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法编码该请求的Entity，则`RestClient`将会抛出CodecException异常。
 ```
 
-### 编码器执行时机
+### 执行时机
 见[请求处理完整流程](../process_of_restclient/)中的`Encoder`。
 
 ## 编码器埋点

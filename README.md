@@ -52,7 +52,7 @@ final String entity = client.post("http://127.0.0.1:8081/")
 
 ### Test cases
 
-- We built an echo server by ESA-HTTPServer and used ESA-RestClient、ESA-HttpClient(1.0.0) to do the requests for RPS testing with fixed string:'OK' and different ratio of asynchronous to synchronous requests.This is because if all requests are executed asynchronously, many requests are requesting to obtain connections, resulting in errors. Therefore, the test method is to use asynchronous and synchronous alternately to make requests, so as to achieve the best performance.
+- We built an echo server by ESA-HTTPServer and used ESA-RestClient(1.0.0)、ESA-HttpClient(1.0.0) to do the requests for RPS testing with fixed string:'OK' and different ratio of asynchronous to synchronous requests.This is because if all requests are executed asynchronously, many requests are requesting to obtain connections, resulting in errors. Therefore, the test method is to use asynchronous and synchronous alternately to make requests, so as to achieve the best performance.
 - Also we used `Apache HttpComponents`(5.1.2) and `OK-HttpClient`(4.9.2) to build a client which is same with above for RPS testing.
 
 ### Hardware Used
@@ -89,7 +89,7 @@ We used the following software for the testing:
 | -------------- | --------- | --------- | --------- | --------- | 
 | Best RPS | 116013.75 | 111217.98 | 89633.73 | 70501.59 | 
 | ratio of async to sync | 800 | 800 | 50 | 300 | 
-| num of io threads  | 4 | 4 | 4 | 10 | 
+| num of io threads  | 4 | 4 | 4 | 10(MaxRequestsPerHost) | 
 | num of biz threads  | 1 | 1 | 10 | 1 | 
 
 

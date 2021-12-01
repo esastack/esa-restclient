@@ -182,10 +182,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         }
         checkStarted();
         checkMultipartBodyNotNull();
-        for (String key : values.keySet()) {
-            List<String> vs = values.get(key);
-            vs.forEach(v -> multipartBody.attr(key, v));
-        }
+        multipartBody.attrs(values);
         return self();
     }
 
@@ -346,7 +343,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         super.addParam(name, value);
         return self();
     }
-    
+
     @Override
     public CompositeRequest addParams(Map<String, String> params) {
         checkStarted();

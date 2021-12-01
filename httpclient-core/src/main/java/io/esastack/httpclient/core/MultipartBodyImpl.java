@@ -47,12 +47,25 @@ public class MultipartBodyImpl implements MultipartBody {
             return self();
         }
         checkAttrsNotNull();
-        for (String key : values.keySet()) {
-            attrs.addAll(key, values.get(key));
+        for (Map.Entry<String, List<String>> entry : values.entrySet()) {
+            attrs.addAll(entry.getKey(), entry.getValue());
         }
         return self();
     }
 
+    @Override
+    public MultipartConfigure attrs(Map<String, String> attrMap) {
+        if (attrMap == null || attrMap.isEmpty()) {
+            return self();
+        }
+        checkAttrsNotNull();
+        for (Map.Entry<String, String> entry : attrMap.entrySet()) {
+            attr(entry.getKey(), entry.getValue());
+        }
+
+        return self();
+    }
+    
     @Override
     public MultipartBody files(List<MultipartFileItem> files) {
         if (files == null || files.isEmpty()) {
@@ -61,16 +74,6 @@ public class MultipartBodyImpl implements MultipartBody {
         checkMultipartFile();
         checkFilesNotNull();
         this.files.addAll(files);
-        return self();
-    }
-
-    @Override
-    public MultipartConfigure attrs(Map<String, String> attrMap) {
-        checkAttrsNotNull();
-        for (Map.Entry<String, String> entry : attrMap.entrySet()) {
-            attr(entry.getKey(), entry.getValue());
-        }
-
         return self();
     }
 

@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,8 +56,10 @@ class CompositeRequestTest {
         then(multipart.files()).isEmpty();
 
         multipart.attr("a", "b");
-        multipart.attr("x", "y");
-        multipart.attr("xxxxx", "mmmmmmm");
+        Map<String, String> attrs = new HashMap<>();
+        attrs.put("x", "y");
+        attrs.put("xxxxx", "mmmmmmm");
+        multipart.attrs(attrs);
 
         final File file = new File("/abc");
         multipart.file("a1", file);

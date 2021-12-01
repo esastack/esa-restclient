@@ -24,7 +24,6 @@ import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
-import io.esastack.httpclient.core.MultipartConfigure;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.RestRequestExecutor;
@@ -117,7 +116,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
-    public MultipartConfigure attrs(Map<String, String> attrMap) {
+    public RestMultipartRequest attrs(Map<String, String> attrMap) {
         Checks.checkNotNull(attrMap, "attrMap");
         if (entity instanceof MultipartBody) {
             ((MultipartBody) entity).attrs(attrMap);

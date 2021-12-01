@@ -43,7 +43,7 @@ public interface RestMultipartRequest extends ExecutableRestRequest, MultipartCo
      * @return this
      */
     @Override
-    MultipartConfigure attrs(Map<String, String> attrMap);
+    RestMultipartRequest attrs(Map<String, String> attrMap);
 
     /**
      * add multipart file,this method is not thread-safe.

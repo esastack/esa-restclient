@@ -257,6 +257,9 @@ class RestCompositeRequestTest {
 
     @Test
     void testMultipart() {
+        Map<String, String> attrs = new HashMap<>();
+        attrs.put("aaa", "ccc");
+        attrs.put("ccc", "aaa1");
         File file = new File("aaa");
         RestMultipartRequest request = RestClient.ofDefault().post("aaa").multipart()
                 .file("aaa", file)
@@ -265,15 +268,18 @@ class RestCompositeRequestTest {
                 .file("aaa3", "aaa", file, "aaa2", false)
                 .file(null, null)
                 .attr("bbb", "bbb")
-                .attr(null, null);
+                .attr(null, null)
+                .attrs(attrs);
         then(request.contentType()).isEqualTo(MediaTypeUtil.MULTIPART_FORM_DATA);
         then(request.entity() instanceof MultipartBody).isTrue();
 
         MultipartBody body = (MultipartBody) request.entity();
         then(body.files().size()).isEqualTo(4);
         then(body.files().get(0).file()).isEqualTo(file);
-        then(body.attrs().size()).isEqualTo(1);
+        then(body.attrs().size()).isEqualTo(3);
         then(body.attrs().getFirst("bbb")).isEqualTo("bbb");
+        then(body.attrs().getFirst("aaa")).isEqualTo("ccc");
+        then(body.attrs().getFirst("ccc")).isEqualTo("aaa1");
     }
 
     @Test

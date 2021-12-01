@@ -70,7 +70,7 @@ We used the following software for the testing:
 ```
 -Xms1024m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
 ```
-### ping result
+### Ping Result
 ![ping_result](./docs/img/ping_result.png)
 
 ### Client Options
@@ -89,8 +89,8 @@ We used the following software for the testing:
 | -------------- | --------- | --------- | --------- | --------- | 
 | Best RPS | 116013.75 | 111217.98 | 89633.73 | 70501.59 | 
 | ratio of async to sync | 800 | 800 | 50 | 300 | 
-| io thread num | 4 | 4 | 4 | 10 | 
-| biz thread num | 1 | 1 | 10 | 1 | 
+| num of io threads  | 4 | 4 | 4 | 10 | 
+| num of biz threads  | 1 | 1 | 10 | 1 | 
 
 
 See more details in [Reference Doc](https://www.esastack.io/esa-httpclient)

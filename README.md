@@ -40,10 +40,10 @@ ESA HttpClient is an asynchronous event-driven http client based on netty.
 final RestClient client = RestClient.ofDefault();
 
 final String entity = client.post("http://127.0.0.1:8081/")
+                        .maxRetries(3)     //设置重试次数
+                        .readTimeout(3000)      //读超时
                         .entity("Hello Server")
                         .execute()
-                        .retry(3)               //重试次数
-                        .readTimeout(3000)      //读超时
                         .get()
                         .bodyToEntity(String.class);
 ```

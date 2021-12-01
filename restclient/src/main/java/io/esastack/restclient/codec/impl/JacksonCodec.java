@@ -28,6 +28,7 @@ import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.JsonCodec;
 import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.utils.Constants;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -78,4 +79,8 @@ public class JacksonCodec implements JsonCodec {
         return typeFactory.constructType(type);
     }
 
+    @Override
+    public int getOrder() {
+        return Constants.Order.JACKSON;
+    }
 }

@@ -3,13 +3,14 @@ sort: 1
 ---
 
 # 编码器
-`RestClient`内置了下面这些编码器：
+`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的编码器进行编码。其内置了下面这些编码器：
 - Json
     - jackson(默认)
     - fastjson
     - gson
 - ProtoBuf
 - String
+- byte[]
 
 除此之外`RestClient`也支持用户自定义编码器。
 ```note
@@ -18,14 +19,14 @@ sort: 1
 
 ## 自定义编码器
 ### Encoder
-`Encoder`将用户设置的请求`Entity`Encode to ```RequestContent```。```RequestContent```负责将`RestClient`编码后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
+`Encoder`将用户设置的请求`Entity`编码成```RequestContent```。```RequestContent```负责将`RestClient`编码后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
 - Encode to ```byte[]```：底层的`HttpClient`将```byte[]```直接当做请求体发送。
 - Encode to ```MultipartBody```：底层的`HttpClient`将`MultipartBody`Encode to Multipart的形式发送。
 - Encode to ```File```：底层的`HttpClient`将使用`NIO`的`FileChannel`来进行0拷贝传输，传输更加快速的同时避免文件过大造成的OOM。
 
-由于大多数用户最常用的是将请求体Encode to ```byte[]```，因此下面仅以Encode to ```byte[]```作为示例。
-#### Encode to ```byte[]```
-Encode to ```byte[]```是用户最常用的一种编码方式，因此`RestClient`抽象出继承自```Encoder```的```ByteEncoder```。下面为```ByteEncoder```的示例：
+由于大多数用户最常用的是将请求体编码成```byte[]```，因此下面仅以Encode to ```byte[]```作为示例。
+#### 示例
+编码成```byte[]```是用户最常用的一种编码方式，因此`RestClient`抽象出继承自```Encoder```的```ByteEncoder```。下面为```ByteEncoder```的示例：
 ```java
 public class StringEncoder implements ByteEncoder {
 
@@ -64,7 +65,6 @@ public interface EncodeContext<V> extends EncodeChain {
     @Override
     RequestContent<V> next() throws Exception;
 }
-
 
 public interface EncodeChain {
 
@@ -110,12 +110,14 @@ final RestClient client = RestClient.create()
                 })
                 .build();
 ```
-#### SPI
-`RestClient`支持通过Spi的方式加载`Encoder`接口的实现类，使用时只需要按照SPI的加载规则将自定义的`Encoder`放入指定的目录下即可。
 
 ```tip
 - 多个Encoder之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
 ```
+
+#### SPI
+`RestClient`支持通过SPI的方式加载`Encoder`接口的实现类，使用时只需要按照SPI的加载规则将自定义的`Encoder`放入指定的目录下即可。
+
 #### 直接绑定Request
 `Encoder`可以直接绑定`Request`，使用方式如下:
 ```java
@@ -131,14 +133,14 @@ final RestResponseBase response = client.post(url)
                         .get();
 ```
 ```tip
-- 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法编码该请求的Entity，则`RestClient`将会抛出CodecExceptiony异常。
+- 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法编码该请求的Entity，则`RestClient`将会抛出CodecException异常。
 ```
 
 ### 编码器执行时机
 见[请求处理完整流程](../process_of_restclient/)中的`Encoder`。
 
 ## 编码器埋点
-用户可以通过```EncodeAdvice```在编码前后进行埋点来插入业务逻辑。
+用户可以通过```EncodeAdvice```在编码前后进行埋点来插入业务逻辑，来对要编码的 `Entity` 或者 编码后的`RequestContent` 进行修改替换等操作。
 ### 示例
 ```java
 public class EncodeAdviceImpl implements EncodeAdvice {
@@ -221,7 +223,7 @@ final RestClient client = RestClient.create()
                       .build();
 ```
 #### SPI
-`RestClient`支持通过Spi的方式加载`EncodeAdvice`接口的实现类，使用时只需要按照SPI的加载规则将自定义的`EncodeAdvice`放入指定的目录下即可。
+`RestClient`支持通过SPI的方式加载`EncodeAdvice`接口的实现类，使用时只需要按照SPI的加载规则将自定义的`EncodeAdvice`放入指定的目录下即可。
 
 ```tip
 - 多个EncodeAdvice之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。

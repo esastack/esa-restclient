@@ -17,11 +17,11 @@ package io.esastack.restclient.spi;
 
 import esa.commons.spi.SPI;
 import io.esastack.restclient.RestClientOptions;
-import io.esastack.restclient.exec.ClientInterceptor;
+import io.esastack.restclient.exec.RestInterceptor;
 
 import java.util.Collection;
 
 @SPI
-public interface ClientInterceptorFactory {
-    Collection<ClientInterceptor> interceptors(RestClientOptions clientOptions);
+public interface RestInterceptorFactory {
+    Collection<RestInterceptor> interceptors(RestClientOptions clientOptions);
 }

@@ -35,8 +35,8 @@ import io.esastack.restclient.codec.EncodeAdviceContext;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.codec.RequestContent;
-import io.esastack.restclient.exec.ClientInterceptor;
 import io.esastack.restclient.exec.InvocationChain;
+import io.esastack.restclient.exec.RestInterceptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -229,14 +229,14 @@ class RestClientBuilderTest {
     @Test
     void testAddInterceptor() {
         RestClientBuilder builder = new RestClientBuilder();
-        ClientInterceptor interceptor1 = createInterceptor(3);
+        RestInterceptor interceptor1 = createInterceptor(3);
         builder.addInterceptor(interceptor1);
-        ClientInterceptor interceptor2 = createInterceptor(-1);
-        ClientInterceptor interceptor3 = createInterceptor(1);
-        List<ClientInterceptor> interceptors = Arrays.asList(interceptor2, interceptor3);
+        RestInterceptor interceptor2 = createInterceptor(-1);
+        RestInterceptor interceptor3 = createInterceptor(1);
+        List<RestInterceptor> interceptors = Arrays.asList(interceptor2, interceptor3);
         builder.addInterceptors(interceptors);
 
-        List<ClientInterceptor> orderedInterceptors = builder.unmodifiableInterceptors();
+        List<RestInterceptor> orderedInterceptors = builder.unmodifiableInterceptors();
         then(orderedInterceptors.size()).isEqualTo(3);
     }
 
@@ -296,8 +296,8 @@ class RestClientBuilderTest {
         };
     }
 
-    private ClientInterceptor createInterceptor(int order) {
-        return new ClientInterceptor() {
+    private RestInterceptor createInterceptor(int order) {
+        return new RestInterceptor() {
 
             @Override
             public CompletionStage<RestResponse> proceed(RestRequest request, InvocationChain next) {

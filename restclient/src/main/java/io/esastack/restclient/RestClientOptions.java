@@ -28,7 +28,7 @@ import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.exec.ClientInterceptor;
+import io.esastack.restclient.exec.RestInterceptor;
 
 import java.util.List;
 
@@ -87,5 +87,5 @@ public interface RestClientOptions {
 
     List<Decoder> unmodifiableDecoders();
 
-    List<ClientInterceptor> unmodifiableInterceptors();
+    List<RestInterceptor> unmodifiableInterceptors();
 }

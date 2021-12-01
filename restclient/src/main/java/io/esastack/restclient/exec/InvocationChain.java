@@ -23,7 +23,7 @@ import java.util.concurrent.CompletionStage;
 public interface InvocationChain {
 
     /**
-     * Invoke the registered {@link ClientInterceptor}s.
+     * Invoke the registered {@link RestInterceptor}s.
      *
      * @param request current request
      * @return future

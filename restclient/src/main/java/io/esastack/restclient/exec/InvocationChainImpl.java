@@ -23,10 +23,10 @@ import java.util.concurrent.CompletionStage;
 
 final class InvocationChainImpl implements InvocationChain {
 
-    private final ClientInterceptor current;
+    private final RestInterceptor current;
     private final InvocationChain next;
 
-    InvocationChainImpl(ClientInterceptor current, InvocationChain next) {
+    InvocationChainImpl(RestInterceptor current, InvocationChain next) {
         Checks.checkNotNull(current, "current");
         Checks.checkNotNull(next, "next");
         this.current = current;

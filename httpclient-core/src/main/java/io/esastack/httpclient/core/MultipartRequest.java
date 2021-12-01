@@ -37,11 +37,11 @@ public interface MultipartRequest extends ExecutableRequest, MultipartConfigure 
     /**
      * add multipart attributes,this method is not thread-safe.
      *
-     * @param attrMap  attrMap
+     * @param attrMap attrMap
      * @return this
      */
     @Override
-    MultipartRequest attrs(Map<String,String> attrMap);
+    MultipartRequest attrs(Map<String, String> attrMap);
 
     /**
      * add multipart file,this method is not thread-safe.

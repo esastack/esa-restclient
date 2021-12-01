@@ -7,7 +7,7 @@ public interface MultipartConfigure {
 
     MultipartConfigure attr(String name, String value);
 
-    MultipartConfigure attrs(Map<String,String> attrMap);
+    MultipartConfigure attrs(Map<String, String> attrMap);
 
     MultipartConfigure file(String name, File file);
 

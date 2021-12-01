@@ -17,6 +17,7 @@ package io.esastack.restclient;
 
 import esa.commons.Checks;
 import esa.commons.StringUtils;
+import esa.commons.collection.MultiValueMap;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaType;
@@ -24,6 +25,8 @@ import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
+import io.esastack.httpclient.core.MultipartConfigure;
+import io.esastack.httpclient.core.MultipartFileItem;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
 import io.esastack.restclient.exec.RestRequestExecutor;
@@ -31,6 +34,7 @@ import io.esastack.restclient.utils.GenericsUtil;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 public class RestCompositeRequest extends AbstractExecutableRestRequest
@@ -116,6 +120,19 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     }
 
     @Override
+    public RestMultipartRequest attrs(MultiValueMap<String, String> values) {
+        if (values == null || values.isEmpty()) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).attrs(values);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
+        return self();
+    }
+
+    @Override
     public RestMultipartRequest attrs(Map<String, String> attrMap) {
         Checks.checkNotNull(attrMap, "attrMap");
         if (entity instanceof MultipartBody) {
@@ -172,6 +189,19 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         }
         if (entity instanceof MultipartBody) {
             ((MultipartBody) entity).file(name, filename, file, contentType, isText);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
+        return self();
+    }
+
+    @Override
+    public MultipartConfigure files(List<MultipartFileItem> files) {
+        if (files == null || files.isEmpty()) {
+            return self();
+        }
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).files(files);
         } else {
             throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
         }

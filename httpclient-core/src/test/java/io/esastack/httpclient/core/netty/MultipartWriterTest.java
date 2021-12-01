@@ -61,7 +61,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
-                    .file("file", file, null, true)
+                    .file("file", file)
                     .attr("key1", "value1");
             final ExecContext ctx = ExecContextUtil.newAs();
             final ChannelFuture end = writer.writeAndFlush(request,
@@ -143,7 +143,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
-                    .file("file", file, null, true)
+                    .file("file", file)
                     .attr("key1", "value1");
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
@@ -198,7 +198,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
-                    .file("file", file, null, true)
+                    .file("file", file)
                     .attr("key1", "value1");
 
             file.delete();
@@ -242,7 +242,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
-                    .file("file", file, null, true);
+                    .file("file", file);
             final ExecContext ctx = ExecContextUtil.newAs();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
@@ -335,7 +335,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
-                    .file("file", file, null, true);
+                    .file("file", file);
             request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
             final NettyExecContext ctx = ExecContextUtil.newAsNetty();
@@ -395,7 +395,7 @@ class MultipartWriterTest extends Http2ConnectionHelper {
             final io.esastack.httpclient.core.MultipartRequest request = client
                     .post("http://127.0.0.1/abc")
                     .multipart()
-                    .file("file", file, null, true);
+                    .file("file", file);
 
             final ExecContext ctx = ExecContextUtil.newAs();
             request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);

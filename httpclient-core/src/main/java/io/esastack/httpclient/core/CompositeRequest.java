@@ -176,6 +176,20 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
     }
 
     @Override
+    public MultipartRequest attrs(MultiValueMap<String, String> values) {
+        if (values == null || values.isEmpty()) {
+            return self();
+        }
+        checkStarted();
+        checkMultipartBodyNotNull();
+        for (String key : values.keySet()) {
+            List<String> vs = values.get(key);
+            vs.forEach(v -> multipartBody.attr(key, v));
+        }
+        return self();
+    }
+
+    @Override
     public MultipartRequest file(String name, File file) {
         if (illegalArgs(name, file)) {
             return self();
@@ -223,6 +237,17 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         checkStarted();
         checkMultipartBodyNotNull();
         multipartBody.file(name, filename, file, contentType, isText);
+        return self();
+    }
+
+    @Override
+    public MultipartRequest files(List<MultipartFileItem> files) {
+        if (files == null || files.isEmpty()) {
+            return self();
+        }
+        checkStarted();
+        checkMultipartBodyNotNull();
+        multipartBody.files(files);
         return self();
     }
 
@@ -321,7 +346,7 @@ public class CompositeRequest extends HttpRequestBaseImpl implements PlainReques
         super.addParam(name, value);
         return self();
     }
-
+    
     @Override
     public CompositeRequest addParams(Map<String, String> params) {
         checkStarted();

@@ -21,22 +21,59 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static io.esastack.httpclient.core.MultipartFileItem.DEFAULT_BINARY_CONTENT_TYPE;
 import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class MultipartFileItemTest {
 
     @Test
     void testConstructor() {
+        File file1 = new File("/abc");
+        MultipartFileItem item1 = new MultipartFileItem("item1", file1);
+        assertEquals("item1", item1.name());
+        assertEquals(file1.getName(), item1.fileName());
+        assertSame(file1, item1.file());
+        assertEquals(DEFAULT_BINARY_CONTENT_TYPE, item1.contentType());
+        assertFalse(item1.isText());
+
+        File file2 = new File("/mn");
+        MultipartFileItem item2 = new MultipartFileItem("item2", file2, HttpHeaderValues.APPLICATION_JSON);
+        assertEquals("item2", item2.name());
+        assertEquals(file2.getName(), item2.fileName());
+        assertSame(file2, item2.file());
+        assertEquals(HttpHeaderValues.APPLICATION_JSON, item2.contentType());
+        assertFalse(item2.isText());
+
+        File file3 = new File("/xyz");
+        MultipartFileItem item3 = new MultipartFileItem("item3", file3, HttpHeaderValues.S_MAXAGE, true);
+        assertEquals("item3", item3.name());
+        assertEquals(file3.getName(), item3.fileName());
+        assertSame(file3, item3.file());
+        assertEquals(HttpHeaderValues.S_MAXAGE, item3.contentType());
+        assertTrue(item3.isText());
+
         assertThrows(NullPointerException.class, () ->
                 new MultipartFileItem(null, "abc", mock(File.class),
                         HttpHeaderValues.APPLICATION_JSON, true));
 
         assertThrows(NullPointerException.class, () ->
+                new MultipartFileItem("abc", null, mock(File.class),
+                        HttpHeaderValues.APPLICATION_JSON, true));
+
+        assertThrows(NullPointerException.class, () ->
                 new MultipartFileItem("abc", "abc", null,
                         HttpHeaderValues.APPLICATION_JSON, true));
+
+        assertThrows(NullPointerException.class, () ->
+                new MultipartFileItem("abc", "abc", mock(File.class),
+                        null, true));
 
         assertDoesNotThrow(() ->
                 new MultipartFileItem("abc", "abc", mock(File.class),

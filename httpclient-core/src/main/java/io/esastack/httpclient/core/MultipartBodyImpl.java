@@ -4,14 +4,12 @@ import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiValueMap;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class MultipartBodyImpl implements MultipartBody {
-
-    private static final String DEFAULT_BINARY_CONTENT_TYPE = "application/octet-stream";
-    private static final String DEFAULT_TEXT_CONTENT_TYPE = "text/plain";
 
     /**
      * Data which isn't always exists, so it's good to be instantiate lazily.
@@ -44,6 +42,29 @@ public class MultipartBodyImpl implements MultipartBody {
     }
 
     @Override
+    public MultipartBody attrs(MultiValueMap<String, String> values) {
+        if (values == null || values.isEmpty()) {
+            return self();
+        }
+        checkAttrsNotNull();
+        for (String key : values.keySet()) {
+            attrs.addAll(key, values.get(key));
+        }
+        return self();
+    }
+
+    @Override
+    public MultipartBody files(List<MultipartFileItem> files) {
+        if (files == null || files.isEmpty()) {
+            return self();
+        }
+        checkMultipartFile();
+        checkFilesNotNull();
+        this.files.addAll(files);
+        return self();
+    }
+
+    @Override
     public MultipartConfigure attrs(Map<String, String> attrMap) {
         checkAttrsNotNull();
         for (Map.Entry<String, String> entry : attrMap.entrySet()) {
@@ -55,26 +76,22 @@ public class MultipartBodyImpl implements MultipartBody {
 
     @Override
     public MultipartBody file(String name, File file) {
-        return file(name, file.getName(), file, DEFAULT_BINARY_CONTENT_TYPE, false);
+        return files(Collections.singletonList(new MultipartFileItem(name, file)));
     }
 
     @Override
     public MultipartBody file(String name, File file, String contentType) {
-        return file(name, file.getName(), file, contentType,
-                DEFAULT_TEXT_CONTENT_TYPE.equalsIgnoreCase(contentType));
+        return files(Collections.singletonList(new MultipartFileItem(name, file, contentType)));
     }
 
     @Override
     public MultipartBody file(String name, File file, String contentType, boolean isText) {
-        return file(name, file.getName(), file, contentType, isText);
+        return files(Collections.singletonList(new MultipartFileItem(name, file, contentType, isText)));
     }
 
     @Override
     public MultipartBody file(String name, String filename, File file, String contentType, boolean isText) {
-        checkMultipartFile();
-        checkFilesNotNull();
-        files.add(new MultipartFileItem(name, filename, file, contentType, isText));
-        return self();
+        return files(Collections.singletonList(new MultipartFileItem(name, filename, file, contentType, isText)));
     }
 
     @Override

@@ -1,14 +1,14 @@
-# ESA HttpClient
+# ESA RestClient
 
-ESA HttpClient is an asynchronous event-driven http client based on netty which supports.
+ESA RestClient is an asynchronous event-driven http client based on netty which supports.
 
 ## Features
 
 - Http1/H2/H2cUpgrade
 - Https
 - Epoll/NIO
+- Serialize and Deserialize
 - Interceptor
-- Serialize and Deserialize([RestClient](./Reference Doc/v1.0.0/RestClient)
 - Filter
 - Retry, Redirect, 100-expect-continue
 - Multipart

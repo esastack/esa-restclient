@@ -3,7 +3,7 @@ sort: 1
 ---
 
 # Quick Start
-It's so easy to get start with `ESA RestClient`.
+It's so easy to get start with `RestClient`.
 
 #### Step 1: Add dependency
 ```xml

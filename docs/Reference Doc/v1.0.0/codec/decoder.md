@@ -18,7 +18,7 @@ sort: 2
 ```
 
 ## 自定义Decoder
-`Decoder`将`ResponseContent`解码成用户期望的`Entity`类型。```ResponseContent```负责将`ESA-HttpClient`(底层使用`Netty`)接收到的数据传递给`RestClient`，其当前仅传递`byte[]`，直接对应了响应体的字节流。未来会支持更多类型，便于用户处理各种复杂场景(如:下载大文件)。
+`Decoder`将`ResponseContent`解码成用户期望的`Entity`类型。```ResponseContent```负责将`HttpClient`(底层使用`Netty`)接收到的数据传递给`RestClient`，其当前仅传递`byte[]`，直接对应了响应体的字节流。未来会支持更多类型，便于用户处理各种复杂场景(如:下载大文件)。
 
 ### 示例
 为了便于用户使用，`RestClient`抽象出继承自```Decoder```的```ByteDecoder```，用户无需再判断`ResponseContent`内部数据的具体类型。下面为`ByteDecoder`的示例：

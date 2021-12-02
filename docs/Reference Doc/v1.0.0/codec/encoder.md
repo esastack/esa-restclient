@@ -18,7 +18,7 @@ sort: 1
 ```
 
 ## 自定义Encoder
-`Encoder`将用户设置的请求`Entity``Encode`成```RequestContent```。```RequestContent```负责将`RestClient``Encode`后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
+`Encoder`将用户设置的请求`Entity``Encode`成```RequestContent```。```RequestContent```负责将`RestClient``Encode`后的对象传递给`HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
 - Encode to ```byte[]```：底层的`HttpClient`将```byte[]```直接当做请求体发送。
 - Encode to ```MultipartBody```：底层的`HttpClient`将`MultipartBody` 以Multipart的形式发送。
 - Encode to ```File```：底层的`HttpClient`将使用`NIO`的`FileChannel`来进行0拷贝传输，传输更加快速的同时避免文件过大造成的OOM。

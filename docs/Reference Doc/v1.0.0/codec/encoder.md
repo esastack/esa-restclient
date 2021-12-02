@@ -156,7 +156,9 @@ public class EncodeAdviceImpl implements EncodeAdvice {
     }
 }
 ```
-
+```tip
+- 多个EncodeAdvice之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
+```
 ### 配置方式
 #### Builder
 在构造`RestClient`时传入自定义的`EncodeAdvice`实例，如：
@@ -169,9 +171,6 @@ final RestClient client = RestClient.create()
             return requestContent;
         })
         .build();
-```
-```tip
-- 多个EncodeAdvice之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
 ```
 #### SPI
 ##### 普通SPI

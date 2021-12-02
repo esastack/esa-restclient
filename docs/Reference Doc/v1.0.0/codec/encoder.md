@@ -18,7 +18,7 @@ sort: 1
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 ```
 ## 使用Json Encoder
-指定`contentType`为`MediaTypeUtil.APPLICATION_JSON`，将自动使用`Json Encoder`来对`Entity`来进行`Encode`。
+指定`contentType`为`MediaTypeUtil.APPLICATION_JSON`，将自动使用`Json Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response  = client.post("localhost:8080/aaa")
@@ -30,7 +30,7 @@ RestResponseBase response  = client.post("localhost:8080/aaa")
 ```
 
 ## 使用ProtoBuf Encoder
-指定`contentType`为`ProtoBufCodec.PROTO_BUF`，且`Entity`类型为`com.google.protobuf.Message`的子类时，将自动使用`ProtoBuf Encoder`来对`Entity`来进行`Encode`。
+指定`contentType`为`ProtoBufCodec.PROTO_BUF`，且`Entity`类型为`com.google.protobuf.Message`的子类时，将自动使用`ProtoBuf Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response  = client.post("localhost:8080/aaa")
@@ -41,7 +41,7 @@ RestResponseBase response  = client.post("localhost:8080/aaa")
         .get();
 ```
 ## 使用File Encoder
-当`Entity`类型为`File`时，将自动使用`File Encoder`来对`Entity`来进行`Encode`。
+当`Entity`类型为`File`时，将自动使用`File Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response  = client.post("localhost:8080/aaa")
@@ -51,7 +51,7 @@ RestResponseBase response  = client.post("localhost:8080/aaa")
         .get();
 ```
 ## 使用String Encoder
-当`Entity`类型为`String`时，将自动使用`String Encoder`来对`Entity`来进行`Encode`。
+当`Entity`类型为`String`时，将自动使用`String Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response  = client.post("localhost:8080/aaa")
@@ -61,7 +61,7 @@ RestResponseBase response  = client.post("localhost:8080/aaa")
         .get();
 ```
 ## 使用byte[] Encoder
-当`Entity`类型为`byte[]`时，将自动使用`byte[] Encoder`来对`Entity`来进行`Encode`。
+当`Entity`类型为`byte[]`时，将自动使用`byte[] Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response = client.post("localhost:8080/aaa")
@@ -91,7 +91,7 @@ public class StringEncoder implements ByteEncoder {
 }
 ```
 ```tip
-在`RestClient`中，同时存在多个`Encoder`，多个`Encoder`之间成链表结构排列：多个`Encoder`之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
+在`RestClient`中，同时存在多个`Encoder`，它们之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
 针对当前`Encoder`，分为两种情况：
 - 当前`Encoder`可以`Encode`该请求:
     直接返回`Encode`后的结果。
@@ -105,8 +105,7 @@ public class StringEncoder implements ByteEncoder {
 ```java
 final RestClient client = RestClient.create()
         .addEncoder(ctx -> {
-            //`Encode`...
-            //如果该`Encoder`无法`Encode`该类型，则调用下一个`Encoder`
+            //encode...
             return ctx.next();
         })
         .build();
@@ -129,7 +128,7 @@ public interface EncoderFactory {
 final RestResponseBase response = client.post(url)
         .entity(new File("aaa"))
         .encoder(ctx -> {
-            //`Encode`...
+            //encode...
             return ctx.next();
         })
         .execute()

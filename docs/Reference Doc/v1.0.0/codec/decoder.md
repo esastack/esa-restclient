@@ -84,7 +84,7 @@ public class StringDecoder implements ByteDecoder {
 }
 ```
 ```tip
-在`RestClient`中，同时存在多个`Decoder`，多个`Decoder`之间成链表结构排列：多个`Decoder`之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
+在`RestClient`中，同时存在多个`Decoder`，它们之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
 针对当前`Decoder`，分为两种情况：
 - 当前`Decoder`可以`Decode`该响应:
     直接返回`Decode`后的结果。
@@ -97,7 +97,7 @@ public class StringDecoder implements ByteDecoder {
 ```java
 final RestClient client = RestClient.create()
         .addDecoder(ctx -> {
-            //解码...
+            //decode...
             return ctx.next();
         })
         .build();
@@ -119,8 +119,7 @@ public interface DecoderFactory {
 final RestResponseBase response = client.post(url)
         .entity(new File("aaa"))
         .decoder(ctx -> {
-            //解码...
-            //如果该Decoder无法解码该类型，则调用下一个解码器
+            //decode...
             return ctx.next();
         })
         .execute()

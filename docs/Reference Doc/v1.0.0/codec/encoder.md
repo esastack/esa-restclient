@@ -31,17 +31,12 @@ sort: 1
 public class StringEncoder implements ByteEncoder {
 
     @Override
-    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx)  {
-        if (String.class.isAssignableFrom(ctx.entityType())) {
-            MediaType contentType = ctx.contentType();
-            Charset charset = null;
-            if (contentType != null) {
-                charset = contentType.charset();
-            }
-            if (charset == null) {
-                return RequestContent.of(((String) ctx.entity()).getBytes(StandardCharsets.UTF_8));
+    public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) {
+        if (ctx.contentType() == MediaTypeUtil.TEXT_PLAIN) {
+            if (ctx.entity() != null) {
+                return RequestContent.of(ctx.entity().toString());
             } else {
-                return RequestContent.of(((String) ctx.entity()).getBytes(charset));
+                return RequestContent.of("null");
             }
         }
         //该编码器无法编码这种类型，将编码工作交给下一个编码器
@@ -103,12 +98,12 @@ public interface EncodeChain {
 在构造`RestClient`时传入自定义的`Encoder`实例，如：
 ```java
 final RestClient client = RestClient.create()
-                .addEncoder(ctx -> {
-                    //编码...
-                    //如果该编码器无法编码该类型，则调用下一个编码器
-                    return ctx.next();
-                })
-                .build();
+        .addEncoder(ctx -> {
+            //编码...
+            //如果该编码器无法编码该类型，则调用下一个编码器
+            return ctx.next();
+        })
+        .build();
 ```
 
 ```tip
@@ -122,14 +117,14 @@ final RestClient client = RestClient.create()
 `Encoder`可以直接绑定`Request`，使用方式如下:
 ```java
 final RestResponseBase response = client.post(url)
-                        .entity(new File("aaa"))
-                        .encoder(ctx -> {
-                            //编码...
-                            return ctx.next();
-                        })
-                        .execute()
-                        .toCompletableFuture()
-                        .get();
+        .entity(new File("aaa"))
+        .encoder(ctx -> {
+            //编码...
+            return ctx.next();
+        })
+        .execute()
+        .toCompletableFuture()
+        .get();
 ```
 ```tip
 - 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法编码该请求的Entity，则`RestClient`将会抛出CodecException异常。
@@ -213,13 +208,13 @@ public interface EncodeChain {
 在构造`RestClient`时传入自定义的`EncodeAdvice`实例，如：
 ```java
 final RestClient client = RestClient.create()
-                      .addEncodeAdvice(ctx ->{
-                          //...before encode
-                          RequestContent<?> requestContent = ctx.next();
-                          //...after encode
-                          return requestContent;
-                      })
-                      .build();
+        .addEncodeAdvice(ctx -> {
+            //...before encode
+            RequestContent<?> requestContent = ctx.next();
+            //...after encode
+            return requestContent;
+        })
+        .build();
 ```
 #### SPI
 `RestClient`支持通过SPI的方式加载`EncodeAdvice`接口的实现类，使用时只需要按照SPI的加载规则将自定义的`EncodeAdvice`放入指定的目录下即可。

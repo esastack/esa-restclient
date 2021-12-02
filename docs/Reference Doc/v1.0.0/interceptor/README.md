@@ -2,7 +2,7 @@
 sort: 3
 ---
 
-# RestInterceptor
+# Interceptor
 `RestClient`支持通过builder配置和SPI加载两种方式配置`RestInterceptor`。
 
 ## Builder配置
@@ -10,10 +10,10 @@ sort: 3
 在构造`RestClient`时传入自定义的`RestInterceptor`实例，如：
 ```java
 final RestClient client = RestClient.create()
-                                .addInterceptor((request, next) -> {
-                                     System.out.println("Interceptor");
-                                     return next.proceed(request);
-                                 }).build();
+        .addInterceptor((request, next) -> {
+            System.out.println("Interceptor");
+            return next.proceed(request);
+        }).build();
 ```
 
 ## SPI

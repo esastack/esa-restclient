@@ -9,16 +9,16 @@ sort: 4
 Client级别的`100-expect-continue`将对该Client下的所有 Request 生效，具体配置方式如下：
 ```java
 final RestClient client = RestClient.create()
-                      .useExpectContinue(true)     //设置100-expect-continue
-                      .build();
+        .useExpectContinue(true)
+        .build();
 ```
 
 ## Request级别`100-expect-continue`
 当Request设置了`100-expect-continue`，其数据将覆盖Client设置的`100-expect-continue`，具体配置方式如下:
 ```java
 final String entity = client.get("http://127.0.0.1:8081/")
-                        .disableExpectContinue()    //关闭100-expect-continue
-                        .execute()
-                        .get()
-                        .bodyToEntity(String.class);
+        .disableExpectContinue()
+        .execute()
+        .get()
+        .bodyToEntity(String.class);
 ```

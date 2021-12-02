@@ -9,8 +9,8 @@ sort: 3
 Client级别的重定向将对该Client下的所有 Request 生效，具体配置方式如下：
 ```java
 final RestClient client = RestClient.create()
-                      .maxRedirects(3)     //设置重定向次数
-                      .build();
+        .maxRedirects(3)
+        .build();
 ```
 
 ## Request级别重定向
@@ -19,8 +19,8 @@ final RestClient client = RestClient.create()
 final RestClient client = RestClient.ofDefault();
 
 final String entity = client.get("http://127.0.0.1:8081/")
-                        .maxRedirects(3)     //设置重定向次数
-                        .execute()
-                        .get()
-                        .bodyToEntity(String.class);
+        .maxRedirects(3)
+        .execute()
+        .get()
+        .bodyToEntity(String.class);
 ```

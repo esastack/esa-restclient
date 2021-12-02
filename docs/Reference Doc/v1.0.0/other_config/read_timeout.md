@@ -9,8 +9,8 @@ sort: 1
 Client级别的读超时将对该Client下的所有请求生效，具体配置方式如下：
 ```java
 final RestClient client = RestClient.create()
-                      .readTimeout(3000)     //设置读超时
-                      .build();
+        .readTimeout(3000)
+        .build();
 ```
 
 ## Request级别读超时
@@ -19,8 +19,8 @@ final RestClient client = RestClient.create()
 final RestClient client = RestClient.ofDefault();
 
 final String entity = client.get("http://127.0.0.1:8081/")
-                        .readTimeout(3000)      //设置读超时
-                        .execute()
-                        .get()
-                        .bodyToEntity(String.class);
+        .readTimeout(3000)
+        .execute()
+        .get()
+        .bodyToEntity(String.class);
 ```

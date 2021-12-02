@@ -10,10 +10,10 @@ sort: 1
 ```java
 final RestClient client = RestClient.ofDefault();
 final String entity = client.post("http://127.0.0.1:8081/")
-                        .entity(new File("aaa"))
-                        .execute()
-                        .get()
-                        .bodyToEntity(String.class);
+        .entity(new File("aaa"))
+        .execute()
+        .get()
+        .bodyToEntity(String.class);
 ```
 如上所示，`RestClient`将分块读取文件内容并将其写入请求body中，对应请求的Content-Type为**application/octet-stream**。该情形适用于单个大文件内容作为原始body内容上传的情况。
 

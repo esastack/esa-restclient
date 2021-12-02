@@ -29,16 +29,7 @@ public class StringDecoder implements ByteDecoder {
     @Override
     public Object doDecode(DecodeContext<byte[]> ctx) {
         if (String.class.isAssignableFrom(ctx.targetType())) {
-            MediaType contentType = ctx.contentType();
-            Charset charset = null;
-            if (contentType != null) {
-                charset = contentType.charset();
-            }
-            if (charset == null) {
-                return new String(ctx.content().value(), StandardCharsets.UTF_8);
-            } else {
-                return new String(ctx.content().value(), charset);
-            }
+            return new String(ctx.content().value());
         }
         return ctx.next();
     }
@@ -97,11 +88,11 @@ public interface DecodeChain {
 在构造`RestClient`时传入自定义的`Decoder`实例，如：
 ```java
 final RestClient client = RestClient.create()
-                .addDecoder(ctx -> {
-                    //解码...
-                    return ctx.next();
-                })
-                .build();
+        .addDecoder(ctx -> {
+            //解码...
+            return ctx.next();
+        })
+        .build();
 ```
 ```tip
 - 多个`Decoder`之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。
@@ -113,15 +104,15 @@ final RestClient client = RestClient.create()
 `Decoder`可以直接绑定`Request`，使用方式如下:
 ```java
 final RestResponseBase response = client.post(url)
-                        .entity(new File("aaa"))
-                        .decoder(ctx -> {
-                            //解码...
-                            //如果该解码器无法解码该类型，则调用下一个解码器
-                            return ctx.next();
-                        })
-                        .execute()
-                        .toCompletableFuture()
-                        .get();
+        .entity(new File("aaa"))
+        .decoder(ctx -> {
+            //解码...
+            //如果该解码器无法解码该类型，则调用下一个解码器
+            return ctx.next();
+        })
+        .execute()
+        .toCompletableFuture()
+        .get();
 ```
 ```tip
 - 当`Request`绑定了`Decoder`，该Client中设置的所有`Decoder`将对该请求失效。即：如果当前`Decoder`无法解码该响应，则`RestClient`将会抛出CodecException异常。
@@ -199,13 +190,13 @@ public interface DecodeChain {
 在构造`RestClient`时传入自定义的`DecodeAdvice`实例，如：
 ```java
 final RestClient client = RestClient.create()
-                      .addDecodeAdvice(ctx ->{
-                            //...before decode
-                            Object decoded = ctx.next();
-                            //...after decode
-                            return decoded;
-                      })
-                      .build();
+        .addDecodeAdvice(ctx ->{
+            //...before decode
+            Object decoded = ctx.next();
+            //...after decode
+            return decoded;
+        })
+        .build();
 ```
 ```tip
 - 多个`DecodeAdvice`之间通过`getOrder()`方法返回值区分执行顺序，值越小，优先级越高。

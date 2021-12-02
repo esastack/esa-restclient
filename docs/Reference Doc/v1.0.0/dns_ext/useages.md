@@ -7,7 +7,7 @@ sort: 1
 ```java
 final RestClient client = RestClient.create().resolver(new HostResolver() {
     @Override
-    public CompletableFuture<InetAddress> resolve(String inetHost) {
+    public CompletionStage<InetAddress> resolve(String inetHost) {
         // resolve inetHost
         return null;
     }

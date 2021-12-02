@@ -26,9 +26,9 @@ It's so easy to get start with `ESA RestClient`.
 final RestClient client = RestClient.ofDefault();
 
 final String entity = client.post("http://127.0.0.1:8081/")
-                        .entity("Hello Server")
-                        .execute()
-                        .get()
-                        .bodyToEntity(String.class);
+        .entity("Hello Server")
+        .execute()
+        .get()
+        .bodyToEntity(String.class);
 
 ```

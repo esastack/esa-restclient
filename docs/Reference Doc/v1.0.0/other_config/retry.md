@@ -9,13 +9,13 @@ sort: 2
 Client级别的重试将对该Client下的所有 Request 生效，使用时，可以通过自定义`RetryOptions`参数更改重试次数、重试条件、重试间隔时间等。具体配置方式如下：
 ```java
 final RestClient client = RestClient.create()
-                      .retryOptions(RetryOptions.options()
-                              .maxRetries(3)                      //最大重试次数
-                              .intervalMs(value -> value)         //重试间隔时间
-                              .predicate((request, response, ctx, cause) -> cause != null)  //重试条件
-                              .build())
-                      .connectionPoolSize(2048)
-                      .build();
+        .retryOptions(RetryOptions.options()
+                .maxRetries(3)
+                .intervalMs(value -> value)
+                .predicate((request, response, ctx, cause) -> cause != null)
+                .build())
+        .connectionPoolSize(2048)
+        .build();
 ```
 
 ## Request级别重试
@@ -24,8 +24,8 @@ final RestClient client = RestClient.create()
 final RestClient client = RestClient.ofDefault();
 
 final String entity = client.get("http://127.0.0.1:8081/")
-                        .maxRetries(3)     //设置重试次数
-                        .execute()
-                        .get()
-                        .bodyToEntity(String.class);
+        .maxRetries(3)
+        .execute()
+        .get()
+        .bodyToEntity(String.class);
 ```

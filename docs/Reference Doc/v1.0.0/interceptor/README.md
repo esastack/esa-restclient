@@ -2,7 +2,7 @@
 sort: 3
 ---
 
-# RestInterceptor
+# Interceptor
 `RestClient`支持通过builder配置和SPI加载两种方式配置`RestInterceptor`。
 
 ## Builder配置

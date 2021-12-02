@@ -18,10 +18,6 @@ sort: 2
 ```
 
 ## 自定义Decoder
-`Decoder`将`ResponseContent`解码成用户期望的`Entity`类型。```ResponseContent```负责将`HttpClient`(底层使用`Netty`)接收到的数据传递给`RestClient`，其当前仅传递`byte[]`，直接对应了响应体的字节流。未来会支持更多类型，便于用户处理各种复杂场景(如:下载大文件)。
-
-### 示例
-为了便于用户使用，`RestClient`抽象出继承自```Decoder```的```ByteDecoder```，用户无需再判断`ResponseContent`内部数据的具体类型。下面为`ByteDecoder`的示例：
 ```java
 public class StringDecoder implements ByteDecoder {
 
@@ -32,53 +28,6 @@ public class StringDecoder implements ByteDecoder {
         }
         return ctx.next();
     }
-}
-```
-
-#### DecodeContext
-`RestClient`将`Decode`过程所需要的数据均封装到```DecodeContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对`Decode`的上下文进行扩展时，也不会影响到用户的业务逻辑。
-调用`DecodeContext.next()`，意味着当前`Decoder`无法`Decode`该响应，使用下一个`Decoder`继续进行`Decode`。具体接口内容如下:
-```java
-public interface DecodeContext<V> extends DecodeChain {
-
-    /**
-     * @return The headers of response
-     */
-    HttpHeaders headers();
-
-    @Override
-    ResponseContent<V> content();
-}
-
-public interface DecodeChain {
-
-    /**
-     * @return The contentType of response
-     */
-    MediaType contentType();
-
-    /**
-     * @return The content of response
-     */
-    ResponseContent<?> content();
-
-    /**
-     * @return The type of target
-     */
-    Class<?> targetType();
-
-    /**
-     * @return The generics of target
-     */
-    Type targetGenerics();
-
-    /**
-     * Proceed to the next member in the chain.
-     *
-     * @return decoded object
-     * @throws Exception error
-     */
-    Object next() throws Exception;
 }
 ```
 
@@ -132,55 +81,6 @@ public class DecodeAdviceImpl implements DecodeAdvice {
         //...after decode
         return decoded;
     }
-}
-```
-#### DecodeAdviceContext
-`RestClient`将`aroundDecode`过程所需要的数据均封装到`DecodeAdviceContext` 接口中，这样更符合**依赖倒置**原则 ，在未来要对`DecodeAdvice`的上下文进行扩展时，也不会影响到用户的业务逻辑。
-调用`DecodeAdviceContext.next()`，该方法的返回值为`Decode`后的结果，调用该方法通常意味着使用下一个`DecodeAdvice`，最后一个`DecodeAdvice`将会开始执行`Decode`流程。具体接口内容如下:
-```java
-public interface DecodeAdviceContext extends DecodeChain {
-
-    RestRequest request();
-
-    RestResponse response();
-
-    /**
-     * set responseContent,this method is not safe for use by multiple threads
-     *
-     * @param responseContent responseContent
-     */
-    void content(ResponseContent<?> responseContent);
-}
-
-public interface DecodeChain {
-
-    /**
-     * @return The contentType of response
-     */
-    MediaType contentType();
-
-    /**
-     * @return The content of response
-     */
-    ResponseContent<?> content();
-
-    /**
-     * @return The type of target
-     */
-    Class<?> targetType();
-
-    /**
-     * @return The generics of target
-     */
-    Type targetGenerics();
-
-    /**
-     * Proceed to the next member in the chain.
-     *
-     * @return decoded object
-     * @throws Exception error
-     */
-    Object next() throws Exception;
 }
 ```
 

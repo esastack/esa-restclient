@@ -2,8 +2,8 @@
 sort: 1
 ---
 
-# 编码器
-`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的编码器进行编码。其内置了下面这些编码器：
+# Encoder
+`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的`Encoder`进行`Encode`。其内置了下面这些`Encoder`：
 - Json
     - jackson(默认)
     - fastjson
@@ -12,21 +12,20 @@ sort: 1
 - String
 - byte[]
 
-除此之外`RestClient`也支持用户自定义编码器。
+除此之外`RestClient`也支持用户自定义`Encoder`。
 ```note
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 ```
 
-## 自定义编码器
-### Encoder
-`Encoder`将用户设置的请求`Entity`编码成```RequestContent```。```RequestContent```负责将`RestClient`编码后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
+## 自定义Encoder
+`Encoder`将用户设置的请求`Entity``Encode`成```RequestContent```。```RequestContent```负责将`RestClient``Encode`后的对象传递给`ESA-HttpClient`(底层使用`Netty`)，其当前可以接受```byte[]```、```MultipartBody```、```File```类型。
 - Encode to ```byte[]```：底层的`HttpClient`将```byte[]```直接当做请求体发送。
 - Encode to ```MultipartBody```：底层的`HttpClient`将`MultipartBody` 以Multipart的形式发送。
 - Encode to ```File```：底层的`HttpClient`将使用`NIO`的`FileChannel`来进行0拷贝传输，传输更加快速的同时避免文件过大造成的OOM。
 
-由于大多数用户最常用的是将请求体编码成```byte[]```，因此下面仅以Encode to ```byte[]```作为示例。
+由于大多数用户最常用的是将请求体`Encode`成```byte[]```，因此下面仅以Encode to ```byte[]```作为示例。
 #### 示例
-编码成```byte[]```是用户最常用的一种编码方式，因此`RestClient`抽象出继承自```Encoder```的```ByteEncoder```。下面为```ByteEncoder```的示例：
+`Encode`成```byte[]```是用户最常用的一种`Encode`方式，因此`RestClient`抽象出继承自```Encoder```的```ByteEncoder```。下面为```ByteEncoder```的示例：
 ```java
 public class StringEncoder implements ByteEncoder {
 
@@ -39,7 +38,7 @@ public class StringEncoder implements ByteEncoder {
                 return RequestContent.of("null");
             }
         }
-        //该编码器无法编码这种类型，将编码工作交给下一个编码器
+        //该Encoder无法Encode这种类型，将Encode工作交给下一个Encoder
         return ctx.next();
     }
 }
@@ -47,8 +46,8 @@ public class StringEncoder implements ByteEncoder {
 
 
 #### EncodeContext
-`RestClient`将编码过程所需要的数据均封装到```EncodeContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对编码的上下文进行扩展时，也不会影响到用户的业务逻辑。
-调用`EncodeContext.next()`，意味着当前编码器无法编码该请求的`Entity`，使用下一个编码器继续进行编码。具体接口内容如下:
+`RestClient`将`Encode`过程所需要的数据均封装到```EncodeContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对`Encode`的上下文进行扩展时，也不会影响到用户的业务逻辑。
+调用`EncodeContext.next()`，意味着当前`Encoder`无法`Encode`该请求的`Entity`，使用下一个`Encoder`继续进行`Encode`。具体接口内容如下:
 ```java
 public interface EncodeContext<V> extends EncodeChain {
 
@@ -93,14 +92,14 @@ public interface EncodeChain {
 }
 ```
 
-### 配置编码器
+### 配置Encoder
 #### Builder
 在构造`RestClient`时传入自定义的`Encoder`实例，如：
 ```java
 final RestClient client = RestClient.create()
         .addEncoder(ctx -> {
-            //编码...
-            //如果该编码器无法编码该类型，则调用下一个编码器
+            //`Encode`...
+            //如果该`Encoder`无法`Encode`该类型，则调用下一个`Encoder`
             return ctx.next();
         })
         .build();
@@ -119,7 +118,7 @@ final RestClient client = RestClient.create()
 final RestResponseBase response = client.post(url)
         .entity(new File("aaa"))
         .encoder(ctx -> {
-            //编码...
+            //`Encode`...
             return ctx.next();
         })
         .execute()
@@ -127,14 +126,14 @@ final RestResponseBase response = client.post(url)
         .get();
 ```
 ```tip
-- 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法编码该请求的Entity，则`RestClient`将会抛出CodecException异常。
+- 当`Request`绑定了`Encoder`，该Client中设置的所有`Encoder`将对该请求失效。即：如果当前`Encoder`无法`Encode`该请求的Entity，则`RestClient`将会抛出CodecException异常。
 ```
 
 ### 执行时机
 见[请求处理完整流程](../process_of_restclient/)中的`Encoder`。
 
-## 编码器埋点
-用户可以通过```EncodeAdvice```在编码前后进行埋点来插入业务逻辑，来对要编码的 `Entity` 或者 编码后的`RequestContent` 进行修改替换等操作。
+## EncodeAdvice
+用户可以通过```EncodeAdvice```在`Encode`前后插入业务逻辑，来对要`Encode`的 `Entity` 或者 `Encode`后的`RequestContent` 进行修改替换等操作。
 ### 示例
 ```java
 public class EncodeAdviceImpl implements EncodeAdvice {
@@ -148,8 +147,8 @@ public class EncodeAdviceImpl implements EncodeAdvice {
 }
 ```
 #### EncodeAdviceContext
-`RestClient`将编码埋点过程所需要的数据均封装到```EncodeAdviceContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对编码埋点的上下文进行扩展时，也不会影响到用户的业务逻辑。
-调用`EncodeAdviceContext.next()`，该方法的返回值为编码后的结果，调用该方法通常意味着使用下一个`EncodeAdvice`，最后一个`EncodeAdvice`将会开始执行编码流程。具体接口内容如下:
+`RestClient`将`aroundEncode`过程所需要的数据均封装到```EncodeAdviceContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对`EncodeAdvice`的上下文进行扩展时，也不会影响到用户的业务逻辑。
+调用`EncodeAdviceContext.next()`，该方法的返回值为`Encode`后的结果，调用该方法通常意味着使用下一个`EncodeAdvice`，最后一个`EncodeAdvice`将会开始执行`Encode`流程。具体接口内容如下:
 ```java
 public interface EncodeAdviceContext extends EncodeChain {
 

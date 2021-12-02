@@ -2,8 +2,8 @@
 sort: 2
 ---
 
-# 解码器
-`RestClient`会自动根据用户的 `Headers` 与 期望`Entity`类型 等选择合适的解码器进行解码。`RestClient`内置了下面这些解码器：
+# Decoder
+`RestClient`会自动根据用户的 `Headers` 与 期望`Entity`类型 等选择合适的`Decoder`进行解码。`RestClient`内置了下面这些`Decoder`：
 - Json
     - jackson(默认)
     - fastjson
@@ -17,11 +17,10 @@ sort: 2
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 ```
 
-## 自定义解码器
-### Decoder
+## 自定义Decoder
 `Decoder`将`ResponseContent`解码成用户期望的`Entity`类型。```ResponseContent```负责将`ESA-HttpClient`(底层使用`Netty`)接收到的数据传递给`RestClient`，其当前仅传递`byte[]`，直接对应了响应体的字节流。未来会支持更多类型，便于用户处理各种复杂场景(如:下载大文件)。
 
-#### 示例
+### 示例
 为了便于用户使用，`RestClient`抽象出继承自```Decoder```的```ByteDecoder```，用户无需再判断`ResponseContent`内部数据的具体类型。下面为`ByteDecoder`的示例：
 ```java
 public class StringDecoder implements ByteDecoder {
@@ -37,8 +36,8 @@ public class StringDecoder implements ByteDecoder {
 ```
 
 #### DecodeContext
-`RestClient`将解码过程所需要的数据均封装到```DecodeContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对解码的上下文进行扩展时，也不会影响到用户的业务逻辑。
-调用`DecodeContext.next()`，意味着当前解码器无法解码该响应，使用下一个解码器继续进行解码。具体接口内容如下:
+`RestClient`将`Decode`过程所需要的数据均封装到```DecodeContext``` 接口中，这样更符合**依赖倒置**原则 ，在未来要对`Decode`的上下文进行扩展时，也不会影响到用户的业务逻辑。
+调用`DecodeContext.next()`，意味着当前`Decoder`无法`Decode`该响应，使用下一个`Decoder`继续进行`Decode`。具体接口内容如下:
 ```java
 public interface DecodeContext<V> extends DecodeChain {
 
@@ -83,7 +82,7 @@ public interface DecodeChain {
 }
 ```
 
-### 配置解码器
+### 配置Decoder
 #### Builder
 在构造`RestClient`时传入自定义的`Decoder`实例，如：
 ```java
@@ -107,7 +106,7 @@ final RestResponseBase response = client.post(url)
         .entity(new File("aaa"))
         .decoder(ctx -> {
             //解码...
-            //如果该解码器无法解码该类型，则调用下一个解码器
+            //如果该Decoder无法解码该类型，则调用下一个解码器
             return ctx.next();
         })
         .execute()
@@ -121,8 +120,8 @@ final RestResponseBase response = client.post(url)
 ### 执行时机
 见[请求处理完整流程](../process_of_restclient/)中的`Decoder`。
 
-## 解码器埋点
-用户可以通过`DecodeAdvice`在解码前后进行埋点来插入业务逻辑，来对要解码的 `ResponseContent` 或者 解码后的对象 进行修改替换等操作。
+## DecodeAdvice
+用户可以通过`DecodeAdvice`在`Decode`前后进行来插入业务逻辑，来对要解码的 `ResponseContent` 或者 `Decode`后的对象 进行修改替换等操作。
 ### 示例
 ```java
 public class DecodeAdviceImpl implements DecodeAdvice {
@@ -136,8 +135,8 @@ public class DecodeAdviceImpl implements DecodeAdvice {
 }
 ```
 #### DecodeAdviceContext
-`RestClient`将解码埋点过程所需要的数据均封装到`DecodeAdviceContext` 接口中，这样更符合**依赖倒置**原则 ，在未来要对解码埋点的上下文进行扩展时，也不会影响到用户的业务逻辑。
-调用`DecodeAdviceContext.next()`，该方法的返回值为解码后的结果，调用该方法通常意味着使用下一个`DecodeAdvice`，最后一个`DecodeAdvice`将会开始执行解码流程。具体接口内容如下:
+`RestClient`将`aroundDecode`过程所需要的数据均封装到`DecodeAdviceContext` 接口中，这样更符合**依赖倒置**原则 ，在未来要对`DecodeAdvice`的上下文进行扩展时，也不会影响到用户的业务逻辑。
+调用`DecodeAdviceContext.next()`，该方法的返回值为`Decode`后的结果，调用该方法通常意味着使用下一个`DecodeAdvice`，最后一个`DecodeAdvice`将会开始执行`Decode`流程。具体接口内容如下:
 ```java
 public interface DecodeAdviceContext extends DecodeChain {
 

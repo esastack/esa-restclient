@@ -19,7 +19,7 @@ sort: 8
 final RestClient client = RestClient.create()
         .connectionPoolSize(512)
         .connectionPoolWaitingQueueLength(256)
-        .readTimeout(6000)
+        .readTimeout(6000L)
         .connectTimeout(3000)
         .build();
 ```

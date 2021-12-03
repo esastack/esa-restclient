@@ -17,7 +17,7 @@ package io.esastack.restclient.codec;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -43,7 +43,7 @@ public class CodecAdviceTest {
     void testEncodeAdvice() throws Exception {
         JacksonCodec jacksonCodec = new JacksonCodec();
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
         String data = "data";
@@ -79,7 +79,7 @@ public class CodecAdviceTest {
         assertThrows(CodecException.class, () ->
                 jacksonCodec.encode(ctx));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(request.contentType()).thenReturn(MediaType.APPLICATION_JSON_UTF8);
 
         then(jacksonCodec.encode(ctx).value())
                 .isEqualTo(JacksonCodec.getDefaultMapper().writeValueAsBytes(stringList));
@@ -92,7 +92,7 @@ public class CodecAdviceTest {
         Person person = new Person("Bob", "boy");
 
         RestResponse response = mock(RestResponse.class);
-        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(response.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         Person person1 = new Person("Bob1", "boy1");
         when(clientOptions.unmodifiableDecodeAdvices()).thenReturn(
@@ -119,7 +119,7 @@ public class CodecAdviceTest {
         assertThrows(CodecException.class, () ->
                 jacksonCodec.decode(ctx));
 
-        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(response.contentType()).thenReturn(MediaType.APPLICATION_JSON_UTF8);
         then(jacksonCodec.decode(ctx)).isEqualTo(person1);
 
 

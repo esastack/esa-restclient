@@ -15,7 +15,7 @@
  */
 package io.esastack.restclient.codec;
 
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -42,7 +42,7 @@ class StringCodecTest {
         StringCodec codec = new StringCodec();
 
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
+        when(request.contentType()).thenReturn(MediaType.APPLICATION_JSON);
         String data = "data";
 
         EncodeContext ctx = new EncodeChainImpl(
@@ -64,7 +64,7 @@ class StringCodecTest {
                 mock(List.class),
                 mock(List.class)
         );
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         then(codec.encode(ctx1).value())
                 .isEqualTo(data.getBytes(StandardCharsets.UTF_8));
 
@@ -76,7 +76,10 @@ class StringCodecTest {
                 mock(List.class),
                 mock(List.class)
         );
-        when(request.contentType()).thenReturn(MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16));
+        when(request.contentType()).thenReturn(MediaType.builder("text")
+                .subtype("plain")
+                .charset(StandardCharsets.UTF_16)
+                .build());
         then(codec.encode(ctx2).value())
                 .isEqualTo(data.getBytes(StandardCharsets.UTF_16));
     }
@@ -88,7 +91,7 @@ class StringCodecTest {
         String data = "data";
 
         RestResponse response = mock(RestResponse.class);
-        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(response.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
@@ -108,7 +111,10 @@ class StringCodecTest {
                 ByteBufAllocator.DEFAULT.buffer().writeBytes(data.getBytes(StandardCharsets.UTF_8))
         );
         when(response.contentType()).thenReturn(
-                MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_8));
+                MediaType.builder("text")
+                        .subtype("plain")
+                        .charset(StandardCharsets.UTF_8)
+                        .build());
         then(codec.decode(ctx1)).isEqualTo(data);
 
         DecodeContext ctx2 = new DecodeChainImpl(
@@ -119,8 +125,10 @@ class StringCodecTest {
                 String.class,
                 ByteBufAllocator.DEFAULT.buffer().writeBytes(data.getBytes(StandardCharsets.UTF_16))
         );
-        when(response.contentType()).thenReturn(
-                MediaTypeUtil.of("text", "plain", StandardCharsets.UTF_16));
+        when(response.contentType()).thenReturn(MediaType.builder("text")
+                .subtype("plain")
+                .charset(StandardCharsets.UTF_16)
+                .build());
         then(codec.decode(ctx2)).isEqualTo(data);
     }
 }

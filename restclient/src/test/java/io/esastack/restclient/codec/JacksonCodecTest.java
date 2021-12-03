@@ -16,7 +16,7 @@
 package io.esastack.restclient.codec;
 
 import com.alibaba.fastjson.JSON;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -39,7 +39,7 @@ public class JacksonCodecTest {
     void testEncode() throws Exception {
         JacksonCodec jacksonCodec = new JacksonCodec();
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
         EncodeContext ctx = new EncodeChainImpl(
@@ -54,7 +54,7 @@ public class JacksonCodecTest {
         assertThrows(CodecException.class, () ->
                 jacksonCodec.encode(ctx));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(request.contentType()).thenReturn(MediaType.APPLICATION_JSON_UTF8);
 
         then(jacksonCodec.encode(ctx).value())
                 .isEqualTo(JacksonCodec.getDefaultMapper().writeValueAsBytes(person));
@@ -66,7 +66,7 @@ public class JacksonCodecTest {
         Person person = new Person("Bob", "boy");
 
         RestResponse response = mock(RestResponse.class);
-        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(response.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
@@ -79,7 +79,7 @@ public class JacksonCodecTest {
         assertThrows(CodecException.class, () ->
                 jacksonCodec.decode(ctx));
 
-        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(response.contentType()).thenReturn(MediaType.APPLICATION_JSON_UTF8);
         then(jacksonCodec.decode(ctx)).isEqualTo(person);
     }
 }

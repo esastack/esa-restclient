@@ -17,7 +17,7 @@ sort: 2
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 ```
 ## 使用Json Decoder
-当Response的`contentType`为`MediaTypeUtil.APPLICATION_JSON`，将自动使用`Json Decoder`来来进行`Decode`。
+当Response的`contentType`为`MediaType.APPLICATION_JSON`，将自动使用`Json Decoder`来来进行`Decode`。
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response  = client.get("localhost:8080/aaa")
@@ -25,7 +25,7 @@ RestResponseBase response  = client.get("localhost:8080/aaa")
         .toCompletableFuture()
         .get();
 
-//当 response.contentType() == MediaTypeUtil.APPLICATION_JSON 时将自动使用Json Decoder
+//当 response.contentType() == MediaType.APPLICATION_JSON 时将自动使用Json Decoder
 Person person = response.bodyToEntity(Person.class);
 
 ```
@@ -44,7 +44,7 @@ Person person = response.bodyToEntity(Person.class);
 
 ```
 ## 使用String Encoder
-当`response.bodyToEntity()`传入的类型为`String.class`，且Response的`contentType`不为`MediaTypeUtil.APPLICATION_JSON`时，将自动使用`String Decoder`来进行`Decode`。
+当`response.bodyToEntity()`传入的类型为`String.class`，且Response的`contentType`不为`MediaType.APPLICATION_JSON`时，将自动使用`String Decoder`来进行`Decode`。
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response = client.get("localhost:8080/aaa")
@@ -52,12 +52,12 @@ RestResponseBase response = client.get("localhost:8080/aaa")
         .toCompletableFuture()
         .get();
 
-//当 response.contentType() != MediaTypeUtil.APPLICATION_JSON 时，自动使用String Decoder来进行Decode
+//当 response.contentType() != MediaType.APPLICATION_JSON 时，自动使用String Decoder来进行Decode
 String result = response.bodyToEntity(String.class);
 
 ```
 ## 使用byte[] Encoder
-当`response.bodyToEntity()`传入的类型为`byte[].class`，且Response的`contentType`不为`MediaTypeUtil.APPLICATION_JSON`时，将自动使用`byte[] Decoder`来进行`Decode`。
+当`response.bodyToEntity()`传入的类型为`byte[].class`，且Response的`contentType`不为`MediaType.APPLICATION_JSON`时，将自动使用`byte[] Decoder`来进行`Decode`。
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response = client.get("localhost:8080/aaa")
@@ -65,7 +65,7 @@ RestResponseBase response = client.get("localhost:8080/aaa")
         .toCompletableFuture()
         .get();
 
-//当 response.contentType() != MediaTypeUtil.APPLICATION_JSON 时，自动使用byte[] Decoder来进行Decode
+//当 response.contentType() != MediaType.APPLICATION_JSON 时，自动使用byte[] Decoder来进行Decode
 byte[] result = response.bodyToEntity(byte[].class);
 ```
 

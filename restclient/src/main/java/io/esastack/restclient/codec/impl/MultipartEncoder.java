@@ -16,7 +16,6 @@
 package io.esastack.restclient.codec.impl;
 
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
@@ -27,7 +26,7 @@ public class MultipartEncoder implements Encoder {
     @Override
     public RequestContent<?> encode(EncodeContext<?> ctx) throws Exception {
         MediaType contentType = ctx.contentType();
-        if (contentType != null && MediaTypeUtil.MULTIPART_FORM_DATA.isCompatibleWith(contentType)
+        if (contentType != null && MediaType.MULTIPART_FORM_DATA.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(ctx.entityType())) {
             return RequestContent.of((MultipartBody) ctx.entity());
         }

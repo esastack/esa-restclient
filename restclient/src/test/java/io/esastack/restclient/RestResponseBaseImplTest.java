@@ -15,7 +15,7 @@
  */
 package io.esastack.restclient;
 
-import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpVersion;
@@ -137,7 +137,7 @@ class RestResponseBaseImplTest {
         RestResponseBase restResponse = new RestResponseBaseImpl(request, response, clientOptions);
         HttpHeaders headers = new Http1HeadersImpl();
         when(response.headers()).thenReturn(headers);
-        when(response.body()).thenReturn(BufferUtil.buffer("Hello".getBytes(StandardCharsets.UTF_8)));
+        when(response.body()).thenReturn(Buffer.defaultAlloc().buffer("Hello".getBytes(StandardCharsets.UTF_8)));
         when(request.decoder()).thenReturn(new StringCodec());
 
         //decodeAdvices is empty

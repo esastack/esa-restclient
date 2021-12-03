@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
@@ -128,7 +128,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -200,7 +200,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -252,7 +252,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -400,7 +400,7 @@ class FilteringHandleTest {
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();

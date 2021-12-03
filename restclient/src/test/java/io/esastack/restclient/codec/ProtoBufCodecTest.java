@@ -16,7 +16,7 @@
 package io.esastack.restclient.codec;
 
 import com.alibaba.fastjson.JSON;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -40,7 +40,7 @@ class ProtoBufCodecTest {
         ProtoBufCodec protoBufCodec = new ProtoBufCodec();
 
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         EncodeContext ctx = new EncodeChainImpl(
                 request,
@@ -59,7 +59,7 @@ class ProtoBufCodecTest {
         ProtoBufCodec protoBufCodec = new ProtoBufCodec();
 
         RestResponse response = mock(RestResponse.class);
-        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(response.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,

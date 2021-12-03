@@ -105,7 +105,7 @@ public class RestResponseBaseImpl implements RestResponseBase {
     public MediaType contentType() {
         String contentType = headers().get(HttpHeaderNames.CONTENT_TYPE);
         if (StringUtils.isNotBlank(contentType)) {
-            return MediaTypeUtil.valueOf(contentType);
+            return MediaTypeUtil.parseMediaType(contentType);
         }
         return null;
     }

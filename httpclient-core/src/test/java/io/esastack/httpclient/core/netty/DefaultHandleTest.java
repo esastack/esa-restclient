@@ -16,7 +16,6 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
-import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
@@ -84,9 +83,9 @@ class DefaultHandleTest {
 
         final byte[] data = "Hello World!".getBytes();
         nHandle2.onMessage(message2);
-        nHandle2.onData(BufferUtil.buffer().writeBytes(data));
-        nHandle2.onData(BufferUtil.buffer().writeBytes(data));
-        nHandle2.onData(BufferUtil.buffer().writeBytes(data));
+        nHandle2.onData(Buffer.defaultAlloc().buffer().writeBytes(data));
+        nHandle2.onData(Buffer.defaultAlloc().buffer().writeBytes(data));
+        nHandle2.onData(Buffer.defaultAlloc().buffer().writeBytes(data));
 
         final HttpHeaders trailers = new Http1HeadersImpl();
         trailers.add("D", "E");

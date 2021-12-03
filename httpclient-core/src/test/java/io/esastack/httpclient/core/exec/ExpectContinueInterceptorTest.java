@@ -17,7 +17,6 @@ package io.esastack.httpclient.core.exec;
 
 import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaderNames;
-import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.SegmentRequest;
@@ -71,7 +70,7 @@ class ExpectContinueInterceptorTest {
         then(request1.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
         final HttpRequest request2 = client.post("http://127.0.0.1:8080/abc")
-                .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
+                .body(Buffer.defaultAlloc().buffer().writeBytes("Hello World!".getBytes()));
         ctx.useExpectContinue(true);
         // Case 4: enable expect-continue but body isn't empty
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request2, next);
@@ -79,14 +78,14 @@ class ExpectContinueInterceptorTest {
 
         // Case 5: disable expect-continue and body isn't empty
         final HttpRequest request3 = client.post("http://127.0.0.1:8080/abc")
-                .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
+                .body(Buffer.defaultAlloc().buffer().writeBytes("Hello World!".getBytes()));
         ctx.useExpectContinue(false);
         EXPECT_CONTINUE_INTERCEPTOR.proceed(request3, next);
         then(request3.getHeader(HttpHeaderNames.EXPECT)).isNull();
 
         // Case 6: enable expect-continue but body isn't empty
         final HttpRequest request4 = client.post("http://127.0.0.1:8080/abc")
-                .body(new BufferImpl().writeBytes("Hello World!".getBytes()));
+                .body(Buffer.defaultAlloc().buffer().writeBytes("Hello World!".getBytes()));
         ctx.clear();
         ctx.useExpectContinue(false);
         request4.setHeader(HttpHeaderNames.EXPECT, "100-continue0");
@@ -99,7 +98,7 @@ class ExpectContinueInterceptorTest {
         final HttpClient client = HttpClient.ofDefault();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc"))).isTrue();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.post("/abc").body((Buffer) null))).isTrue();
-        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.post("/abc").body(new BufferImpl()))).isTrue();
+        then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.post("/abc").body(Buffer.defaultAlloc().buffer()))).isTrue();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").segment())).isTrue();
         then(EXPECT_CONTINUE_INTERCEPTOR.emptyBody(client.get("/abc").multipart()
                 .attr("a", "b"))).isFalse();

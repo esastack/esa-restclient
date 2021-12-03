@@ -16,7 +16,6 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
-import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.Handle;
@@ -49,7 +48,7 @@ class DefaultHandle extends HandleImpl {
 
         this.end = (v) -> {
             if (body == null) {
-                super.underlying.body(BufferUtil.empty());
+                super.underlying.body(Buffer.defaultAlloc().empty());
             } else {
                 super.underlying.body(new BufferImpl(Unpooled.copiedBuffer(body)));
             }

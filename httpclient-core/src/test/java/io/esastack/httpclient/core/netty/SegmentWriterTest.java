@@ -17,7 +17,6 @@ package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
@@ -77,7 +76,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         then(content.content().readableBytes()).isEqualTo(data.length);
 
         // Write Buffer
-        Buffer buffer = new BufferImpl(data.length);
+        Buffer buffer = Buffer.defaultAlloc().buffer(data.length);
         buffer.writeBytes(data);
         writer.write(buffer, -1, -1);
         content = channel.readOutbound();
@@ -172,7 +171,7 @@ class SegmentWriterTest extends Http2ConnectionHelper {
         then(content.endStream).isFalse();
 
         // Write Buffer
-        Buffer buffer = new BufferImpl(data.length);
+        Buffer buffer = Buffer.defaultAlloc().buffer(data.length);
         buffer.writeBytes(data);
         writer.write(buffer, -1, -1);
         content = channel.readOutbound();

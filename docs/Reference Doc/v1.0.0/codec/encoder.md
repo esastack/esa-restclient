@@ -18,11 +18,11 @@ sort: 1
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 ```
 ## 使用Json Encoder
-指定`contentType`为`MediaTypeUtil.APPLICATION_JSON`，将自动使用`Json Encoder`来对`Entity`来进行`Encode`。示例如下：
+指定`contentType`为`MediaType.APPLICATION_JSON`，将自动使用`Json Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
 final RestClient client = RestClient.ofDefault();
 RestResponseBase response  = client.post("localhost:8080/aaa")
-        .contentType(MediaTypeUtil.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
         .entity(new Person("Bob","male"))
         .execute()
         .toCompletableFuture()
@@ -78,7 +78,7 @@ public class StringEncoder implements ByteEncoder {
 
     @Override
     public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) {
-        if (ctx.contentType() == MediaTypeUtil.TEXT_PLAIN) {
+        if (ctx.contentType() == MediaType.TEXT_PLAIN) {
             if (ctx.entity() != null) {
                 return RequestContent.of(ctx.entity().toString());
             } else {

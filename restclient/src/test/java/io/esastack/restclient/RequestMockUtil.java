@@ -20,8 +20,7 @@ import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpVersion;
-import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.commons.net.netty.buffer.BufferImpl;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.netty.http.CookieImpl;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.CompositeRequest;
@@ -77,7 +76,7 @@ public class RequestMockUtil {
         return new HttpResponse() {
             @Override
             public Buffer body() {
-                Buffer buffer = new BufferImpl();
+                Buffer buffer = Buffer.defaultAlloc().buffer();
                 buffer.writeBytes(content.getBytes(StandardCharsets.UTF_8));
                 return buffer;
             }
@@ -105,7 +104,7 @@ public class RequestMockUtil {
             @Override
             public HttpHeaders headers() {
                 HttpHeaders headers = new Http1HeadersImpl();
-                headers.add(HttpHeaderNames.CONTENT_TYPE, MediaTypeUtil.TEXT_PLAIN.toString());
+                headers.add(HttpHeaderNames.CONTENT_TYPE, MediaType.TEXT_PLAIN.toString());
                 Cookie cookie = new CookieImpl(cookieName, cookieValue);
                 headers.add(HttpHeaderNames.SET_COOKIE, cookie.encode(true));
                 return headers;

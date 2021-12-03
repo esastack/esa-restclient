@@ -17,7 +17,6 @@ package io.esastack.restclient.codec;
 
 import esa.commons.DateUtils;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 
 public interface JsonCodec extends ByteCodec {
     String DEFAULT_DATE_FORMAT = DateUtils.yyyyMMddHHmmss;
@@ -25,7 +24,7 @@ public interface JsonCodec extends ByteCodec {
     @Override
     default RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) throws Exception {
         MediaType contentType = ctx.contentType();
-        if (contentType != null && MediaTypeUtil.APPLICATION_JSON.isCompatibleWith(contentType)) {
+        if (contentType != null && MediaType.APPLICATION_JSON.isCompatibleWith(contentType)) {
             return encodeToJson(ctx);
         }
 
@@ -37,7 +36,7 @@ public interface JsonCodec extends ByteCodec {
     @Override
     default Object doDecode(DecodeContext<byte[]> ctx) throws Exception {
         MediaType contentType = ctx.contentType();
-        if (contentType != null && MediaTypeUtil.APPLICATION_JSON.isCompatibleWith(contentType)) {
+        if (contentType != null && MediaType.APPLICATION_JSON.isCompatibleWith(contentType)) {
             byte[] content = ctx.content().value();
             if (content == null) {
                 return null;

@@ -16,6 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
@@ -224,7 +225,7 @@ class ResponseHandleTest {
                 .onEnd(v -> count.incrementAndGet());
 
         nHandle.onError(new RuntimeException());
-        nHandle.onMessage(new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl()));
+        nHandle.onMessage(new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, new Http1HeadersImpl()));
         nHandle.onData(Buffer.defaultAlloc().buffer("Hello".getBytes()));
         nHandle.onTrailers(new Http1HeadersImpl());
         nHandle.onEnd();
@@ -252,7 +253,7 @@ class ResponseHandleTest {
 
         nHandle.onEnd();
 
-        nHandle.onMessage(new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl()));
+        nHandle.onMessage(new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, new Http1HeadersImpl()));
         nHandle.onData(Buffer.defaultAlloc().buffer("Hello".getBytes()));
         nHandle.onTrailers(new Http1HeadersImpl());
         nHandle.onError(new RuntimeException());

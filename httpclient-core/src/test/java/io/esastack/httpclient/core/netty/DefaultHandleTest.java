@@ -17,6 +17,7 @@ package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
@@ -40,11 +41,16 @@ class DefaultHandleTest {
     void testNoopOnXxx() {
         final DefaultHandle0 handle = new DefaultHandle0();
 
-        final Consumer<Void> start = (v) -> {};
-        final Consumer<Buffer> data = (d) -> {};
-        final Consumer<HttpHeaders> trailer = (t) -> {};
-        final Consumer<Void> end = (v) -> {};
-        final Consumer<Throwable> error = (th) -> {};
+        final Consumer<Void> start = (v) -> {
+        };
+        final Consumer<Buffer> data = (d) -> {
+        };
+        final Consumer<HttpHeaders> trailer = (t) -> {
+        };
+        final Consumer<Void> end = (v) -> {
+        };
+        final Consumer<Throwable> error = (th) -> {
+        };
 
         handle.onStart(start)
                 .onData(data)
@@ -74,11 +80,12 @@ class DefaultHandleTest {
         nHandle1.onEnd();
         then(handle1.body().readableBytes()).isEqualTo(0);
         then(handle1.headers().isEmpty()).isTrue();
-        then(handle1.status()).isEqualTo(202);
+        then(handle1.status()).isEqualTo(HttpStatus.ACCEPTED.code());
 
         final HandleImpl handle2 = new DefaultHandle(ByteBufAllocator.DEFAULT);
         final ResponseHandle nHandle2 = new ResponseHandle(handle2, request, ctx, tHandle, response);
-        final HttpMessage message2 = new HttpMessageImpl(302, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
+        final HttpMessage message2 =
+                new HttpMessageImpl(HttpStatus.FOUND.code(), HttpVersion.HTTP_1_1, new Http1HeadersImpl());
         message2.headers().add("A", "B");
 
         final byte[] data = "Hello World!".getBytes();

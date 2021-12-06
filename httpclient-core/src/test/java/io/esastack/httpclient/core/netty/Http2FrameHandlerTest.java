@@ -16,6 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.http.HttpHeaderNames;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
@@ -166,7 +167,7 @@ class Http2FrameHandlerTest {
         then(rsp.headers().get("a")).isEqualTo("b");
         then(rsp.headers().get("x")).isEqualTo("y");
 
-        then(rsp.status()).isEqualTo(200);
+        then(rsp.status()).isEqualTo(HttpStatus.OK.code());
         then(rsp.body().readableBytes()).isEqualTo(DATA.length);
         then(rsp.version()).isEqualTo(HttpVersion.HTTP_2);
 
@@ -210,7 +211,7 @@ class Http2FrameHandlerTest {
         then(rsp.headers().get("a")).isEqualTo("b");
         then(rsp.headers().get("x")).isEqualTo("y");
 
-        then(rsp.status()).isEqualTo(200);
+        then(rsp.status()).isEqualTo(HttpStatus.OK.code());
         then(rsp.trailers().get("m")).isEqualTo("n");
         then(rsp.body().readableBytes()).isEqualTo(DATA.length);
         then(rsp.version()).isEqualTo(HttpVersion.HTTP_2);
@@ -263,7 +264,7 @@ class Http2FrameHandlerTest {
         then(rsp.headers().get("a")).isEqualTo("b");
         then(rsp.headers().get("x")).isEqualTo("y");
 
-        then(rsp.status()).isEqualTo(200);
+        then(rsp.status()).isEqualTo(HttpStatus.OK.code());
         then(rsp.trailers().get("m")).isEqualTo("n");
         then(rsp.body().readableBytes()).isEqualTo(DATA.length);
         then(rsp.version()).isEqualTo(HttpVersion.HTTP_2);
@@ -334,7 +335,7 @@ class Http2FrameHandlerTest {
         then(rsp.headers().get("a")).isEqualTo("b");
         then(rsp.headers().get("x")).isEqualTo("y");
 
-        then(rsp.status()).isEqualTo(200);
+        then(rsp.status()).isEqualTo(HttpStatus.OK.code());
         then(rsp.trailers().get("m")).isEqualTo("n");
         then(rsp.body().readableBytes()).isEqualTo(data.length);
         then(rsp.version()).isEqualTo(HttpVersion.HTTP_2);
@@ -382,7 +383,7 @@ class Http2FrameHandlerTest {
         then(rsp1.headers().get("a")).isEqualTo("b");
         then(rsp1.headers().get("x")).isEqualTo("y");
 
-        then(rsp1.status()).isEqualTo(200);
+        then(rsp1.status()).isEqualTo(HttpStatus.OK.code());
         then(rsp1.trailers().get("m")).isEqualTo("n");
         then(rsp1.body().readableBytes()).isEqualTo(DATA.length);
         then(rsp1.version()).isEqualTo(HttpVersion.HTTP_2);

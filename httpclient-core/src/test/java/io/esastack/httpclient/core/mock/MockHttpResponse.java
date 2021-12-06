@@ -17,6 +17,7 @@ package io.esastack.httpclient.core.mock;
 
 import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpResponse;
@@ -32,7 +33,7 @@ public class MockHttpResponse implements HttpResponse {
     }
 
     public MockHttpResponse() {
-        this(200);
+        this(HttpStatus.OK.code());
     }
 
     @Override

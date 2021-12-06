@@ -15,6 +15,7 @@
  */
 package io.esastack.httpclient.core.exec;
 
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
@@ -49,7 +50,7 @@ class RetryInterceptorTest {
         final HttpRequest request = client.get("http://127.0.0.1:9999/abc/def");
         final ExecChain chain = mock(ExecChain.class);
         final MockContext ctx = new MockContext();
-        final HttpResponse response = new MockHttpResponse(200);
+        final HttpResponse response = new MockHttpResponse(HttpStatus.OK.code());
         when(chain.proceed(request)).thenReturn(Futures.completed(response));
         when(chain.ctx()).thenReturn(ctx);
         ctx.maxRetries(10);
@@ -97,7 +98,7 @@ class RetryInterceptorTest {
         then(response00.isCompletedExceptionally()).isTrue();
         ctx.clear();
 
-        final HttpResponse response1 = new MockHttpResponse(200);
+        final HttpResponse response1 = new MockHttpResponse(HttpStatus.OK.code());
         when(chain.proceed(request)).thenReturn(Futures.completed(new ConnectException()))
                 .thenReturn(Futures.completed(response1));
         final CompletableFuture<HttpResponse> response11 = new CompletableFuture<>();
@@ -118,7 +119,7 @@ class RetryInterceptorTest {
         when(chain.ctx()).thenReturn(ctx);
         ctx.maxRetries(maxRetries);
 
-        final HttpResponse succeed = new MockHttpResponse(200);
+        final HttpResponse succeed = new MockHttpResponse(HttpStatus.OK.code());
 
         when(chain.proceed(any(HttpRequest.class))).thenAnswer(answer -> {
             int count0 = count.getAndIncrement();
@@ -133,7 +134,7 @@ class RetryInterceptorTest {
 
         final RetryInterceptor interceptor = new RetryInterceptor(RetryPredicateImpl.DEFAULT, (cunt) -> 0);
         final HttpResponse result = interceptor.proceed(client.get("/abc"), chain).get();
-        then(result.status()).isEqualTo(200);
+        then(result.status()).isEqualTo(HttpStatus.OK.code());
         int hasRetriedCount = ctx.getAttr(HAS_RETRIED_COUNT);
         then(hasRetriedCount).isEqualTo(maxRetries);
     }
@@ -169,7 +170,7 @@ class RetryInterceptorTest {
 
     private static final class AuxiliaryRetryInterceptor extends RetryInterceptor {
 
-        private static final HttpResponse RESPONSE = new MockHttpResponse(200);
+        private static final HttpResponse RESPONSE = new MockHttpResponse(HttpStatus.OK.code());
 
         private AuxiliaryRetryInterceptor(RetryPredicate predicate, IntToLongFunction intervalMs) {
             super(predicate, intervalMs);

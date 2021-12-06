@@ -17,6 +17,7 @@ package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Handle;
@@ -117,14 +118,14 @@ class HandleImplTest {
         final HttpHeaders headers = new Http1HeadersImpl();
         final byte[] data = "Hello World".getBytes();
 
-        final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
+        final HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, headers);
         response.message(message);
         response.body(Buffer.defaultAlloc().buffer(data));
 
         final HandleImpl handle = new HandleImpl(response);
         then(handle.body().readableBytes()).isEqualTo(data.length);
         then(handle.headers()).isSameAs(headers);
-        then(handle.status()).isEqualTo(200);
+        then(handle.status()).isEqualTo(HttpStatus.OK.code());
         then(handle.version()).isSameAs(HttpVersion.HTTP_1_1);
 
         handle.headers().add("a", "b");

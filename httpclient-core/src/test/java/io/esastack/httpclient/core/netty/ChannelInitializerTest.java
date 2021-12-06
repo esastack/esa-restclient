@@ -15,6 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpClientBuilder;
@@ -273,7 +274,9 @@ class ChannelInitializerTest {
         when(context.alloc()).thenReturn(ByteBufAllocator.DEFAULT);
 
         final List<Object> messages = new LinkedList<>();
-        encoder.encode(ctx, new DefaultHttpResponse(HTTP_1_1, HttpResponseStatus.valueOf(200)), messages);
+        encoder.encode(ctx, new DefaultHttpResponse(HTTP_1_1,
+                HttpResponseStatus.valueOf(HttpStatus.OK.code())),
+                messages);
         then(messages.size()).isEqualTo(1);
 
         channel.writeInbound(messages.get(0));

@@ -22,6 +22,7 @@ import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpMethod;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.httpclient.core.DelegatingRequest;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
@@ -41,12 +42,6 @@ public class RedirectInterceptor implements Interceptor {
     static final String HAS_REDIRECTED_COUNT = "$redirected.count";
     private static final String SLASH = "/";
     private static final Logger logger = LoggerUtils.logger();
-
-    private static final int SC_MOVED_PERMANENTLY = 301;
-    private static final int SC_MOVED_TEMPORARILY = 302;
-    private static final int SC_SEE_OTHER = 303;
-    private static final int SC_TEMPORARY_REDIRECT = 307;
-    private static final int SC_PERMANENT_REDIRECT = 308;
 
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
@@ -190,26 +185,23 @@ public class RedirectInterceptor implements Interceptor {
         }
 
         int status = response.status();
-        switch (status) {
-            case SC_MOVED_PERMANENTLY:
-            case SC_MOVED_TEMPORARILY:
-            case SC_SEE_OTHER:
-            case SC_TEMPORARY_REDIRECT:
-            case SC_PERMANENT_REDIRECT:
-                return true;
-            default:
-                return false;
-        }
+        return status == HttpStatus.MOVED_PERMANENTLY.code() ||
+                status == HttpStatus.FOUND.code() ||
+                status == HttpStatus.SEE_OTHER.code() ||
+                status == HttpStatus.TEMPORARY_REDIRECT.code() ||
+                status == HttpStatus.PERMANENT_REDIRECT.code();
     }
 
     protected boolean switchToGet(HttpRequest request, int status) {
-        return status == SC_PERMANENT_REDIRECT
-                || status == SC_TEMPORARY_REDIRECT
-                || status == SC_SEE_OTHER;
+        return status == HttpStatus.PERMANENT_REDIRECT.code()
+                || status == HttpStatus.TEMPORARY_REDIRECT.code()
+                || status == HttpStatus.SEE_OTHER.code();
     }
 
     protected boolean cleanBody(int status) {
-        return status == SC_MOVED_PERMANENTLY || status == SC_MOVED_TEMPORARILY || status == SC_SEE_OTHER;
+        return status == HttpStatus.MOVED_PERMANENTLY.code()
+                || status == HttpStatus.FOUND.code()
+                || status == HttpStatus.SEE_OTHER.code();
     }
 
     protected URI detectURI(HttpRequest request, HttpResponse response)

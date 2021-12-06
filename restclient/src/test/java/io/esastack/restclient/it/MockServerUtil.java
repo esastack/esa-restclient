@@ -16,6 +16,7 @@
 package io.esastack.restclient.it;
 
 import esa.commons.NetworkUtils;
+import io.esastack.commons.net.http.HttpStatus;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.MediaType;
@@ -37,7 +38,7 @@ class MockServerUtil {
             request = request.withBody(requestBody);
         }
         mockServer.when(request).respond(
-                response().withStatusCode(200)
+                response().withStatusCode(HttpStatus.OK.code())
                         .withContentType(responseMediaType)
                         .withBody(responseBody)
         );

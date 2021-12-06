@@ -16,6 +16,7 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpMessage;
@@ -38,14 +39,14 @@ class HttpMessageImplTest {
     @Test
     void testConstructor() {
         assertThrows(NullPointerException.class,
-                () -> new HttpMessageImpl(200, null, new Http1HeadersImpl()));
+                () -> new HttpMessageImpl(HttpStatus.OK.code(), null, new Http1HeadersImpl()));
 
         assertThrows(NullPointerException.class,
-                () -> new HttpMessageImpl(200, HttpVersion.HTTP_1_1, null));
+                () -> new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, null));
 
-        HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, new Http1HeadersImpl());
+        HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, new Http1HeadersImpl());
         then(message.toString()).isEqualTo(new StringJoiner(", ", HttpMessageImpl.class.getSimpleName() + "[", "]")
-                .add("status=" + 200)
+                .add("status=" + HttpStatus.OK.code())
                 .add("version=" + HttpVersion.HTTP_1_1)
                 .add("headers=" + new Http1HeadersImpl())
                 .toString());
@@ -53,7 +54,7 @@ class HttpMessageImplTest {
 
     @Test
     void testGetter() {
-        final int status = 200;
+        final int status = HttpStatus.OK.code();
         final HttpVersion version = HttpVersion.HTTP_1_1;
         final HttpHeaders headers = new Http1HeadersImpl();
 
@@ -89,7 +90,7 @@ class HttpMessageImplTest {
         headers.add("x", "y");
 
         HttpMessage message = HttpMessageImpl.from(headers, 3);
-        then(message.status()).isEqualTo(200);
+        then(message.status()).isEqualTo(HttpStatus.OK.code());
         then(message.version()).isSameAs(HttpVersion.HTTP_2);
         then(message.headers().size()).isEqualTo(2);
         then(message.headers().get("a")).isEqualTo("b");

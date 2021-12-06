@@ -19,6 +19,7 @@ import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.netty.http.CookieImpl;
@@ -93,7 +94,7 @@ public class RequestMockUtil {
 
             @Override
             public int status() {
-                return 200;
+                return HttpStatus.OK.code();
             }
 
             @Override

@@ -18,6 +18,7 @@ package io.esastack.httpclient.core.exec;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
@@ -320,7 +321,7 @@ class RedirectInterceptorTest {
         when(chain.ctx()).thenReturn(ctx);
         ctx.maxRedirects(maxRedirects);
 
-        final HttpResponse succeed = new MockHttpResponse(200);
+        final HttpResponse succeed = new MockHttpResponse(HttpStatus.OK.code());
         succeed.headers().add("a", "b");
 
         when(chain.proceed(any(HttpRequest.class))).thenAnswer(answer -> {
@@ -336,7 +337,7 @@ class RedirectInterceptorTest {
 
         final RedirectInterceptor interceptor = new RedirectInterceptor();
         final HttpResponse result = interceptor.proceed(client.get("/abc"), chain).get();
-        then(result.status()).isEqualTo(200);
+        then(result.status()).isEqualTo(HttpStatus.OK.code());
         then(result.headers().get("a")).isEqualTo("b");
         final int hasRedirectedCount = ctx.getAttr(HAS_REDIRECTED_COUNT);
         then(hasRedirectedCount).isEqualTo(maxRedirects);
@@ -344,7 +345,7 @@ class RedirectInterceptorTest {
 
     private static final class AuxiliaryRedirectInterceptor extends RedirectInterceptor {
 
-        private static final HttpResponse RESPONSE = new MockHttpResponse(200);
+        private static final HttpResponse RESPONSE = new MockHttpResponse(HttpStatus.OK.code());
 
         private AuxiliaryRedirectInterceptor() {
         }

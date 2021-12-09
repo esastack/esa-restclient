@@ -25,7 +25,7 @@ public class MockFilterContext extends FilterContext {
     }
 
     public void clear() {
-        super.attributes.clear();
+        super.attrs().forEach((key, attr) -> attr.set(null));
     }
 }
 

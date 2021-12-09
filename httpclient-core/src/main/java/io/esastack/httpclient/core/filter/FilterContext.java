@@ -16,12 +16,14 @@
 package io.esastack.httpclient.core.filter;
 
 import esa.commons.Checks;
-import io.esastack.httpclient.core.AttributeMap;
+import esa.commons.collection.AttributeMap;
+import esa.commons.collection.Attributes;
 import io.esastack.httpclient.core.Context;
 
-public class FilterContext extends AttributeMap {
+public class FilterContext {
 
     private final Context parent;
+    private final Attributes attrs = new AttributeMap(8);
 
     public FilterContext(Context parent) {
         Checks.checkNotNull(parent, "parent");
@@ -30,5 +32,9 @@ public class FilterContext extends AttributeMap {
 
     public Context parent() {
         return parent;
+    }
+
+    public Attributes attrs() {
+        return attrs;
     }
 }

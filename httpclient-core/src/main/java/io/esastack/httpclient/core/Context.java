@@ -15,11 +15,15 @@
  */
 package io.esastack.httpclient.core;
 
-public class Context extends AttributeMap {
+import esa.commons.collection.AttributeMap;
+import esa.commons.collection.Attributes;
+
+public class Context {
 
     protected volatile int maxRedirects;
     protected volatile int maxRetries;
     protected volatile boolean useExpectContinue;
+    private final Attributes attrs = new AttributeMap(8);
 
     public int maxRedirects() {
         return maxRedirects;
@@ -43,5 +47,9 @@ public class Context extends AttributeMap {
 
     protected void useExpectContinue(boolean useExpectContinue) {
         this.useExpectContinue = useExpectContinue;
+    }
+
+    public Attributes attrs() {
+        return attrs;
     }
 }

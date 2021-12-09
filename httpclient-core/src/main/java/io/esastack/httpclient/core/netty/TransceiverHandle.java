@@ -17,7 +17,7 @@ package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.httpclient.core.Context;
-import io.esastack.httpclient.core.ContextNames;
+import io.esastack.httpclient.core.ContextKeys;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.Listener;
@@ -38,7 +38,7 @@ abstract class TransceiverHandle {
      * @param channelPool channel pool
      * @param delegate    listener
      * @param version     version
-     * @return            proxied listener
+     * @return proxied listener
      */
     abstract TimeoutHandle buildTimeoutHandle(Channel channel,
                                               ChannelPool channelPool,
@@ -49,7 +49,7 @@ abstract class TransceiverHandle {
      * Builds a {@link ResponseHandle} and adds it to {@link HandleRegistry}.
      *
      * @param request  request
-     * @param execCtx      ctx
+     * @param execCtx  ctx
      * @param channel  channel
      * @param filters  filters
      * @param registry registry of handler adapter
@@ -99,8 +99,9 @@ abstract class TransceiverHandle {
         if (filters == null || filters.length == 0) {
             return new ResponseHandle(handle, request, execCtx, tHandle, response);
         } else {
+
             return new FilteringHandle(handle, request, execCtx, tHandle, response, filters,
-                    execCtx.ctx().removeAttr(ContextNames.FILTER_CONTEXT));
+                    execCtx.ctx().attrs().attr(ContextKeys.FILTER_CONTEXT_KEY).getAndRemove());
         }
     }
 }

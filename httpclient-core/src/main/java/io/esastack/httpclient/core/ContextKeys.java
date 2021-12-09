@@ -15,10 +15,14 @@
  */
 package io.esastack.httpclient.core;
 
-public final class ContextNames {
+import esa.commons.collection.AttributeKey;
+import io.esastack.httpclient.core.filter.FilterContext;
 
-    public static final String FILTER_CONTEXT = "$filterContext";
+public final class ContextKeys {
 
-    private ContextNames() {
+    public static final AttributeKey<FilterContext>
+            FILTER_CONTEXT_KEY = AttributeKey.valueOf("$filterContext");
+
+    private ContextKeys() {
     }
 }

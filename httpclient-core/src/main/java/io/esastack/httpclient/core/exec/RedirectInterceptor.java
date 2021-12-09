@@ -16,6 +16,8 @@
 package io.esastack.httpclient.core.exec;
 
 import esa.commons.StringUtils;
+import esa.commons.collection.Attribute;
+import esa.commons.collection.AttributeKey;
 import esa.commons.collection.MultiValueMap;
 import esa.commons.logging.Logger;
 import io.esastack.commons.net.buffer.Buffer;
@@ -39,7 +41,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class RedirectInterceptor implements Interceptor {
 
-    static final String HAS_REDIRECTED_COUNT = "$redirected.count";
+    static final AttributeKey<Integer> HAS_REDIRECTED_COUNT = AttributeKey.valueOf("$redirected.count");
     private static final String SLASH = "/";
     private static final Logger logger = LoggerUtils.logger();
 
@@ -76,9 +78,9 @@ public class RedirectInterceptor implements Interceptor {
         next.proceed(request).whenComplete((rsp, th) -> {
             try {
                 // Update hasRedirectedCount immediately
-                final int hasDirectedCount = next.ctx().getAttr(HAS_REDIRECTED_COUNT, -1) + 1;
-                next.ctx().removeAttr(HAS_REDIRECTED_COUNT);
-                next.ctx().setAttr(HAS_REDIRECTED_COUNT, hasDirectedCount);
+                Attribute<Integer> countAttr = next.ctx().attrs().attr(HAS_REDIRECTED_COUNT);
+                final int hasDirectedCount = countAttr.getOrDefault(-1) + 1;
+                countAttr.set(hasDirectedCount);
 
                 if (th != null) {
                     response.completeExceptionally(th);

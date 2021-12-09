@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.exec;
 
-import io.esastack.httpclient.core.ContextNames;
+import io.esastack.httpclient.core.ContextKeys;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.Listener;
@@ -44,9 +44,8 @@ public class FilteringExec implements Interceptor {
     @Override
     public CompletableFuture<HttpResponse> proceed(HttpRequest request, ExecChain next) {
         final FilterContext ctx0 = new FilterContext(next.ctx());
-        next.ctx().setAttr(ContextNames.FILTER_CONTEXT, ctx0);
-
-        Listener listener = next.ctx().removeAttr(LISTENER_KEY);
+        next.ctx().attrs().attr(ContextKeys.FILTER_CONTEXT_KEY).set(ctx0);
+        Listener listener = next.ctx().attrs().attr(LISTENER_KEY).getAndRemove();
         if (listener != null) {
             listener.onInterceptorsEnd(request, next.ctx());
             listener.onFiltersStart(request, ctx0);

@@ -17,15 +17,17 @@ package io.esastack.httpclient.core.exec;
 
 import esa.commons.Checks;
 import esa.commons.annotation.Internal;
+import esa.commons.collection.AttributeKey;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
+import io.esastack.httpclient.core.Listener;
 
 import java.util.concurrent.CompletableFuture;
 
 @Internal
 public class RequestExecutorImpl implements RequestExecutor {
 
-    static final String LISTENER_KEY = "$listener";
+    static final AttributeKey<Listener> LISTENER_KEY = AttributeKey.valueOf("$listener");
 
     private final Interceptor[] interceptors;
     private final HttpTransceiver transceiver;
@@ -43,7 +45,7 @@ public class RequestExecutorImpl implements RequestExecutor {
         ExecChain chain = LinkedExecChain.from(interceptors, transceiver, execContext);
 
         execContext.listener().onInterceptorsStart(request, chain.ctx());
-        chain.ctx().setAttr(LISTENER_KEY, execContext.listener());
+        chain.ctx().attrs().attr(LISTENER_KEY).set(execContext.listener());
         return chain.proceed(request);
     }
 }

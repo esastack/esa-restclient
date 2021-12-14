@@ -16,7 +16,6 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
-import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
@@ -29,7 +28,7 @@ public class NettyResponse implements HttpResponse {
     private final boolean aggregated;
 
     private volatile HttpMessage message;
-    private volatile Buffer body = BufferUtil.buffer(0);
+    private volatile Buffer body = Buffer.defaultAlloc().buffer(0);
 
     public NettyResponse(boolean aggregated) {
         this.aggregated = aggregated;
@@ -47,7 +46,7 @@ public class NettyResponse implements HttpResponse {
 
     @Override
     public Buffer body() {
-        return body == null ? BufferUtil.empty() : body;
+        return body == null ? Buffer.defaultAlloc().empty() : body;
     }
 
     @Override

@@ -17,7 +17,7 @@ package io.esastack.httpclient.core.resolver;
 
 import java.io.Closeable;
 import java.net.InetAddress;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * This class is designed to resolve given host to detailed ips. eg: localhost : 127.0.0.1
@@ -31,7 +31,7 @@ public interface HostResolver extends Closeable {
      * @param inetHost host
      * @return address
      */
-    CompletableFuture<InetAddress> resolve(String inetHost);
+    CompletionStage<InetAddress> resolve(String inetHost);
 
     /**
      * Closes the {@link HostResolver}.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 OPPO ESA Stack Project
+ * Copyright 2020 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.spi;
+package io.esastack.httpclient.core;
 
-import esa.commons.spi.SPI;
-import io.esastack.restclient.RestClientOptions;
-import io.esastack.restclient.exec.ClientInterceptor;
+import esa.commons.collection.AttributeKey;
+import io.esastack.httpclient.core.filter.FilterContext;
 
-import java.util.Collection;
+public final class ContextKeys {
 
-@SPI
-public interface ClientInterceptorFactory {
-    Collection<ClientInterceptor> interceptors(RestClientOptions clientOptions);
+    public static final AttributeKey<FilterContext>
+            FILTER_CONTEXT_KEY = AttributeKey.valueOf("$filterContext");
+
+    private ContextKeys() {
+    }
 }

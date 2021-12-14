@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 OPPO ESA Stack Project
+ * Copyright 2021 OPPO ESA Stack Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.httpclient.core;
+package io.esastack.restclient.spi;
 
-public final class ContextNames {
+import esa.commons.spi.SPI;
+import io.esastack.restclient.RestClientOptions;
+import io.esastack.restclient.exec.RestInterceptor;
 
-    public static final String FILTER_CONTEXT = "$filterContext";
+import java.util.Collection;
 
-    private ContextNames() {
-    }
+@SPI
+public interface RestInterceptorFactory {
+    Collection<RestInterceptor> interceptors(RestClientOptions clientOptions);
 }

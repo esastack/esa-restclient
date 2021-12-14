@@ -21,6 +21,7 @@ import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.JsonCodec;
 import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.utils.Constants;
 
 public class FastJsonCodec implements JsonCodec {
 
@@ -38,5 +39,10 @@ public class FastJsonCodec implements JsonCodec {
     @Override
     public Object decodeFromJson(DecodeContext<byte[]> ctx) {
         return JSON.parseObject(ctx.content().value(), ctx.targetGenerics());
+    }
+
+    @Override
+    public int getOrder() {
+        return Constants.Order.FAST_JSON;
     }
 }

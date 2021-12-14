@@ -21,7 +21,7 @@ import esa.commons.collection.MultiValueMap;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaderValues;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.netty.http.CookieImpl;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
@@ -167,13 +167,13 @@ class RestCompositeRequestTest {
         File file = new File("aaa");
         RestFileRequest restFileRequest = request.entity(file);
         then(restFileRequest.file()).isEqualTo(file);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_OCTET_STREAM);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_OCTET_STREAM.value());
-        request.contentType(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_JSON_UTF8);
+                .isEqualTo(MediaType.APPLICATION_OCTET_STREAM.value());
+        request.contentType(MediaType.APPLICATION_JSON_UTF8);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_JSON_UTF8.value());
+                .isEqualTo(MediaType.APPLICATION_JSON_UTF8.value());
 
         RestRequestFacade finalRequest = request;
         assertThrows(IllegalStateException.class, () ->
@@ -184,13 +184,13 @@ class RestCompositeRequestTest {
         Object entity = new Object();
         request.entity(entity);
         then(request.entity()).isEqualTo(entity);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_JSON_UTF8.value());
-        request.contentType(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
+                .isEqualTo(MediaType.APPLICATION_JSON_UTF8.value());
+        request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_FORM_URLENCODED);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_FORM_URLENCODED.value());
+                .isEqualTo(MediaType.APPLICATION_FORM_URLENCODED.value());
         RestRequestFacade finalRequest1 = request;
         assertThrows(IllegalStateException.class, () ->
                 finalRequest1.entity(new Object())
@@ -200,13 +200,13 @@ class RestCompositeRequestTest {
         String aaa = "aaa";
         request.entity(aaa);
         then(request.entity()).isEqualTo(aaa);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.TEXT_PLAIN);
+        then(request.contentType()).isEqualTo(MediaType.TEXT_PLAIN);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.TEXT_PLAIN.value());
-        request.contentType(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
+                .isEqualTo(MediaType.TEXT_PLAIN.value());
+        request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_FORM_URLENCODED);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_FORM_URLENCODED.value());
+                .isEqualTo(MediaType.APPLICATION_FORM_URLENCODED.value());
         RestRequestFacade finalRequest2 = request;
         assertThrows(IllegalStateException.class, () ->
                 finalRequest2.entity(new Object())
@@ -216,13 +216,13 @@ class RestCompositeRequestTest {
         byte[] bytes = "aaa".getBytes();
         request.entity(bytes);
         then(request.entity()).isEqualTo(bytes);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_OCTET_STREAM);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_OCTET_STREAM);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_OCTET_STREAM.value());
-        request.contentType(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
+                .isEqualTo(MediaType.APPLICATION_OCTET_STREAM.value());
+        request.contentType(MediaType.APPLICATION_FORM_URLENCODED);
+        then(request.contentType()).isEqualTo(MediaType.APPLICATION_FORM_URLENCODED);
         then(request.getHeader(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.APPLICATION_FORM_URLENCODED.value());
+                .isEqualTo(MediaType.APPLICATION_FORM_URLENCODED.value());
         RestRequestFacade finalRequest3 = request;
         assertThrows(IllegalStateException.class, () ->
                 finalRequest3.entity(new Object())
@@ -286,12 +286,15 @@ class RestCompositeRequestTest {
 
         then(request.getHeader(HttpHeaderNames.ACCEPT)).isNull();
 
-        request.accept(MediaTypeUtil.APPLICATION_JSON_UTF8);
-        then(MediaTypeUtil.APPLICATION_JSON_UTF8.value()).isEqualTo(request.getHeader(HttpHeaderNames.ACCEPT));
+        request.accept(MediaType.APPLICATION_JSON_UTF8);
+        then(MediaType.APPLICATION_JSON_UTF8.value()).isEqualTo(request.getHeader(HttpHeaderNames.ACCEPT));
     }
 
     @Test
     void testMultipart() {
+        Map<String, String> attrs = new HashMap<>();
+        attrs.put("aaa", "ccc");
+        attrs.put("ccc", "aaa1");
         File file = new File("aaa");
         RestMultipartRequest request = RestClient.ofDefault().post("aaa").multipart()
                 .file("aaa", file)
@@ -300,15 +303,18 @@ class RestCompositeRequestTest {
                 .file("aaa3", "aaa", file, "aaa2", false)
                 .file(null, null)
                 .attr("bbb", "bbb")
-                .attr(null, null);
-        then(request.contentType()).isEqualTo(MediaTypeUtil.MULTIPART_FORM_DATA);
+                .attr(null, null)
+                .attrs(attrs);
+        then(request.contentType()).isEqualTo(MediaType.MULTIPART_FORM_DATA);
         then(request.entity() instanceof MultipartBody).isTrue();
 
         MultipartBody body = (MultipartBody) request.entity();
         then(body.files().size()).isEqualTo(4);
         then(body.files().get(0).file()).isEqualTo(file);
-        then(body.attrs().size()).isEqualTo(1);
+        then(body.attrs().size()).isEqualTo(3);
         then(body.attrs().getFirst("bbb")).isEqualTo("bbb");
+        then(body.attrs().getFirst("aaa")).isEqualTo("ccc");
+        then(body.attrs().getFirst("ccc")).isEqualTo("aaa1");
     }
 
     @Test

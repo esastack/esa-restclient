@@ -20,7 +20,6 @@ import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.restclient.codec.ByteCodec;
 import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.EncodeContext;
@@ -38,8 +37,10 @@ public class ProtoBufCodec implements ByteCodec {
 
     private final ExtensionRegistry extensionRegistry;
 
-    public static final MediaType PROTO_BUF =
-            MediaTypeUtil.of("application", "x-protobuf", StandardCharsets.UTF_8);
+    public static final MediaType PROTO_BUF = MediaType.builder("application")
+            .subtype("x-protobuf")
+            .charset(StandardCharsets.UTF_8)
+            .build();
 
     /**
      * The HTTP header containing the protobuf schema.

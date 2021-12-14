@@ -16,6 +16,8 @@
 package io.esastack.httpclient.core.exec;
 
 import esa.commons.Checks;
+import esa.commons.collection.Attribute;
+import esa.commons.collection.AttributeKey;
 import esa.commons.logging.Logger;
 import io.esastack.httpclient.core.HttpRequest;
 import io.esastack.httpclient.core.HttpResponse;
@@ -28,7 +30,7 @@ import java.util.function.IntToLongFunction;
 
 public class RetryInterceptor implements Interceptor {
 
-    static final String HAS_RETRIED_COUNT = "$retried.count";
+    static final AttributeKey<Integer> HAS_RETRIED_COUNT = AttributeKey.valueOf("$retried.count");
     private static final Logger logger = LoggerUtils.logger();
 
     private final RetryPredicate predicate;
@@ -80,9 +82,9 @@ public class RetryInterceptor implements Interceptor {
         next.proceed(request).whenComplete((rsp, th) -> {
             try {
                 // Update hasRetriedCount immediately.
-                int hasRetriedCount = next.ctx().getAttr(HAS_RETRIED_COUNT, -1) + 1;
-                next.ctx().removeAttr(HAS_RETRIED_COUNT);
-                next.ctx().setAttr(HAS_RETRIED_COUNT, hasRetriedCount);
+                Attribute<Integer> countAttr = next.ctx().attrs().attr(HAS_RETRIED_COUNT);
+                int hasRetriedCount = countAttr.getOrDefault(-1) + 1;
+                countAttr.set(hasRetriedCount);
 
                 // Judge whether the request has been handled successfully.
                 boolean canRetry = predicate.canRetry(request, rsp, next.ctx(), th);

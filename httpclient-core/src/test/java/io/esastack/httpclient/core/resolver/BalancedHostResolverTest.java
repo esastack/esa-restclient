@@ -46,9 +46,9 @@ class BalancedHostResolverTest {
                 (address) -> Futures.completed(addresses);
 
         final HostResolver resolver = new HostResolverImpl(new RoundRobinLoadBalancer<>(), function);
-        assertSame(address1, resolver.resolve("localhost").get());
-        assertSame(address2, resolver.resolve("localhost").get());
-        assertSame(address3, resolver.resolve("localhost").get());
+        assertSame(address1, resolver.resolve("localhost").toCompletableFuture().get());
+        assertSame(address2, resolver.resolve("localhost").toCompletableFuture().get());
+        assertSame(address3, resolver.resolve("localhost").toCompletableFuture().get());
     }
 
     private static class HostResolverImpl extends BalancedHostResolver {

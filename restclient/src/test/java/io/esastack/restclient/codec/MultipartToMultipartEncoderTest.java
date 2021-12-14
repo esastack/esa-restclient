@@ -15,7 +15,7 @@
  */
 package io.esastack.restclient.codec;
 
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.RestRequestBase;
@@ -37,7 +37,7 @@ class MultipartToMultipartEncoderTest {
     void testEncode() throws Exception {
         MultipartEncoder encoder = new MultipartEncoder();
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         MultipartBody multipartBody = new MultipartBodyImpl();
         EncodeContext ctx = new EncodeChainImpl(
@@ -50,7 +50,7 @@ class MultipartToMultipartEncoderTest {
         );
         assertThrows(CodecException.class, () -> encoder.encode(ctx));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.MULTIPART_FORM_DATA);
+        when(request.contentType()).thenReturn(MediaType.MULTIPART_FORM_DATA);
         then(((MultipartBody) encoder.encode(ctx).value()).multipartEncode()).isTrue();
     }
 

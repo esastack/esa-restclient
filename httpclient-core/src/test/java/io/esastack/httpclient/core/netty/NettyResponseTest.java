@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpMessage;
@@ -36,7 +36,7 @@ class NettyResponseTest {
         final NettyResponse response = new NettyResponse(aggregated);
         final HttpMessage message = new HttpMessageImpl(status, HttpVersion.HTTP_2, new Http1HeadersImpl());
         response.message(message);
-        response.body(BufferUtil.buffer(data));
+        response.body(Buffer.defaultAlloc().buffer(data));
 
         response.headers().add("A", "B");
         response.trailers().add("X", "Y");

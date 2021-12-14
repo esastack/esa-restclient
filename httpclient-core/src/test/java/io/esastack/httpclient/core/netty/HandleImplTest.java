@@ -16,8 +16,8 @@
 package io.esastack.httpclient.core.netty;
 
 import io.esastack.commons.net.buffer.Buffer;
-import io.esastack.commons.net.buffer.BufferUtil;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.Handle;
@@ -73,10 +73,10 @@ class HandleImplTest {
 
         final HandleImpl0 handle = new HandleImpl0(new NettyResponse(false), (h) ->
                 h.onStart(v -> count.incrementAndGet())
-                .onData(b -> count.incrementAndGet())
-                .onTrailer(t -> count.incrementAndGet())
-                .onEnd(v -> count.incrementAndGet())
-                .onError(th -> count.incrementAndGet()));
+                        .onData(b -> count.incrementAndGet())
+                        .onTrailer(t -> count.incrementAndGet())
+                        .onEnd(v -> count.incrementAndGet())
+                        .onError(th -> count.incrementAndGet()));
         handle.data().accept(null);
         handle.start().accept(null);
         handle.trailers0().accept(null);
@@ -92,11 +92,16 @@ class HandleImplTest {
         final NettyResponse response = new NettyResponse(aggregated);
         final HandleImpl0 handle = new HandleImpl0(response);
 
-        final Consumer<Void> start = (v) -> {};
-        final Consumer<Buffer> data = (d) -> {};
-        final Consumer<HttpHeaders> trailers = (t) -> {};
-        final Consumer<Void> end = (v) -> {};
-        final Consumer<Throwable> error = (th) -> {};
+        final Consumer<Void> start = (v) -> {
+        };
+        final Consumer<Buffer> data = (d) -> {
+        };
+        final Consumer<HttpHeaders> trailers = (t) -> {
+        };
+        final Consumer<Void> end = (v) -> {
+        };
+        final Consumer<Throwable> error = (th) -> {
+        };
 
         handle.onStart(start).onData(data).onTrailer(trailers).onError(error).onEnd(end);
         then(handle.start()).isSameAs(start);
@@ -113,14 +118,14 @@ class HandleImplTest {
         final HttpHeaders headers = new Http1HeadersImpl();
         final byte[] data = "Hello World".getBytes();
 
-        final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
+        final HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, headers);
         response.message(message);
-        response.body(BufferUtil.buffer(data));
+        response.body(Buffer.defaultAlloc().buffer(data));
 
         final HandleImpl handle = new HandleImpl(response);
         then(handle.body().readableBytes()).isEqualTo(data.length);
         then(handle.headers()).isSameAs(headers);
-        then(handle.status()).isEqualTo(200);
+        then(handle.status()).isEqualTo(HttpStatus.OK.code());
         then(handle.version()).isSameAs(HttpVersion.HTTP_1_1);
 
         handle.headers().add("a", "b");

@@ -21,7 +21,6 @@ import esa.commons.collection.MultiValueMap;
 import io.esastack.commons.net.http.Cookie;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.CompositeRequest;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
@@ -126,6 +125,17 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         }
         if (entity instanceof MultipartBody) {
             ((MultipartBody) entity).attrs(values);
+        } else {
+            throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
+        }
+        return self();
+    }
+
+    @Override
+    public RestMultipartRequest attrs(Map<String, String> attrMap) {
+        Checks.checkNotNull(attrMap, "attrMap");
+        if (entity instanceof MultipartBody) {
+            ((MultipartBody) entity).attrs(attrMap);
         } else {
             throw new IllegalStateException("Entity is not MultipartBody type,please call multipart() firstly");
         }
@@ -255,7 +265,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     public ExecutableRestRequest entity(Object entity) {
         Checks.checkNotNull(entity, "entity");
         checkEntityHadSet();
-        setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        setContentTypeIfAbsent(MediaType.APPLICATION_JSON_UTF8);
         fillEntity(entity);
         return self();
     }
@@ -267,7 +277,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
         checkEntityHadSet();
         Class<?> typeTem = entity.getClass();
         GenericsUtil.checkTypeCompatibility(typeTem, generics);
-        setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        setContentTypeIfAbsent(MediaType.APPLICATION_JSON_UTF8);
         fillEntity(entity, typeTem, generics);
         return self();
     }
@@ -276,7 +286,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     public ExecutableRestRequest entity(String content) {
         Checks.checkNotNull(content, "content");
         checkEntityHadSet();
-        setContentTypeIfAbsent(MediaTypeUtil.TEXT_PLAIN);
+        setContentTypeIfAbsent(MediaType.TEXT_PLAIN);
         fillEntity(content);
         return self();
     }
@@ -285,7 +295,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     public ExecutableRestRequest entity(byte[] data) {
         Checks.checkNotNull(data, "data");
         checkEntityHadSet();
-        setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_OCTET_STREAM);
+        setContentTypeIfAbsent(MediaType.APPLICATION_OCTET_STREAM);
         fillEntity(data);
         return self();
     }
@@ -294,7 +304,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     public RestFileRequest entity(File file) {
         Checks.checkNotNull(file, "file");
         checkEntityHadSet();
-        setContentTypeIfAbsent(MediaTypeUtil.APPLICATION_OCTET_STREAM);
+        setContentTypeIfAbsent(MediaType.APPLICATION_OCTET_STREAM);
         fillEntity(file);
         return self();
     }
@@ -302,7 +312,7 @@ public class RestCompositeRequest extends AbstractExecutableRestRequest
     @Override
     public RestMultipartRequest multipart() {
         checkEntityHadSet();
-        setContentTypeIfAbsent(MediaTypeUtil.MULTIPART_FORM_DATA);
+        setContentTypeIfAbsent(MediaType.MULTIPART_FORM_DATA);
         fillMultipartBody();
         return self();
     }

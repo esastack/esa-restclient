@@ -15,9 +15,11 @@
  */
 package io.esastack.httpclient.core.exec;
 
+import esa.commons.collection.AttributeKey;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
@@ -45,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 class RedirectInterceptorTest {
 
-    private static final String DO_REDIRECT = "$doRedirect";
+    private static final AttributeKey<Boolean> DO_REDIRECT = AttributeKey.valueOf("$doRedirect");
 
     private final HttpClient client = HttpClient.ofDefault();
 
@@ -63,7 +65,7 @@ class RedirectInterceptorTest {
 
         final RedirectInterceptor interceptor = new AuxiliaryRedirectInterceptor();
         final CompletableFuture<HttpResponse> response00 = interceptor.proceed(request0, next);
-        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
+        then(ctx.attrs().attr(DO_REDIRECT).get()).isNull();
         then(response00.isDone()).isTrue();
         then(response00.getNow(null)).isSameAs(response);
         ctx.clear();
@@ -72,14 +74,14 @@ class RedirectInterceptorTest {
         final HttpRequest request1 = client.get("http://127.0.0.1:8080/abc");
         when(next.proceed(request1)).thenReturn(Futures.completed(response));
         final CompletableFuture<HttpResponse> response11 = interceptor.proceed(request1, next);
-        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
+        then(ctx.attrs().attr(DO_REDIRECT).get()).isNull();
         then(response11.isDone()).isTrue();
         then(response11.getNow(null)).isSameAs(response);
         ctx.clear();
 
         // redirect is configured as false
         final CompletableFuture<HttpResponse> response22 = interceptor.proceed(request1, next);
-        then((Integer) ctx.getAttr(DO_REDIRECT)).isNull();
+        then(ctx.attrs().attr(DO_REDIRECT).get()).isNull();
         then(response22.isDone()).isTrue();
         then(response22.getNow(null)).isSameAs(response);
         ctx.clear();
@@ -87,7 +89,7 @@ class RedirectInterceptorTest {
         // redirect is configured as true
         ctx.maxRedirects(1);
         final CompletableFuture<HttpResponse> response33 = interceptor.proceed(request1, next);
-        then((Boolean) ctx.getAttr(DO_REDIRECT)).isEqualTo(true);
+        then(ctx.attrs().attr(DO_REDIRECT).get()).isEqualTo(true);
         then(response33.isDone()).isTrue();
         then(response33.getNow(null)).isSameAs(AuxiliaryRedirectInterceptor.RESPONSE);
         ctx.clear();
@@ -139,7 +141,7 @@ class RedirectInterceptorTest {
         final CompletableFuture<HttpResponse> response44 = interceptor.proceed(request0, next);
         then(response44.isDone()).isTrue();
         then(response44.isCompletedExceptionally()).isTrue();
-        then((Integer) ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(10);
+        then(ctx.attrs().attr(HAS_REDIRECTED_COUNT).get()).isEqualTo(10);
         ctx.clear();
 
         // Case 5: when complete with location, status is 302 and redirected response is null
@@ -150,7 +152,7 @@ class RedirectInterceptorTest {
         final CompletableFuture<HttpResponse> response55 = interceptor.proceed(request0, next);
         then(response55.isDone()).isTrue();
         then(response55.isCompletedExceptionally()).isTrue();
-        then((Integer) ctx.getAttr(HAS_REDIRECTED_COUNT)).isEqualTo(0);
+        then(ctx.attrs().attr(HAS_REDIRECTED_COUNT).get()).isEqualTo(0);
         ctx.clear();
     }
 
@@ -320,7 +322,7 @@ class RedirectInterceptorTest {
         when(chain.ctx()).thenReturn(ctx);
         ctx.maxRedirects(maxRedirects);
 
-        final HttpResponse succeed = new MockHttpResponse(200);
+        final HttpResponse succeed = new MockHttpResponse(HttpStatus.OK.code());
         succeed.headers().add("a", "b");
 
         when(chain.proceed(any(HttpRequest.class))).thenAnswer(answer -> {
@@ -336,15 +338,15 @@ class RedirectInterceptorTest {
 
         final RedirectInterceptor interceptor = new RedirectInterceptor();
         final HttpResponse result = interceptor.proceed(client.get("/abc"), chain).get();
-        then(result.status()).isEqualTo(200);
+        then(result.status()).isEqualTo(HttpStatus.OK.code());
         then(result.headers().get("a")).isEqualTo("b");
-        final int hasRedirectedCount = ctx.getAttr(HAS_REDIRECTED_COUNT);
+        final int hasRedirectedCount = ctx.attrs().attr(HAS_REDIRECTED_COUNT).get();
         then(hasRedirectedCount).isEqualTo(maxRedirects);
     }
 
     private static final class AuxiliaryRedirectInterceptor extends RedirectInterceptor {
 
-        private static final HttpResponse RESPONSE = new MockHttpResponse(200);
+        private static final HttpResponse RESPONSE = new MockHttpResponse(HttpStatus.OK.code());
 
         private AuxiliaryRedirectInterceptor() {
         }
@@ -354,7 +356,7 @@ class RedirectInterceptorTest {
                                   HttpRequest request,
                                   ExecChain next,
                                   int maxRedirects) {
-            next.ctx().setAttr(DO_REDIRECT, true);
+            next.ctx().attrs().attr(DO_REDIRECT).set(true);
             response.complete(RESPONSE);
         }
     }

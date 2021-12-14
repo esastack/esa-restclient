@@ -15,7 +15,7 @@
  */
 package io.esastack.restclient.codec;
 
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.httpclient.core.MultipartBodyImpl;
 import io.esastack.restclient.RestRequestBase;
@@ -37,7 +37,7 @@ class FormURLEncodedEncoderTest {
     void testEncode() throws Exception {
         FormURLEncodedEncoder encoder = new FormURLEncodedEncoder();
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         MultipartBody multipartBody = new MultipartBodyImpl();
         EncodeContext ctx = new EncodeChainImpl(
@@ -51,7 +51,7 @@ class FormURLEncodedEncoderTest {
         assertThrows(CodecException.class, () ->
                 encoder.encode(ctx));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_FORM_URLENCODED);
+        when(request.contentType()).thenReturn(MediaType.APPLICATION_FORM_URLENCODED);
         then(((MultipartBody) encoder.encode(ctx).value()).multipartEncode()).isFalse();
     }
 

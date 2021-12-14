@@ -16,7 +16,6 @@
 package io.esastack.restclient.codec.impl;
 
 import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.MultipartBody;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.Encoder;
@@ -28,7 +27,7 @@ public class FormURLEncodedEncoder implements Encoder {
     public RequestContent<?> encode(EncodeContext<?> ctx) throws Exception {
         MediaType contentType = ctx.contentType();
         Class<?> type = ctx.entityType();
-        if (contentType != null && MediaTypeUtil.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
+        if (contentType != null && MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)
                 && MultipartBody.class.isAssignableFrom(type)) {
             MultipartBody formBody = (MultipartBody) ctx.entity();
             formBody.multipartEncode(false);

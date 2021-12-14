@@ -15,14 +15,13 @@
  */
 package io.esastack.restclient.it;
 
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClient;
 import io.esastack.restclient.RestResponseBase;
 import io.esastack.restclient.codec.impl.JacksonCodec;
 import io.esastack.restclient.codec.impl.MultipartEncoder;
 import io.netty.handler.codec.CodecException;
 import org.junit.jupiter.api.Test;
-import org.mockserver.model.MediaType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -42,13 +41,13 @@ class CodecTest {
         MockServerUtil.startMockServer(
                 JacksonCodec.getDefaultMapper().writeValueAsBytes(requestEntity),
                 JacksonCodec.getDefaultMapper().writeValueAsBytes(responseEntity),
-                MediaType.APPLICATION_JSON_UTF_8,
+                org.mockserver.model.MediaType.APPLICATION_JSON_UTF_8,
                 path
         );
 
         RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
-                .contentType(MediaTypeUtil.APPLICATION_JSON_UTF8)
-                .accept(MediaTypeUtil.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8)
                 .entity(requestEntity)
                 .execute()
                 .toCompletableFuture()
@@ -63,12 +62,12 @@ class CodecTest {
         MockServerUtil.startMockServer(
                 requestEntity.getBytes(StandardCharsets.UTF_8),
                 responseEntity.getBytes(StandardCharsets.UTF_8),
-                MediaType.TEXT_PLAIN,
+                org.mockserver.model.MediaType.TEXT_PLAIN,
                 path
         );
 
         RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
-                .contentType(MediaTypeUtil.TEXT_PLAIN)
+                .contentType(MediaType.TEXT_PLAIN)
                 .entity(requestEntity)
                 .execute()
                 .toCompletableFuture()
@@ -83,14 +82,14 @@ class CodecTest {
         MockServerUtil.startMockServer(
                 JacksonCodec.getDefaultMapper().writeValueAsBytes(requestEntity),
                 JacksonCodec.getDefaultMapper().writeValueAsBytes(responseEntity),
-                MediaType.APPLICATION_JSON_UTF_8,
+                org.mockserver.model.MediaType.APPLICATION_JSON_UTF_8,
                 path
         );
 
         Throwable ex = null;
         try {
             restClient.post("http://localhost:" + MockServerUtil.PORT + path)
-                    .contentType(MediaTypeUtil.APPLICATION_JSON_UTF8)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .encoder(new MultipartEncoder())
                     .entity(requestEntity)
                     .execute()
@@ -103,7 +102,7 @@ class CodecTest {
 
         JacksonCodec jacksonCodec = new JacksonCodec();
         RestResponseBase response = restClient.post("http://localhost:" + MockServerUtil.PORT + path)
-                .contentType(MediaTypeUtil.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .encoder(jacksonCodec)
                 .decoder(jacksonCodec)
                 .entity(requestEntity)

@@ -15,9 +15,10 @@
  */
 package io.esastack.restclient;
 
-import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaderNames;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.HttpResponse;
@@ -40,12 +41,12 @@ class RestResponseBaseImplTest {
         HttpResponse response = mock(HttpResponse.class);
         RestClientOptions clientOptions = mock(RestClientOptions.class);
         RestResponse restResponse = new RestResponseBaseImpl(request, response, clientOptions);
-        when(response.status()).thenReturn(200);
-        then(restResponse.status()).isEqualTo(200);
-        when(response.status()).thenReturn(300);
-        then(restResponse.status()).isEqualTo(300);
-        when(response.status()).thenReturn(100);
-        then(restResponse.status()).isEqualTo(100);
+        when(response.status()).thenReturn(HttpStatus.OK.code());
+        then(restResponse.status()).isEqualTo(HttpStatus.OK.code());
+        when(response.status()).thenReturn(HttpStatus.MULTIPLE_CHOICES.code());
+        then(restResponse.status()).isEqualTo(HttpStatus.MULTIPLE_CHOICES.code());
+        when(response.status()).thenReturn(HttpStatus.TEMPORARY_REDIRECT.code());
+        then(restResponse.status()).isEqualTo(HttpStatus.TEMPORARY_REDIRECT.code());
         when(response.status()).thenReturn(-1);
         then(restResponse.status()).isEqualTo(-1);
         when(response.status()).thenReturn(0);
@@ -137,7 +138,7 @@ class RestResponseBaseImplTest {
         RestResponseBase restResponse = new RestResponseBaseImpl(request, response, clientOptions);
         HttpHeaders headers = new Http1HeadersImpl();
         when(response.headers()).thenReturn(headers);
-        when(response.body()).thenReturn(BufferUtil.buffer("Hello".getBytes(StandardCharsets.UTF_8)));
+        when(response.body()).thenReturn(Buffer.defaultAlloc().buffer("Hello".getBytes(StandardCharsets.UTF_8)));
         when(request.decoder()).thenReturn(new StringCodec());
 
         //decodeAdvices is empty

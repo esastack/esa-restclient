@@ -16,7 +16,7 @@
 package io.esastack.restclient.codec;
 
 import com.alibaba.fastjson.JSON;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -40,7 +40,7 @@ public class FastJsonCodecTest {
     void testEncode() throws Exception {
         FastJsonCodec fastJsonCodec = new FastJsonCodec();
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
         EncodeContext ctx = new EncodeChainImpl(
@@ -54,7 +54,7 @@ public class FastJsonCodecTest {
         assertThrows(CodecException.class, () ->
                 fastJsonCodec.encode(ctx));
 
-        when(ctx.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(ctx.contentType()).thenReturn(MediaType.APPLICATION_JSON_UTF8);
         then(fastJsonCodec.encode(ctx).value())
                 .isEqualTo(JSON.toJSONBytes(person));
     }
@@ -65,7 +65,7 @@ public class FastJsonCodecTest {
         Person person = new Person("Bob", "boy");
 
         RestResponse response = mock(RestResponse.class);
-        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(response.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
@@ -77,7 +77,7 @@ public class FastJsonCodecTest {
         assertThrows(CodecException.class, () ->
                 fastJsonCodec.decode(ctx));
 
-        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON_UTF8);
+        when(response.contentType()).thenReturn(MediaType.APPLICATION_JSON_UTF8);
         then(fastJsonCodec.decode(ctx))
                 .isEqualTo(person);
     }

@@ -15,8 +15,8 @@
  */
 package io.esastack.httpclient.core.netty;
 
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpVersion;
-import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
@@ -349,7 +349,7 @@ class HttpTransceiverImplTest {
         final HttpRequest request1 = client.get("/abc");
         then(transceiver.detectWriter(request1)).isInstanceOf(PlainWriter.class);
 
-        final HttpRequest request2 = client.post("/abc").body(new BufferImpl());
+        final HttpRequest request2 = client.post("/abc").body(Buffer.defaultAlloc().buffer());
         then(transceiver.detectWriter(request2)).isInstanceOf(PlainWriter.class);
 
         final HttpRequest request3 = client.patch("/abc").body(new File(""));

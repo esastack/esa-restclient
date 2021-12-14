@@ -17,17 +17,19 @@ package io.esastack.httpclient.core;
 
 import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiValueMap;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaderValues;
 import io.esastack.commons.net.http.HttpMethod;
-import io.esastack.commons.net.netty.buffer.BufferImpl;
 import io.esastack.httpclient.core.netty.NettyHttpClient;
 import io.esastack.httpclient.core.util.Futures;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Java6BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,8 +60,10 @@ class CompositeRequestTest {
         then(multipart.files()).isEmpty();
 
         multipart.attr("a", "b");
-        multipart.attr("x", "y");
-        multipart.attr("xxxxx", "mmmmmmm");
+        Map<String, String> attrs = new HashMap<>();
+        attrs.put("x", "y");
+        attrs.put("xxxxx", "mmmmmmm");
+        multipart.attrs(attrs);
 
         final File file = new File("/abc");
         multipart.file("a1", file);
@@ -75,11 +79,11 @@ class CompositeRequestTest {
         then(request.attrs().size()).isEqualTo(3);
         then(request.files().size()).isEqualTo(5);
 
-        MultiValueMap<String, String> attrs = new HashMultiValueMap<>();
-        attrs.add("a1", "c");
-        attrs.add("x1", "z");
-        attrs.add("xxxxx1", "mmmmmmmm");
-        multipart.attrs(attrs);
+        MultiValueMap<String, String> attrs1 = new HashMultiValueMap<>();
+        attrs1.add("a1", "c");
+        attrs1.add("x1", "z");
+        attrs1.add("xxxxx1", "mmmmmmmm");
+        multipart.attrs(attrs1);
 
         then(request.attrs().size()).isEqualTo(6);
         List<MultipartFileItem> items = new LinkedList<>();
@@ -94,9 +98,10 @@ class CompositeRequestTest {
         then(new CompositeRequest(builder, client, () -> chunk0, method, uri).body(new File(""))
                 .file()).isNotNull();
 
-        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes("Hello".getBytes())));
+        assertThrows(IllegalStateException.class, () ->
+                request.body(Buffer.defaultAlloc().buffer().writeBytes("Hello".getBytes())));
         then(new CompositeRequest(builder, client, () -> chunk0, method, uri)
-                .body(new BufferImpl().writeBytes("Hello".getBytes()))).isNotNull();
+                .body(Buffer.defaultAlloc().buffer().writeBytes("Hello".getBytes()))).isNotNull();
     }
 
     @Test
@@ -241,7 +246,7 @@ class CompositeRequestTest {
         request.file("a4", "file1", file, HttpHeaderValues.TEXT_PLAIN, true);
         request.attr("a", "b");
         request.multipartEncode(true);
-        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes(data)));
+        assertThrows(IllegalStateException.class, () -> request.body(Buffer.defaultAlloc().buffer().writeBytes(data)));
         assertThrows(IllegalStateException.class, () -> request.body(file));
 
         request.execute();
@@ -275,7 +280,7 @@ class CompositeRequestTest {
         assertThrows(IllegalStateException.class, () -> request.attr("a", "b"));
         assertThrows(IllegalStateException.class, () -> request.multipartEncode(true));
         assertThrows(IllegalStateException.class, () -> request.body(file));
-        assertThrows(IllegalStateException.class, () -> request.body(new BufferImpl().writeBytes(data)));
+        assertThrows(IllegalStateException.class, () -> request.body(Buffer.defaultAlloc().buffer().writeBytes(data)));
 
         assertThrows(IllegalStateException.class, request::execute);
     }

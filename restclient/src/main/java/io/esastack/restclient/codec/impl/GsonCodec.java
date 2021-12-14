@@ -22,6 +22,7 @@ import io.esastack.restclient.codec.DecodeContext;
 import io.esastack.restclient.codec.EncodeContext;
 import io.esastack.restclient.codec.JsonCodec;
 import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.utils.Constants;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -72,5 +73,10 @@ public class GsonCodec implements JsonCodec {
             return gson.fromJson(
                     new String(ctx.content().value(), charset), ctx.targetGenerics());
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return Constants.Order.GSON;
     }
 }

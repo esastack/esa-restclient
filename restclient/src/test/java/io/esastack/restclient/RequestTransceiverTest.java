@@ -16,7 +16,8 @@
 package io.esastack.restclient;
 
 import io.esastack.commons.net.http.HttpHeaderNames;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.HttpStatus;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.httpclient.core.HttpUri;
 import io.esastack.restclient.codec.impl.ByteToByteCodec;
 import io.esastack.restclient.codec.impl.StringCodec;
@@ -50,9 +51,9 @@ public class RequestTransceiverTest {
                 "aaa",
                 "aaa");
         RestResponse response = requestTransceiver.proceed(request).toCompletableFuture().get();
-        then(response.status()).isEqualTo(200);
+        then(response.status()).isEqualTo(HttpStatus.OK.code());
         then(response.headers().get(HttpHeaderNames.CONTENT_TYPE))
-                .isEqualTo(MediaTypeUtil.TEXT_PLAIN.toString());
+                .isEqualTo(MediaType.TEXT_PLAIN.toString());
         then(response.cookies().size())
                 .isEqualTo(1);
         then(response.cookies().iterator().next().value())

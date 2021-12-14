@@ -15,6 +15,7 @@
  */
 package io.esastack.restclient.it;
 
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.restclient.RestClient;
 import io.esastack.restclient.RestClientBuilder;
 import io.esastack.restclient.RestRequest;
@@ -109,7 +110,7 @@ class RequestMethodsTest {
                         .withBody(JacksonCodec.getDefaultMapper().writeValueAsBytes(body))
                         .withCookies(EXPECTED_REQUEST_COOKIES)
         ).respond(
-                response().withStatusCode(200)
+                response().withStatusCode(HttpStatus.OK.code())
                         .withCookies(EXPECTED_RESPONSE_COOKIES)
                         .withContentType(MediaType.APPLICATION_JSON_UTF_8)
                         .withBody(JacksonCodec.getDefaultMapper().writeValueAsBytes(body))
@@ -123,7 +124,7 @@ class RequestMethodsTest {
                         .withPath(path)
                         .withCookies(EXPECTED_REQUEST_COOKIES)
         ).respond(
-                response().withStatusCode(200)
+                response().withStatusCode(HttpStatus.OK.code())
                         .withCookies(EXPECTED_RESPONSE_COOKIES)
                         .withContentType(MediaType.APPLICATION_JSON_UTF_8)
                         .withBody(JacksonCodec.getDefaultMapper().writeValueAsBytes(body))

@@ -243,7 +243,7 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
             return null;
         }
 
-        return MediaTypeUtil.valueOf(contentTypeString);
+        return MediaTypeUtil.parseMediaType(contentTypeString);
     }
 
     @Override

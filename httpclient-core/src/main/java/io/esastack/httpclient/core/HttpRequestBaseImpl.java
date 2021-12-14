@@ -16,6 +16,7 @@
 package io.esastack.httpclient.core;
 
 import esa.commons.Checks;
+import esa.commons.collection.Attribute;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
@@ -223,10 +224,11 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
         return copied;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected static void copyTo(HttpRequestBaseImpl source, HttpRequestBaseImpl dest) {
-        for (String name : source.ctx.attrNames()) {
-            dest.ctx.setAttr(name, source.ctx.getAttr(name));
-        }
+        source.ctx.attrs().forEach((key, attr) ->
+                ((Attribute) (dest.ctx.attrs().attr(key))).set(attr.get())
+        );
 
         source.uri().params().forEach(dest.uri::addParams);
 

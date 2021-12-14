@@ -15,6 +15,7 @@
  */
 package io.esastack.httpclient.core.exec;
 
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
@@ -38,7 +39,7 @@ class FilteringExecTest {
     void testProceed() {
         final HttpRequest request = client.get("http://127.0.0.1:9999/abc/def");
         final Context ctx = new Context();
-        final HttpResponse response = new MockHttpResponse(200);
+        final HttpResponse response = new MockHttpResponse(HttpStatus.OK.code());
         final ExecChain chain = mock(ExecChain.class);
         when(chain.proceed(request)).thenReturn(Futures.completed(response));
         when(chain.ctx()).thenReturn(ctx);

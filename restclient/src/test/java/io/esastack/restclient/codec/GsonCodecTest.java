@@ -17,7 +17,7 @@ package io.esastack.restclient.codec;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.esastack.commons.net.http.MediaTypeUtil;
+import io.esastack.commons.net.http.MediaType;
 import io.esastack.restclient.RestClientOptions;
 import io.esastack.restclient.RestRequestBase;
 import io.esastack.restclient.RestResponse;
@@ -44,7 +44,7 @@ class GsonCodecTest {
     void testEncode() throws Exception {
         GsonCodec gsonCodec = new GsonCodec();
         RestRequestBase request = mock(RestRequestBase.class);
-        when(request.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(request.contentType()).thenReturn(MediaType.TEXT_PLAIN);
 
         Person person = new Person("Bob", "boy");
         EncodeContext ctx = new EncodeChainImpl(
@@ -59,11 +59,14 @@ class GsonCodecTest {
         assertThrows(CodecException.class, () ->
                 gsonCodec.encode(ctx));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
+        when(request.contentType()).thenReturn(MediaType.APPLICATION_JSON);
         then(gsonCodec.encode(ctx).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_8));
 
-        when(request.contentType()).thenReturn(MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16));
+        when(request.contentType()).thenReturn(MediaType.builder("application")
+                .subtype("json")
+                .charset(StandardCharsets.UTF_16)
+                .build());
         then(gsonCodec.encode(ctx).value())
                 .isEqualTo(gson.toJson(person).getBytes(StandardCharsets.UTF_16));
     }
@@ -74,7 +77,7 @@ class GsonCodecTest {
         Person person = new Person("Bob", "boy");
 
         RestResponse response = mock(RestResponse.class);
-        when(response.contentType()).thenReturn(MediaTypeUtil.TEXT_PLAIN);
+        when(response.contentType()).thenReturn(MediaType.TEXT_PLAIN);
         DecodeContext ctx = new DecodeChainImpl(
                 mock(RestRequestBase.class),
                 response,
@@ -87,7 +90,7 @@ class GsonCodecTest {
         assertThrows(CodecException.class, () ->
                 gsonCodec.decode(ctx));
 
-        when(response.contentType()).thenReturn(MediaTypeUtil.APPLICATION_JSON);
+        when(response.contentType()).thenReturn(MediaType.APPLICATION_JSON);
         then(gsonCodec.decode(ctx))
                 .isEqualTo(person);
 
@@ -100,8 +103,10 @@ class GsonCodecTest {
                 ByteBufAllocator.DEFAULT.buffer().writeBytes(
                         gson.toJson(person).getBytes(StandardCharsets.UTF_16))
         );
-        when(response.contentType()).thenReturn(
-                MediaTypeUtil.of("application", "json", StandardCharsets.UTF_16));
+        when(response.contentType()).thenReturn(MediaType.builder("application")
+                .subtype("json")
+                .charset(StandardCharsets.UTF_16)
+                .build());
 
         then(gsonCodec.decode(ctx1)).isEqualTo(person);
     }

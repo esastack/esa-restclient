@@ -15,6 +15,7 @@
  */
 package io.esastack.httpclient.core.exec;
 
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.HttpRequest;
@@ -38,7 +39,7 @@ class LinkedExecChainTest {
     void testFrom1() {
         final HttpTransceiver transceiver = mock(HttpTransceiver.class);
         final HttpRequest request = client.get("http://127.0.0.1:8888/abc/def");
-        final HttpResponse response = new MockHttpResponse(200);
+        final HttpResponse response = new MockHttpResponse(HttpStatus.OK.code());
 
         final ExecContext ctx = ExecContextUtil.from(new MockContext());
         when(transceiver.handle(request, ctx))
@@ -121,7 +122,7 @@ class LinkedExecChainTest {
         final HttpRequest request = client.get("http://127.0.0.1:8888/abc/def");
 
         final ExecContext ctx = ExecContextUtil.from(new MockContext());
-        final HttpResponse response = new MockHttpResponse(200);
+        final HttpResponse response = new MockHttpResponse(HttpStatus.OK.code());
 
         when(transceiver.handle(request, ctx))
                 .thenReturn(Futures.completed(response));

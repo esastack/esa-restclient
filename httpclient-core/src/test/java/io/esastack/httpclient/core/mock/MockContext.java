@@ -35,7 +35,7 @@ public class MockContext extends Context {
     }
 
     public void clear() {
-        super.attributes.clear();
+        super.attrs().forEach((key, attr) -> attr.set(null));
         useExpectContinue = true;
         maxRedirects = 0;
         maxRetries = 0;

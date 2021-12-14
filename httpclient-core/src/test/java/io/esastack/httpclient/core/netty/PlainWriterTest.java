@@ -15,7 +15,7 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import io.esastack.commons.net.netty.buffer.BufferImpl;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.httpclient.core.ExecContextUtil;
 import io.esastack.httpclient.core.HttpClient;
 import io.esastack.httpclient.core.exec.ExecContext;
@@ -49,7 +49,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
 
         final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
-                .body(new BufferImpl().writeBytes(DATA));
+                .body(Buffer.defaultAlloc().buffer().writeBytes(DATA));
         final ExecContext ctx = ExecContextUtil.newAs();
         final ChannelFuture end = writer.writeAndFlush(request,
                 channel,
@@ -80,7 +80,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
 
         final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
-                .body(new BufferImpl().writeBytes(DATA));
+                .body(Buffer.defaultAlloc().buffer().writeBytes(DATA));
         request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
         final NettyExecContext ctx = ExecContextUtil.newAsNetty();
 
@@ -119,7 +119,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
 
         final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
-                .body(new BufferImpl().writeBytes(DATA));
+                .body(Buffer.defaultAlloc().buffer().writeBytes(DATA));
         final ExecContext ctx = ExecContextUtil.newAs();
         request.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), STREAM_ID);
 
@@ -156,7 +156,7 @@ class PlainWriterTest extends Http2ConnectionHelper {
 
         final io.esastack.httpclient.core.PlainRequest request = client
                 .put("http://127.0.0.1/abc")
-                .body(new BufferImpl().writeBytes(DATA));
+                .body(Buffer.defaultAlloc().buffer().writeBytes(DATA));
         request.headers().add(HttpHeaderNames.EXPECT, HttpHeaderValues.CONTINUE);
 
         final NettyExecContext ctx = ExecContextUtil.newAsNetty();

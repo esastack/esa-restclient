@@ -15,8 +15,9 @@
  */
 package io.esastack.httpclient.core.netty;
 
-import io.esastack.commons.net.buffer.BufferUtil;
+import io.esastack.commons.net.buffer.Buffer;
 import io.esastack.commons.net.http.HttpHeaders;
+import io.esastack.commons.net.http.HttpStatus;
 import io.esastack.commons.net.http.HttpVersion;
 import io.esastack.commons.net.netty.http.Http1HeadersImpl;
 import io.esastack.httpclient.core.ExecContextUtil;
@@ -121,14 +122,14 @@ class FilteringHandleTest {
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
 
-        final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
+        final HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, headers);
         nHandle.onMessage(message);
 
         final byte[] data = new byte[1024 * 1024];
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -142,7 +143,7 @@ class FilteringHandleTest {
 
         // Waits the response to complete
         final HttpResponse response0 = response.get();
-        then(response0.status()).isEqualTo(200);
+        then(response0.status()).isEqualTo(HttpStatus.OK.code());
 
         final byte[] bodyData = new byte[1024 * 1024];
         response0.body().readBytes(bodyData);
@@ -193,14 +194,14 @@ class FilteringHandleTest {
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
 
-        final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
+        final HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, headers);
         nHandle.onMessage(message);
 
         final byte[] data = new byte[1024 * 1024];
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -245,14 +246,14 @@ class FilteringHandleTest {
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
 
-        final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
+        final HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, headers);
         nHandle.onMessage(message);
 
         final byte[] data = new byte[1024 * 1024];
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();
@@ -393,14 +394,14 @@ class FilteringHandleTest {
 
         final HttpHeaders headers = new Http1HeadersImpl();
         headers.add("A", "B");
-        final HttpMessage message = new HttpMessageImpl(200, HttpVersion.HTTP_1_1, headers);
+        final HttpMessage message = new HttpMessageImpl(HttpStatus.OK.code(), HttpVersion.HTTP_1_1, headers);
         nHandle.onMessage(message);
 
         final byte[] data = new byte[1024 * 1024];
         ThreadLocalRandom.current().nextBytes(data);
 
         for (int i = 0; i < 1024; i++) {
-            nHandle.onData(BufferUtil.buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
+            nHandle.onData(Buffer.defaultAlloc().buffer(Arrays.copyOfRange(data, 1024 * i, 1024 * (i + 1))));
         }
 
         final HttpHeaders trailers = new Http1HeadersImpl();

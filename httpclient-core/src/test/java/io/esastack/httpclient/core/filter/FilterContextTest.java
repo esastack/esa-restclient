@@ -15,6 +15,7 @@
  */
 package io.esastack.httpclient.core.filter;
 
+import esa.commons.collection.AttributeKey;
 import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.mock.MockFilterContext;
 import org.assertj.core.api.BDDAssertions;
@@ -34,48 +35,23 @@ class FilterContextTest {
     }
 
     @Test
-    void testIllegalArgument() {
-        final FilterContext ctx = new FilterContext(mock(Context.class));
-        assertThrows(NullPointerException.class, () -> ctx.setAttr(null, "a"));
-        assertThrows(NullPointerException.class, () -> ctx.setAttr("a", null));
-        assertThrows(NullPointerException.class, () -> ctx.removeAttr(null));
-        assertThrows(NullPointerException.class, () -> ctx.getAttr(null));
-    }
-
-    @Test
     void testAttrOperation() {
         final Context ctx0 = mock(Context.class);
         final MockFilterContext ctx = new MockFilterContext(ctx0);
 
         final Object value1 = new Object();
-        ctx.setAttr("A", value1);
-        then((Object) ctx.getAttr("A")).isSameAs(value1);
+        ctx.attrs().attr(AttributeKey.valueOf("A")).set(value1);
+        then(ctx.attrs().attr(AttributeKey.valueOf("A")).get()).isSameAs(value1);
 
-        ctx.removeAttr("A");
-        then((Object) ctx.getAttr("A")).isNull();
+        ctx.attrs().attr(AttributeKey.valueOf("A")).remove();
+        then(ctx.attrs().attr(AttributeKey.valueOf("A")).get()).isNull();
 
-        ctx.setAttr("A", value1);
+        ctx.attrs().attr(AttributeKey.valueOf("A")).set(value1);
         final Object value2 = new Object();
-        ctx.setAttr("A", value2);
-        then((Object) ctx.getAttr("A")).isSameAs(value2);
+        ctx.attrs().attr(AttributeKey.valueOf("A")).set(value2);
+        then(ctx.attrs().attr(AttributeKey.valueOf("A")).get()).isSameAs(value2);
         ctx.clear();
-        then((Object) ctx.getAttr("A")).isNull();
-
-        ctx.clear();
-        ctx.setAttr("A", true);
-        then((Boolean) ctx.getAttr("A")).isEqualTo(true);
-
-        ctx.clear();
-        ctx.setAttr("B", false);
-        then((Boolean) ctx.getAttr("B")).isEqualTo(false);
-
-        ctx.clear();
-        ctx.setAttr("A", 3);
-        then((Integer) ctx.getAttr("A")).isEqualTo(3);
-        then((Integer) ctx.getAttr("B")).isNull();
-
-        BDDAssertions.then(ctx.attrNames().size()).isEqualTo(1);
-        BDDAssertions.then(ctx.attrNames().contains("A")).isTrue();
+        then(ctx.attrs().attr(AttributeKey.valueOf("A")).get()).isNull();
 
         ctx.clear();
         BDDAssertions.then(ctx.parent()).isSameAs(ctx0);

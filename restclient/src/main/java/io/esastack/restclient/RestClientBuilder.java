@@ -37,12 +37,12 @@ import io.esastack.restclient.codec.DecodeAdvice;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.EncodeAdvice;
 import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.exec.ClientInterceptor;
-import io.esastack.restclient.spi.ClientInterceptorFactory;
+import io.esastack.restclient.exec.RestInterceptor;
 import io.esastack.restclient.spi.DecodeAdviceFactory;
 import io.esastack.restclient.spi.DecoderFactory;
 import io.esastack.restclient.spi.EncodeAdviceFactory;
 import io.esastack.restclient.spi.EncoderFactory;
+import io.esastack.restclient.spi.RestInterceptorFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +59,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
 
     private static final Logger logger = LoggerUtils.logger();
     private final HttpClientBuilder httpClientBuilder;
-    private final List<ClientInterceptor> interceptors = new ArrayList<>();
+    private final List<RestInterceptor> interceptors = new ArrayList<>();
     private final List<DecodeAdvice> decodeAdvices = new ArrayList<>();
     private final List<EncodeAdvice> encodeAdvices = new ArrayList<>();
     private final List<Decoder> decoders = new ArrayList<>();
@@ -144,13 +144,13 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         return self();
     }
 
-    public RestClientBuilder addInterceptor(ClientInterceptor interceptor) {
+    public RestClientBuilder addInterceptor(RestInterceptor interceptor) {
         Checks.checkNotNull(interceptor, "interceptor");
         this.interceptors.add(interceptor);
         return self();
     }
 
-    public RestClientBuilder addInterceptors(List<ClientInterceptor> interceptors) {
+    public RestClientBuilder addInterceptors(List<RestInterceptor> interceptors) {
         Checks.checkNotNull(interceptors, "interceptors");
         this.interceptors.addAll(interceptors);
         return self();
@@ -391,7 +391,7 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     @Override
-    public List<ClientInterceptor> unmodifiableInterceptors() {
+    public List<RestInterceptor> unmodifiableInterceptors() {
         return Collections.unmodifiableList(interceptors);
     }
 
@@ -466,10 +466,10 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
     }
 
     private void loadInterceptorsFromSpi() {
-        SpiLoader.cached(ClientInterceptorFactory.class)
+        SpiLoader.cached(RestInterceptorFactory.class)
                 .getByGroup(name(), true)
                 .forEach(clientInterceptorFactory -> {
-                    Collection<ClientInterceptor> interceptorsFromSpi =
+                    Collection<RestInterceptor> interceptorsFromSpi =
                             clientInterceptorFactory.interceptors(this);
                     interceptors.addAll(interceptorsFromSpi);
 

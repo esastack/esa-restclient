@@ -21,6 +21,7 @@ final RestClient client = RestClient.ofDefault();
 final String entity = client.get("http://127.0.0.1:8081/")
         .readTimeout(3000L)
         .execute()
+        .toCompletableFuture()
         .get()
         .bodyToEntity(String.class);
 ```

@@ -19,6 +19,7 @@ final RestClient client = RestClient.create()
 final String entity = client.get("http://127.0.0.1:8081/")
         .disableExpectContinue()
         .execute()
+        .toCompletableFuture()
         .get()
         .bodyToEntity(String.class);
 ```

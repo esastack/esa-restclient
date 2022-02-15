@@ -21,6 +21,7 @@ final RestClient client = RestClient.ofDefault();
 final String entity = client.post("http://127.0.0.1:8081/")
         .entity("Hello Server")
         .execute()
+        .toCompletableFuture()
         .get()
         .bodyToEntity(String.class);
 

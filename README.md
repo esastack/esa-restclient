@@ -1,11 +1,11 @@
-# ESA HttpClient
+# ESA RestClient
 
 ![Build](https://github.com/esastack/esa-httpclient/workflows/Build/badge.svg?branch=main)
 [![codecov](https://codecov.io/gh/esastack/esa-httpclient/branch/main/graph/badge.svg?token=D85SMNQNK0)](https://codecov.io/gh/esastack/esa-httpclient)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.esastack/httpclient/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.esastack/httpclient/)
 [![GitHub license](https://img.shields.io/github/license/esastack/esa-httpclient)](https://github.com/esastack/esa-httpclient/blob/main/LICENSE)
 
-ESA HttpClient is an asynchronous event-driven http client based on netty.
+ESA RestClient is an asynchronous event-driven http client based on netty.
 
 ## Features
 
@@ -44,6 +44,7 @@ final String entity = client.post("http://127.0.0.1:8081/")
                         .readTimeout(3000)      //读超时
                         .entity("Hello Server")
                         .execute()
+                        .toCompletableFuture()
                         .get()
                         .bodyToEntity(String.class);
 ```
@@ -93,4 +94,4 @@ We used the following software for the testing:
 | num of biz threads  | 1 | 1 | 10 | 1 | 
 
 
-See more details in [Reference Doc](https://www.esastack.io/esa-httpclient)
+See more details in [Reference Doc](https://www.esastack.io/esa-restclient)

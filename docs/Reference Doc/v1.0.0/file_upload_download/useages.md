@@ -12,6 +12,7 @@ final RestClient client = RestClient.ofDefault();
 final String entity = client.post("http://127.0.0.1:8081/")
         .entity(new File("aaa"))
         .execute()
+        .toCompletableFuture()
         .get()
         .bodyToEntity(String.class);
 ```
@@ -28,7 +29,10 @@ final RestMultipartRequest request = client.post("http://127.0.0.1:9997/file/upl
         .attr("name", "Bob")
         .attr("address", "China");
 
-RestResponseBase response = request.execute().get();
+RestResponseBase response = request
+        .execute()
+        .toCompletableFuture()
+        .get();
 System.out.println(response.status());
 System.out.println(response.bodyToEntity(String.class));
 ```

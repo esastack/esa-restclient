@@ -1,0 +1,17 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ESA Restclient – DNS扩展</title>
+    <link>/docs/dns_ext/</link>
+    <description>Recent content in DNS扩展 on ESA Restclient</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/dns_ext/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+  </channel>
+</rss>

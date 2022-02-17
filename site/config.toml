@@ -123,7 +123,7 @@ copyright = "OPPO ESA Stack Project"
 
 # Menu title if your navbar has a versions selector to access old versions of your site.
 # This menu appears only if you have at least one [params.versions] set.
-version_menu = "RestClient Version"
+version_menu = "Versions"
 
 # Flag used in the "version-banner" partial to decide whether to display a 
 # banner on every page indicating that this is an archived version of the docs.
@@ -137,15 +137,15 @@ version = "0.0"
 
 # A link to latest version of the docs. Used in the "version-banner" partial to
 # point people to the main doc site.
-url_latest_version = "https://www.esastack.io/restclient/docs/"
+url_latest_version = "https://restclient.esastack.io/docs/"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
-github_repo = "https://github.com/esastack/restclient-website"
+github_repo = "https://github.com/esastack/esa-restclient"
 # An optional link to a related project repo. For example, the sibling repository where your product code lives.
 github_project_repo = "https://github.com/esastack/esa-restclient"
 
 # Specify a value here if your content directory is not in your repo's root directory
-# github_subdir = ""
+github_subdir = "site"
 
 # Uncomment this if you have a newer GitHub repo with "main" as the default branch,
 # or specify a new value if you want to reference another branch in your GitHub links
@@ -212,3 +212,11 @@ enable = false
   url = "mailto:esa.stack@oppo.com"
   icon = "fa fa-envelope"
   desc = "Discuss development issues around the project"
+
+# multi-versions
+[[params.versions]]
+  version = "v1.0.0 (Latest)"
+  url = "/docs"
+[[params.versions]]
+  version = "v0.1.0"
+  url = "/docs-v0.1.0"

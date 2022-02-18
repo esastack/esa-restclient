@@ -165,7 +165,7 @@ This is the multi-page printable view of this section.
 
 
 <div class="content">
-      <h1 id="使用方式">使用方式</h1>
+      <h2 id="使用方式">使用方式</h2>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">create</span><span style="color:#ce5c00;font-weight:bold">().</span><span style="color:#c4a000">resolver</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">HostResolver</span><span style="color:#ce5c00;font-weight:bold">()</span> <span style="color:#ce5c00;font-weight:bold">{</span>
     <span style="color:#5c35cc;font-weight:bold">@Override</span>
     <span style="color:#204a87;font-weight:bold">public</span> <span style="color:#000">CompletionStage</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#000">InetAddress</span><span style="color:#ce5c00;font-weight:bold">&gt;</span> <span style="color:#000">resolve</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">String</span> <span style="color:#000">inetHost</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">{</span>

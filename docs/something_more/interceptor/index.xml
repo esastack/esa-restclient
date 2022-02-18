@@ -1,0 +1,86 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ESA Restclient – Interceptor</title>
+    <link>/docs/something_more/interceptor/</link>
+    <description>Recent content in Interceptor on ESA Restclient</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/something_more/interceptor/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: 内置Interceptor</title>
+      <link>/docs/something_more/interceptor/embedded_interceptors/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/something_more/interceptor/embedded_interceptors/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;100-expect-continue&#34;&gt;100-expect-continue&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;HttpClient&lt;/code&gt;内置了对100(&amp;ldquo;expect-continue&amp;rdquo;)响应码的支持，使用时可以设置Client或者Request级别的useExpectContinue参数为false来禁用该功能。&lt;/p&gt;
+&lt;h2 id=&#34;重试&#34;&gt;重试&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;HttpClient&lt;/code&gt;使用内置的&lt;code&gt;RetryInterceptor&lt;/code&gt;实现重试功能。默认情况下，会对所有抛出连接异常的请求进行重试，其中：最大重试次数为3（不包括原始请求），重试间隔时间为0。使用时，可以通过自定义&lt;code&gt;RetryOptions&lt;/code&gt;参数更改重试次数、重试条件、重试间隔时间等。&lt;/p&gt;
+&lt;h2 id=&#34;重定向&#34;&gt;重定向&lt;/h2&gt;
+&lt;p&gt;默认情况下，&lt;code&gt;HttpClient&lt;/code&gt;会对响应状态码为301，302，303，307，308的请求重定向，其中：最大重定向次数为5（不包含原始请求）。使用时，可以通过maxRedirects更新重定向次数或者禁用（maxRedirects=0）重定向功能。&lt;/p&gt;
+&lt;h2 id=&#34;覆盖内置拦截器&#34;&gt;覆盖内置拦截器&lt;/h2&gt;
+&lt;p&gt;当内置拦截器的功能不能满足用户需求时，可重写对应的内置拦截器的相关方法并通过Builder配置或者Spi加载的机制传入，此时，对应的内置拦截器将自动失效。&lt;/p&gt;
+
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+&lt;h4 class=&#34;alert-heading&#34;&gt;Note&lt;/h4&gt;
+
+    内置拦截器默认执行顺序： 100-expect-continue &amp;gt; 重试 &amp;gt; 重定向
+
+&lt;/div&gt;
+
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 使用方式</title>
+      <link>/docs/something_more/interceptor/useages/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/something_more/interceptor/useages/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;builder配置&#34;&gt;Builder配置&lt;/h2&gt;
+&lt;p&gt;在构造&lt;code&gt;HttpClient&lt;/code&gt;时传入自定义的&lt;code&gt;Interceptor&lt;/code&gt;实例，如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;final&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;HttpClient&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;client&lt;/span&gt; &lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;HttpClient&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#c4a000&#34;&gt;create&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;().&lt;/span&gt;&lt;span style=&#34;color:#c4a000&#34;&gt;addInterceptor&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;((&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;request&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;next&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#000&#34;&gt;System&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#c4a000&#34;&gt;out&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#c4a000&#34;&gt;println&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;Interceptor&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;);&lt;/span&gt;
+    &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;next&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#c4a000&#34;&gt;proceed&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color:#000&#34;&gt;request&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;);&lt;/span&gt;
+&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;}).&lt;/span&gt;&lt;span style=&#34;color:#c4a000&#34;&gt;build&lt;/span&gt;&lt;span style=&#34;color:#ce5c00;font-weight:bold&#34;&gt;();&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;spi&#34;&gt;SPI&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;HttpClient&lt;/code&gt;支持通过SPI的方式加载&lt;code&gt;Interceptor&lt;/code&gt;接口的实现类，使用时只需要按照SPI的加载规则将自定义的&lt;code&gt;Interceptor&lt;/code&gt;放入指定的目录下即可。&lt;/p&gt;
+
+
+&lt;div class=&#34;alert alert-primary&#34; role=&#34;alert&#34;&gt;
+&lt;h4 class=&#34;alert-heading&#34;&gt;Note&lt;/h4&gt;
+
+    &lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用时可以通过&lt;code&gt;Interceptor&lt;/code&gt;替换原始的&lt;code&gt;HttpRequest&lt;/code&gt;和&lt;code&gt;HttpResponse&lt;/code&gt;; 2.&lt;code&gt;HttpClient&lt;/code&gt;内置的重试、重定向、100-expect-continue协商等功能通过&lt;code&gt;Interceptor&lt;/code&gt;实现。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;多个拦截器之间通过&lt;code&gt;getOrder()&lt;/code&gt;方法返回值区分执行顺序，值越小，优先级越高。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;/div&gt;
+
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

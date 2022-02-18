@@ -13,15 +13,40 @@
     
     
     <item>
-      <title>Blog: The second blog post</title>
-      <link>/blog/2022/02/15/the-second-blog-post/</link>
-      <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
+      <title>Blog: Release v1.0.0</title>
+      <link>/blog/2022/02/16/release-v1.0.0/</link>
+      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
       
-      <guid>/blog/2022/02/15/the-second-blog-post/</guid>
+      <guid>/blog/2022/02/16/release-v1.0.0/</guid>
       <description>
         
         
+        &lt;p&gt;Add &lt;code&gt;codec&lt;/code&gt; which will automatically select the appropriate decoder or encoder to decode or encode according to the user&amp;rsquo;s headers and entity. At the same time, restclient also supports users to insert business logic before and after decode or encode.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Blog: Release v0.1.0</title>
+      <link>/blog/2021/02/02/release-v0.1.0/</link>
+      <pubDate>Tue, 02 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/2021/02/02/release-v0.1.0/</guid>
+      <description>
         
+        
+        &lt;ul&gt;
+&lt;li&gt;Http1/H2/H2cUpgrade&lt;/li&gt;
+&lt;li&gt;Https&lt;/li&gt;
+&lt;li&gt;Epoll/NIO&lt;/li&gt;
+&lt;li&gt;Interceptor&lt;/li&gt;
+&lt;li&gt;Filter&lt;/li&gt;
+&lt;li&gt;Retry, Redirect, 100-expect-continue&lt;/li&gt;
+&lt;li&gt;Segmented read/write&lt;/li&gt;
+&lt;li&gt;Multipart&lt;/li&gt;
+&lt;li&gt;Metrics&lt;/li&gt;
+&lt;/ul&gt;
+
       </description>
     </item>
     

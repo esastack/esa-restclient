@@ -2,55 +2,126 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/docs-v0.1.0/getting-started/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
-  </url><url>
-    <loc>/docs/getting-started/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
-  </url><url>
-    <loc>/docs/dns_ext/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
-  </url><url>
-    <loc>/blog/releases/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
-  </url><url>
-    <loc>/docs-v0.1.0/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
+    <loc>/blog/2022/02/16/release-v1.0.0/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/docs/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
-    <loc>/blog/news/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
+    <loc>/docs-v0.1.0/getting_started/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
-    <loc>/blog/2022/02/15/the-second-blog-post/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
+    <loc>/docs/getting_started/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/getting_started/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/filter/useages/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/filter/useages/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/interceptor/embedded_interceptors/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/interceptor/embedded_interceptors/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/blog/2021/02/02/release-v0.1.0/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/interceptor/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/interceptor/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/interceptor/useages/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/interceptor/useages/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/blog/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/filter/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/filter/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/dns_ext/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/dns_ext/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/dns_ext/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/customize_handle/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/customize_handle/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/segemented_read_write/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/segemented_read_write/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/file_upload_download/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/file_upload_download/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/connection_pool_config/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/connection_pool_config/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v0.1.0/metrics/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/metrics/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/blog/releases/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs/something_more/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/categories/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
   </url><url>
-    <loc>/tags/docs/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
+    <loc>/tags/config/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/</loc>
-    <lastmod>2022-02-16T16:28:05+08:00</lastmod>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
-    <loc>/categories/examples/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
+    <loc>/tags/example/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
-    <loc>/categories/placeholders/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
+    <loc>/tags/extension/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/search/</loc>
     <lastmod>2022-02-16T16:28:05+08:00</lastmod>
   </url><url>
     <loc>/tags/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
-    <loc>/tags/test/</loc>
-    <lastmod>2022-02-17T15:09:04+08:00</lastmod>
+    <loc>/tags/usage/</loc>
+    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url>
 </urlset>

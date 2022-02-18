@@ -1,19 +1,11 @@
-
 ---
-title: "Docs"
-linkTitle: "Docs"
-weight: 20
-menu:
-  main:
-    weight: 20
+title: "ESA RestClient"
+linkTitle: "ESA RestClient"
+weight: 10
+description: >
+  ESA RestClient is an asynchronous event-driven http client based on netty.
 ---
-
-# ESA RestClient
-
-ESA RestClient is an asynchronous event-driven http client based on netty.
-
 ## Features
-
 - Http1/H2/H2cUpgrade
 - Https
 - Epoll/NIO
@@ -25,4 +17,3 @@ ESA RestClient is an asynchronous event-driven http client based on netty.
 - Multipart
 - Metrics
 - more features...
-

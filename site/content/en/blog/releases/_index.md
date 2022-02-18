@@ -1,8 +1,9 @@
-
 ---
-title: "New Releases"
+title: "Releases"
 linkTitle: "Releases"
-weight: 10
+weight: 100
+description: >
+  The newest version is 1.0.0 which add `codec`。
 ---
 
 

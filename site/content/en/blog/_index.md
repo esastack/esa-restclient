@@ -1,13 +1,10 @@
+
 ---
-title: "ESA RestClient Blog"
+title: "Blog"
 linkTitle: "Blog"
-menu:
-  main:
-    weight: 10
+weight: 30
+description: >
+  This is the **blog** section. It has categories: Releases.
 ---
-
-
-This is the **blog** section. It has two categories: News and Releases.
-
-Files in these directories will be listed in reverse chronological order.
+AAA
 

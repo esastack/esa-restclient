@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.92.2" />
+<link rel="canonical" type="text/html" href="/docs/codec/">
+<link rel="alternate" type="application/rss&#43;xml" href="/docs/codec/index.xml">
+<meta name="robots" content="noindex, nofollow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>Codec | ESA Restclient</title>
+<meta name="description" content="用户请求时`RestClient`会自动根据用户的 `Headers` 与 `Entity` 自动选择合适的`Decoder`或`Encoder`进行`Decode`或`Encode`。同时`RestClient`也支持用户在`codec`前后进行插入业务逻辑。
+">
+<meta property="og:title" content="Codec" />
+<meta property="og:description" content="用户请求时`RestClient`会自动根据用户的 `Headers` 与 `Entity` 自动选择合适的`Decoder`或`Encoder`进行`Decode`或`Encode`。同时`RestClient`也支持用户在`codec`前后进行插入业务逻辑。
+" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="/docs/codec/" /><meta property="og:site_name" content="ESA Restclient" />
+
+<meta itemprop="name" content="Codec">
+<meta itemprop="description" content="用户请求时`RestClient`会自动根据用户的 `Headers` 与 `Entity` 自动选择合适的`Decoder`或`Encoder`进行`Decode`或`Encode`。同时`RestClient`也支持用户在`codec`前后进行插入业务逻辑。
+"><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Codec"/>
+<meta name="twitter:description" content="用户请求时`RestClient`会自动根据用户的 `Headers` 与 `Entity` 自动选择合适的`Decoder`或`Encoder`进行`Decode`或`Encode`。同时`RestClient`也支持用户在`codec`前后进行插入业务逻辑。
+"/>
+
+
+
+
+<link rel="preload" href="/scss/main.min.d6e0d5abc6f6a3c1d53dbb7d3961f4afa416f54a6cd0393408d9a241c4e351fa.css" as="style">
+<link href="/scss/main.min.d6e0d5abc6f6a3c1d53dbb7d3961f4afa416f54a6cd0393408d9a241c4e351fa.css" rel="stylesheet" integrity="">
+
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK"
+  crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-00000000-0', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  </head>
+  <body class="td-section">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+        <a class="navbar-brand" href="/">
+		<span class="navbar-logo"><svg id="layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 180 180" style="enable-background:new 0 0 180 180"><style>.st0{fill-rule:evenodd;clip-rule:evenodd;fill:#fff}.st1{opacity:.6;fill-rule:evenodd;clip-rule:evenodd;fill:#fff;enable-background:new}.st2{opacity:.3;fill-rule:evenodd;clip-rule:evenodd;fill:#fff;enable-background:new}</style><g><path class="st0" d="M127.6 95.9c-11-2.2-23.9-3.5-37.7-3.5-13.9.0-26.8 1.2-37.7 3.5 11 2.2 23.9 3.5 37.7 3.5S116.7 98 127.6 95.9zM135.8 97.8c-12.7 3.2-28.6 5.2-45.9 5.2s-33.3-2-45.9-5.2c-2.1.5-4.1 1.1-5.9 1.7-6.5 2.2-11.6 4.7-14.9 7.3-3.3 2.6-4.4 4.9-4.4 6.8s1.1 4.2 4.4 6.8 8.4 5.2 14.9 7.3c13.1 4.3 31.5 7 51.8 7s38.7-2.7 51.8-7c6.5-2.2 11.6-4.7 14.9-7.3s4.4-4.9 4.4-6.8-1.1-4.2-4.4-6.8-8.4-5.2-14.9-7.3C139.9 98.9 137.9 98.3 135.8 97.8z"/><path class="st1" d="M120.9 59.2C111.5 57.7 101 57 89.8 57c-11.1.0-21.7.9-31.1 2.2 9.4 1.5 19.9 2.2 31.1 2.2C101 61.5 111.5 60.7 120.9 59.2zm10 1.8c-11.8 2.6-25.9 4.1-41 4.1-15.2.0-29.2-1.5-41-4.1-3.9.9-7.5 1.9-10.9 3-6.5 2.2-11.6 4.7-14.9 7.3-3.3 2.6-4.4 4.9-4.4 6.8s1.1 4.2 4.4 6.8c3.3 2.6 8.4 5.2 14.9 7.3 13.1 4.3 31.5 7 51.8 7s38.7-2.7 51.8-7c6.5-2.2 11.6-4.7 14.9-7.3s4.4-4.9 4.4-6.8-1.1-4.2-4.4-6.8-8.4-5.2-14.9-7.3C138.4 63 134.8 62 130.9 61z"/><path class="st2" d="M161.1 40.3c0 1.9-1.1 4.2-4.4 6.8-3.3 2.6-8.4 5.2-14.9 7.3-13.1 4.3-31.5 7-51.8 7s-38.7-2.7-51.8-7c-6.5-2.2-11.6-4.7-14.9-7.3s-4.4-4.9-4.4-6.8 1.1-4.2 4.4-6.8 8.4-5.2 14.9-7.3c13.1-4.3 31.5-7 51.8-7s38.7 2.7 51.8 7c6.5 2.2 11.6 4.7 14.9 7.3S161.1 38.5 161.1 40.3z"/></g></svg></span><span class="font-weight-bold">ESA Restclient</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				
+				
+				<a class="nav-link" href="/docs/" ><i class='fas fa-book pr-2'></i><span>Docs</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				
+				
+				<a class="nav-link" href="/blog/" ><i class='fas fa-rss pr-2'></i><span>Blog</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				
+				
+				<a class="nav-link" href="https://github.com/esastack/esa-restclient" target="_blank" ><i class='fab fa-github pr-2'></i><span>Github</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				
+				
+				<a class="nav-link" href="https://www.esastack.io" target="_blank" ><span>ESA Stack</span></a>
+			</li>
+			
+
+
+
+
+
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block"><input type="search" class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete="off">
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            
+
+
+
+
+<div class="td-content">
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href="#" onclick="print();return false;">Click here to print</a>.
+</p><p>
+<a href="/docs/codec/">Return to the regular view of this page</a>.
+</p>
+</div>
+
+
+
+<h1 class="title">Codec</h1>
+<div class="lead">用户请求时<code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 自动选择合适的<code>Decoder</code>或<code>Encoder</code>进行<code>Decode</code>或<code>Encode</code>。同时<code>RestClient</code>也支持用户在<code>codec</code>前后进行插入业务逻辑。</div>
+
+
+
+
+    <ul>
+    
+  
+  
+  
+  
+
+  
+    
+    
+	
+<li>1: <a href="#pg-ccf5bdff85b9b051b20d3c91a4e0af22">Encoder</a></li>
+
+
+    
+  
+    
+    
+	
+<li>2: <a href="#pg-2f605874175033b7c894d595db9fdc42">Decoder</a></li>
+
+
+    
+  
+
+    </ul>
+
+
+<div class="content">
+      
+</div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-ccf5bdff85b9b051b20d3c91a4e0af22">1 - Encoder</h1>
+    <div class="lead"><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 等选择合适的<code>Encoder</code>进行<code>Encode</code>。其内置了下面这些<code>Encoder</code>：</p>
+<ul>
+<li>Json
+<ul>
+<li>jackson(默认)</li>
+<li>fastjson</li>
+<li>gson</li>
+</ul>
+</li>
+<li>ProtoBuf</li>
+<li>File</li>
+<li>String</li>
+<li>byte[]</li>
+</ul>
+<p>除此之外<code>RestClient</code>也支持用户自定义<code>Encoder</code>。</p>
+</div>
+	<h2 id="使用json-encoder">使用Json Encoder</h2>
+<p>指定<code>contentType</code>为<code>MediaType.APPLICATION_JSON</code>，将自动使用<code>Json Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span>  <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">contentType</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">MediaType</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">APPLICATION_JSON</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">Person</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;Bob&#34;</span><span style="color:#ce5c00;font-weight:bold">,</span><span style="color:#4e9a06">&#34;male&#34;</span><span style="color:#ce5c00;font-weight:bold">))</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Note</h4>
+
+    其中Json相关的序列化方式默认配置了日期格式为<code>yyyy-MM-dd HH:mm:ss</code>
+
+</div>
+
+<h2 id="使用protobuf-encoder">使用ProtoBuf Encoder</h2>
+<p>指定<code>contentType</code>为<code>ProtoBufCodec.PROTO_BUF</code>，且<code>Entity</code>类型为<code>com.google.protobuf.Message</code>的子类时，将自动使用<code>ProtoBuf Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span>  <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">contentType</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ProtoBufCodec</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">PROTO_BUF</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h2 id="使用file-encoder">使用File Encoder</h2>
+<p>当<code>Entity</code>类型为<code>File</code>时，将自动使用<code>File Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span>  <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">File</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;tem&#34;</span><span style="color:#ce5c00;font-weight:bold">))</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h2 id="使用string-encoder">使用String Encoder</h2>
+<p>当<code>Entity</code>类型为<code>String</code>时，将自动使用<code>String Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span>  <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;string&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h2 id="使用byte-encoder">使用byte[] Encoder</h2>
+<p>当<code>Entity</code>类型为<code>byte[]</code>时，将自动使用<code>byte[] Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;bytes&#34;</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">getBytes</span><span style="color:#ce5c00;font-weight:bold">())</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h2 id="自定义encoder">自定义Encoder</h2>
+<p>当<code>RestClient</code>内置的<code>Encoder</code>无法满足用户需求时，用户可以自定义<code>Encoder</code>，示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">StringEncoder</span> <span style="color:#204a87;font-weight:bold">implements</span> <span style="color:#000">ByteEncoder</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+
+    <span style="color:#5c35cc;font-weight:bold">@Override</span>
+    <span style="color:#204a87;font-weight:bold">public</span> <span style="color:#000">RequestContent</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#204a87;font-weight:bold">byte</span><span style="color:#ce5c00;font-weight:bold">[]&gt;</span> <span style="color:#000">doEncode</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">EncodeContext</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#204a87;font-weight:bold">byte</span><span style="color:#ce5c00;font-weight:bold">[]&gt;</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">contentType</span><span style="color:#ce5c00;font-weight:bold">()</span> <span style="color:#ce5c00;font-weight:bold">==</span> <span style="color:#000">MediaType</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">TEXT_PLAIN</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">()</span> <span style="color:#ce5c00;font-weight:bold">!=</span> <span style="color:#204a87;font-weight:bold">null</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+                <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">RequestContent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">of</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">().</span><span style="color:#c4a000">toString</span><span style="color:#ce5c00;font-weight:bold">());</span>
+            <span style="color:#ce5c00;font-weight:bold">}</span> <span style="color:#204a87;font-weight:bold">else</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+                <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">RequestContent</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">of</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;null&#34;</span><span style="color:#ce5c00;font-weight:bold">);</span>
+            <span style="color:#ce5c00;font-weight:bold">}</span>
+        <span style="color:#ce5c00;font-weight:bold">}</span>
+        <span style="color:#8f5902;font-style:italic">//该Encoder无法Encode这种类型，将Encode工作交给下一个Encoder
+</span><span style="color:#8f5902;font-style:italic"></span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+    <span style="color:#ce5c00;font-weight:bold">}</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Tip</h4>
+
+    <p>在<code>RestClient</code>中，同时存在多个<code>Encoder</code>，它们之间通过<code>getOrder()</code>方法返回值区分执行顺序，值越小，优先级越高。
+针对当前<code>Encoder</code>，分为两种情况：</p>
+<ul>
+<li>当前<code>Encoder</code>可以<code>Encode</code>该请求:
+直接返回<code>Encode</code>后的结果。</li>
+<li>当前<code>Encoder</code>不可以<code>Encode</code>该请求：
+调用<code>ctx.next()</code>，将<code>Encode</code>工作交给下一个<code>Encoder</code>，如果<code>RestClient</code>中的所有<code>Encoder</code>都无法编码该请求，则<code>RestClient</code>将抛出<code>CodecException</code>异常。</li>
+</ul>
+
+
+</div>
+
+<h3 id="配置encoder">配置Encoder</h3>
+<h4 id="builder">Builder</h4>
+<p>在构造<code>RestClient</code>时传入自定义的<code>Encoder</code>实例，如：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">create</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">addEncoder</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#8f5902;font-style:italic">//encode...
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+        <span style="color:#ce5c00;font-weight:bold">})</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">build</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h4 id="spi">SPI</h4>
+<h5 id="普通spi">普通SPI</h5>
+<p><code>RestClient</code>支持通过SPI的方式加载<code>Encoder</code>接口的实现类，使用时只需要按照SPI的加载规则将自定义的<code>Encoder</code>放入指定的目录下即可。</p>
+<h5 id="encoderfactory">EncoderFactory</h5>
+<p>如果用户自定义的<code>Encoder</code>对于不同<code>RestClient</code>的配置有不同的实现，则用户可以实现<code>EncoderFactory</code>接口，并按照SPI的加载规则将自定义的<code>EncoderFactory</code>放入指定的目录下即可。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">interface</span> <span style="color:#000">EncoderFactory</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+    <span style="color:#000">Collection</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#000">Encoder</span><span style="color:#ce5c00;font-weight:bold">&gt;</span> <span style="color:#000">encoders</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">RestClientOptions</span> <span style="color:#000">clientOptions</span><span style="color:#ce5c00;font-weight:bold">);</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div><p>在<code>RestClient</code>构建时将调用<code>EncoderFactory.encoders(RestClientOptions clientOptions)</code>，该方法返回的所有<code>Encoder</code>都将加入到构建好的<code>RestClient</code>中。</p>
+<h4 id="直接绑定request">直接绑定Request</h4>
+<p><code>Encoder</code>可以直接绑定<code>Request</code>，使用方式如下:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">url</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">File</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">))</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">encoder</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#8f5902;font-style:italic">//encode...
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+        <span style="color:#ce5c00;font-weight:bold">})</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Tip</h4>
+
+    当<code>Request</code>绑定了<code>Encoder</code>，该Client中设置的所有<code>Encoder</code>将对该请求失效。即：如果当前<code>Encoder</code>无法<code>Encode</code>该请求的Entity，则<code>RestClient</code>将会抛出CodecException异常。
+
+</div>
+
+<h3 id="执行时机">执行时机</h3>
+<p>见<a href="../process_of_restclient/">请求处理完整流程</a>中的<code>Encoder</code>。</p>
+<h2 id="encodeadvice">EncodeAdvice</h2>
+<p>用户可以通过<code>EncodeAdvice</code>在<code>Encode</code>前后插入业务逻辑，来对要<code>Encode</code>的 <code>Entity</code> 或者 <code>Encode</code>后的<code>RequestContent</code> 进行修改替换等操作。</p>
+<h3 id="示例">示例</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">EncodeAdviceImpl</span> <span style="color:#204a87;font-weight:bold">implements</span> <span style="color:#000">EncodeAdvice</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+    <span style="color:#5c35cc;font-weight:bold">@Override</span>
+    <span style="color:#204a87;font-weight:bold">public</span> <span style="color:#000">RequestContent</span><span style="color:#ce5c00;font-weight:bold">&lt;?&gt;</span> <span style="color:#000">aroundEncode</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">EncodeAdviceContext</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">throws</span> <span style="color:#000">Exception</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+        <span style="color:#8f5902;font-style:italic">//...before encode
+</span><span style="color:#8f5902;font-style:italic"></span>        <span style="color:#000">RequestContent</span><span style="color:#ce5c00;font-weight:bold">&lt;?&gt;</span> <span style="color:#000">requestContent</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+        <span style="color:#8f5902;font-style:italic">//...after encode
+</span><span style="color:#8f5902;font-style:italic"></span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">requestContent</span><span style="color:#ce5c00;font-weight:bold">;</span>
+    <span style="color:#ce5c00;font-weight:bold">}</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Tip</h4>
+
+    多个EncodeAdvice之间通过<code>getOrder()</code>方法返回值区分执行顺序，值越小，优先级越高。
+
+</div>
+
+<h3 id="配置方式">配置方式</h3>
+<h4 id="builder-1">Builder</h4>
+<p>在构造<code>RestClient</code>时传入自定义的<code>EncodeAdvice</code>实例，如：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">create</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">addEncodeAdvice</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#8f5902;font-style:italic">//...before encode
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#000">RequestContent</span><span style="color:#ce5c00;font-weight:bold">&lt;?&gt;</span> <span style="color:#000">requestContent</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+            <span style="color:#8f5902;font-style:italic">//...after encode
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">requestContent</span><span style="color:#ce5c00;font-weight:bold">;</span>
+        <span style="color:#ce5c00;font-weight:bold">})</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">build</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h4 id="spi-1">SPI</h4>
+<h5 id="普通spi-1">普通SPI</h5>
+<p><code>RestClient</code>支持通过SPI的方式加载<code>EncodeAdvice</code>接口的实现类，使用时只需要按照SPI的加载规则将自定义的<code>EncodeAdvice</code>放入指定的目录下即可。</p>
+<h5 id="encodeadvicefactory">EncodeAdviceFactory</h5>
+<p>如果用户自定义的<code>EncodeAdvice</code>对于不同<code>RestClient</code>的配置有不同的实现，则用户可以实现<code>EncodeAdviceFactory</code>接口，并按照SPI的加载规则将自定义的<code>EncodeAdviceFactory</code>放入指定的目录下即可。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">interface</span> <span style="color:#000">EncodeAdviceFactory</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+    <span style="color:#000">Collection</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#000">EncodeAdvice</span><span style="color:#ce5c00;font-weight:bold">&gt;</span> <span style="color:#000">encodeAdvices</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">RestClientOptions</span> <span style="color:#000">clientOptions</span><span style="color:#ce5c00;font-weight:bold">);</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div><p>在<code>RestClient</code>构建时将调用<code>EncodeAdviceFactory.encodeAdvices(RestClientOptions clientOptions)</code>，该方法返回的所有<code>EncodeAdvice</code>都将加入到构建好的<code>RestClient</code>中。</p>
+<h3 id="执行时机-1">执行时机</h3>
+<p>见<a href="../process_of_restclient/">请求处理完整流程</a>中的<code>EncodeAdvice</code>。</p>
+
+</div>
+
+
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-2f605874175033b7c894d595db9fdc42">2 - Decoder</h1>
+    <div class="lead"><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 期望<code>Entity</code>类型 等选择合适的<code>Decoder</code>进行解码。<code>RestClient</code>内置了下面这些<code>Decoder</code>：</p>
+<ul>
+<li>Json
+<ul>
+<li>jackson(默认)</li>
+<li>fastjson</li>
+<li>gson</li>
+</ul>
+</li>
+<li>ProtoBuf</li>
+<li>String</li>
+<li>byte[]</li>
+</ul>
+<p>除此之外<code>RestClient</code>也支持用户自定义解码器。</p>
+</div>
+	<h2 id="使用json-decoder">使用Json Decoder</h2>
+<p>当Response的<code>contentType</code>为<code>MediaType.APPLICATION_JSON</code>，将自动使用<code>Json Decoder</code>来来进行<code>Decode</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span>  <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+
+<span style="color:#8f5902;font-style:italic">//当 response.contentType() == MediaType.APPLICATION_JSON 时将自动使用Json Decoder
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#000">Person</span> <span style="color:#000">person</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">response</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">bodyToEntity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">Person</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">class</span><span style="color:#ce5c00;font-weight:bold">);</span>
+
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Note</h4>
+
+    其中Json相关的序列化方式默认配置了日期格式为<code>yyyy-MM-dd HH:mm:ss</code>
+
+</div>
+
+<h2 id="使用protobuf-decoder">使用ProtoBuf Decoder</h2>
+<p>当Response的<code>contentType</code>为<code>ProtoBufCodec.PROTO_BUF</code>，且<code>response.bodyToEntity()</code>传入的类型为<code>com.google.protobuf.Message</code>的子类时，将自动使用<code>ProtoBuf Decoder</code>来进行<code>Decode</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+
+<span style="color:#8f5902;font-style:italic">//当 response.contentType() == ProtoBufCodec.PROTO_BUF，且 Person 为 Message 的子类时，将自动使用ProtoBuf Decoder
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#000">Person</span> <span style="color:#000">person</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">response</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">bodyToEntity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">Person</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">class</span><span style="color:#ce5c00;font-weight:bold">);</span>
+
+</code></pre></div><h2 id="使用string-encoder">使用String Encoder</h2>
+<p>当<code>response.bodyToEntity()</code>传入的类型为<code>String.class</code>，且Response的<code>contentType</code>不为<code>MediaType.APPLICATION_JSON</code>时，将自动使用<code>String Decoder</code>来进行<code>Decode</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+
+<span style="color:#8f5902;font-style:italic">//当 response.contentType() != MediaType.APPLICATION_JSON 时，自动使用String Decoder来进行Decode
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#000">String</span> <span style="color:#000">result</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">response</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">bodyToEntity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">String</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">class</span><span style="color:#ce5c00;font-weight:bold">);</span>
+
+</code></pre></div><h2 id="使用byte-encoder">使用byte[] Encoder</h2>
+<p>当<code>response.bodyToEntity()</code>传入的类型为<code>byte[].class</code>，且Response的<code>contentType</code>不为<code>MediaType.APPLICATION_JSON</code>时，将自动使用<code>byte[] Decoder</code>来进行<code>Decode</code>。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+
+<span style="color:#8f5902;font-style:italic">//当 response.contentType() != MediaType.APPLICATION_JSON 时，自动使用byte[] Decoder来进行Decode
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#204a87;font-weight:bold">byte</span><span style="color:#ce5c00;font-weight:bold">[]</span> <span style="color:#000">result</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">response</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">bodyToEntity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">byte</span><span style="color:#ce5c00;font-weight:bold">[].</span><span style="color:#c4a000">class</span><span style="color:#ce5c00;font-weight:bold">);</span>
+</code></pre></div><h2 id="自定义decoder">自定义Decoder</h2>
+<p>当<code>RestClient</code>内置的<code>Decoder</code>无法满足用户需求时，用户可以自定义<code>Decoder</code>，示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">StringDecoder</span> <span style="color:#204a87;font-weight:bold">implements</span> <span style="color:#000">ByteDecoder</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+
+    <span style="color:#5c35cc;font-weight:bold">@Override</span>
+    <span style="color:#204a87;font-weight:bold">public</span> <span style="color:#000">Object</span> <span style="color:#000">doDecode</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">DecodeContext</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#204a87;font-weight:bold">byte</span><span style="color:#ce5c00;font-weight:bold">[]&gt;</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+        <span style="color:#204a87;font-weight:bold">if</span> <span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">String</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">class</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">isAssignableFrom</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">targetType</span><span style="color:#ce5c00;font-weight:bold">()))</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">String</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">content</span><span style="color:#ce5c00;font-weight:bold">().</span><span style="color:#c4a000">value</span><span style="color:#ce5c00;font-weight:bold">());</span>
+        <span style="color:#ce5c00;font-weight:bold">}</span>
+        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+    <span style="color:#ce5c00;font-weight:bold">}</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Tip</h4>
+
+    <p>在<code>RestClient</code>中，同时存在多个<code>Decoder</code>，它们之间通过<code>getOrder()</code>方法返回值区分执行顺序，值越小，优先级越高。
+针对当前<code>Decoder</code>，分为两种情况：</p>
+<ul>
+<li>当前<code>Decoder</code>可以<code>Decode</code>该响应:
+直接返回<code>Decode</code>后的结果。</li>
+<li>当前<code>Decoder</code>不可以<code>Decode</code>该响应：
+调用<code>ctx.next()</code>，将<code>Decode</code>工作交给下一个<code>Decoder</code>，如果<code>RestClient</code>中的所有<code>Decoder</code>都无法编码该请求，则<code>RestClient</code>将抛出<code>CodecException</code>异常。</li>
+</ul>
+
+
+</div>
+
+<h3 id="配置decoder">配置Decoder</h3>
+<h4 id="builder">Builder</h4>
+<p>在构造<code>RestClient</code>时传入自定义的<code>Decoder</code>实例，如：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">create</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">addDecoder</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#8f5902;font-style:italic">//decode...
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+        <span style="color:#ce5c00;font-weight:bold">})</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">build</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h4 id="spi">SPI</h4>
+<h5 id="普通spi">普通SPI</h5>
+<p><code>RestClient</code>支持通过SPI的方式加载<code>Decoder</code>接口的实现类，使用时只需要按照SPI的加载规则将自定义的<code>Decoder</code>放入指定的目录下即可。</p>
+<h5 id="decoderfactory">DecoderFactory</h5>
+<p>如果用户自定义的<code>Decoder</code>对于不同<code>RestClient</code>的配置有不同的实现，则用户可以实现<code>DecoderFactory</code>接口，并按照SPI的加载规则将自定义的<code>DecoderFactory</code>放入指定的目录下即可。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">interface</span> <span style="color:#000">DecoderFactory</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+    <span style="color:#000">Collection</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#000">Decoder</span><span style="color:#ce5c00;font-weight:bold">&gt;</span> <span style="color:#000">decoders</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">RestClientOptions</span> <span style="color:#000">clientOptions</span><span style="color:#ce5c00;font-weight:bold">);</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div><p>在<code>RestClient</code>构建时将调用<code>DecoderFactory.decoders(RestClientOptions clientOptions)</code>，该方法返回的所有<code>Decoder</code>都将加入到构建好的<code>RestClient</code>中。</p>
+<h4 id="直接绑定request">直接绑定Request</h4>
+<p><code>Decoder</code>可以直接绑定<code>Request</code>，使用方式如下:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">url</span><span style="color:#ce5c00;font-weight:bold">)</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">File</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">))</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">decoder</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span> <span style="color:#ce5c00;font-weight:bold">-&gt;</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+            <span style="color:#8f5902;font-style:italic">//decode...
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+        <span style="color:#ce5c00;font-weight:bold">})</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">execute</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">toCompletableFuture</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">get</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Tip</h4>
+
+    当<code>Request</code>绑定了<code>Decoder</code>，该Client中设置的所有<code>Decoder</code>将对该请求失效。即：如果当前<code>Decoder</code>无法解码该响应，则<code>RestClient</code>将会抛出CodecException异常。
+
+</div>
+
+<h3 id="执行时机">执行时机</h3>
+<p>见<a href="../process_of_restclient/">请求处理完整流程</a>中的<code>Decoder</code>。</p>
+<h2 id="decodeadvice">DecodeAdvice</h2>
+<p>用户可以通过<code>DecodeAdvice</code>在<code>Decode</code>前后进行来插入业务逻辑，来对要解码的 <code>ResponseContent</code> 或者 <code>Decode</code>后的对象 进行修改替换等操作。</p>
+<h3 id="示例">示例</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">class</span> <span style="color:#000">DecodeAdviceImpl</span> <span style="color:#204a87;font-weight:bold">implements</span> <span style="color:#000">DecodeAdvice</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+    <span style="color:#5c35cc;font-weight:bold">@Override</span>
+    <span style="color:#204a87;font-weight:bold">public</span> <span style="color:#000">Object</span> <span style="color:#000">aroundDecode</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">DecodeAdviceContext</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">)</span> <span style="color:#204a87;font-weight:bold">throws</span> <span style="color:#000">Exception</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+        <span style="color:#8f5902;font-style:italic">//...before decode
+</span><span style="color:#8f5902;font-style:italic"></span>        <span style="color:#000">Object</span> <span style="color:#000">decoded</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+        <span style="color:#8f5902;font-style:italic">//...after decode
+</span><span style="color:#8f5902;font-style:italic"></span>        <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">decoded</span><span style="color:#ce5c00;font-weight:bold">;</span>
+    <span style="color:#ce5c00;font-weight:bold">}</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div>
+
+<div class="alert alert-primary" role="alert">
+<h4 class="alert-heading">Tip</h4>
+
+    多个<code>DecodeAdvice</code>之间通过<code>getOrder()</code>方法返回值区分执行顺序，值越小，优先级越高。
+
+</div>
+
+<h3 id="配置方式">配置方式</h3>
+<h4 id="builder-1">Builder</h4>
+<p>在构造<code>RestClient</code>时传入自定义的<code>DecodeAdvice</code>实例，如：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">create</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">addDecodeAdvice</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ctx</span> <span style="color:#ce5c00;font-weight:bold">-&gt;{</span>
+            <span style="color:#8f5902;font-style:italic">//...before decode
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#000">Object</span> <span style="color:#000">decoded</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">ctx</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">next</span><span style="color:#ce5c00;font-weight:bold">();</span>
+            <span style="color:#8f5902;font-style:italic">//...after decode
+</span><span style="color:#8f5902;font-style:italic"></span>            <span style="color:#204a87;font-weight:bold">return</span> <span style="color:#000">decoded</span><span style="color:#ce5c00;font-weight:bold">;</span>
+        <span style="color:#ce5c00;font-weight:bold">})</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">build</span><span style="color:#ce5c00;font-weight:bold">();</span>
+</code></pre></div><h4 id="spi-1">SPI</h4>
+<h5 id="普通spi-1">普通SPI</h5>
+<p><code>RestClient</code>支持通过SPI的方式加载<code>DecodeAdvice</code>接口的实现类，使用时只需要按照SPI的加载规则将自定义的<code>DecodeAdvice</code>放入指定的目录下即可。</p>
+<h5 id="decodeadvicefactory">DecodeAdviceFactory</h5>
+<p>如果用户自定义的<code>DecodeAdvice</code>对于不同<code>RestClient</code>的配置有不同的实现，则用户可以实现<code>DecodeAdviceFactory</code>接口，并按照SPI的加载规则将自定义的<code>DecodeAdviceFactory</code>放入指定的目录下即可。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">public</span> <span style="color:#204a87;font-weight:bold">interface</span> <span style="color:#000">DecodeAdviceFactory</span> <span style="color:#ce5c00;font-weight:bold">{</span>
+    <span style="color:#000">Collection</span><span style="color:#ce5c00;font-weight:bold">&lt;</span><span style="color:#000">DecodeAdvice</span><span style="color:#ce5c00;font-weight:bold">&gt;</span> <span style="color:#000">decodeAdvices</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">RestClientOptions</span> <span style="color:#000">clientOptions</span><span style="color:#ce5c00;font-weight:bold">);</span>
+<span style="color:#ce5c00;font-weight:bold">}</span>
+</code></pre></div><p>在<code>RestClient</code>构建时将调用<code>DecodeAdviceFactory.decodeAdvices(RestClientOptions clientOptions)</code>，该方法返回的所有<code>DecodeAdvice</code>都将加入到构建好的<code>RestClient</code>中。</p>
+<h3 id="执行时机-1">执行时机</h3>
+<p>见<a href="../process_of_restclient/">请求处理完整流程</a>中的<code>DecodeAdvice</code>。</p>
+
+</div>
+
+
+
+    
+	
+  
+
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="User mailing list" aria-label="User mailing list">
+    <a class="text-white" target="_blank" rel="noopener" href="mailto:esa.stack@oppo.com" aria-label="User mailing list">
+      <i class="fa fa-envelope"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="GitHub" aria-label="GitHub">
+    <a class="text-white" target="_blank" rel="noopener" href="https://github.com/esastack/esa-restclient" aria-label="GitHub">
+      <i class="fab fa-github"></i>
+    </a>
+  </li>
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="Developer mailing list" aria-label="Developer mailing list">
+    <a class="text-white" target="_blank" rel="noopener" href="mailto:esa.stack@oppo.com" aria-label="Developer mailing list">
+      <i class="fa fa-envelope"></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2022 OPPO ESA Stack Project All Rights Reserved</small>
+        
+	
+		
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"
+    integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA=="
+    crossorigin="anonymous"></script>
+
+
+
+
+
+<script src='/js/tabpane-persist.js'></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/main.min.7380160122c24d59789a168af05fcec445fe4e5f2069dd9f3a0c991f10269ae0.js" integrity="sha256-c4AWASLCTVl4mhaK8F/OxEX&#43;Tl8gad2fOgyZHxAmmuA=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  </body>
+</html>

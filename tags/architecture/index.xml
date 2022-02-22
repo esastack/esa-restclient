@@ -1,0 +1,32 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ESA Restclient – architecture</title>
+    <link>/tags/architecture/</link>
+    <description>Recent content in architecture on ESA Restclient</description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/tags/architecture/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: 生命周期</title>
+      <link>/docs/process_of_restclient/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/process_of_restclient/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;生命周期&#34;&gt;生命周期&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../../img/process_of_restclient.svg&#34; alt=&#34;process_of_restclient&#34;&gt;&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

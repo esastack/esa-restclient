@@ -80,7 +80,7 @@ public class StringEncoder implements ByteEncoder {
 
     @Override
     public RequestContent<byte[]> doEncode(EncodeContext<byte[]> ctx) {
-        if (ctx.contentType() == MediaType.TEXT_PLAIN) {
+        if (MediaType.TEXT_PLAIN.isCompatibleWith(ctx.contentType())) {
             if (ctx.entity() != null) {
                 return RequestContent.of(ctx.entity().toString());
             } else {

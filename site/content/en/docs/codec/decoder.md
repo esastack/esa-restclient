@@ -41,7 +41,7 @@ RestResponseBase response = client.get("localhost:8080/aaa")
         .toCompletableFuture()
         .get();
 
-//当 response.contentType() == ProtoBufCodec.PROTO_BUF，且 Person 为 Message 的子类时，将自动使用ProtoBuf Decoder
+//当 ProtoBufCodec.PROTO_BUF.isCompatibleWith(response.contentType())，且 Person 为 Message 的子类时，将自动使用ProtoBuf Decoder
 Person person = response.bodyToEntity(Person.class);
 
 ```
@@ -54,7 +54,7 @@ RestResponseBase response = client.get("localhost:8080/aaa")
         .toCompletableFuture()
         .get();
 
-//当 response.contentType() != MediaType.APPLICATION_JSON 时，自动使用String Decoder来进行Decode
+//当 !MediaType.APPLICATION_JSON.isCompatibleWith(response.contentType()) 时，自动使用String Decoder来进行Decode
 String result = response.bodyToEntity(String.class);
 
 ```
@@ -67,7 +67,7 @@ RestResponseBase response = client.get("localhost:8080/aaa")
         .toCompletableFuture()
         .get();
 
-//当 response.contentType() != MediaType.APPLICATION_JSON 时，自动使用byte[] Decoder来进行Decode
+//当 !MediaType.APPLICATION_JSON.isCompatibleWith(response.contentType()) 时，自动使用byte[] Decoder来进行Decode
 byte[] result = response.bodyToEntity(byte[].class);
 ```
 

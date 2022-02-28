@@ -312,68 +312,8 @@ if (!doNotTrack) {
         </article>
       
         
-        <article class="article-teaser article-type-docs">
-          <h3><a href="/docs/something_more/customize_handle/">自定义响应处理</a></h3>
-          <p>默认情况下，<code>HttpClient</code>需要将整个响应body内容聚合后存放在内存中返回给业务处理，对于响应body内容较大的请求，此种方式可能会导致OOM。<code>HttpClient</code> 开放了底层的接口，支持用户自定义响应信息处理Handler，用于处理接收到的响应headers、body(分块的)、trailers等数据。通过这种方式，可以 灵活的处理响应数据，避免响应body堆积在内存中产生OOM的风险。</p>
-          <header class="article-meta">
-            
-            
-              
-                
-
-
-<div class="taxonomy taxonomy-terms-article taxo-tags">
-  <h5 class="taxonomy-title">Tags:</h5>
-  <ul class="taxonomy-terms">
-    
-      <li><a class="taxonomy-term" href="/tags/usage/" data-taxonomy-term="usage"><span class="taxonomy-label">usage</span></a></li>
-    
-  </ul>
-</div>
-
-              
-                
-
-
-              
-            
-            
-          </header>
-        </article>
-      
-        
         <article class="article-teaser article-type-docs-v0.1.0">
           <h3><a href="/docs-v0.1.0/segemented_read_write/">分块读写</a></h3>
-          <p><code>HttpClient</code>支持分块写请求数据及分块处理响应数据，分块读功能请参考<a href="../customize_handle">自定义响应处理</a>，此处不再赘述。本文仅介绍分块写请求body相关功能。</p>
-          <header class="article-meta">
-            
-            
-              
-                
-
-
-<div class="taxonomy taxonomy-terms-article taxo-tags">
-  <h5 class="taxonomy-title">Tags:</h5>
-  <ul class="taxonomy-terms">
-    
-      <li><a class="taxonomy-term" href="/tags/usage/" data-taxonomy-term="usage"><span class="taxonomy-label">usage</span></a></li>
-    
-  </ul>
-</div>
-
-              
-                
-
-
-              
-            
-            
-          </header>
-        </article>
-      
-        
-        <article class="article-teaser article-type-docs">
-          <h3><a href="/docs/something_more/segemented_read_write/">分块读写</a></h3>
           <p><code>HttpClient</code>支持分块写请求数据及分块处理响应数据，分块读功能请参考<a href="../customize_handle">自定义响应处理</a>，此处不再赘述。本文仅介绍分块写请求body相关功能。</p>
           <header class="article-meta">
             
@@ -463,36 +403,6 @@ if (!doNotTrack) {
       
         
         <article class="article-teaser article-type-docs">
-          <h3><a href="/docs/something_more/file_upload_download/">文件上传及下载</a></h3>
-          <p><code>HttpClient</code>支持文件上传和下载功能。<strong>需要说明地是，对于内容较小的文件，可通过直接将文件内容写入请求body中或者直接从响应body中读取。</strong> 本文只讨论当文件内容过大，直接读取或者写入有OOM风险时的大文件上传和下载功能。</p>
-          <header class="article-meta">
-            
-            
-              
-                
-
-
-<div class="taxonomy taxonomy-terms-article taxo-tags">
-  <h5 class="taxonomy-title">Tags:</h5>
-  <ul class="taxonomy-terms">
-    
-      <li><a class="taxonomy-term" href="/tags/usage/" data-taxonomy-term="usage"><span class="taxonomy-label">usage</span></a></li>
-    
-  </ul>
-</div>
-
-              
-                
-
-
-              
-            
-            
-          </header>
-        </article>
-      
-        
-        <article class="article-teaser article-type-docs">
           <h3><a href="/docs/metrics/">指标统计</a></h3>
           <p><code>RestClient</code>提供了IO线程池及连接池的Metric指标统计，使用时通过<code>RestClient</code>实例便可直接获取。</p>
           <header class="article-meta">
@@ -524,36 +434,6 @@ if (!doNotTrack) {
         
         <article class="article-teaser article-type-docs-v0.1.0">
           <h3><a href="/docs-v0.1.0/metrics/">指标统计</a></h3>
-          <p><code>HttpClient</code>提供了IO线程池及连接池的Metric指标统计，使用时通过<code>HttpClient</code>实例便可直接获取。</p>
-          <header class="article-meta">
-            
-            
-              
-                
-
-
-<div class="taxonomy taxonomy-terms-article taxo-tags">
-  <h5 class="taxonomy-title">Tags:</h5>
-  <ul class="taxonomy-terms">
-    
-      <li><a class="taxonomy-term" href="/tags/usage/" data-taxonomy-term="usage"><span class="taxonomy-label">usage</span></a></li>
-    
-  </ul>
-</div>
-
-              
-                
-
-
-              
-            
-            
-          </header>
-        </article>
-      
-        
-        <article class="article-teaser article-type-docs">
-          <h3><a href="/docs/something_more/metrics/">指标统计</a></h3>
           <p><code>HttpClient</code>提供了IO线程池及连接池的Metric指标统计，使用时通过<code>HttpClient</code>实例便可直接获取。</p>
           <header class="article-meta">
             

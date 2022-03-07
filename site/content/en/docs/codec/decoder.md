@@ -7,12 +7,17 @@ description: >
   `RestClient`会自动根据用户的 `Headers` 与 期望`Entity`类型 等选择合适的`Decoder`进行解码。`RestClient`内置了下面这些`Decoder`：
   
     - Json
-      - jackson (默认，自动通过SPI注入到RestClient中)
-      - fastjson (需要用户引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中)
-      - gson (需要用户引入`gson`依赖,并将`GsonCodec`添加到RestClient中)
-    - ProtoBuf (需要用户引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中)
-    - String (自动通过SPI注入到RestClient中)
-    - byte[] (自动通过SPI注入到RestClient中)
+      - jackson ：默认，自动通过SPI的方式注入到RestClient中
+
+      - fastjson ：需要引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中
+
+      - gson ：需要引入`gson`依赖,并将`GsonCodec`添加到RestClient中
+
+    - ProtoBuf ：需要引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中
+
+    - String ：自动通过SPI的方式注入到RestClient中
+
+    - byte[]  ：自动通过SPI的方式注入到RestClient中
 
     除此之外`RestClient`也支持用户自定义解码器。
 ---

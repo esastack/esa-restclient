@@ -72,7 +72,7 @@ We used the following software for the testing:
 -Xms1024m -Xmx1024m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70
 ```
 ### Ping Result
-![ping_result](./docs/img/ping_result.png)
+![ping_result](./site/content/en/img/ping_result.png)
 
 ### Client Options
 

@@ -55,7 +55,7 @@ import java.util.List;
  */
 public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClientOptions {
 
-    public static final String CLIENT = "RestClient";
+    private static final String CLIENT = "RestClient";
 
     private static final Logger logger = LoggerUtils.logger();
     private final HttpClientBuilder httpClientBuilder;
@@ -439,7 +439,6 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
                                 decodeAdvicesFromSpi, decodeAdviceFactory);
                     }
                 });
-        OrderedComparator.sort(decodeAdvices);
     }
 
     private void sortDecodeAdvices() {
@@ -528,6 +527,8 @@ public class RestClientBuilder implements Reusable<RestClientBuilder>, RestClien
         restClientBuilder.addInterceptors(interceptors);
         restClientBuilder.addEncodeAdvices(encodeAdvices);
         restClientBuilder.addDecodeAdvices(decodeAdvices);
+        restClientBuilder.addDecoders(decoders);
+        restClientBuilder.addEncoders(encoders);
         return restClientBuilder;
     }
 }

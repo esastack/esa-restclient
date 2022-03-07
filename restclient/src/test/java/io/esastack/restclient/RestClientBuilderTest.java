@@ -132,6 +132,8 @@ class RestClientBuilderTest {
         builder.addInterceptor(createInterceptor(2));
         builder.addDecodeAdvice(createDecodeAdvice(2));
         builder.addEncodeAdvice(createEncodeAdvice(2));
+        builder.addEncoder(createByteEncoder(-10000));
+        builder.addDecoder(createByteDecoder(-10000));
 
         isEqual(builder, builder.copy());
         isEqual(builder, builder.build().clientOptions());
@@ -165,9 +167,16 @@ class RestClientBuilderTest {
         then(origin.version()).isEqualTo(other.version());
         then(origin.isUseDecompress()).isEqualTo(other.isUseDecompress());
         then(origin.isUseExpectContinue()).isEqualTo(other.isUseExpectContinue());
+
+        then(origin.unmodifiableDecodeAdvices().size()).isEqualTo(other.unmodifiableDecodeAdvices().size());
+        then(origin.unmodifiableEncodeAdvices().size()).isEqualTo(other.unmodifiableEncodeAdvices().size());
+        then(origin.unmodifiableInterceptors().size()).isEqualTo(other.unmodifiableInterceptors().size());
+
         then(origin.unmodifiableDecodeAdvices().get(0)).isEqualTo(other.unmodifiableDecodeAdvices().get(0));
         then(origin.unmodifiableEncodeAdvices().get(0)).isEqualTo(other.unmodifiableEncodeAdvices().get(0));
         then(origin.unmodifiableInterceptors().get(0)).isEqualTo(other.unmodifiableInterceptors().get(0));
+        then(origin.unmodifiableEncoders().get(0)).isEqualTo(other.unmodifiableEncoders().get(0));
+        then(origin.unmodifiableDecoders().get(0)).isEqualTo(other.unmodifiableDecoders().get(0));
     }
 
     @Test
@@ -182,6 +191,9 @@ class RestClientBuilderTest {
 
         List<Encoder> orderedEncoders = builder.unmodifiableEncoders();
         then(orderedEncoders.size()).isEqualTo(3);
+        //unmodifiableEncoders().size() = encoders added(3) + encoders from spi(6)
+        then(builder.build().clientOptions().unmodifiableEncoders().size()).isEqualTo(9);
+        then(builder.build().clientOptions().unmodifiableEncoders().get(0)).isEqualTo(encoder2);
     }
 
     @Test
@@ -196,6 +208,9 @@ class RestClientBuilderTest {
 
         List<Decoder> orderedDecoders = builder.unmodifiableDecoders();
         then(orderedDecoders.size()).isEqualTo(3);
+        //unmodifiableDecoders().size() = decoders added(3) + decoders from spi(3)
+        then(builder.build().clientOptions().unmodifiableDecoders().size()).isEqualTo(6);
+        then(builder.build().clientOptions().unmodifiableDecoders().get(0)).isEqualTo(decoder2);
     }
 
     @Test
@@ -210,6 +225,8 @@ class RestClientBuilderTest {
 
         List<DecodeAdvice> orderedDecodeAdvices = builder.unmodifiableDecodeAdvices();
         then(orderedDecodeAdvices.size()).isEqualTo(3);
+        then(builder.build().clientOptions().unmodifiableDecodeAdvices().size()).isEqualTo(3);
+        then(builder.build().clientOptions().unmodifiableDecodeAdvices().get(0)).isEqualTo(decodeAdvice2);
     }
 
     @Test
@@ -224,6 +241,8 @@ class RestClientBuilderTest {
 
         List<EncodeAdvice> orderedEncodeAdvices = builder.unmodifiableEncodeAdvices();
         then(orderedEncodeAdvices.size()).isEqualTo(3);
+        then(builder.build().clientOptions().unmodifiableEncodeAdvices().size()).isEqualTo(3);
+        then(builder.build().clientOptions().unmodifiableEncodeAdvices().get(0)).isEqualTo(encodeAdvice2);
     }
 
     @Test
@@ -238,6 +257,8 @@ class RestClientBuilderTest {
 
         List<RestInterceptor> orderedInterceptors = builder.unmodifiableInterceptors();
         then(orderedInterceptors.size()).isEqualTo(3);
+        then(builder.build().clientOptions().unmodifiableInterceptors().size()).isEqualTo(3);
+        then(builder.build().clientOptions().unmodifiableInterceptors().get(0)).isEqualTo(interceptor2);
     }
 
     private ByteEncoder createByteEncoder(int order) {

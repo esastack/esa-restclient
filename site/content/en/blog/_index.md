@@ -6,5 +6,4 @@ weight: 30
 description: >
   This is the **blog** section. It has categories: Releases.
 ---
-AAA
 

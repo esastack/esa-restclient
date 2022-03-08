@@ -1,4 +1,5 @@
 ---
+tags: ["architecture"]
 title: "The Architecture Of ESA RestClient"
 linkTitle: "The Architecture Of ESA RestClient"
 weight: 10

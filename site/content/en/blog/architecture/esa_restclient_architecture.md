@@ -28,7 +28,9 @@ RestClient 文档地址：[https://www.esastack.io/esa-restclient](https://www.e
 `ESA RestClient` 是一个基于 Netty 的全链路异步事件驱动的高性能轻量级的HTTP客户端。
 
 > 以下简称RestClient
-1. Quick Start
+
+## 1. Quick Start
+
 ### Step1：添加依赖
 
 ```xml
@@ -55,7 +57,8 @@ client.post("http://127.0.0.1:8081/")
             }
         });
 ```
-2. 功能特性
+## 2. 功能特性
+
 * Http1/H2/H2cUpgrade/Https
 * Encode 与  EncodeAdvice
 * Decode 与 DecodeAdvice

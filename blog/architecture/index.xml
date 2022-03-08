@@ -1,31 +1,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ESA Restclient – Blog</title>
-    <link>/blog/</link>
-    <description>Recent content in Blog on ESA Restclient</description>
+    <title>ESA Restclient – Architecture</title>
+    <link>/blog/architecture/</link>
+    <description>Recent content in Architecture on ESA Restclient</description>
     <generator>Hugo -- gohugo.io</generator>
     
-	  <atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
+	  <atom:link href="/blog/architecture/index.xml" rel="self" type="application/rss+xml" />
     
     
       
         
       
     
-    
-    <item>
-      <title>Blog: Release v1.0.1</title>
-      <link>/blog/2022/03/08/release-v1.0.1/</link>
-      <pubDate>Tue, 08 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/2022/03/08/release-v1.0.1/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Fix the bug that the user can,t directly added the encoder and decoder through RestClientBuilder!&lt;/p&gt;
-
-      </description>
-    </item>
     
     <item>
       <title>Blog: The Architecture Of ESA RestClient</title>
@@ -946,44 +932,6 @@
 &lt;h2 id=&#34;6-结语&#34;&gt;6. 结语&lt;/h2&gt;
 &lt;p&gt;尽管&lt;code&gt;RestClient&lt;/code&gt;主要只涉及发起请求这个简单的功能，但是“麻雀虽小，五脏俱全”，它考虑到了性能优化的方方面面，同时在 接口设计、代码整洁、功能完善 几个方面上也尽量做到了毫不妥协。&lt;/p&gt;
 &lt;p&gt;它还是一个年轻的项目，欢迎各路技术爱好者们加入，一同探讨学习与进步。&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Blog: Release v1.0.0</title>
-      <link>/blog/2022/02/16/release-v1.0.0/</link>
-      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/2022/02/16/release-v1.0.0/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Add &lt;code&gt;codec&lt;/code&gt; which will automatically select the appropriate decoder or encoder to decode or encode according to the user&amp;rsquo;s headers and entity. At the same time, restclient also supports users to insert business logic before and after decode or encode.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Blog: Release v0.1.0</title>
-      <link>/blog/2021/02/02/release-v0.1.0/</link>
-      <pubDate>Tue, 02 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/2021/02/02/release-v0.1.0/</guid>
-      <description>
-        
-        
-        &lt;ul&gt;
-&lt;li&gt;Http1/H2/H2cUpgrade&lt;/li&gt;
-&lt;li&gt;Https&lt;/li&gt;
-&lt;li&gt;Epoll/NIO&lt;/li&gt;
-&lt;li&gt;Interceptor&lt;/li&gt;
-&lt;li&gt;Filter&lt;/li&gt;
-&lt;li&gt;Retry, Redirect, 100-expect-continue&lt;/li&gt;
-&lt;li&gt;Segmented read/write&lt;/li&gt;
-&lt;li&gt;Multipart&lt;/li&gt;
-&lt;li&gt;Metrics&lt;/li&gt;
-&lt;/ul&gt;
 
       </description>
     </item>

@@ -4,9 +4,7 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="generator" content="Hugo 0.92.2" />
-<link rel="canonical" type="text/html" href="/blog/">
-<link rel="alternate" type="application/rss&#43;xml" href="/blog/index.xml">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 
 
 <link rel="shortcut icon" href="/favicons/favicon.ico" >
@@ -20,20 +18,25 @@
 <link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
 <link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
 
-<title>Blog | ESA Restclient</title>
-<meta name="description" content="This is the **blog** section. It has categories: Releases.
+<title>The Architecture Of ESA RestClient | ESA Restclient</title>
+<meta name="description" content="This article introduces the architecture of ESA RestClient!
 ">
-<meta property="og:title" content="Blog" />
-<meta property="og:description" content="This is the **blog** section. It has categories: Releases.
+<meta property="og:title" content="The Architecture Of ESA RestClient" />
+<meta property="og:description" content="This article introduces the architecture of ESA RestClient!
 " />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="/blog/" /><meta property="og:site_name" content="ESA Restclient" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/blog/2022/03/08/the-architecture-of-esa-restclient/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-03-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-03-08T16:06:51+08:00" /><meta property="og:site_name" content="ESA Restclient" />
 
-<meta itemprop="name" content="Blog">
-<meta itemprop="description" content="This is the **blog** section. It has categories: Releases.
-"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Blog"/>
-<meta name="twitter:description" content="This is the **blog** section. It has categories: Releases.
+<meta itemprop="name" content="The Architecture Of ESA RestClient">
+<meta itemprop="description" content="This article introduces the architecture of ESA RestClient!
+"><meta itemprop="datePublished" content="2022-03-08T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2022-03-08T16:06:51+08:00" />
+<meta itemprop="wordCount" content="1341">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="The Architecture Of ESA RestClient"/>
+<meta name="twitter:description" content="This article introduces the architecture of ESA RestClient!
 "/>
 
 
@@ -61,7 +64,7 @@ if (!doNotTrack) {
 <script async src='https://www.google-analytics.com/analytics.js'></script>
 
   </head>
-  <body class="td-section td-blog">
+  <body class="td-page td-blog">
     <header>
       
 <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
@@ -128,324 +131,190 @@ if (!doNotTrack) {
     <div class="container-fluid td-outer">
       <div class="td-main">
         <div class="row flex-xl-nowrap">
-          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
-          </div>
-          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
-          </div>
-          <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role="main">
+          <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            
+<div id="td-sidebar-menu" class="td-sidebar__inner">
+  <form class="td-sidebar__search d-flex align-items-center">
+    <input type="search" class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete="off">
+
+    <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type="button" data-toggle="collapse" data-target="#td-section-nav" aria-controls="td-docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    </button>
+  </form>
+  <nav class="collapse td-sidebar-nav foldable-nav" id="td-section-nav">
+    <ul class="td-sidebar-nav__section pr-md-3 ul-0">
+      <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-blog-li">
+  <a href="/blog/" class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id="m-blog"><span class="">Blog</span></a>
+  <ul class="ul-1">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-blogreleases-li">
+  <input type="checkbox" id="m-blogreleases-check"/>
+  <label for="m-blogreleases-check"><a href="/blog/releases/" class="align-left pl-0  td-sidebar-link td-sidebar-link__section" id="m-blogreleases"><span class="">Releases</span></a></label>
+  
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20220308release-v101-li">
+  <input type="checkbox" id="m-blog20220308release-v101-check"/>
+  <label for="m-blog20220308release-v101-check"><a href="/blog/2022/03/08/release-v1.0.1/" class="align-left pl-0  td-sidebar-link td-sidebar-link__page" id="m-blog20220308release-v101"><span class="">Release v1.0.1</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20220216release-v100-li">
+  <input type="checkbox" id="m-blog20220216release-v100-check"/>
+  <label for="m-blog20220216release-v100-check"><a href="/blog/2022/02/16/release-v1.0.0/" class="align-left pl-0  td-sidebar-link td-sidebar-link__page" id="m-blog20220216release-v100"><span class="">Release v1.0.0</span></a></label>
+  
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-blog20210202release-v010-li">
+  <input type="checkbox" id="m-blog20210202release-v010-check"/>
+  <label for="m-blog20210202release-v010-check"><a href="/blog/2021/02/02/release-v0.1.0/" class="align-left pl-0  td-sidebar-link td-sidebar-link__page" id="m-blog20210202release-v010"><span class="">Release v0.1.0</span></a></label>
+  
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-blogarchitecture-li">
+  <input type="checkbox" id="m-blogarchitecture-check" checked/>
+  <label for="m-blogarchitecture-check"><a href="/blog/architecture/" class="align-left pl-0  td-sidebar-link td-sidebar-link__section" id="m-blogarchitecture"><span class="">Architecture</span></a></label>
+  
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-blog20220308the-architecture-of-esa-restclient-li">
+  <input type="checkbox" id="m-blog20220308the-architecture-of-esa-restclient-check" checked/>
+  <label for="m-blog20220308the-architecture-of-esa-restclient-check"><a href="/blog/2022/03/08/the-architecture-of-esa-restclient/" class="align-left pl-0  active td-sidebar-link td-sidebar-link__page" id="m-blog20220308the-architecture-of-esa-restclient"><span class="td-sidebar-nav-active-item">The Architecture Of ESA RestClient</span></a></label>
+  
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+    </ul>
+  </nav>
+</div>
+
+          </aside>
+          <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+            
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+<a href="https://github.com/esastack/esa-restclient/tree/main/site/content/en/blog/architecture/esa_restclient_architecture.md" class="td-page-meta--view" target="_blank" rel="noopener"><i class="fa fa-file-alt fa-fw"></i> View page source</a>
+  <a href="https://github.com/esastack/esa-restclient/edit/main/site/content/en/blog/architecture/esa_restclient_architecture.md" class="td-page-meta--edit" target="_blank" rel="noopener"><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+  <a href="https://github.com/esastack/esa-restclient/new/main/site/content/en/blog/architecture/esa_restclient_architecture.md?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child" target="_blank" rel="noopener"><i class="fa fa-edit fa-fw"></i> Create child page</a>
+  <a href="https://github.com/esastack/esa-restclient/issues/new?title=The%20Architecture%20Of%20ESA%20RestClient" class="td-page-meta--issue" target="_blank" rel="noopener"><i class="fab fa-github fa-fw"></i> Create documentation issue</a>
+  <a href="https://github.com/esastack/esa-restclient/issues/new" class="td-page-meta--project-issue" target="_blank" rel="noopener"><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
+  <a id="print" href="/blog/architecture/_print/"><i class="fa fa-print fa-fw"></i> Print entire section</a>
+
+</div>
+
             
 
 
+<div class="td-toc"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#step1添加依赖">Step1：添加依赖</a></li>
+        <li><a href="#step2--构建restclient并发送请求处理响应">Step2:  构建RestClient并发送请求处理响应</a></li>
+        <li><a href="#21-encode-与--encodeadvice">2.1 Encode 与  EncodeAdvice</a></li>
+        <li><a href="#22-decode-与-decodeadvice">2.2 Decode 与 DecodeAdvice</a></li>
+        <li><a href="#23-restinterceptor">2.3 RestInterceptor</a></li>
+        <li><a href="#24-大文件发送">2.4 大文件发送</a></li>
+        <li><a href="#25-读超时">2.5 读超时</a></li>
+        <li><a href="#26-重试">2.6 重试</a></li>
+        <li><a href="#27-重定向">2.7 重定向</a></li>
+        <li><a href="#28-其它功能">2.8 其它功能</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-性能表现">3 性能表现</a>
+      <ul>
+        <li><a href="#31-测试场景">3.1 测试场景</a></li>
+        <li><a href="#32-机器配置">3.2 机器配置</a></li>
+        <li><a href="#33-jvm参数">3.3 JVM参数</a></li>
+        <li><a href="#34-客户端版本">3.4 客户端版本</a></li>
+        <li><a href="#35-测试方法">3.5 测试方法</a></li>
+        <li><a href="#36-测试结果">3.6 测试结果</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-架构设计">4 架构设计</a>
+      <ul>
+        <li><a href="#41-设计原则">4.1 设计原则</a></li>
+        <li><a href="#42-结构设计">4.2 结构设计</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-其它性能优化的一些设计">5 其它性能优化的一些设计</a>
+      <ul>
+        <li><a href="#51-netty">5.1 Netty</a></li>
+        <li><a href="#52-encode--decode">5.2 Encode &amp; Decode</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-结语">6. 结语</a></li>
+  </ul>
+</nav></div>
 
 
+
+            
+
+	
+		
+			
+		
+		
+
+
+
+  
+  
+    <div class="taxonomy taxonomy-terms-cloud taxo-tags">
+      
+        <h5 class="taxonomy-title">Tag Cloud</h5>
+      
+      <ul class="taxonomy-terms">
+        
+          <li><a class="taxonomy-term" href="/tags/architecture/" data-taxonomy-term="architecture"><span class="taxonomy-label">architecture</span><span class="taxonomy-count">1</span></a></li>
+        
+          <li><a class="taxonomy-term" href="/tags/config/" data-taxonomy-term="config"><span class="taxonomy-label">config</span><span class="taxonomy-count">2</span></a></li>
+        
+          <li><a class="taxonomy-term" href="/tags/example/" data-taxonomy-term="example"><span class="taxonomy-label">example</span><span class="taxonomy-count">2</span></a></li>
+        
+          <li><a class="taxonomy-term" href="/tags/extension/" data-taxonomy-term="extension"><span class="taxonomy-label">extension</span><span class="taxonomy-count">11</span></a></li>
+        
+          <li><a class="taxonomy-term" href="/tags/usage/" data-taxonomy-term="usage"><span class="taxonomy-label">usage</span><span class="taxonomy-count">11</span></a></li>
+        
+      </ul>
+    </div>
+  
+
+	
+		
+			
+		
+		
+
+
+
+  
+  
+
+	
+
+          </aside>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role="main">
+            <a class="btn btn-lg -bg-orange td-rss-button d-none d-lg-block" href="/blog/architecture/index.xml" target="_blank">
+              RSS <i class="fa fa-rss ml-2 "></i>
+            </a>
+            
 <div class="td-content">
-<div class="pageinfo pageinfo-primary d-print-none">
-<p>
-This is the multi-page printable view of this section.
-<a href="#" onclick="print();return false;">Click here to print</a>.
-</p><p>
-<a href="/blog/">Return to the regular view of this page</a>.
-</p>
-</div>
-
-
-
-<h1 class="title">Blog</h1>
-<div class="lead">This is the <strong>blog</strong> section. It has categories: Releases.</div>
-
-
-
-
-    <ul>
-    
-  
-  
-  
-  
-
-  
-    
-    
-	
-
-    <li><a href="#pg-fbc771f2981eed29c0bc016b2d68a41a">Releases</a></li>
-
-
-
-    
-    <ul>
-        
-  
-  
-  
-  
-
-  
-    
-    
-	
-
-    <li><a href="#pg-6f4443b9af40477479591fc184871a29">Release v1.0.1</a></li>
-
-
-
-    
-  
-    
-    
-	
-
-    <li><a href="#pg-794b5d90dc8a76efe53cd1189faf34ff">Release v1.0.0</a></li>
-
-
-
-    
-  
-    
-    
-	
-
-    <li><a href="#pg-6ff53eed9a41f435ca4319ce1f53743a">Release v0.1.0</a></li>
-
-
-
-    
-  
-
-    </ul>
-    
-  
-    
-    
-	
-
-    <li><a href="#pg-49122a6e53571da79f10996180ecd39b">Architecture</a></li>
-
-
-
-    
-    <ul>
-        
-  
-  
-  
-  
-
-  
-    
-    
-	
-
-    <li><a href="#pg-df51bf5a6da0175c6e23af1892e20e9d">The Architecture Of ESA RestClient</a></li>
-
-
-
-    
-  
-
-    </ul>
-    
-  
-
-    </ul>
-
-
-<div class="content">
-      
-</div>
-</div>
-
-
-  
-  
-  
-  
-
-  
-  
-
-  
-    
-    
-	
-    
-
-
-  
-
-<div class="td-content" style="">
-    <h1 id="pg-fbc771f2981eed29c0bc016b2d68a41a">Releases</h1>
-	<div class="lead">The newest version is 1.0.1 which fix bug of <code>codec</code>。</div>
-	<div class="td-byline mb-4">
-		
-        
-	</div>
-	
-</div>
-
-
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-    
-    
-	
-    
-
-
-  
-
-<div class="td-content" style="">
-    <h1 id="pg-6f4443b9af40477479591fc184871a29">Release v1.0.1</h1>
-	<div class="lead">Fix bug of <code>codec</code>!</div>
-	<div class="td-byline mb-4">
-		
-        
-		<time datetime="2022-03-08" class="text-muted">Tuesday, March 08, 2022</time>
-        
-	</div>
-	<p>Fix the bug that the user can,t directly added the encoder and decoder through RestClientBuilder!</p>
-
-</div>
-
-
-
-
-
-    
-	
-  
-    
-    
-	
-    
-
-
-  
-
-<div class="td-content" style="page-break-before: always">
-    <h1 id="pg-794b5d90dc8a76efe53cd1189faf34ff">Release v1.0.0</h1>
-	<div class="lead">Add <code>codec</code>!</div>
-	<div class="td-byline mb-4">
-		
-        
-		<time datetime="2022-02-16" class="text-muted">Wednesday, February 16, 2022</time>
-        
-	</div>
-	<p>Add <code>codec</code> which will automatically select the appropriate decoder or encoder to decode or encode according to the user&rsquo;s headers and entity. At the same time, restclient also supports users to insert business logic before and after decode or encode.</p>
-
-</div>
-
-
-
-
-
-    
-	
-  
-    
-    
-	
-    
-
-
-  
-
-<div class="td-content" style="page-break-before: always">
-    <h1 id="pg-6ff53eed9a41f435ca4319ce1f53743a">Release v0.1.0</h1>
-	<div class="lead">First Release!</div>
-	<div class="td-byline mb-4">
-		
-        
-		<time datetime="2021-02-02" class="text-muted">Tuesday, February 02, 2021</time>
-        
-	</div>
-	<ul>
-<li>Http1/H2/H2cUpgrade</li>
-<li>Https</li>
-<li>Epoll/NIO</li>
-<li>Interceptor</li>
-<li>Filter</li>
-<li>Retry, Redirect, 100-expect-continue</li>
-<li>Segmented read/write</li>
-<li>Multipart</li>
-<li>Metrics</li>
-</ul>
-
-</div>
-
-
-
-
-
-    
-	
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-
-  
-
-<div class="td-content" style="page-break-before: always">
-    <h1 id="pg-49122a6e53571da79f10996180ecd39b">Architecture</h1>
-	<div class="lead">There are some architecture related documents.</div>
-	<div class="td-byline mb-4">
-		
-        
-	</div>
-	
-</div>
-
-
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-    
-    
-	
-    
-
-
-  
-
-<div class="td-content" style="">
-    <h1 id="pg-df51bf5a6da0175c6e23af1892e20e9d">The Architecture Of ESA RestClient</h1>
+	<h1>The Architecture Of ESA RestClient</h1>
 	<div class="lead">This article introduces the architecture of ESA RestClient!</div>
 	<div class="td-byline mb-4">
 		
-        
 		<time datetime="2022-03-08" class="text-muted">Tuesday, March 08, 2022</time>
-        
 	</div>
+	<header class="article-meta">
+		
+		
+			
+				
+
+
+			
+				
+
+
+			
+		
+		
+	</header>
 	<p><img src="/img/architecture/esa_stack.png" alt="esa_stack"></p>
 <p>ESA Stack(Elastic Service Architecture) 是OPPO云计算中心孵化的技术品牌，致力于微服务相关技术栈，帮助用户快速构建高性能，高可用的云原生微服务。产品包含高性能Web服务框架、RPC框架、服务治理框架、注册中心、配置中心、调用链追踪系统，Service Mesh、Serverless等各类产品及研究方向。</p>
 <p>当前部分产品已经对外开源：</p>
@@ -1357,20 +1226,17 @@ This is the multi-page printable view of this section.
 <p>尽管<code>RestClient</code>主要只涉及发起请求这个简单的功能，但是“麻雀虽小，五脏俱全”，它考虑到了性能优化的方方面面，同时在 接口设计、代码整洁、功能完善 几个方面上也尽量做到了毫不妥协。</p>
 <p>它还是一个年轻的项目，欢迎各路技术爱好者们加入，一同探讨学习与进步。</p>
 
+	
+
+	<ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
+  <li>
+    <a class="btn btn-primary disabled"><span class="mr-1">←</span>Previous</a>
+  </li>
+    <a class="btn btn-primary disabled">Next<span class="ml-1">→</span></a>
+  </li>
+</ul>
+
 </div>
-
-
-
-
-
-    
-	
-  
-
-    
-	
-  
-
 
 
           </main>

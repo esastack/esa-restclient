@@ -6,14 +6,21 @@ weight: 10
 description: >
   `RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的`Encoder`进行`Encode`。其内置了下面这些`Encoder`：
    
-    - Json
-      - jackson(默认)
-      - fastjson
-      - gson
-    - ProtoBuf
-    - File
-    - String
-    - byte[]
+   - Json
+     
+      - jackson ：默认，自动通过SPI的方式注入到RestClient中
+
+      - fastjson ：需要引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中
+
+      - gson ：需要引入`gson`依赖,并将`GsonCodec`添加到RestClient中
+
+    - ProtoBuf ：需要引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中
+
+    - File ：自动通过SPI的方式注入到RestClient中
+
+    - String ：自动通过SPI的方式注入到RestClient中
+
+    - byte[] ：自动通过SPI的方式注入到RestClient中
   
   除此之外`RestClient`也支持用户自定义`Encoder`。
 ---
@@ -32,9 +39,22 @@ RestResponseBase response  = client.post("localhost:8080/aaa")
 其中Json相关的序列化方式默认配置了日期格式为`yyyy-MM-dd HH:mm:ss`
 {{< /alert >}}
 ## 使用ProtoBuf Encoder
-指定`contentType`为`ProtoBufCodec.PROTO_BUF`，且`Entity`类型为`com.google.protobuf.Message`的子类时，将自动使用`ProtoBuf Encoder`来对`Entity`来进行`Encode`。示例如下：
+### Step1 : 引入ProtoBuf依赖
+```xml
+<dependency>
+    <groupId>com.google.protobuf</groupId>
+    <artifactId>protobuf-java</artifactId>
+</dependency>
+```
+
+### Step2 : 使用 ProtoBuf Encoder 进行编码
+将ProtoBufCodec加入到RestClient中，指定`contentType`为`ProtoBufCodec.PROTO_BUF`，且`Entity`类型为`com.google.protobuf.Message`的子类时，将自动使用`ProtoBuf Encoder`来对`Entity`来进行`Encode`。示例如下：
 ```java
-final RestClient client = RestClient.ofDefault();
+//将ProtoBufCodec加入到RestClient中
+final RestClient client = RestClient.create()
+        .addEncoder(new ProtoBufCodec())
+        .build();
+
 RestResponseBase response  = client.post("localhost:8080/aaa")
         .contentType(ProtoBufCodec.PROTO_BUF)
         .entity(message)

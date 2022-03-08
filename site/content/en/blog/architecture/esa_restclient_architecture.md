@@ -57,7 +57,8 @@ client.post("http://127.0.0.1:8081/")
             }
         });
 ```
-2. 功能特性
+## 2. 功能特性
+
 * Http1/H2/H2cUpgrade/Https
 * Encode 与  EncodeAdvice
 * Decode 与 DecodeAdvice

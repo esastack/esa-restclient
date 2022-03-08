@@ -1,9 +1,9 @@
 # ESA RestClient
 
-![Build](https://github.com/esastack/esa-httpclient/workflows/Build/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/esastack/esa-httpclient/branch/main/graph/badge.svg?token=D85SMNQNK0)](https://codecov.io/gh/esastack/esa-httpclient)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.esastack/httpclient/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.esastack/httpclient/)
-[![GitHub license](https://img.shields.io/github/license/esastack/esa-httpclient)](https://github.com/esastack/esa-httpclient/blob/main/LICENSE)
+![Build](https://github.com/esastack/esa-restclient/workflows/Build/badge.svg?branch=main)
+[![codecov](https://codecov.io/gh/esastack/esa-restclient/branch/main/graph/badge.svg?token=D85SMNQNK0)](https://codecov.io/gh/esastack/esa-restclient)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.esastack/restclient/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.esastack/restclient/)
+[![GitHub license](https://img.shields.io/github/license/esastack/esa-restclient)](https://github.com/esastack/esa-restclient/blob/main/LICENSE)
 
 ESA RestClient is an asynchronous event-driven http client based on netty.
 

@@ -21,64 +21,92 @@
 <title>Encoder | ESA Restclient</title>
 <meta name="description" content="`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的`Encoder`进行`Encode`。其内置了下面这些`Encoder`：
  
-  - Json
-    - jackson(默认)
-    - fastjson
-    - gson
-  - ProtoBuf
-  - File
-  - String
-  - byte[]
+ - Json
+   
+    - jackson ：默认，自动通过SPI的方式注入到RestClient中
+
+    - fastjson ：需要引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中
+
+    - gson ：需要引入`gson`依赖,并将`GsonCodec`添加到RestClient中
+
+  - ProtoBuf ：需要引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中
+
+  - File ：自动通过SPI的方式注入到RestClient中
+
+  - String ：自动通过SPI的方式注入到RestClient中
+
+  - byte[] ：自动通过SPI的方式注入到RestClient中
 
 除此之外`RestClient`也支持用户自定义`Encoder`。
 ">
 <meta property="og:title" content="Encoder" />
 <meta property="og:description" content="`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的`Encoder`进行`Encode`。其内置了下面这些`Encoder`：
  
-  - Json
-    - jackson(默认)
-    - fastjson
-    - gson
-  - ProtoBuf
-  - File
-  - String
-  - byte[]
+ - Json
+   
+    - jackson ：默认，自动通过SPI的方式注入到RestClient中
+
+    - fastjson ：需要引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中
+
+    - gson ：需要引入`gson`依赖,并将`GsonCodec`添加到RestClient中
+
+  - ProtoBuf ：需要引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中
+
+  - File ：自动通过SPI的方式注入到RestClient中
+
+  - String ：自动通过SPI的方式注入到RestClient中
+
+  - byte[] ：自动通过SPI的方式注入到RestClient中
 
 除此之外`RestClient`也支持用户自定义`Encoder`。
 " />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/docs/codec/encoder/" /><meta property="article:section" content="docs" />
 
-<meta property="article:modified_time" content="2022-02-28T19:17:17+08:00" /><meta property="og:site_name" content="ESA Restclient" />
+<meta property="article:modified_time" content="2022-03-07T16:05:09+08:00" /><meta property="og:site_name" content="ESA Restclient" />
 
 <meta itemprop="name" content="Encoder">
 <meta itemprop="description" content="`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的`Encoder`进行`Encode`。其内置了下面这些`Encoder`：
  
-  - Json
-    - jackson(默认)
-    - fastjson
-    - gson
-  - ProtoBuf
-  - File
-  - String
-  - byte[]
+ - Json
+   
+    - jackson ：默认，自动通过SPI的方式注入到RestClient中
+
+    - fastjson ：需要引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中
+
+    - gson ：需要引入`gson`依赖,并将`GsonCodec`添加到RestClient中
+
+  - ProtoBuf ：需要引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中
+
+  - File ：自动通过SPI的方式注入到RestClient中
+
+  - String ：自动通过SPI的方式注入到RestClient中
+
+  - byte[] ：自动通过SPI的方式注入到RestClient中
 
 除此之外`RestClient`也支持用户自定义`Encoder`。
 ">
-<meta itemprop="dateModified" content="2022-02-28T19:17:17+08:00" />
-<meta itemprop="wordCount" content="264">
+<meta itemprop="dateModified" content="2022-03-07T16:05:09+08:00" />
+<meta itemprop="wordCount" content="281">
 <meta itemprop="keywords" content="extension," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Encoder"/>
 <meta name="twitter:description" content="`RestClient`会自动根据用户的 `Headers` 与 `Entity` 等选择合适的`Encoder`进行`Encode`。其内置了下面这些`Encoder`：
  
-  - Json
-    - jackson(默认)
-    - fastjson
-    - gson
-  - ProtoBuf
-  - File
-  - String
-  - byte[]
+ - Json
+   
+    - jackson ：默认，自动通过SPI的方式注入到RestClient中
+
+    - fastjson ：需要引入`fastjson`依赖,并将`FastJsonCodec`添加到RestClient中
+
+    - gson ：需要引入`gson`依赖,并将`GsonCodec`添加到RestClient中
+
+  - ProtoBuf ：需要引入`ProtoBuf`依赖,并将`ProtoBufCodec`添加到RestClient中
+
+  - File ：自动通过SPI的方式注入到RestClient中
+
+  - String ：自动通过SPI的方式注入到RestClient中
+
+  - byte[] ：自动通过SPI的方式注入到RestClient中
 
 除此之外`RestClient`也支持用户自定义`Encoder`。
 "/>
@@ -166,7 +194,7 @@ if (!doNotTrack) {
 </a>
 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 	
-	<a class="dropdown-item" href="/docs">v1.0.0 (Latest)</a>
+	<a class="dropdown-item" href="/docs">v1.0.1 (Latest)</a>
 	
 	<a class="dropdown-item" href="/docs-v0.1.0">v0.1.0</a>
 	
@@ -291,7 +319,12 @@ if (!doNotTrack) {
 <div class="td-toc"><nav id="TableOfContents">
   <ul>
     <li><a href="#使用json-encoder">使用Json Encoder</a></li>
-    <li><a href="#使用protobuf-encoder">使用ProtoBuf Encoder</a></li>
+    <li><a href="#使用protobuf-encoder">使用ProtoBuf Encoder</a>
+      <ul>
+        <li><a href="#step1--引入protobuf依赖">Step1 : 引入ProtoBuf依赖</a></li>
+        <li><a href="#step2--使用-protobuf-encoder-进行编码">Step2 : 使用 ProtoBuf Encoder 进行编码</a></li>
+      </ul>
+    </li>
     <li><a href="#使用file-encoder">使用File Encoder</a></li>
     <li><a href="#使用string-encoder">使用String Encoder</a></li>
     <li><a href="#使用byte-encoder">使用byte[] Encoder</a></li>
@@ -381,17 +414,32 @@ if (!doNotTrack) {
 	<h1>Encoder</h1>
 	<div class="lead"><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 等选择合适的<code>Encoder</code>进行<code>Encode</code>。其内置了下面这些<code>Encoder</code>：</p>
 <ul>
-<li>Json
+<li>
+<p>Json</p>
 <ul>
-<li>jackson(默认)</li>
-<li>fastjson</li>
-<li>gson</li>
+<li>
+<p>jackson ：默认，自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>fastjson ：需要引入<code>fastjson</code>依赖,并将<code>FastJsonCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>gson ：需要引入<code>gson</code>依赖,并将<code>GsonCodec</code>添加到RestClient中</p>
+</li>
 </ul>
 </li>
-<li>ProtoBuf</li>
-<li>File</li>
-<li>String</li>
-<li>byte[]</li>
+<li>
+<p>ProtoBuf ：需要引入<code>ProtoBuf</code>依赖,并将<code>ProtoBufCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>File ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>String ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>byte[] ：自动通过SPI的方式注入到RestClient中</p>
+</li>
 </ul>
 <p>除此之外<code>RestClient</code>也支持用户自定义<code>Encoder</code>。</p>
 </div>
@@ -438,8 +486,18 @@ if (!doNotTrack) {
 </div>
 
 <h2 id="使用protobuf-encoder">使用ProtoBuf Encoder</h2>
-<p>指定<code>contentType</code>为<code>ProtoBufCodec.PROTO_BUF</code>，且<code>Entity</code>类型为<code>com.google.protobuf.Message</code>的子类时，将自动使用<code>ProtoBuf Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
-<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
+<h3 id="step1--引入protobuf依赖">Step1 : 引入ProtoBuf依赖</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#204a87;font-weight:bold">&lt;dependency&gt;</span>
+    <span style="color:#204a87;font-weight:bold">&lt;groupId&gt;</span>com.google.protobuf<span style="color:#204a87;font-weight:bold">&lt;/groupId&gt;</span>
+    <span style="color:#204a87;font-weight:bold">&lt;artifactId&gt;</span>protobuf-java<span style="color:#204a87;font-weight:bold">&lt;/artifactId&gt;</span>
+<span style="color:#204a87;font-weight:bold">&lt;/dependency&gt;</span>
+</code></pre></div><h3 id="step2--使用-protobuf-encoder-进行编码">Step2 : 使用 ProtoBuf Encoder 进行编码</h3>
+<p>将ProtoBufCodec加入到RestClient中，指定<code>contentType</code>为<code>ProtoBufCodec.PROTO_BUF</code>，且<code>Entity</code>类型为<code>com.google.protobuf.Message</code>的子类时，将自动使用<code>ProtoBuf Encoder</code>来对<code>Entity</code>来进行<code>Encode</code>。示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#8f5902;font-style:italic">//将ProtoBufCodec加入到RestClient中
+</span><span style="color:#8f5902;font-style:italic"></span><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">create</span><span style="color:#ce5c00;font-weight:bold">()</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">addEncoder</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#204a87;font-weight:bold">new</span> <span style="color:#000">ProtoBufCodec</span><span style="color:#ce5c00;font-weight:bold">())</span>
+        <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">build</span><span style="color:#ce5c00;font-weight:bold">();</span>
+
 <span style="color:#000">RestResponseBase</span> <span style="color:#000">response</span>  <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;localhost:8080/aaa&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
         <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">contentType</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">ProtoBufCodec</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">PROTO_BUF</span><span style="color:#ce5c00;font-weight:bold">)</span>
         <span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">entity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">message</span><span style="color:#ce5c00;font-weight:bold">)</span>
@@ -653,7 +711,7 @@ if (!doNotTrack) {
 	
 	
 	<div class="text-muted mt-5 pt-3 border-top">
-  Last modified February 28, 2022: <a href="https://github.com/esastack/esa-restclient/commit/77faeb25e905811d7998afe77dd6576963c242f6">delete doc named something_more (77faeb2)</a>
+  Last modified March 7, 2022: <a href="https://github.com/esastack/esa-restclient/commit/8cd3fed2fc314de958c822960a2343fa3654a9cf">optimize the docs of decoder and encoder (8cd3fed)</a>
 </div>
 
 </div>

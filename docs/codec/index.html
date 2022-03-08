@@ -119,7 +119,7 @@ if (!doNotTrack) {
 </a>
 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 	
-	<a class="dropdown-item" href="/docs">v1.0.0 (Latest)</a>
+	<a class="dropdown-item" href="/docs">v1.0.1 (Latest)</a>
 	
 	<a class="dropdown-item" href="/docs-v0.1.0">v0.1.0</a>
 	
@@ -350,17 +350,32 @@ if (!doNotTrack) {
                 </h5>
                 <p><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 等选择合适的<code>Encoder</code>进行<code>Encode</code>。其内置了下面这些<code>Encoder</code>：</p>
 <ul>
-<li>Json
+<li>
+<p>Json</p>
 <ul>
-<li>jackson(默认)</li>
-<li>fastjson</li>
-<li>gson</li>
+<li>
+<p>jackson ：默认，自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>fastjson ：需要引入<code>fastjson</code>依赖,并将<code>FastJsonCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>gson ：需要引入<code>gson</code>依赖,并将<code>GsonCodec</code>添加到RestClient中</p>
+</li>
 </ul>
 </li>
-<li>ProtoBuf</li>
-<li>File</li>
-<li>String</li>
-<li>byte[]</li>
+<li>
+<p>ProtoBuf ：需要引入<code>ProtoBuf</code>依赖,并将<code>ProtoBufCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>File ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>String ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>byte[] ：自动通过SPI的方式注入到RestClient中</p>
+</li>
 </ul>
 <p>除此之外<code>RestClient</code>也支持用户自定义<code>Encoder</code>。</p>
 </p>
@@ -373,16 +388,29 @@ if (!doNotTrack) {
                 </h5>
                 <p><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 期望<code>Entity</code>类型 等选择合适的<code>Decoder</code>进行解码。<code>RestClient</code>内置了下面这些<code>Decoder</code>：</p>
 <ul>
-<li>Json
+<li>
+<p>Json</p>
 <ul>
-<li>jackson(默认)</li>
-<li>fastjson</li>
-<li>gson</li>
+<li>
+<p>jackson ：默认，自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>fastjson ：需要引入<code>fastjson</code>依赖,并将<code>FastJsonCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>gson ：需要引入<code>gson</code>依赖,并将<code>GsonCodec</code>添加到RestClient中</p>
+</li>
 </ul>
 </li>
-<li>ProtoBuf</li>
-<li>String</li>
-<li>byte[]</li>
+<li>
+<p>ProtoBuf ：需要引入<code>ProtoBuf</code>依赖,并将<code>ProtoBufCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>String ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>byte[]  ：自动通过SPI的方式注入到RestClient中</p>
+</li>
 </ul>
 <p>除此之外<code>RestClient</code>也支持用户自定义解码器。</p>
 </p>

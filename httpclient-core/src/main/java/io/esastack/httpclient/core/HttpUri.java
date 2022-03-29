@@ -19,6 +19,7 @@ import esa.commons.Checks;
 import esa.commons.StringUtils;
 import esa.commons.collection.HashMultiValueMap;
 import esa.commons.collection.MultiValueMap;
+import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.httpclient.core.util.MultiValueMapUtils;
 import io.netty.handler.codec.http.QueryStringEncoder;
 
@@ -34,12 +35,12 @@ public final class HttpUri {
     /**
      * The uri specified by {@link HttpClient}, such as {@link HttpClient#get(String)} and so on.
      */
-    private final String rawUri;
+    private String rawUri;
 
     /**
      * The uri created by {@link URI#create(String)}
      */
-    private final URI uri;
+    private URI uri;
     private final MultiValueMap<String, String> params;
 
     public HttpUri(String rawUri) {
@@ -63,6 +64,24 @@ public final class HttpUri {
         this.params = params == null ? new HashMultiValueMap<>() : new HashMultiValueMap<>(params);
     }
 
+    public void uri(String rawUri) {
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("The URI of the request is modified from {} to {}.",
+                    this.rawUri, rawUri);
+        }
+        this.rawUri = rawUri;
+        this.uri = URI.create(rawUri);
+    }
+
+    public void uri(URI uri) {
+        if (LoggerUtils.logger().isDebugEnabled()) {
+            LoggerUtils.logger().debug("The URI of the request is modified from {} to {}.",
+                    this.rawUri, uri.toString());
+        }
+        this.rawUri = uri.toString();
+        this.uri = uri;
+    }
+
     public void addParam(String name, String value) {
         Checks.checkNotNull(name, "name");
         Checks.checkNotNull(value, "value");
@@ -78,8 +97,8 @@ public final class HttpUri {
     /**
      * Gets values of given {@code name} which is unmodifiable.
      *
-     * @param name  name
-     * @return  unmodifiable values, may be null
+     * @param name name
+     * @return unmodifiable values, may be null
      */
     public List<String> params(String name) {
         Checks.checkNotNull(name, "name");
@@ -123,14 +142,14 @@ public final class HttpUri {
 
     /**
      * Obtains relative path of the fully uri and query parameters. eg:
-     *
+     * <p>
      * uri is http://127.0.0.1:8080/abc/def and
      * params are: a=b,c=d,x=y then
-     *
+     * <p>
      * relative result is: "/abc/def?a=b%26c=d%26x=y"
      *
      * @param encode encode
-     * @return  relative uri
+     * @return relative uri
      */
     public String relative(boolean encode) {
         return encode ? encodeRelative() : spliceRelativeDirectly();

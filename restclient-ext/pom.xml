@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>restclient-parent</artifactId>
+        <groupId>io.esastack</groupId>
+        <version>1.0.2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>restclient-ext</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>request-redefine-interceptor</module>
+    </modules>
+
+    <properties>
+        <restclient.version>1.0.2-SNAPSHOT</restclient.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.esastack</groupId>
+            <artifactId>restclient</artifactId>
+            <version>${restclient.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

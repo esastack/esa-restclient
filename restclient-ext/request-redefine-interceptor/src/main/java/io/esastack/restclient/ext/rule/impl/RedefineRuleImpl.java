@@ -11,21 +11,30 @@ public class RedefineRuleImpl implements RedefineRule {
     private final String name;
     private final List<RequestRedefineCondition> conditions;
     private final List<RequestRedefineAction> actions;
+    private final MatchMechanism matchMechanism;
 
     public RedefineRuleImpl(String name,
                             List<RequestRedefineCondition> conditions,
-                            List<RequestRedefineAction> actions) {
+                            List<RequestRedefineAction> actions,
+                            MatchMechanism matchMechanism) {
         Checks.checkNotNull(name, "name");
         Checks.checkNotNull(conditions, "conditions");
         Checks.checkNotNull(actions, "actions");
+        Checks.checkNotNull(matchMechanism, "matchMechanism");
         this.name = name;
         this.conditions = conditions;
         this.actions = actions;
+        this.matchMechanism = matchMechanism;
     }
 
     @Override
     public String name() {
         return name;
+    }
+
+    @Override
+    public MatchMechanism matchMechanism() {
+        return matchMechanism;
     }
 
     @Override

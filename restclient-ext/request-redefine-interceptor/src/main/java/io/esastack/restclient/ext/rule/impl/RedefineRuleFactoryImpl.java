@@ -60,6 +60,6 @@ public class RedefineRuleFactoryImpl implements RedefineRuleFactory {
                 actions.add(actionFactory.create(configItem));
             }
         }
-        return new RedefineRuleImpl(config.name(), conditions, actions);
+        return new RedefineRuleImpl(config.name(), conditions, actions, config.matchMechanism());
     }
 }

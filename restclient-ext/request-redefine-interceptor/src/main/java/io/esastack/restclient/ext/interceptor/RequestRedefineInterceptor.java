@@ -1,13 +1,10 @@
 package io.esastack.restclient.ext.interceptor;
 
-import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.exec.InvocationChain;
 import io.esastack.restclient.exec.RestInterceptor;
 import io.esastack.restclient.ext.RedefineContextImpl;
-import io.esastack.restclient.ext.condition.MatchResult;
-import io.esastack.restclient.ext.condition.RequestRedefineCondition;
 import io.esastack.restclient.ext.rule.RedefineRule;
 import io.esastack.restclient.ext.rule.RedefineRulesManager;
 import io.esastack.restclient.ext.rule.impl.RedefineRulesManagerImpl;
@@ -23,23 +20,7 @@ public class RequestRedefineInterceptor implements RestInterceptor {
     public CompletionStage<RestResponse> proceed(RestRequest request, InvocationChain next) {
         List<RedefineRule> rules = rulesManager.rules();
         for (RedefineRule rule : rules) {
-            boolean match = true;
-            for (RequestRedefineCondition condition : rule.conditions()) {
-                MatchResult result = condition.match(request);
-                if (!result.isMatch()) {
-                    match = false;
-                    if (LoggerUtils.logger().isDebugEnabled()) {
-                        LoggerUtils.logger().debug("Request({}) don,t hit redefineRule({}), cause:{}",
-                                request, rule.name(), result.unMatchReason());
-                    }
-                    break;
-                }
-            }
-            if (match) {
-                if (LoggerUtils.logger().isDebugEnabled()) {
-                    LoggerUtils.logger().debug("Request({}) hit redefineRule({}).",
-                            request, rule.name());
-                }
+            if (rule.matchMechanism().match(rule.name(), request, rule.conditions())) {
                 return new RedefineContextImpl(request, rule.actions(), next).next();
             }
         }

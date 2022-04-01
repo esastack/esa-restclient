@@ -1,12 +1,10 @@
-package io.esastack.restclient.ext.rule;
+package io.esastack.restclient.ext.config;
 
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
 public interface RedefineRuleConfigsSupplier {
-
-    boolean isChanged(Collection<RedefineRuleConfig> before);
 
     Collection<RedefineRuleConfig> configs();
 

@@ -1,8 +1,10 @@
 package io.esastack.restclient.ext.condition;
 
+import io.esastack.restclient.ext.config.ConfigItem;
+
 public interface RequestRedefineConditionFactory {
 
-    String name();
+    String type();
 
-    RequestRedefineCondition create(String config);
+    RequestRedefineCondition create(ConfigItem config);
 }

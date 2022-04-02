@@ -5,17 +5,17 @@ import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.ext.condition.MatchResult;
 import io.esastack.restclient.ext.condition.RequestRedefineCondition;
 
-public class HeaderCondition implements RequestRedefineCondition {
+public class ParamCondition implements RequestRedefineCondition {
 
-    private final HeaderMatcher matcher;
+    private final ParamMatcher matcher;
 
-    public HeaderCondition(HeaderMatcher matcher) {
+    public ParamCondition(ParamMatcher matcher) {
         Checks.checkNotNull(matcher, "matcher");
         this.matcher = matcher;
     }
 
     @Override
     public MatchResult match(RestRequest request) {
-        return matcher.match(request.headers());
+        return matcher.match(request);
     }
 }

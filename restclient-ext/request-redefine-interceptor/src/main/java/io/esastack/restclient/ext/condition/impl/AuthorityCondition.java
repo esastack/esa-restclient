@@ -5,17 +5,17 @@ import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.ext.condition.MatchResult;
 import io.esastack.restclient.ext.condition.RequestRedefineCondition;
 
-public class HostCondition implements RequestRedefineCondition {
+public class AuthorityCondition implements RequestRedefineCondition {
 
     private final StringMatcher matcher;
 
-    public HostCondition(StringMatcher matcher) {
+    public AuthorityCondition(StringMatcher matcher) {
         Checks.checkNotNull(matcher, "matcher");
         this.matcher = matcher;
     }
 
     @Override
     public MatchResult match(RestRequest request) {
-        return matcher.match(request.uri().host());
+        return matcher.match(request.uri().netURI().getAuthority());
     }
 }

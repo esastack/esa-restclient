@@ -18,4 +18,11 @@ public class HeaderCondition implements RequestRedefineCondition {
     public MatchResult match(RestRequest request) {
         return matcher.match(request.headers());
     }
+
+    @Override
+    public String toString() {
+        return "HeaderCondition{" +
+                "matcher=" + matcher +
+                '}';
+    }
 }

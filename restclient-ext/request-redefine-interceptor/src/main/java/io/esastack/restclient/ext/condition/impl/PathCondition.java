@@ -17,4 +17,11 @@ public class PathCondition implements RequestRedefineCondition {
     public MatchResult match(RestRequest request) {
         return matcher.match(request.path());
     }
+
+    @Override
+    public String toString() {
+        return "PathCondition{" +
+                "matcher=" + matcher +
+                '}';
+    }
 }

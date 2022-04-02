@@ -18,4 +18,11 @@ public class AuthorityCondition implements RequestRedefineCondition {
     public MatchResult match(RestRequest request) {
         return matcher.match(request.uri().netURI().getAuthority());
     }
+
+    @Override
+    public String toString() {
+        return "AuthorityCondition{" +
+                "matcher=" + matcher +
+                '}';
+    }
 }

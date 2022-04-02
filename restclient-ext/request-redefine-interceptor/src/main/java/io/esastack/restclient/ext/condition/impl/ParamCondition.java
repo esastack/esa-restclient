@@ -18,4 +18,11 @@ public class ParamCondition implements RequestRedefineCondition {
     public MatchResult match(RestRequest request) {
         return matcher.match(request);
     }
+
+    @Override
+    public String toString() {
+        return "ParamCondition{" +
+                "matcher=" + matcher +
+                '}';
+    }
 }

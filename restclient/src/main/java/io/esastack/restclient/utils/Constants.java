@@ -25,7 +25,7 @@ public final class Constants {
         public static final int GSON = -2048;
         public static final int JACKSON = 0;
         public static final int NORMAL = 0;
-        public static final int BYTE_TO_BYTE_CODEC = 2048;
-        public static final int STRING_CODEC = 2048;
+        public static final int BYTE_TO_BYTE_CODEC = -4096;
+        public static final int STRING_CODEC = -4096;
     }
 }

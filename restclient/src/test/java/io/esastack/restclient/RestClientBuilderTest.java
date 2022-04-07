@@ -16,25 +16,10 @@
 package io.esastack.restclient;
 
 import io.esastack.commons.net.http.HttpVersion;
-import io.esastack.httpclient.core.config.Decompression;
-import io.esastack.httpclient.core.config.Http1Options;
-import io.esastack.httpclient.core.config.Http2Options;
-import io.esastack.httpclient.core.config.NetOptions;
-import io.esastack.httpclient.core.config.RetryOptions;
-import io.esastack.httpclient.core.config.SslOptions;
+import io.esastack.httpclient.core.config.*;
 import io.esastack.httpclient.core.resolver.HostResolver;
 import io.esastack.httpclient.core.spi.ChannelPoolOptionsProvider;
-import io.esastack.restclient.codec.ByteDecoder;
-import io.esastack.restclient.codec.ByteEncoder;
-import io.esastack.restclient.codec.DecodeAdvice;
-import io.esastack.restclient.codec.DecodeAdviceContext;
-import io.esastack.restclient.codec.DecodeContext;
-import io.esastack.restclient.codec.Decoder;
-import io.esastack.restclient.codec.EncodeAdvice;
-import io.esastack.restclient.codec.EncodeAdviceContext;
-import io.esastack.restclient.codec.EncodeContext;
-import io.esastack.restclient.codec.Encoder;
-import io.esastack.restclient.codec.RequestContent;
+import io.esastack.restclient.codec.*;
 import io.esastack.restclient.exec.InvocationChain;
 import io.esastack.restclient.exec.RestInterceptor;
 import org.junit.jupiter.api.Test;
@@ -193,7 +178,7 @@ class RestClientBuilderTest {
         then(orderedEncoders.size()).isEqualTo(3);
         //unmodifiableEncoders().size() = encoders added(3) + encoders from spi(6)
         then(builder.build().clientOptions().unmodifiableEncoders().size()).isEqualTo(9);
-        then(builder.build().clientOptions().unmodifiableEncoders().get(0)).isEqualTo(encoder2);
+        then(builder.build().clientOptions().unmodifiableEncoders().get(2)).isEqualTo(encoder2);
     }
 
     @Test
@@ -210,7 +195,7 @@ class RestClientBuilderTest {
         then(orderedDecoders.size()).isEqualTo(3);
         //unmodifiableDecoders().size() = decoders added(3) + decoders from spi(3)
         then(builder.build().clientOptions().unmodifiableDecoders().size()).isEqualTo(6);
-        then(builder.build().clientOptions().unmodifiableDecoders().get(0)).isEqualTo(decoder2);
+        then(builder.build().clientOptions().unmodifiableDecoders().get(2)).isEqualTo(decoder2);
     }
 
     @Test

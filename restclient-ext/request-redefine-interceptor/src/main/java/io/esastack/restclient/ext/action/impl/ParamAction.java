@@ -29,11 +29,11 @@ public class ParamAction implements RequestRedefineAction {
     private final Map<String, String> paramsToBeAdd;
     private final List<String> paramsToBeRemove;
 
-    public ParamAction(Map<String, String> paramsToBeAdd, List<String> paramsToBeRemove) {
+    public ParamAction(ParamActionConfig config) {
+        paramsToBeAdd = config.getParamsToBeAdd();
+        paramsToBeRemove = config.getParamsToBeRemove();
         Checks.checkNotNull(paramsToBeAdd, "paramsToBeAdd");
         Checks.checkNotNull(paramsToBeRemove, "paramsToBeRemove");
-        this.paramsToBeAdd = paramsToBeAdd;
-        this.paramsToBeRemove = paramsToBeRemove;
     }
 
     @Override

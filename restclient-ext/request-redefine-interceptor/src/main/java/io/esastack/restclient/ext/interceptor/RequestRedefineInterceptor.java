@@ -22,7 +22,7 @@ import io.esastack.restclient.exec.InvocationChain;
 import io.esastack.restclient.exec.RestInterceptor;
 import io.esastack.restclient.ext.RedefineContextImpl;
 import io.esastack.restclient.ext.rule.RedefineRule;
-import io.esastack.restclient.ext.rule.RedefineRulesSource;
+import io.esastack.restclient.ext.spi.RedefineRulesSource;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;

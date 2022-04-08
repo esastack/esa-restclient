@@ -29,11 +29,11 @@ public class HeaderAction implements RequestRedefineAction {
     private final Map<String, String> headersToBeAdd;
     private final List<String> headersToBeRemove;
 
-    public HeaderAction(Map<String, String> headersToBeAdd, List<String> headersToBeRemove) {
+    public HeaderAction(HeaderActionConfig config) {
+        headersToBeAdd = config.getHeadersToBeAdd();
+        headersToBeRemove = config.getHeadersToBeRemove();
         Checks.checkNotNull(headersToBeAdd, "headersToBeAdd");
         Checks.checkNotNull(headersToBeRemove, "headersToBeRemove");
-        this.headersToBeAdd = headersToBeAdd;
-        this.headersToBeRemove = headersToBeRemove;
     }
 
     @Override

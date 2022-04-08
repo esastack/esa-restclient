@@ -28,13 +28,12 @@ public class RewriteAction implements RequestRedefineAction {
     private final String authority;
     private final String path;
 
-    public RewriteAction(String authority, String path) {
+    public RewriteAction(RewriteActionConfig config) {
+        authority = config.getAuthority();
+        path = config.getPath();
         if (authority == null && path == null) {
             throw new IllegalArgumentException("Both authority and path are null!");
         }
-
-        this.authority = authority;
-        this.path = path;
     }
 
     @Override

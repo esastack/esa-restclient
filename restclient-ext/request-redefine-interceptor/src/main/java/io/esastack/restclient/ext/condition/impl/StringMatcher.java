@@ -22,9 +22,6 @@ public class StringMatcher {
     private String prefix;
     private String regex;
 
-    public StringMatcher() {
-    }
-
     public MatchResult match(String actual) {
         if (actual == null) {
             actual = "";

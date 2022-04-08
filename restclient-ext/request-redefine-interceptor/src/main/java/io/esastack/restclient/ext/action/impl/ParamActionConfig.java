@@ -13,11 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.ext.rule;
+package io.esastack.restclient.ext.action.impl;
 
 import java.util.List;
+import java.util.Map;
 
-public interface RedefineRulesSource {
+public class ParamActionConfig {
+    private Map<String, String> paramsToBeAdd;
+    private List<String> paramsToBeRemove;
 
-    List<RedefineRule> rules();
+    public Map<String, String> getParamsToBeAdd() {
+        return paramsToBeAdd;
+    }
+
+    public void setParamsToBeAdd(Map<String, String> paramsToBeAdd) {
+        this.paramsToBeAdd = paramsToBeAdd;
+    }
+
+    public List<String> getParamsToBeRemove() {
+        return paramsToBeRemove;
+    }
+
+    public void setParamsToBeRemove(List<String> paramsToBeRemove) {
+        this.paramsToBeRemove = paramsToBeRemove;
+    }
 }

@@ -19,22 +19,22 @@ import java.util.List;
 import java.util.Map;
 
 public class ParamActionConfig {
-    private Map<String, String> paramsToBeAdd;
-    private List<String> paramsToBeRemove;
+    private Map<String, String> add;
+    private List<String> remove;
 
-    public Map<String, String> getParamsToBeAdd() {
-        return paramsToBeAdd;
+    public Map<String, String> getAdd() {
+        return add;
     }
 
-    public void setParamsToBeAdd(Map<String, String> paramsToBeAdd) {
-        this.paramsToBeAdd = paramsToBeAdd;
+    public void setAdd(Map<String, String> add) {
+        this.add = add;
     }
 
-    public List<String> getParamsToBeRemove() {
-        return paramsToBeRemove;
+    public List<String> getRemove() {
+        return remove;
     }
 
-    public void setParamsToBeRemove(List<String> paramsToBeRemove) {
-        this.paramsToBeRemove = paramsToBeRemove;
+    public void setRemove(List<String> remove) {
+        this.remove = remove;
     }
 }

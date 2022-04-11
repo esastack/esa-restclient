@@ -30,8 +30,8 @@ public class HeaderAction implements RequestRedefineAction {
     private final List<String> headersToBeRemove;
 
     public HeaderAction(HeaderActionConfig config) {
-        headersToBeAdd = config.getHeadersToBeAdd();
-        headersToBeRemove = config.getHeadersToBeRemove();
+        headersToBeAdd = config.getAdd();
+        headersToBeRemove = config.getRemove();
         Checks.checkNotNull(headersToBeAdd, "headersToBeAdd");
         Checks.checkNotNull(headersToBeRemove, "headersToBeRemove");
     }

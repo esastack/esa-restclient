@@ -19,22 +19,22 @@ import java.util.List;
 import java.util.Map;
 
 public class HeaderActionConfig {
-    private Map<String, String> headersToBeAdd;
-    private List<String> headersToBeRemove;
+    private Map<String, String> add;
+    private List<String> remove;
 
-    public Map<String, String> getHeadersToBeAdd() {
-        return headersToBeAdd;
+    public Map<String, String> getAdd() {
+        return add;
     }
 
-    public void setHeadersToBeAdd(Map<String, String> headersToBeAdd) {
-        this.headersToBeAdd = headersToBeAdd;
+    public void setAdd(Map<String, String> add) {
+        this.add = add;
     }
 
-    public List<String> getHeadersToBeRemove() {
-        return headersToBeRemove;
+    public List<String> getRemove() {
+        return remove;
     }
 
-    public void setHeadersToBeRemove(List<String> headersToBeRemove) {
-        this.headersToBeRemove = headersToBeRemove;
+    public void setRemove(List<String> remove) {
+        this.remove = remove;
     }
 }

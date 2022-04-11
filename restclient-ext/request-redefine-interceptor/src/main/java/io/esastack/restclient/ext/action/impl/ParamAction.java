@@ -30,8 +30,8 @@ public class ParamAction implements RequestRedefineAction {
     private final List<String> paramsToBeRemove;
 
     public ParamAction(ParamActionConfig config) {
-        paramsToBeAdd = config.getParamsToBeAdd();
-        paramsToBeRemove = config.getParamsToBeRemove();
+        paramsToBeAdd = config.getAdd();
+        paramsToBeRemove = config.getRemove();
         Checks.checkNotNull(paramsToBeAdd, "paramsToBeAdd");
         Checks.checkNotNull(paramsToBeRemove, "paramsToBeRemove");
     }

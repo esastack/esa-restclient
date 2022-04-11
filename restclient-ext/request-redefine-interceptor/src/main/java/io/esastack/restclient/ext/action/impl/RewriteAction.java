@@ -51,13 +51,14 @@ public class RewriteAction implements RequestRedefineAction {
             if (LoggerUtils.logger().isDebugEnabled()) {
                 LoggerUtils.logger()
                         .debug("Do rewrite action in request redefine rule!" +
-                                (authority != null ? "rewrite authority from "
+                                (authority != null
+                                        ? "rewrite authority from "
                                         + origin.getRawAuthority()
                                         + " to " + authority + "." : "") +
-                                (path != null ?
-                                        "rewrite path from "
-                                                + origin.getRawPath()
-                                                + " to " + path + "." : ""));
+                                (path != null
+                                        ? "rewrite path from "
+                                        + origin.getRawPath()
+                                        + " to " + path + "." : ""));
             }
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);

@@ -37,4 +37,12 @@ public class ParamActionConfig {
     public void setRemove(List<String> remove) {
         this.remove = remove;
     }
+
+    @Override
+    public String toString() {
+        return "ParamActionConfig{" +
+                "add=" + add +
+                ", remove=" + remove +
+                '}';
+    }
 }

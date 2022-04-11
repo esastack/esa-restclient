@@ -37,4 +37,12 @@ public class HeaderActionConfig {
     public void setRemove(List<String> remove) {
         this.remove = remove;
     }
+
+    @Override
+    public String toString() {
+        return "HeaderActionConfig{" +
+                "add=" + add +
+                ", remove=" + remove +
+                '}';
+    }
 }

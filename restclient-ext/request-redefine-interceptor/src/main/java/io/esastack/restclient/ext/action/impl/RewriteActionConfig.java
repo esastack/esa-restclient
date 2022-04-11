@@ -34,4 +34,12 @@ public class RewriteActionConfig {
     public void setPath(String path) {
         this.path = path;
     }
+
+    @Override
+    public String toString() {
+        return "RewriteActionConfig{" +
+                "authority='" + authority + '\'' +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }

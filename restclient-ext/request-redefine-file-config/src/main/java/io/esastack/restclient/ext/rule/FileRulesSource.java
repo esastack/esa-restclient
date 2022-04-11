@@ -84,7 +84,8 @@ public class FileRulesSource implements RedefineRulesSource {
         long currentModified = configFile.lastModified();
         if (currentModified != lastModified) {
             if (LoggerUtils.logger().isDebugEnabled()) {
-                LoggerUtils.logger().debug("The " + configFile.getName() + " has updated!");
+                LoggerUtils.logger()
+                        .debug("The request redefine rule file(" + configFile.getName() + ") had updated!");
             }
             loadRules();
             this.lastModified = currentModified;
@@ -96,9 +97,10 @@ public class FileRulesSource implements RedefineRulesSource {
             RulesConfig config = yaml.load(new FileInputStream(configFile));
             if (config != null) {
                 this.rules = config.build();
+                LoggerUtils.logger().info("Load request redefine rules success!The latest config is {}", config);
             }
         } catch (Throwable e) {
-            LoggerUtils.logger().error("LoadRules error!", e);
+            LoggerUtils.logger().error("Load request redefine rules error!", e);
         }
     }
 

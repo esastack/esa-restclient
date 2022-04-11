@@ -15,6 +15,7 @@
  */
 package io.esastack.restclient.ext.action.impl;
 
+import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.ext.RedefineContext;
 import io.esastack.restclient.ext.action.RequestRedefineAction;
@@ -47,6 +48,17 @@ public class RewriteAction implements RequestRedefineAction {
                     origin.getRawQuery(),
                     origin.getRawFragment()
             ));
+            if (LoggerUtils.logger().isDebugEnabled()) {
+                LoggerUtils.logger()
+                        .debug("Do rewrite action in request redefine rule!" +
+                                (authority != null ? "rewrite authority from "
+                                        + origin.getRawAuthority()
+                                        + " to " + authority + "." : "") +
+                                (path != null ?
+                                        "rewrite path from "
+                                                + origin.getRawPath()
+                                                + " to " + path + "." : ""));
+            }
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }

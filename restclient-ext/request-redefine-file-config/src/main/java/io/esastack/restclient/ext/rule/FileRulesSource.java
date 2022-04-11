@@ -56,7 +56,7 @@ public class FileRulesSource implements RedefineRulesSource {
         String configDir = configDir();
         String configName = configName();
         this.configFile = getConfig(configDir, configName);
-        loadRules();
+        refreshRulesIfNeeded();
         initRuleRefreshTask();
     }
 

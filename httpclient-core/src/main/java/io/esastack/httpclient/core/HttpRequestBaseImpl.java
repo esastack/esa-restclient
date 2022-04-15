@@ -59,11 +59,6 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     }
 
     @Override
-    public Context context() {
-        return ctx;
-    }
-
-    @Override
     public HttpRequestBase enableUriEncode() {
         this.useUriEncode = true;
         return self();
@@ -220,6 +215,11 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     @Override
     public boolean uriEncode() {
         return useUriEncode;
+    }
+
+    @Override
+    public Context context() {
+        return ctx;
     }
 
     @Override

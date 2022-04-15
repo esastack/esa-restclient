@@ -53,11 +53,6 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     }
 
     @Override
-    public Context context() {
-        return target.context();
-    }
-
-    @Override
     public HttpMethod method() {
         return target.method();
     }
@@ -310,6 +305,11 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     @Override
     public Decoder decoder() {
         return decoder;
+    }
+
+    @Override
+    public Context context() {
+        return target.context();
     }
 
     private ExecutableRestRequest self() {

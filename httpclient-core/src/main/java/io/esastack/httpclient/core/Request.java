@@ -49,8 +49,6 @@ public interface Request {
 
     Request removeHeader(CharSequence name);
 
-    Context context();
-
     /**
      * Whether allow uri encode or not
      *
@@ -64,4 +62,6 @@ public interface Request {
      * @return readTimeout
      */
     long readTimeout();
+
+    Context context();
 }

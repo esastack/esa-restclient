@@ -166,6 +166,11 @@ public class DelegatingRequest implements HttpRequest {
     }
 
     @Override
+    public Context context() {
+        return underlying.context();
+    }
+
+    @Override
     public String toString() {
         return underlying.toString();
     }

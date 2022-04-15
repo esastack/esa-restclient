@@ -49,6 +49,8 @@ public interface Request {
 
     Request removeHeader(CharSequence name);
 
+    Context context();
+
     /**
      * Whether allow uri encode or not
      *

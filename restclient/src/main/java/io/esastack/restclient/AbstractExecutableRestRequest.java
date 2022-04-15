@@ -17,16 +17,8 @@ package io.esastack.restclient;
 
 import esa.commons.Checks;
 import esa.commons.StringUtils;
-import io.esastack.commons.net.http.Cookie;
-import io.esastack.commons.net.http.HttpHeaderNames;
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.commons.net.http.HttpMethod;
-import io.esastack.commons.net.http.MediaType;
-import io.esastack.commons.net.http.MediaTypeUtil;
-import io.esastack.httpclient.core.CompositeRequest;
-import io.esastack.httpclient.core.HttpResponse;
-import io.esastack.httpclient.core.HttpUri;
-import io.esastack.httpclient.core.MultipartBody;
+import io.esastack.commons.net.http.*;
+import io.esastack.httpclient.core.*;
 import io.esastack.httpclient.core.util.Futures;
 import io.esastack.restclient.codec.Decoder;
 import io.esastack.restclient.codec.Encoder;
@@ -58,6 +50,11 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
         this.target = request;
         this.clientOptions = clientOptions;
         this.requestExecutor = requestExecutor;
+    }
+
+    @Override
+    public Context context() {
+        return target.context();
     }
 
     @Override

@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.ext.spi;
-
-import io.esastack.restclient.ext.rule.RedefineRule;
+package io.esastack.restclient.ext.rule;
 
 import java.util.List;
 
-public interface RedefineRulesSource {
+public interface RedefineRuleSource {
 
     List<RedefineRule> rules();
 }

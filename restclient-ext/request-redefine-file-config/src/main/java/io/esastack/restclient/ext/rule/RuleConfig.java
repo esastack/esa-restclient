@@ -51,7 +51,7 @@ public class RuleConfig {
         } else if ("not".equalsIgnoreCase(match)) {
             matchMechanism = RedefineRule.MatchMechanism.NOT;
         } else {
-            throw new IllegalStateException("Ill legal match:(" + match + ")");
+            throw new IllegalStateException("Illegal match:(" + match + ")");
         }
 
         return new RedefineRuleImpl(name,
@@ -62,10 +62,10 @@ public class RuleConfig {
 
     private static final class RedefineRuleImpl implements RedefineRule {
 
-        private String name;
-        private MatchMechanism match;
-        private List<RequestRedefineCondition> conditions;
-        private List<RequestRedefineAction> actions;
+        private final String name;
+        private final MatchMechanism match;
+        private final List<RequestRedefineCondition> conditions;
+        private final List<RequestRedefineAction> actions;
 
         public RedefineRuleImpl(String name,
                                 MatchMechanism match,

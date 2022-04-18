@@ -15,7 +15,6 @@
  */
 package io.esastack.restclient.ext.action.impl;
 
-import esa.commons.Checks;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.ext.RedefineContext;
@@ -33,14 +32,16 @@ public class HeaderAction implements RequestRedefineAction {
     public HeaderAction(HeaderActionConfig config) {
         headersToBeAdd = config.getAdd();
         headersToBeRemove = config.getRemove();
-        Checks.checkNotNull(headersToBeAdd, "headersToBeAdd");
-        Checks.checkNotNull(headersToBeRemove, "headersToBeRemove");
     }
 
     @Override
     public CompletionStage<RestResponse> doAction(RedefineContext context) {
-        context.request().addHeaders(headersToBeAdd);
-        headersToBeRemove.forEach(name -> context.request().removeHeader(name));
+        if (headersToBeAdd != null) {
+            context.request().addHeaders(headersToBeAdd);
+        }
+        if (headersToBeRemove != null) {
+            headersToBeRemove.forEach(name -> context.request().removeHeader(name));
+        }
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger()
                     .debug("Do action of header in request redefine rule!" +

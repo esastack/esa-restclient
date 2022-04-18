@@ -49,7 +49,8 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
                     .getByGroup(options.name(), true);
             int ruleSourceFactoriesSize = ruleSourceFactories.size();
             if (ruleSourceFactoriesSize == 1) {
-                this.rulesSource = Checks.checkNotNull(ruleSourceFactories.get(0).create(options), "rulesSource");
+                this.rulesSource = Checks.checkNotNull(ruleSourceFactories.get(0).create(options),
+                        "rulesSource");
             } else {
                 throw new IllegalStateException("Unexpected size of ruleSourceFactories : " + ruleSourceFactoriesSize
                         + ", expected size is 1. RuleSourceFactories: " + ruleSourceFactories);

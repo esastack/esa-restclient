@@ -15,7 +15,6 @@
  */
 package io.esastack.restclient.ext.action.impl;
 
-import esa.commons.Checks;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.ext.RedefineContext;
@@ -33,14 +32,16 @@ public class ParamAction implements RequestRedefineAction {
     public ParamAction(ParamActionConfig config) {
         paramsToBeAdd = config.getAdd();
         paramsToBeRemove = config.getRemove();
-        Checks.checkNotNull(paramsToBeAdd, "paramsToBeAdd");
-        Checks.checkNotNull(paramsToBeRemove, "paramsToBeRemove");
     }
 
     @Override
     public CompletionStage<RestResponse> doAction(RedefineContext context) {
-        context.request().addParams(paramsToBeAdd);
-        paramsToBeRemove.forEach(name -> context.request().uri().params().remove(name));
+        if (paramsToBeAdd != null) {
+            context.request().addParams(paramsToBeAdd);
+        }
+        if (paramsToBeRemove != null) {
+            paramsToBeRemove.forEach(name -> context.request().uri().params().remove(name));
+        }
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger()
                     .debug("Do action of param in request redefine rule!Add params({}) and remove params({}).",

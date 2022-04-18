@@ -18,8 +18,10 @@ package io.esastack.restclient.ext.condition.impl;
 import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.restclient.ext.condition.MatchResult;
 
+import java.util.Arrays;
+
 public class HeaderMatcher {
-    private String contains;
+    private String[] contains;
     private String name;
     private StringMatcher value;
 
@@ -28,25 +30,29 @@ public class HeaderMatcher {
 
     public MatchResult match(HttpHeaders headers) {
         if (contains != null) {
-            if (headers.contains(contains)) {
-                return MatchResult.success();
+            for (String contain : contains) {
+                if (!headers.contains(contain)) {
+                    return MatchResult.fail("Headers don,t contain " + contain);
+                }
             }
+            return MatchResult.success();
         }
         if (name != null) {
-            String headerValue = headers.get(name);
-            if (headerValue != null) {
-                return value.match(headerValue);
-            }
+            return value.match(headers.get(name));
         }
 
         return MatchResult.fail("Header don't meet expectations("
-                + "contains='" + contains + '\'' +
+                + "contains='" + Arrays.toString(contains) + '\'' +
                 ", name='" + name + '\'' +
                 ", value='" + value + '\'' + ")!");
     }
 
     public void setContains(String contains) {
-        this.contains = contains;
+        if (contains == null) {
+            this.contains = null;
+        } else {
+            this.contains = contains.split(",");
+        }
     }
 
     public void setName(String name) {
@@ -60,7 +66,7 @@ public class HeaderMatcher {
     @Override
     public String toString() {
         return "HeaderMatcher{" +
-                "contains='" + contains + '\'' +
+                "contains='" + Arrays.toString(contains) + '\'' +
                 ", name='" + name + '\'' +
                 ", value=" + value +
                 '}';

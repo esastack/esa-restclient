@@ -18,8 +18,10 @@ package io.esastack.restclient.ext.condition.impl;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.ext.condition.MatchResult;
 
+import java.util.Arrays;
+
 public class ParamMatcher {
-    private String contains;
+    private String[] contains;
     private String name;
     private StringMatcher value;
 
@@ -28,25 +30,29 @@ public class ParamMatcher {
 
     public MatchResult match(RestRequest request) {
         if (contains != null) {
-            if (request.paramNames().contains(contains)) {
-                return MatchResult.success();
+            for (String contain : contains) {
+                if (!request.paramNames().contains(contain)) {
+                    return MatchResult.fail("Params don,t contain " + contain);
+                }
             }
+            return MatchResult.success();
         }
         if (name != null) {
-            String paramValue = request.getParam(name);
-            if (paramValue != null) {
-                return value.match(paramValue);
-            }
+            return value.match(request.getParam(name));
         }
 
         return MatchResult.fail("Param don't meet expectations("
-                + "contains='" + contains + '\'' +
+                + "contains='" + Arrays.toString(contains) + '\'' +
                 ", name='" + name + '\'' +
                 ", value='" + value + '\'' + ")!");
     }
 
     public void setContains(String contains) {
-        this.contains = contains;
+        if (contains == null) {
+            this.contains = null;
+        } else {
+            this.contains = contains.split(",");
+        }
     }
 
     public void setName(String name) {
@@ -60,7 +66,7 @@ public class ParamMatcher {
     @Override
     public String toString() {
         return "ParamMatcher{" +
-                "contains='" + contains + '\'' +
+                "contains='" + Arrays.toString(contains) + '\'' +
                 ", name='" + name + '\'' +
                 ", value=" + value +
                 '}';

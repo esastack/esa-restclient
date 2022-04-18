@@ -41,6 +41,7 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
 
     private static final class RedefineInterceptor implements RestInterceptor {
 
+        private static final int ORDER = 0;
         private final RedefineRuleSource rulesSource;
 
         private RedefineInterceptor(RestClientOptions options) {
@@ -66,6 +67,11 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
                 }
             }
             return next.proceed(request);
+        }
+
+        @Override
+        public int getOrder() {
+            return ORDER;
         }
     }
 

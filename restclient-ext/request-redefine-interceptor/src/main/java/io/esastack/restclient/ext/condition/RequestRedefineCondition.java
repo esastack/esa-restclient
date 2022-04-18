@@ -19,5 +19,10 @@ import io.esastack.restclient.RestRequest;
 
 public interface RequestRedefineCondition {
 
+    /**
+     * @param request RestRequest
+     * @return MatchResult include whether the request matches. If not, include the reason
+     * for the mismatch.
+     */
     MatchResult match(RestRequest request);
 }

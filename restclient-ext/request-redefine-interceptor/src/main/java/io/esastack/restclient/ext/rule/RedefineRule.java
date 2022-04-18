@@ -28,6 +28,11 @@ public interface RedefineRule {
 
     String name();
 
+    /**
+     * Determine the matching mechanism of conditions.
+     *
+     * @return MatchMechanism
+     */
     MatchMechanism matchMechanism();
 
     List<RequestRedefineCondition> conditions();

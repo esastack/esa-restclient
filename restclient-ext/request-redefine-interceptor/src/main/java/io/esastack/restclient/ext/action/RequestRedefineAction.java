@@ -22,5 +22,11 @@ import java.util.concurrent.CompletionStage;
 
 public interface RequestRedefineAction {
 
+    /**
+     * Do action when request match RedefineRule.
+     *
+     * @param context RedefineContext
+     * @return CompletionStage<RestResponse>
+     */
     CompletionStage<RestResponse> doAction(RedefineContext context);
 }

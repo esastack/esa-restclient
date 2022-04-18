@@ -22,5 +22,13 @@ import io.esastack.restclient.ext.rule.RedefineRuleSource;
 @SPI
 public interface RuleSourceFactory {
 
+    /**
+     * Create RedefineRuleSource by RestClientOptions. Different RedefineRuleSource can be
+     * provided according to different RestClientOptions to provide users with more flexible
+     * configuration.
+     *
+     * @param options RestClientOptions
+     * @return RedefineRuleSource
+     */
     RedefineRuleSource create(RestClientOptions options);
 }

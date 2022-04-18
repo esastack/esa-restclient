@@ -23,5 +23,6 @@ import java.util.Collection;
 
 @SPI
 public interface RestInterceptorFactory {
+
     Collection<RestInterceptor> interceptors(RestClientOptions clientOptions);
 }

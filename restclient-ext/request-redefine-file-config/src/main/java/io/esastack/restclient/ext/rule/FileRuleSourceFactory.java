@@ -47,7 +47,7 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
 
         private volatile long lastModified = 0L;
         private final File configFile;
-        private final Yaml yaml = new Yaml(new Constructor(RulesConfig.class));
+        private final Yaml yaml = new Yaml(new Constructor(RulesProvider.class));
         private volatile List<RedefineRule> rules;
 
         private final ScheduledThreadPoolExecutor scheduledRuleRefresher =
@@ -101,10 +101,10 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
 
         private void loadRules() {
             try {
-                RulesConfig config = yaml.load(new FileInputStream(configFile));
-                if (config != null) {
-                    this.rules = config.build();
-                    LoggerUtils.logger().info("Load request redefine rules success!The latest config is {}", config);
+                RulesProvider rulesProvider = yaml.load(new FileInputStream(configFile));
+                if (rulesProvider != null) {
+                    this.rules = rulesProvider.get();
+                    LoggerUtils.logger().info("Load request redefine rules success!The latest rules is {}", rulesProvider);
                 }
             } catch (Throwable e) {
                 LoggerUtils.logger().error("Load request redefine rules error!", e);

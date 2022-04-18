@@ -54,7 +54,6 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
                 throw new IllegalStateException("Unexpected size of ruleSourceFactories : " + ruleSourceFactoriesSize
                         + ", expected size is 1. RuleSourceFactories: " + ruleSourceFactories);
             }
-
         }
 
         @Override

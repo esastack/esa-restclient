@@ -19,5 +19,11 @@ import java.util.List;
 
 public interface RedefineRuleSource {
 
+    /**
+     * It is used to obtain redefineRules. User can specify whether the rules acquisition is
+     * dynamic or static.
+     *
+     * @return rules
+     */
     List<RedefineRule> rules();
 }

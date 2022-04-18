@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RulesConfig {
+public class RulesProvider {
     private boolean close;
     private List<RuleConfig> rules;
 
@@ -33,7 +33,7 @@ public class RulesConfig {
         this.rules = rules;
     }
 
-    public List<RedefineRule> build() {
+    public List<RedefineRule> get() {
         if (close || rules == null || rules.isEmpty()) {
             return Collections.emptyList();
         }

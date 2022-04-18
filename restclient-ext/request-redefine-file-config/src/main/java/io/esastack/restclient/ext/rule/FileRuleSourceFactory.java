@@ -36,7 +36,7 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
         return new FileRulesSource();
     }
 
-    private final static class FileRulesSource implements RedefineRuleSource {
+    private static final class FileRulesSource implements RedefineRuleSource {
 
         private static final long AUTO_REFRESH_TIME_MS = 500L;
         private static final String DEFAULT_CONFIG_DIR = "./conf";
@@ -104,7 +104,8 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
                 RulesProvider rulesProvider = yaml.load(new FileInputStream(configFile));
                 if (rulesProvider != null) {
                     this.rules = rulesProvider.get();
-                    LoggerUtils.logger().info("Load request redefine rules success!The latest rules is {}", rulesProvider);
+                    LoggerUtils.logger().info("Load request redefine rules success!The latest rules is {}",
+                            rulesProvider);
                 }
             } catch (Throwable e) {
                 LoggerUtils.logger().error("Load request redefine rules error!", e);
@@ -120,7 +121,8 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
                 }
 
                 if (file.createNewFile()) {
-                    LoggerUtils.logger().info("The file: {}  doesn't exist, a new one has been created", file.getName());
+                    LoggerUtils.logger().info("The file: {}  doesn't exist, a new one has been created",
+                            file.getName());
                     return file;
                 }
                 throw new IllegalStateException("Failed to create file: " + file.getName());

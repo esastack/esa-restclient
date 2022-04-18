@@ -26,7 +26,7 @@ public interface RequestRedefineAction {
      * Do action when request match RedefineRule.
      *
      * @param context RedefineContext
-     * @return CompletionStage<RestResponse>
+     * @return RestResponse
      */
     CompletionStage<RestResponse> doAction(RedefineContext context);
 }

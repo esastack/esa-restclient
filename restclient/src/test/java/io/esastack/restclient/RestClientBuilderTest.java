@@ -193,7 +193,7 @@ class RestClientBuilderTest {
         then(orderedEncoders.size()).isEqualTo(3);
         //unmodifiableEncoders().size() = encoders added(3) + encoders from spi(6)
         then(builder.build().clientOptions().unmodifiableEncoders().size()).isEqualTo(9);
-        then(builder.build().clientOptions().unmodifiableEncoders().get(0)).isEqualTo(encoder2);
+        then(builder.build().clientOptions().unmodifiableEncoders().get(2)).isEqualTo(encoder2);
     }
 
     @Test
@@ -210,7 +210,7 @@ class RestClientBuilderTest {
         then(orderedDecoders.size()).isEqualTo(3);
         //unmodifiableDecoders().size() = decoders added(3) + decoders from spi(3)
         then(builder.build().clientOptions().unmodifiableDecoders().size()).isEqualTo(6);
-        then(builder.build().clientOptions().unmodifiableDecoders().get(0)).isEqualTo(decoder2);
+        then(builder.build().clientOptions().unmodifiableDecoders().get(2)).isEqualTo(decoder2);
     }
 
     @Test

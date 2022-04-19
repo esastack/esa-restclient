@@ -24,6 +24,7 @@ import io.esastack.commons.net.http.HttpMethod;
 import io.esastack.commons.net.http.MediaType;
 import io.esastack.commons.net.http.MediaTypeUtil;
 import io.esastack.httpclient.core.CompositeRequest;
+import io.esastack.httpclient.core.Context;
 import io.esastack.httpclient.core.HttpResponse;
 import io.esastack.httpclient.core.HttpUri;
 import io.esastack.httpclient.core.MultipartBody;
@@ -313,6 +314,11 @@ abstract class AbstractExecutableRestRequest implements ExecutableRestRequest {
     @Override
     public Decoder decoder() {
         return decoder;
+    }
+
+    @Override
+    public Context context() {
+        return target.context();
     }
 
     private ExecutableRestRequest self() {

@@ -3,8 +3,8 @@ package io.esastack.httpclient.core;
 import esa.commons.collection.MultiValueMap;
 
 import java.io.File;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public interface MultipartConfigure {
 

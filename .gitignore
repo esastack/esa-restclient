@@ -42,4 +42,5 @@ dependency-reduced-pom.xml
 site/public/
 site/resources/
 site/node_modules/
+site/themes/
 .hugo_build.lock

@@ -108,6 +108,7 @@
     <modules>
         <module>httpclient-core</module>
         <module>restclient</module>
+        <module>restclient-ext</module>
     </modules>
 
     <properties>

@@ -62,4 +62,6 @@ public interface Request {
      * @return readTimeout
      */
     long readTimeout();
+
+    Context context();
 }

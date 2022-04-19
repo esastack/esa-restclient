@@ -218,6 +218,11 @@ public class HttpRequestBaseImpl implements HttpRequestBase {
     }
 
     @Override
+    public Context context() {
+        return ctx;
+    }
+
+    @Override
     public HttpRequestBase copy() {
         final HttpRequestBaseImpl copied = new HttpRequestBaseImpl(builder, method, uri.toString());
         copyTo(this, copied);

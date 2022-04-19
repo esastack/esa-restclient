@@ -23,5 +23,11 @@ import java.util.concurrent.CompletionStage;
 public interface RedefineContext {
     RestRequest request();
 
+    /**
+     * Proceed to the next action in the chain.And the final action will proceed next
+     * {@link io.esastack.restclient.exec.RestInterceptor}.
+     *
+     * @return RestResponse
+     */
     CompletionStage<RestResponse> next();
 }

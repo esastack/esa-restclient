@@ -37,7 +37,7 @@ public class ParamMatcher {
             }
             return MatchResult.success();
         }
-        if (name != null) {
+        if (name != null && value != null) {
             return value.match(request.getParam(name));
         }
 

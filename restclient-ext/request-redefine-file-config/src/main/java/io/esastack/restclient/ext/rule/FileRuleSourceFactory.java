@@ -25,6 +25,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -100,8 +101,8 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
         }
 
         private void loadRules() {
-            try {
-                RulesProvider rulesProvider = yaml.load(new FileInputStream(configFile));
+            try (InputStream configStream = new FileInputStream(configFile)) {
+                RulesProvider rulesProvider = yaml.load(configStream);
                 if (rulesProvider != null) {
                     this.rules = rulesProvider.get();
                     LoggerUtils.logger().info("Load request redefine rules success!The latest rules is {}",

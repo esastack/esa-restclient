@@ -37,7 +37,7 @@ public class HeaderMatcher {
             }
             return MatchResult.success();
         }
-        if (name != null) {
+        if (name != null && value != null) {
             return value.match(headers.get(name));
         }
 

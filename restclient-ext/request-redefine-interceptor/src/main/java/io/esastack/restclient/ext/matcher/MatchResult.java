@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.ext.condition;
+package io.esastack.restclient.ext.matcher;
 
-class MatchResultImpl implements MatchResult {
+public interface MatchResult {
 
-    private final boolean isMatch;
-    private final String unMatchReason;
-    static final MatchResult SUCCESS_MATCH_RESULT = new MatchResultImpl(true, null);
+    boolean isMatch();
 
-    MatchResultImpl(boolean isMatch, String unMatchReason) {
-        this.isMatch = isMatch;
-        this.unMatchReason = unMatchReason;
+    String unMatchReason();
+
+    static MatchResult success() {
+        return MatchResultImpl.SUCCESS_MATCH_RESULT;
     }
 
-    @Override
-    public boolean isMatch() {
-        return isMatch;
+    static MatchResult fail(String reason) {
+        return new MatchResultImpl(false, reason);
     }
 
-    @Override
-    public String unMatchReason() {
-        return unMatchReason;
-    }
 }

@@ -17,8 +17,9 @@ package io.esastack.restclient.ext.condition.impl;
 
 import esa.commons.Checks;
 import io.esastack.restclient.RestRequest;
-import io.esastack.restclient.ext.condition.MatchResult;
 import io.esastack.restclient.ext.condition.RequestRedefineCondition;
+import io.esastack.restclient.ext.matcher.HeaderMatcher;
+import io.esastack.restclient.ext.matcher.MatchResult;
 
 public class HeaderCondition implements RequestRedefineCondition {
 

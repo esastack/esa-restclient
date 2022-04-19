@@ -19,8 +19,8 @@ import esa.commons.Checks;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.ext.action.RequestRedefineAction;
-import io.esastack.restclient.ext.condition.MatchResult;
 import io.esastack.restclient.ext.condition.RequestRedefineCondition;
+import io.esastack.restclient.ext.matcher.MatchResult;
 
 import java.util.List;
 

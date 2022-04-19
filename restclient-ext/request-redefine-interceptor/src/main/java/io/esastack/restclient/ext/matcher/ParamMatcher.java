@@ -13,35 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.ext.condition.impl;
+package io.esastack.restclient.ext.matcher;
 
-import io.esastack.commons.net.http.HttpHeaders;
-import io.esastack.restclient.ext.condition.MatchResult;
+import io.esastack.restclient.RestRequest;
 
 import java.util.Arrays;
 
-public class HeaderMatcher {
+public class ParamMatcher {
     private String[] contains;
     private String name;
     private StringMatcher value;
 
-    public HeaderMatcher() {
+    public ParamMatcher() {
     }
 
-    public MatchResult match(HttpHeaders headers) {
+    public MatchResult match(RestRequest request) {
         if (contains != null) {
             for (String contain : contains) {
-                if (!headers.contains(contain)) {
-                    return MatchResult.fail("Headers don,t contain " + contain);
+                if (!request.paramNames().contains(contain)) {
+                    return MatchResult.fail("Params don,t contain " + contain);
                 }
             }
             return MatchResult.success();
         }
         if (name != null && value != null) {
-            return value.match(headers.get(name));
+            return value.match(request.getParam(name));
         }
 
-        return MatchResult.fail("Header don't meet expectations("
+        return MatchResult.fail("Param don't meet expectations("
                 + "contains='" + Arrays.toString(contains) + '\'' +
                 ", name='" + name + '\'' +
                 ", value='" + value + '\'' + ")!");
@@ -65,7 +64,7 @@ public class HeaderMatcher {
 
     @Override
     public String toString() {
-        return "HeaderMatcher{" +
+        return "ParamMatcher{" +
                 "contains='" + Arrays.toString(contains) + '\'' +
                 ", name='" + name + '\'' +
                 ", value=" + value +

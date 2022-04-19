@@ -16,7 +16,12 @@
 package io.esastack.restclient.ext.rule;
 
 import io.esastack.restclient.ext.action.RequestRedefineAction;
-import io.esastack.restclient.ext.action.impl.*;
+import io.esastack.restclient.ext.action.impl.HeaderAction;
+import io.esastack.restclient.ext.action.impl.HeaderActionConfig;
+import io.esastack.restclient.ext.action.impl.ParamAction;
+import io.esastack.restclient.ext.action.impl.ParamActionConfig;
+import io.esastack.restclient.ext.action.impl.RewriteAction;
+import io.esastack.restclient.ext.action.impl.RewriteActionConfig;
 
 import java.util.ArrayList;
 import java.util.List;

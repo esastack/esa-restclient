@@ -17,7 +17,7 @@ package io.esastack.restclient.ext.rule;
 
 import java.util.List;
 
-public interface RedefineRuleSource {
+public interface TrafficSplitRuleSource {
 
     /**
      * It is used to obtain redefineRules. User can specify whether the rules acquisition is
@@ -25,5 +25,5 @@ public interface RedefineRuleSource {
      *
      * @return rules
      */
-    List<RedefineRule> rules();
+    List<TrafficSplitRule> rules();
 }

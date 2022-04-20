@@ -33,15 +33,15 @@ public class RulesProvider {
         this.rules = rules;
     }
 
-    public List<RedefineRule> get() {
+    public List<TrafficSplitRule> get() {
         if (close || rules == null || rules.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<RedefineRule> ruleList = new ArrayList<>(8);
+        List<TrafficSplitRule> ruleList = new ArrayList<>(8);
         for (RuleConfig rule : rules) {
             try {
-                RedefineRule tem = rule.build();
+                TrafficSplitRule tem = rule.build();
                 if (tem != null) {
                     ruleList.add(tem);
                 }

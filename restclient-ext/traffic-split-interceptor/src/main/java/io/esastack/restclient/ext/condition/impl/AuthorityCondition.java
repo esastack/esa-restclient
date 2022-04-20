@@ -17,11 +17,11 @@ package io.esastack.restclient.ext.condition.impl;
 
 import esa.commons.Checks;
 import io.esastack.restclient.RestRequest;
-import io.esastack.restclient.ext.condition.RequestRedefineCondition;
+import io.esastack.restclient.ext.condition.TrafficSplitCondition;
 import io.esastack.restclient.ext.matcher.MatchResult;
 import io.esastack.restclient.ext.matcher.StringMatcher;
 
-public class AuthorityCondition implements RequestRedefineCondition {
+public class AuthorityCondition implements TrafficSplitCondition {
 
     private final StringMatcher matcher;
 

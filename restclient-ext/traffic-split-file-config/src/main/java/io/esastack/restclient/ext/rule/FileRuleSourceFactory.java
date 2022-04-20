@@ -33,11 +33,11 @@ import java.util.concurrent.TimeUnit;
 
 public class FileRuleSourceFactory implements RuleSourceFactory {
     @Override
-    public RedefineRuleSource create(RestClientOptions options) {
+    public TrafficSplitRuleSource create(RestClientOptions options) {
         return new FileRulesSource();
     }
 
-    private static final class FileRulesSource implements RedefineRuleSource {
+    private static final class FileRulesSource implements TrafficSplitRuleSource {
 
         private static final long AUTO_REFRESH_TIME_MS = 500L;
         private static final String DEFAULT_CONFIG_DIR = "./conf";
@@ -49,7 +49,7 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
         private volatile long lastModified = 0L;
         private final File configFile;
         private final Yaml yaml = new Yaml(new Constructor(RulesProvider.class));
-        private volatile List<RedefineRule> rules;
+        private volatile List<TrafficSplitRule> rules;
 
         private final ScheduledThreadPoolExecutor scheduledRuleRefresher =
                 new ScheduledThreadPoolExecutor(1, (r) -> {
@@ -81,7 +81,7 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
         }
 
         @Override
-        public List<RedefineRule> rules() {
+        public List<TrafficSplitRule> rules() {
             if (rules == null) {
                 return Collections.emptyList();
             }

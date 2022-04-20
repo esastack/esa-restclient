@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.esastack.restclient.ext.action;
+package io.esastack.restclient.ext;
 
+import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
-import io.esastack.restclient.ext.RedefineContext;
 
 import java.util.concurrent.CompletionStage;
 
-public interface RequestRedefineAction {
+public interface TrafficSplitContext {
+    RestRequest request();
 
     /**
-     * Do action when request match RedefineRule.
+     * Proceed to the next action in the chain.And the final action will proceed next
+     * {@link io.esastack.restclient.exec.RestInterceptor}.
      *
-     * @param context RedefineContext
      * @return RestResponse
      */
-    CompletionStage<RestResponse> doAction(RedefineContext context);
+    CompletionStage<RestResponse> next();
 }

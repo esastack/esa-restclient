@@ -18,13 +18,13 @@ package io.esastack.restclient.ext.rule;
 import esa.commons.Checks;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestRequest;
-import io.esastack.restclient.ext.action.RequestRedefineAction;
-import io.esastack.restclient.ext.condition.RequestRedefineCondition;
+import io.esastack.restclient.ext.action.TrafficSplitAction;
+import io.esastack.restclient.ext.condition.TrafficSplitCondition;
 import io.esastack.restclient.ext.matcher.MatchResult;
 
 import java.util.List;
 
-public interface RedefineRule {
+public interface TrafficSplitRule {
 
     String name();
 
@@ -35,9 +35,9 @@ public interface RedefineRule {
      */
     MatchMechanism matchMechanism();
 
-    List<RequestRedefineCondition> conditions();
+    List<TrafficSplitCondition> conditions();
 
-    List<RequestRedefineAction> actions();
+    List<TrafficSplitAction> actions();
 
     default boolean match(RestRequest request) {
         return matchMechanism().match(name(), request, conditions());
@@ -46,10 +46,10 @@ public interface RedefineRule {
     enum MatchMechanism {
         ANY {
             @Override
-            public boolean match(String ruleName, RestRequest request, List<RequestRedefineCondition> conditions) {
+            public boolean match(String ruleName, RestRequest request, List<TrafficSplitCondition> conditions) {
                 Checks.checkNotNull(request, "request");
                 Checks.checkNotNull(conditions, "conditions");
-                for (RequestRedefineCondition condition : conditions) {
+                for (TrafficSplitCondition condition : conditions) {
                     if (condition.match(request).isMatch()) {
                         if (LoggerUtils.logger().isDebugEnabled()) {
                             LoggerUtils.logger().debug("Request({}) hit redefineRule({})"
@@ -72,10 +72,10 @@ public interface RedefineRule {
 
         ALL {
             @Override
-            public boolean match(String ruleName, RestRequest request, List<RequestRedefineCondition> conditions) {
+            public boolean match(String ruleName, RestRequest request, List<TrafficSplitCondition> conditions) {
                 Checks.checkNotNull(request, "request");
                 Checks.checkNotNull(conditions, "conditions");
-                for (RequestRedefineCondition condition : conditions) {
+                for (TrafficSplitCondition condition : conditions) {
                     MatchResult result = condition.match(request);
                     if (!result.isMatch()) {
                         if (LoggerUtils.logger().isDebugEnabled()) {
@@ -100,10 +100,10 @@ public interface RedefineRule {
 
         NOT {
             @Override
-            public boolean match(String ruleName, RestRequest request, List<RequestRedefineCondition> conditions) {
+            public boolean match(String ruleName, RestRequest request, List<TrafficSplitCondition> conditions) {
                 Checks.checkNotNull(request, "request");
                 Checks.checkNotNull(conditions, "conditions");
-                for (RequestRedefineCondition condition : conditions) {
+                for (TrafficSplitCondition condition : conditions) {
                     MatchResult result = condition.match(request);
                     if (result.isMatch()) {
                         if (LoggerUtils.logger().isDebugEnabled()) {
@@ -126,6 +126,6 @@ public interface RedefineRule {
         };
 
         public abstract boolean match(String ruleName, RestRequest request,
-                                      List<RequestRedefineCondition> conditions);
+                                      List<TrafficSplitCondition> conditions);
     }
 }

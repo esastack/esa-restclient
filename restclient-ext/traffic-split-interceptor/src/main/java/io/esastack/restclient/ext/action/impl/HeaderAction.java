@@ -17,14 +17,14 @@ package io.esastack.restclient.ext.action.impl;
 
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestResponse;
-import io.esastack.restclient.ext.RedefineContext;
-import io.esastack.restclient.ext.action.RequestRedefineAction;
+import io.esastack.restclient.ext.TrafficSplitContext;
+import io.esastack.restclient.ext.action.TrafficSplitAction;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-public class HeaderAction implements RequestRedefineAction {
+public class HeaderAction implements TrafficSplitAction {
 
     private final Map<String, String> headersToBeAdd;
     private final List<String> headersToBeRemove;
@@ -35,7 +35,7 @@ public class HeaderAction implements RequestRedefineAction {
     }
 
     @Override
-    public CompletionStage<RestResponse> doAction(RedefineContext context) {
+    public CompletionStage<RestResponse> doAction(TrafficSplitContext context) {
         if (headersToBeAdd != null) {
             context.request().addHeaders(headersToBeAdd);
         }

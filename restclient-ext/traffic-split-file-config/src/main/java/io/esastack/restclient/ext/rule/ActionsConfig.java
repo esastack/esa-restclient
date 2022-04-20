@@ -15,7 +15,7 @@
  */
 package io.esastack.restclient.ext.rule;
 
-import io.esastack.restclient.ext.action.RequestRedefineAction;
+import io.esastack.restclient.ext.action.TrafficSplitAction;
 import io.esastack.restclient.ext.action.impl.HeaderAction;
 import io.esastack.restclient.ext.action.impl.HeaderActionConfig;
 import io.esastack.restclient.ext.action.impl.ParamAction;
@@ -28,31 +28,31 @@ import java.util.List;
 
 public class ActionsConfig {
     private RewriteActionConfig rewrite;
-    private HeaderActionConfig header;
-    private ParamActionConfig param;
+    private HeaderActionConfig headers;
+    private ParamActionConfig params;
 
     public void setRewrite(RewriteActionConfig rewrite) {
         this.rewrite = rewrite;
     }
 
-    public void setHeader(HeaderActionConfig header) {
-        this.header = header;
+    public void setHeaders(HeaderActionConfig headers) {
+        this.headers = headers;
     }
 
-    public void setParam(ParamActionConfig param) {
-        this.param = param;
+    public void setParams(ParamActionConfig params) {
+        this.params = params;
     }
 
-    public List<RequestRedefineAction> build() {
-        List<RequestRedefineAction> actions = new ArrayList<>();
+    public List<TrafficSplitAction> build() {
+        List<TrafficSplitAction> actions = new ArrayList<>();
         if (rewrite != null) {
             actions.add(new RewriteAction(rewrite));
         }
-        if (param != null) {
-            actions.add(new ParamAction(param));
+        if (params != null) {
+            actions.add(new ParamAction(params));
         }
-        if (header != null) {
-            actions.add(new HeaderAction(header));
+        if (headers != null) {
+            actions.add(new HeaderAction(headers));
         }
         return actions;
     }
@@ -61,8 +61,8 @@ public class ActionsConfig {
     public String toString() {
         return "ActionsConfig{" +
                 "rewrite=" + rewrite +
-                ", header=" + header +
-                ", param=" + param +
+                ", headers=" + headers +
+                ", params=" + params +
                 '}';
     }
 }

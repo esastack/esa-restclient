@@ -17,7 +17,7 @@ package io.esastack.restclient.ext.rule;
 
 import esa.commons.StringUtils;
 import io.esastack.restclient.RestRequest;
-import io.esastack.restclient.ext.condition.RequestRedefineCondition;
+import io.esastack.restclient.ext.condition.TrafficSplitCondition;
 import io.esastack.restclient.ext.condition.impl.AuthorityCondition;
 import io.esastack.restclient.ext.condition.impl.HeaderCondition;
 import io.esastack.restclient.ext.condition.impl.MethodCondition;
@@ -35,8 +35,8 @@ public class ConditionConfig {
     private String method;
     private StringMatcher authority;
     private StringMatcher path;
-    private HeaderMatcher header;
-    private ParamMatcher param;
+    private HeaderMatcher headers;
+    private ParamMatcher params;
 
     public void setMethod(String method) {
         this.method = method;
@@ -50,16 +50,16 @@ public class ConditionConfig {
         this.path = path;
     }
 
-    public void setHeader(HeaderMatcher header) {
-        this.header = header;
+    public void setHeaders(HeaderMatcher headers) {
+        this.headers = headers;
     }
 
-    public void setParam(ParamMatcher param) {
-        this.param = param;
+    public void setParams(ParamMatcher params) {
+        this.params = params;
     }
 
-    public RequestRedefineCondition build() {
-        List<RequestRedefineCondition> conditions = new ArrayList<>(3);
+    public TrafficSplitCondition build() {
+        List<TrafficSplitCondition> conditions = new ArrayList<>(3);
         if (StringUtils.isNotBlank(method)) {
             conditions.add(new MethodCondition(method));
         }
@@ -69,11 +69,11 @@ public class ConditionConfig {
         if (path != null) {
             conditions.add(new PathCondition(path));
         }
-        if (param != null) {
-            conditions.add(new ParamCondition(param));
+        if (params != null) {
+            conditions.add(new ParamCondition(params));
         }
-        if (header != null) {
-            conditions.add(new HeaderCondition(header));
+        if (headers != null) {
+            conditions.add(new HeaderCondition(headers));
         }
         return new AggregateCondition(conditions);
     }
@@ -84,21 +84,21 @@ public class ConditionConfig {
                 "method='" + method + '\'' +
                 ", authority=" + authority +
                 ", path=" + path +
-                ", header=" + header +
-                ", param=" + param +
+                ", headers=" + headers +
+                ", params=" + params +
                 '}';
     }
 
-    private static final class AggregateCondition implements RequestRedefineCondition {
-        private List<RequestRedefineCondition> conditions;
+    private static final class AggregateCondition implements TrafficSplitCondition {
+        private List<TrafficSplitCondition> conditions;
 
-        private AggregateCondition(List<RequestRedefineCondition> conditions) {
+        private AggregateCondition(List<TrafficSplitCondition> conditions) {
             this.conditions = conditions;
         }
 
         @Override
         public MatchResult match(RestRequest request) {
-            for (RequestRedefineCondition condition : conditions) {
+            for (TrafficSplitCondition condition : conditions) {
                 MatchResult result = condition.match(request);
                 if (!result.isMatch()) {
                     return result;

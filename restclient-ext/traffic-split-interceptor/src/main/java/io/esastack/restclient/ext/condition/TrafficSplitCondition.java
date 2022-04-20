@@ -18,7 +18,7 @@ package io.esastack.restclient.ext.condition;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.ext.matcher.MatchResult;
 
-public interface RequestRedefineCondition {
+public interface TrafficSplitCondition {
 
     /**
      * @param request RestRequest

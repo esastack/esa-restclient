@@ -17,14 +17,14 @@ package io.esastack.restclient.ext.action.impl;
 
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestResponse;
-import io.esastack.restclient.ext.RedefineContext;
-import io.esastack.restclient.ext.action.RequestRedefineAction;
+import io.esastack.restclient.ext.TrafficSplitContext;
+import io.esastack.restclient.ext.action.TrafficSplitAction;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.CompletionStage;
 
-public class RewriteAction implements RequestRedefineAction {
+public class RewriteAction implements TrafficSplitAction {
 
     private final String authority;
     private final String path;
@@ -38,7 +38,7 @@ public class RewriteAction implements RequestRedefineAction {
     }
 
     @Override
-    public CompletionStage<RestResponse> doAction(RedefineContext context) {
+    public CompletionStage<RestResponse> doAction(TrafficSplitContext context) {
         URI origin = context.request().uri().netURI();
         try {
             context.request().uri().uri(new URI(

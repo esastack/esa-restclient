@@ -15,8 +15,8 @@
  */
 package io.esastack.restclient.ext.rule;
 
-import io.esastack.restclient.ext.action.RequestRedefineAction;
-import io.esastack.restclient.ext.condition.RequestRedefineCondition;
+import io.esastack.restclient.ext.action.TrafficSplitAction;
+import io.esastack.restclient.ext.condition.TrafficSplitCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class RuleConfig {
     private String name;
     private String match;
-    private List<RequestRedefineCondition> conditions;
+    private List<TrafficSplitCondition> conditions;
     private ActionsConfig action;
 
     public void setName(String name) {
@@ -48,14 +48,14 @@ public class RuleConfig {
         this.action = action;
     }
 
-    public RedefineRule build() {
-        RedefineRule.MatchMechanism matchMechanism;
+    public TrafficSplitRule build() {
+        TrafficSplitRule.MatchMechanism matchMechanism;
         if ("all".equalsIgnoreCase(match)) {
-            matchMechanism = RedefineRule.MatchMechanism.ALL;
+            matchMechanism = TrafficSplitRule.MatchMechanism.ALL;
         } else if ("any".equalsIgnoreCase(match)) {
-            matchMechanism = RedefineRule.MatchMechanism.ANY;
+            matchMechanism = TrafficSplitRule.MatchMechanism.ANY;
         } else if ("not".equalsIgnoreCase(match)) {
-            matchMechanism = RedefineRule.MatchMechanism.NOT;
+            matchMechanism = TrafficSplitRule.MatchMechanism.NOT;
         } else {
             throw new IllegalStateException("Illegal match:(" + match + ")");
         }
@@ -66,17 +66,17 @@ public class RuleConfig {
                 action == null ? null : action.build());
     }
 
-    private static final class RedefineRuleImpl implements RedefineRule {
+    private static final class RedefineRuleImpl implements TrafficSplitRule {
 
         private final String name;
         private final MatchMechanism match;
-        private final List<RequestRedefineCondition> conditions;
-        private final List<RequestRedefineAction> actions;
+        private final List<TrafficSplitCondition> conditions;
+        private final List<TrafficSplitAction> actions;
 
         public RedefineRuleImpl(String name,
                                 MatchMechanism match,
-                                List<RequestRedefineCondition> conditions,
-                                List<RequestRedefineAction> actions) {
+                                List<TrafficSplitCondition> conditions,
+                                List<TrafficSplitAction> actions) {
             this.name = name;
             this.match = match;
             this.conditions = conditions;
@@ -94,12 +94,12 @@ public class RuleConfig {
         }
 
         @Override
-        public List<RequestRedefineCondition> conditions() {
+        public List<TrafficSplitCondition> conditions() {
             return conditions;
         }
 
         @Override
-        public List<RequestRedefineAction> actions() {
+        public List<TrafficSplitAction> actions() {
             return actions;
         }
     }

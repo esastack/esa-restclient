@@ -22,9 +22,9 @@ import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.exec.InvocationChain;
 import io.esastack.restclient.exec.RestInterceptor;
-import io.esastack.restclient.ext.RedefineContextImpl;
-import io.esastack.restclient.ext.rule.RedefineRule;
-import io.esastack.restclient.ext.rule.RedefineRuleSource;
+import io.esastack.restclient.ext.TrafficSplitContextImpl;
+import io.esastack.restclient.ext.rule.TrafficSplitRule;
+import io.esastack.restclient.ext.rule.TrafficSplitRuleSource;
 import io.esastack.restclient.ext.spi.RuleSourceFactory;
 import io.esastack.restclient.spi.RestInterceptorFactory;
 
@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class RedefineInterceptorFactory implements RestInterceptorFactory {
+public class TrafficSplitInterceptorFactory implements RestInterceptorFactory {
     @Override
     public Collection<RestInterceptor> interceptors(RestClientOptions options) {
         return Collections.singletonList(new RedefineInterceptor(options));
@@ -42,7 +42,7 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
     private static final class RedefineInterceptor implements RestInterceptor {
 
         private static final int ORDER = 0;
-        private final RedefineRuleSource rulesSource;
+        private final TrafficSplitRuleSource rulesSource;
 
         private RedefineInterceptor(RestClientOptions options) {
             List<RuleSourceFactory> ruleSourceFactories = SpiLoader
@@ -60,10 +60,10 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
 
         @Override
         public CompletionStage<RestResponse> proceed(RestRequest request, InvocationChain next) {
-            List<RedefineRule> rules = rulesSource.rules();
-            for (RedefineRule rule : rules) {
+            List<TrafficSplitRule> rules = rulesSource.rules();
+            for (TrafficSplitRule rule : rules) {
                 if (rule.match(request)) {
-                    return new RedefineContextImpl(request, rule.actions(), next).next();
+                    return new TrafficSplitContextImpl(request, rule.actions(), next).next();
                 }
             }
             return next.proceed(request);

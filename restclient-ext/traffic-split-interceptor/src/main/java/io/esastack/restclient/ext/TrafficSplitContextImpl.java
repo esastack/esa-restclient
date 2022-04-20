@@ -19,23 +19,23 @@ import esa.commons.Checks;
 import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.RestResponse;
 import io.esastack.restclient.exec.InvocationChain;
-import io.esastack.restclient.ext.action.RequestRedefineAction;
+import io.esastack.restclient.ext.action.TrafficSplitAction;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
-public class RedefineContextImpl implements RedefineContext {
+public class TrafficSplitContextImpl implements TrafficSplitContext {
 
     private final RestRequest request;
-    private final List<RequestRedefineAction> actions;
+    private final List<TrafficSplitAction> actions;
     private final int actionsSize;
     private final InvocationChain invocationChain;
     private int actionsIndex;
     private boolean hadProceed = false;
 
-    public RedefineContextImpl(RestRequest request,
-                               List<RequestRedefineAction> actions,
-                               InvocationChain invocationChain) {
+    public TrafficSplitContextImpl(RestRequest request,
+                                   List<TrafficSplitAction> actions,
+                                   InvocationChain invocationChain) {
         Checks.checkNotNull(request, "request");
         Checks.checkNotNull(actions, "actions");
         Checks.checkNotNull(invocationChain, "invocationChain");

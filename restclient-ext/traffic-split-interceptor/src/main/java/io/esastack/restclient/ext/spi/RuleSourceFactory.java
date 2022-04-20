@@ -17,7 +17,7 @@ package io.esastack.restclient.ext.spi;
 
 import esa.commons.spi.SPI;
 import io.esastack.restclient.RestClientOptions;
-import io.esastack.restclient.ext.rule.RedefineRuleSource;
+import io.esastack.restclient.ext.rule.TrafficSplitRuleSource;
 
 @SPI
 public interface RuleSourceFactory {
@@ -30,5 +30,5 @@ public interface RuleSourceFactory {
      * @param options RestClientOptions
      * @return RedefineRuleSource
      */
-    RedefineRuleSource create(RestClientOptions options);
+    TrafficSplitRuleSource create(RestClientOptions options);
 }

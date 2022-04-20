@@ -24,24 +24,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>request-redefine-file-config</artifactId>
+    <artifactId>traffic-split-interceptor</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <snakeyaml.version>1.30</snakeyaml.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.esastack</groupId>
-            <artifactId>request-redefine-interceptor</artifactId>
-            <version>${restclient.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>${snakeyaml.version}</version>
-        </dependency>
-    </dependencies>
 </project>

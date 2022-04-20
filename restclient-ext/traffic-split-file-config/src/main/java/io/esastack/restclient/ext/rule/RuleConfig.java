@@ -18,12 +18,13 @@ package io.esastack.restclient.ext.rule;
 import io.esastack.restclient.ext.action.RequestRedefineAction;
 import io.esastack.restclient.ext.condition.RequestRedefineCondition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RuleConfig {
     private String name;
     private String match;
-    private ConditionsConfig condition;
+    private List<RequestRedefineCondition> conditions;
     private ActionsConfig action;
 
     public void setName(String name) {
@@ -34,8 +35,13 @@ public class RuleConfig {
         this.match = match;
     }
 
-    public void setCondition(ConditionsConfig condition) {
-        this.condition = condition;
+    public void setConditions(List<ConditionConfig> conditions) {
+        if (conditions != null && conditions.size() > 0) {
+            this.conditions = new ArrayList<>(conditions.size());
+            for (ConditionConfig config : conditions) {
+                this.conditions.add(config.build());
+            }
+        }
     }
 
     public void setAction(ActionsConfig action) {
@@ -56,7 +62,7 @@ public class RuleConfig {
 
         return new RedefineRuleImpl(name,
                 matchMechanism,
-                condition == null ? null : condition.build(),
+                conditions,
                 action == null ? null : action.build());
     }
 
@@ -103,7 +109,7 @@ public class RuleConfig {
         return "RuleConfig{" +
                 "name='" + name + '\'' +
                 ", match='" + match + '\'' +
-                ", condition=" + condition +
+                ", conditions=" + conditions +
                 ", action=" + action +
                 '}';
     }

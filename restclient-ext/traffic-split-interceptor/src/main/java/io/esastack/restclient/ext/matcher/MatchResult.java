@@ -29,4 +29,8 @@ public interface MatchResult {
         return new MatchResultImpl(false, reason);
     }
 
+    static MatchResult fail() {
+        return new MatchResultImpl(false, "Match failed!");
+    }
+
 }

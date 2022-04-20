@@ -62,7 +62,7 @@ public class RedefineInterceptorFactory implements RestInterceptorFactory {
         public CompletionStage<RestResponse> proceed(RestRequest request, InvocationChain next) {
             List<RedefineRule> rules = rulesSource.rules();
             for (RedefineRule rule : rules) {
-                if (rule.matchMechanism().match(rule.name(), request, rule.conditions())) {
+                if (rule.match(request)) {
                     return new RedefineContextImpl(request, rule.actions(), next).next();
                 }
             }

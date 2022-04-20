@@ -16,6 +16,7 @@
 package io.esastack.restclient.ext.rule;
 
 import esa.commons.StringUtils;
+import io.esastack.restclient.RestRequest;
 import io.esastack.restclient.ext.condition.RequestRedefineCondition;
 import io.esastack.restclient.ext.condition.impl.AuthorityCondition;
 import io.esastack.restclient.ext.condition.impl.HeaderCondition;
@@ -23,13 +24,14 @@ import io.esastack.restclient.ext.condition.impl.MethodCondition;
 import io.esastack.restclient.ext.condition.impl.ParamCondition;
 import io.esastack.restclient.ext.condition.impl.PathCondition;
 import io.esastack.restclient.ext.matcher.HeaderMatcher;
+import io.esastack.restclient.ext.matcher.MatchResult;
 import io.esastack.restclient.ext.matcher.ParamMatcher;
 import io.esastack.restclient.ext.matcher.StringMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConditionsConfig {
+public class ConditionConfig {
     private String method;
     private StringMatcher authority;
     private StringMatcher path;
@@ -56,8 +58,8 @@ public class ConditionsConfig {
         this.param = param;
     }
 
-    public List<RequestRedefineCondition> build() {
-        List<RequestRedefineCondition> conditions = new ArrayList<>();
+    public RequestRedefineCondition build() {
+        List<RequestRedefineCondition> conditions = new ArrayList<>(3);
         if (StringUtils.isNotBlank(method)) {
             conditions.add(new MethodCondition(method));
         }
@@ -73,7 +75,7 @@ public class ConditionsConfig {
         if (header != null) {
             conditions.add(new HeaderCondition(header));
         }
-        return conditions;
+        return new AggregateCondition(conditions);
     }
 
     @Override
@@ -85,5 +87,31 @@ public class ConditionsConfig {
                 ", header=" + header +
                 ", param=" + param +
                 '}';
+    }
+
+    private static final class AggregateCondition implements RequestRedefineCondition {
+        private List<RequestRedefineCondition> conditions;
+
+        private AggregateCondition(List<RequestRedefineCondition> conditions) {
+            this.conditions = conditions;
+        }
+
+        @Override
+        public MatchResult match(RestRequest request) {
+            for (RequestRedefineCondition condition : conditions) {
+                MatchResult result = condition.match(request);
+                if (!result.isMatch()) {
+                    return result;
+                }
+            }
+            return MatchResult.success();
+        }
+
+        @Override
+        public String toString() {
+            return "AggregateCondition{" +
+                    "conditions=" + conditions +
+                    '}';
+        }
     }
 }

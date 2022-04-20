@@ -27,8 +27,8 @@
     <artifactId>restclient-ext</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>request-redefine-interceptor</module>
-        <module>request-redefine-file-config</module>
+        <module>traffic-split-interceptor</module>
+        <module>traffic-split-file-config</module>
     </modules>
 
     <properties>

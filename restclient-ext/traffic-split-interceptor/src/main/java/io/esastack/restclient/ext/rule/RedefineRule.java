@@ -39,6 +39,10 @@ public interface RedefineRule {
 
     List<RequestRedefineAction> actions();
 
+    default boolean match(RestRequest request) {
+        return matchMechanism().match(name(), request, conditions());
+    }
+
     enum MatchMechanism {
         ANY {
             @Override
@@ -121,7 +125,7 @@ public interface RedefineRule {
             }
         };
 
-        public abstract boolean match(String ruleName, RestRequest
-                request, List<RequestRedefineCondition> conditions);
+        public abstract boolean match(String ruleName, RestRequest request,
+                                      List<RequestRedefineCondition> conditions);
     }
 }

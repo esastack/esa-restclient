@@ -27,25 +27,33 @@ import java.util.concurrent.CompletionStage;
 public class ParamAction implements TrafficSplitAction {
 
     private final Map<String, String> paramsToBeAdd;
+    private final Map<String, String> paramsToBeSet;
     private final List<String> paramsToBeRemove;
 
     public ParamAction(ParamActionConfig config) {
         paramsToBeAdd = config.getAdd();
         paramsToBeRemove = config.getRemove();
+        paramsToBeSet = config.getSet();
     }
 
     @Override
     public CompletionStage<RestResponse> doAction(TrafficSplitContext context) {
-        if (paramsToBeAdd != null) {
-            context.request().addParams(paramsToBeAdd);
-        }
         if (paramsToBeRemove != null) {
             paramsToBeRemove.forEach(name -> context.request().uri().params().remove(name));
         }
+        if (paramsToBeSet != null) {
+            paramsToBeSet.forEach((name, value) ->
+                    context.request().uri().params().putSingle(name, value));
+        }
+        if (paramsToBeAdd != null) {
+            context.request().addParams(paramsToBeAdd);
+        }
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger()
-                    .debug("Do action of param in request redefine rule!Add params({}) and remove params({}).",
+                    .debug("Do action of param in request redefine rule!" +
+                                    "Add params({})、set params({}) and remove params({}).",
                             paramsToBeAdd,
+                            paramsToBeSet,
                             paramsToBeRemove);
         }
         return context.next();

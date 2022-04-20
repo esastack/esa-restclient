@@ -20,6 +20,7 @@ import java.util.Map;
 
 public class ParamActionConfig {
     private Map<String, String> add;
+    private Map<String, String> set;
     private List<String> remove;
 
     public Map<String, String> getAdd() {
@@ -38,10 +39,19 @@ public class ParamActionConfig {
         this.remove = remove;
     }
 
+    public Map<String, String> getSet() {
+        return set;
+    }
+
+    public void setSet(Map<String, String> set) {
+        this.set = set;
+    }
+
     @Override
     public String toString() {
         return "ParamActionConfig{" +
                 "add=" + add +
+                ", set=" + set +
                 ", remove=" + remove +
                 '}';
     }

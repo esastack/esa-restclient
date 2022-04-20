@@ -27,26 +27,33 @@ import java.util.concurrent.CompletionStage;
 public class HeaderAction implements TrafficSplitAction {
 
     private final Map<String, String> headersToBeAdd;
+    private final Map<String, String> headersToBeSet;
     private final List<String> headersToBeRemove;
 
     public HeaderAction(HeaderActionConfig config) {
         headersToBeAdd = config.getAdd();
         headersToBeRemove = config.getRemove();
+        headersToBeSet = config.getSet();
     }
 
     @Override
     public CompletionStage<RestResponse> doAction(TrafficSplitContext context) {
-        if (headersToBeAdd != null) {
-            context.request().addHeaders(headersToBeAdd);
-        }
         if (headersToBeRemove != null) {
             headersToBeRemove.forEach(name -> context.request().removeHeader(name));
+        }
+        if (headersToBeSet != null) {
+            headersToBeSet.forEach(
+                    (key, value) -> context.request().setHeader(key, value));
+        }
+        if (headersToBeAdd != null) {
+            context.request().addHeaders(headersToBeAdd);
         }
         if (LoggerUtils.logger().isDebugEnabled()) {
             LoggerUtils.logger()
                     .debug("Do action of header in request redefine rule!" +
-                                    "Add headers({}) and remove headers({}).",
+                                    "Add headers({})、set headers({})  and remove headers({}).",
                             headersToBeAdd,
+                            headersToBeSet,
                             headersToBeRemove);
         }
         return context.next();

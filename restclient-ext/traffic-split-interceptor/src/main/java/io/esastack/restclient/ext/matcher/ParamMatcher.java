@@ -17,57 +17,51 @@ package io.esastack.restclient.ext.matcher;
 
 import io.esastack.restclient.RestRequest;
 
-import java.util.Arrays;
+import java.util.Map;
 
 public class ParamMatcher {
-    private String[] contains;
-    private String name;
-    private StringMatcher value;
+    private Map<String, StringMatcher> paramMap;
 
     public ParamMatcher() {
     }
 
     public MatchResult match(RestRequest request) {
-        if (contains != null) {
-            for (String contain : contains) {
-                if (!request.paramNames().contains(contain)) {
-                    return MatchResult.fail("Params don,t contain " + contain);
+        if (paramMap != null) {
+            for (Map.Entry<String, StringMatcher> param : paramMap.entrySet()) {
+                String name = param.getKey();
+                if (name == null) {
+                    continue;
+                }
+                StringMatcher value = param.getValue();
+                if (value == null) {
+                    if (request.paramNames().contains(name)) {
+                        continue;
+                    } else {
+                        return MatchResult.fail("Params don't contain name:" + name);
+                    }
+                }
+                MatchResult result = value.match(request.getParam(name));
+                if (!result.isMatch()) {
+                    return result;
                 }
             }
-            return MatchResult.success();
-        }
-        if (name != null && value != null) {
-            return value.match(request.getParam(name));
         }
 
-        return MatchResult.fail("Param don't meet expectations("
-                + "contains='" + Arrays.toString(contains) + '\'' +
-                ", name='" + name + '\'' +
-                ", value='" + value + '\'' + ")!");
+        return MatchResult.success();
     }
 
-    public void setContains(String contains) {
-        if (contains == null) {
-            this.contains = null;
-        } else {
-            this.contains = contains.split(",");
-        }
+    public Map<String, StringMatcher> getParams() {
+        return paramMap;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setValue(StringMatcher value) {
-        this.value = value;
+    public void setParams(Map<String, StringMatcher> params) {
+        this.paramMap = params;
     }
 
     @Override
     public String toString() {
         return "ParamMatcher{" +
-                "contains='" + Arrays.toString(contains) + '\'' +
-                ", name='" + name + '\'' +
-                ", value=" + value +
+                "paramMap=" + paramMap +
                 '}';
     }
 }

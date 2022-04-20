@@ -37,7 +37,7 @@ public class AuthorityCondition implements TrafficSplitCondition {
 
     @Override
     public String toString() {
-        return "AuthorityCondition{" +
+        return "URIAuthorityCondition{" +
                 "matcher=" + matcher +
                 '}';
     }

@@ -17,57 +17,51 @@ package io.esastack.restclient.ext.matcher;
 
 import io.esastack.commons.net.http.HttpHeaders;
 
-import java.util.Arrays;
+import java.util.Map;
 
 public class HeaderMatcher {
-    private String[] contains;
-    private String name;
-    private StringMatcher value;
+    private Map<String, StringMatcher> headerMap;
 
     public HeaderMatcher() {
     }
 
     public MatchResult match(HttpHeaders headers) {
-        if (contains != null) {
-            for (String contain : contains) {
-                if (!headers.contains(contain)) {
-                    return MatchResult.fail("Headers don,t contain " + contain);
+        if (headerMap != null) {
+            for (Map.Entry<String, StringMatcher> header : headerMap.entrySet()) {
+                String name = header.getKey();
+                if (name == null) {
+                    continue;
+                }
+                StringMatcher value = header.getValue();
+                if (value == null) {
+                    if (headers.contains(name)) {
+                        continue;
+                    } else {
+                        return MatchResult.fail("Headers don't contain name:" + name);
+                    }
+                }
+                MatchResult result = value.match(headers.get(name));
+                if (!result.isMatch()) {
+                    return result;
                 }
             }
-            return MatchResult.success();
-        }
-        if (name != null && value != null) {
-            return value.match(headers.get(name));
         }
 
-        return MatchResult.fail("Header don't meet expectations("
-                + "contains='" + Arrays.toString(contains) + '\'' +
-                ", name='" + name + '\'' +
-                ", value='" + value + '\'' + ")!");
+        return MatchResult.success();
     }
 
-    public void setContains(String contains) {
-        if (contains == null) {
-            this.contains = null;
-        } else {
-            this.contains = contains.split(",");
-        }
+    public Map<String, StringMatcher> getHeaders() {
+        return headerMap;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setValue(StringMatcher value) {
-        this.value = value;
+    public void setHeaders(Map<String, StringMatcher> headers) {
+        this.headerMap = headers;
     }
 
     @Override
     public String toString() {
         return "HeaderMatcher{" +
-                "contains='" + Arrays.toString(contains) + '\'' +
-                ", name='" + name + '\'' +
-                ", value=" + value +
+                "headerMap=" + headerMap +
                 '}';
     }
 }

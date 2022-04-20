@@ -30,7 +30,7 @@ public class RewriteAction implements TrafficSplitAction {
     private final String path;
 
     public RewriteAction(RewriteActionConfig config) {
-        authority = config.getAuthority();
+        authority = config.getUriAuthority();
         path = config.getPath();
         if (authority == null && path == null) {
             throw new IllegalArgumentException("Both authority and path are null!");

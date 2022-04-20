@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ConditionConfig {
     private String method;
-    private StringMatcher authority;
+    private StringMatcher uriAuthority;
     private StringMatcher path;
     private HeaderMatcher headers;
     private ParamMatcher params;
@@ -42,8 +42,8 @@ public class ConditionConfig {
         this.method = method;
     }
 
-    public void setAuthority(StringMatcher authority) {
-        this.authority = authority;
+    public void setUriAuthority(StringMatcher uriAuthority) {
+        this.uriAuthority = uriAuthority;
     }
 
     public void setPath(StringMatcher path) {
@@ -63,8 +63,8 @@ public class ConditionConfig {
         if (StringUtils.isNotBlank(method)) {
             conditions.add(new MethodCondition(method));
         }
-        if (authority != null) {
-            conditions.add(new AuthorityCondition(authority));
+        if (uriAuthority != null) {
+            conditions.add(new AuthorityCondition(uriAuthority));
         }
         if (path != null) {
             conditions.add(new PathCondition(path));
@@ -82,7 +82,7 @@ public class ConditionConfig {
     public String toString() {
         return "ConditionsConfig{" +
                 "method='" + method + '\'' +
-                ", authority=" + authority +
+                ", uriAuthority=" + uriAuthority +
                 ", path=" + path +
                 ", headers=" + headers +
                 ", params=" + params +
@@ -90,7 +90,7 @@ public class ConditionConfig {
     }
 
     private static final class AggregateCondition implements TrafficSplitCondition {
-        private List<TrafficSplitCondition> conditions;
+        private final List<TrafficSplitCondition> conditions;
 
         private AggregateCondition(List<TrafficSplitCondition> conditions) {
             this.conditions = conditions;

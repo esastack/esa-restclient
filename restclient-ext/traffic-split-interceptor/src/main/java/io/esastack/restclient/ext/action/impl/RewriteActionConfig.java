@@ -16,15 +16,15 @@
 package io.esastack.restclient.ext.action.impl;
 
 public class RewriteActionConfig {
-    private String authority;
+    private String uriAuthority;
     private String path;
 
-    public String getAuthority() {
-        return authority;
+    public String getUriAuthority() {
+        return uriAuthority;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setUriAuthority(String uriAuthority) {
+        this.uriAuthority = uriAuthority;
     }
 
     public String getPath() {
@@ -38,7 +38,7 @@ public class RewriteActionConfig {
     @Override
     public String toString() {
         return "RewriteActionConfig{" +
-                "authority='" + authority + '\'' +
+                "uriAuthority='" + uriAuthority + '\'' +
                 ", path='" + path + '\'' +
                 '}';
     }

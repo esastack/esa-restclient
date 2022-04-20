@@ -15,6 +15,7 @@
  */
 package io.esastack.restclient.ext.rule;
 
+import esa.commons.ConfigUtils;
 import esa.commons.StringUtils;
 import io.esastack.httpclient.core.util.LoggerUtils;
 import io.esastack.restclient.RestClientOptions;
@@ -41,10 +42,10 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
 
         private static final long AUTO_REFRESH_TIME_MS = 500L;
         private static final String DEFAULT_CONFIG_DIR = "./conf";
-        public static final String REQUEST_REDEFINE_CONFIG_DIR = "request-redefine.config.dir";
+        public static final String REQUEST_REDEFINE_CONFIG_DIR = "traffic.split.config.dir";
         private static final String ABSOLUTE_PATH_PREFIX = "/";
         private static final String DEFAULT_CONFIG_NAME = "request-redefine.yaml";
-        public static final String REQUEST_REDEFINE_CONFIG_NAME = "request-redefine.config.name";
+        public static final String REQUEST_REDEFINE_CONFIG_NAME = "traffic.split.config.name";
 
         private volatile long lastModified = 0L;
         private final File configFile;
@@ -154,24 +155,17 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
         }
 
         private static String configName() {
-            String configName;
-            if (StringUtils.isNotEmpty((configName = System.getenv(REQUEST_REDEFINE_CONFIG_NAME)))) {
+            String configName = ConfigUtils.get().getStr(REQUEST_REDEFINE_CONFIG_NAME);
+            if (StringUtils.isNotBlank((configName))) {
                 return configName;
             }
-
-            if (StringUtils.isNotEmpty((configName = System.getProperty(REQUEST_REDEFINE_CONFIG_NAME)))) {
-                return configName;
-            }
-
             return DEFAULT_CONFIG_NAME;
         }
 
         private static String getSystemDir() {
-            final String envValue = System.getenv(
-                    FileRulesSource.REQUEST_REDEFINE_CONFIG_DIR.replace(".", "_"));
-
-            if (StringUtils.isNotBlank(envValue)) {
-                return envValue;
+            String configDir = ConfigUtils.get().getStr(REQUEST_REDEFINE_CONFIG_DIR);
+            if (StringUtils.isNotBlank(configDir)) {
+                return configDir;
             }
 
             return System.getProperty(FileRulesSource.REQUEST_REDEFINE_CONFIG_DIR);

@@ -24,6 +24,7 @@ import io.esastack.restclient.ext.condition.impl.MethodCondition;
 import io.esastack.restclient.ext.condition.impl.ParamCondition;
 import io.esastack.restclient.ext.condition.impl.PathCondition;
 import io.esastack.restclient.ext.matcher.HeaderMatcher;
+import io.esastack.restclient.ext.matcher.KVMatcher;
 import io.esastack.restclient.ext.matcher.MatchResult;
 import io.esastack.restclient.ext.matcher.ParamMatcher;
 import io.esastack.restclient.ext.matcher.StringMatcher;
@@ -35,8 +36,8 @@ public class ConditionConfig {
     private String method;
     private StringMatcher uriAuthority;
     private StringMatcher path;
-    private HeaderMatcher headers;
-    private ParamMatcher params;
+    private List<KVMatcher> headers;
+    private List<KVMatcher> params;
 
     public void setMethod(String method) {
         this.method = method;
@@ -50,11 +51,11 @@ public class ConditionConfig {
         this.path = path;
     }
 
-    public void setHeaders(HeaderMatcher headers) {
+    public void setHeaders(List<KVMatcher> headers) {
         this.headers = headers;
     }
 
-    public void setParams(ParamMatcher params) {
+    public void setParams(List<KVMatcher> params) {
         this.params = params;
     }
 
@@ -70,10 +71,10 @@ public class ConditionConfig {
             conditions.add(new PathCondition(path));
         }
         if (params != null) {
-            conditions.add(new ParamCondition(params));
+            conditions.add(new ParamCondition(new ParamMatcher(params)));
         }
         if (headers != null) {
-            conditions.add(new HeaderCondition(headers));
+            conditions.add(new HeaderCondition(new HeaderMatcher(headers)));
         }
         return new AggregateCondition(conditions);
     }

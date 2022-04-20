@@ -17,18 +17,19 @@ package io.esastack.restclient.ext.matcher;
 
 import io.esastack.restclient.RestRequest;
 
-import java.util.Map;
+import java.util.List;
 
 public class ParamMatcher {
-    private Map<String, StringMatcher> paramMap;
+    private List<KVMatcher> params;
 
-    public ParamMatcher() {
+    public ParamMatcher(List<KVMatcher> params) {
+        this.params = params;
     }
 
     public MatchResult match(RestRequest request) {
-        if (paramMap != null) {
-            for (Map.Entry<String, StringMatcher> param : paramMap.entrySet()) {
-                String name = param.getKey();
+        if (params != null) {
+            for (KVMatcher param : params) {
+                String name = param.getName();
                 if (name == null) {
                     continue;
                 }
@@ -50,18 +51,18 @@ public class ParamMatcher {
         return MatchResult.success();
     }
 
-    public Map<String, StringMatcher> getParams() {
-        return paramMap;
+    public List<KVMatcher> getParams() {
+        return params;
     }
 
-    public void setParams(Map<String, StringMatcher> params) {
-        this.paramMap = params;
+    public void setParams(List<KVMatcher> params) {
+        this.params = params;
     }
 
     @Override
     public String toString() {
         return "ParamMatcher{" +
-                "paramMap=" + paramMap +
+                "params=" + params +
                 '}';
     }
 }

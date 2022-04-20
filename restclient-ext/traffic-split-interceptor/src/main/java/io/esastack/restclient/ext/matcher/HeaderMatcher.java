@@ -17,30 +17,31 @@ package io.esastack.restclient.ext.matcher;
 
 import io.esastack.commons.net.http.HttpHeaders;
 
-import java.util.Map;
+import java.util.List;
 
 public class HeaderMatcher {
-    private Map<String, StringMatcher> headerMap;
+    private List<KVMatcher> headers;
 
-    public HeaderMatcher() {
+    public HeaderMatcher(List<KVMatcher> headers) {
+        this.headers = headers;
     }
 
-    public MatchResult match(HttpHeaders headers) {
-        if (headerMap != null) {
-            for (Map.Entry<String, StringMatcher> header : headerMap.entrySet()) {
-                String name = header.getKey();
+    public MatchResult match(HttpHeaders headerMap) {
+        if (headers != null) {
+            for (KVMatcher header : headers) {
+                String name = header.getName();
                 if (name == null) {
                     continue;
                 }
                 StringMatcher value = header.getValue();
                 if (value == null) {
-                    if (headers.contains(name)) {
+                    if (headerMap.contains(name)) {
                         continue;
                     } else {
                         return MatchResult.fail("Headers don't contain name:" + name);
                     }
                 }
-                MatchResult result = value.match(headers.get(name));
+                MatchResult result = value.match(headerMap.get(name));
                 if (!result.isMatch()) {
                     return result;
                 }
@@ -50,18 +51,18 @@ public class HeaderMatcher {
         return MatchResult.success();
     }
 
-    public Map<String, StringMatcher> getHeaders() {
-        return headerMap;
+    public List<KVMatcher> getHeaders() {
+        return headers;
     }
 
-    public void setHeaders(Map<String, StringMatcher> headers) {
-        this.headerMap = headers;
+    public void setHeaders(List<KVMatcher> headers) {
+        this.headers = headers;
     }
 
     @Override
     public String toString() {
         return "HeaderMatcher{" +
-                "headerMap=" + headerMap +
+                "headers=" + headers +
                 '}';
     }
 }

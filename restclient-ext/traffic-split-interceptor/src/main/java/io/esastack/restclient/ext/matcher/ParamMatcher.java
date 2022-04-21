@@ -27,28 +27,7 @@ public class ParamMatcher {
     }
 
     public MatchResult match(RestRequest request) {
-        if (params != null) {
-            for (KVMatcher param : params) {
-                String name = param.getName();
-                if (name == null) {
-                    continue;
-                }
-                StringMatcher value = param.getValue();
-                if (value == null) {
-                    if (request.paramNames().contains(name)) {
-                        continue;
-                    } else {
-                        return MatchResult.fail("Params don't contain name:" + name);
-                    }
-                }
-                MatchResult result = value.match(request.getParam(name));
-                if (!result.isMatch()) {
-                    return result;
-                }
-            }
-        }
-
-        return MatchResult.success();
+        return KVMatcher.multiMatch(request::getParam, params);
     }
 
     public List<KVMatcher> getParams() {

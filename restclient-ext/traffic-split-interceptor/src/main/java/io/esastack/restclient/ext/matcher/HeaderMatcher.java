@@ -27,28 +27,7 @@ public class HeaderMatcher {
     }
 
     public MatchResult match(HttpHeaders headerMap) {
-        if (headers != null) {
-            for (KVMatcher header : headers) {
-                String name = header.getName();
-                if (name == null) {
-                    continue;
-                }
-                StringMatcher value = header.getValue();
-                if (value == null) {
-                    if (headerMap.contains(name)) {
-                        continue;
-                    } else {
-                        return MatchResult.fail("Headers don't contain name:" + name);
-                    }
-                }
-                MatchResult result = value.match(headerMap.get(name));
-                if (!result.isMatch()) {
-                    return result;
-                }
-            }
-        }
-
-        return MatchResult.success();
+        return KVMatcher.multiMatch(headerMap::get, headers);
     }
 
     public List<KVMatcher> getHeaders() {

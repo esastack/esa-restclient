@@ -45,6 +45,7 @@ import javax.net.ssl.SSLEngine;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.Duration;
+import java.util.function.Supplier;
 
 final class ChannelPoolFactory {
 
@@ -90,9 +91,9 @@ final class ChannelPoolFactory {
             }
         };
 
-        SslHandler sslHandler = null;
+        Supplier<SslHandler> sslHandler = null;
         if (ssl) {
-            sslHandler = buildSslHandler(options.connectTimeout(), address, builder.sslOptions());
+            sslHandler = () -> buildSslHandler(options.connectTimeout(), address, builder.sslOptions());
         }
         final ChannelInitializer initializer = new ChannelInitializer(ssl, sslHandler, builder);
         final io.netty.channel.pool.ChannelPool underlying;
@@ -141,12 +142,12 @@ final class ChannelPoolFactory {
     /**
      * Designed as package visibility for unit test purpose.
      *
-     * @param address           address
-     * @param ioThreads         ioThreads
-     * @param netOptions        net options
-     * @param connectTimeout    connect timeout
-     * @param resolver          resolver
-     * @return                  bootstrap
+     * @param address        address
+     * @param ioThreads      ioThreads
+     * @param netOptions     net options
+     * @param connectTimeout connect timeout
+     * @param resolver       resolver
+     * @return bootstrap
      */
     static Bootstrap buildBootstrap(SocketAddress address,
                                     EventLoopGroup ioThreads,

@@ -65,6 +65,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.internal.SystemPropertyUtil;
 
 import java.net.ConnectException;
+import java.util.function.Supplier;
 
 import static io.esastack.httpclient.core.netty.ChannelPoolFactory.NETTY_CONFIGURE;
 
@@ -80,10 +81,10 @@ final class ChannelInitializer {
             .getBoolean(INTERNAL_DEBUG_ENABLED_KEY, false);
 
     private final boolean ssl;
-    private final SslHandler sslHandler;
+    private final Supplier<SslHandler> sslHandler;
     private final HttpClientBuilder builder;
 
-    ChannelInitializer(boolean ssl, SslHandler sslHandler, HttpClientBuilder builder) {
+    ChannelInitializer(boolean ssl, Supplier<SslHandler> sslHandler, HttpClientBuilder builder) {
         Checks.checkNotNull(builder, "builder");
         this.ssl = ssl;
         this.sslHandler = sslHandler;
@@ -179,7 +180,7 @@ final class ChannelInitializer {
             if (sslHandler == null) {
                 throw new IllegalStateException("SslHandler is absent");
             }
-            pipeline.addLast(sslHandler);
+            pipeline.addLast(sslHandler.get());
 
             // We must wait for the initialization to finish and the protocol to be negotiated before configuring
             // the HTTP/2 components of the pipeline.

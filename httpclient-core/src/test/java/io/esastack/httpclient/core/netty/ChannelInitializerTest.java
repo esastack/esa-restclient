@@ -63,6 +63,7 @@ import java.net.ConnectException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.SWITCHING_PROTOCOLS;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -275,7 +276,7 @@ class ChannelInitializerTest {
 
         final List<Object> messages = new LinkedList<>();
         encoder.encode(ctx, new DefaultHttpResponse(HTTP_1_1,
-                HttpResponseStatus.valueOf(HttpStatus.OK.code())),
+                        HttpResponseStatus.valueOf(HttpStatus.OK.code())),
                 messages);
         then(messages.size()).isEqualTo(1);
 
@@ -299,7 +300,7 @@ class ChannelInitializerTest {
                 .version(isHttp10 ? HttpVersion.HTTP_1_0 : HttpVersion.HTTP_1_1)
                 .useDecompress(decompression);
 
-        final SslHandler sslHandler = mock(SslHandler.class);
+        final Supplier<SslHandler> sslHandler = () -> mock(SslHandler.class);
         final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
@@ -310,7 +311,7 @@ class ChannelInitializerTest {
                 .get(ApplicationProtocolNegotiationHandler.class);
         then(negotiation).isNotNull();
         final ChannelHandlerContext context = pipeline.context(ApplicationProtocolNegotiationHandler.class);
-        when(sslHandler.applicationProtocol()).thenReturn("http/1.1");
+        when(sslHandler.get().applicationProtocol()).thenReturn("http/1.1");
 
         negotiation.userEventTriggered(context, SslHandshakeCompletionEvent.SUCCESS);
 
@@ -333,7 +334,7 @@ class ChannelInitializerTest {
                 .version(isHttp10 ? HttpVersion.HTTP_1_0 : HttpVersion.HTTP_1_1)
                 .useDecompress(decompression);
 
-        final SslHandler sslHandler = mock(SslHandler.class);
+        final Supplier<SslHandler> sslHandler = () -> mock(SslHandler.class);
         final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
 
@@ -348,7 +349,7 @@ class ChannelInitializerTest {
                 .get(ApplicationProtocolNegotiationHandler.class);
         then(negotiation).isNotNull();
         final ChannelHandlerContext context = pipeline.context(ApplicationProtocolNegotiationHandler.class);
-        when(sslHandler.applicationProtocol()).thenReturn("http/1.1");
+        when(sslHandler.get().applicationProtocol()).thenReturn("http/1.1");
 
         negotiation.userEventTriggered(context, SslHandshakeCompletionEvent.SUCCESS);
 
@@ -374,7 +375,8 @@ class ChannelInitializerTest {
                         .gracefulShutdownTimeoutMillis(gracefulShutdownTimeoutMillis)
                         .build());
 
-        final SslHandler sslHandler = mock(SslHandler.class);
+        final SslHandler mockSsl = mock(SslHandler.class);
+        final Supplier<SslHandler> sslHandler = () -> mockSsl;
         final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
         final ChannelFuture connectFuture = initializer.onConnected(channel.newSucceededFuture());
@@ -385,7 +387,7 @@ class ChannelInitializerTest {
                 .get(ApplicationProtocolNegotiationHandler.class);
         then(negotiation).isNotNull();
         final ChannelHandlerContext context = pipeline.context(ApplicationProtocolNegotiationHandler.class);
-        when(sslHandler.applicationProtocol()).thenReturn("h2");
+        when(mockSsl.applicationProtocol()).thenReturn("h2");
 
         negotiation.userEventTriggered(context, SslHandshakeCompletionEvent.SUCCESS);
 
@@ -409,7 +411,7 @@ class ChannelInitializerTest {
                 new ChannelInitializer(true, null, builder)
                         .onConnected(new EmbeddedChannel().newSucceededFuture()));
 
-        final SslHandler sslHandler = mock(SslHandler.class);
+        final Supplier<SslHandler> sslHandler = () -> mock(SslHandler.class);
         final ChannelInitializer initializer = new ChannelInitializer(true, sslHandler, builder);
         final EmbeddedChannel channel = new EmbeddedChannel();
 

@@ -18,30 +18,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>restclient-parent</artifactId>
+        <artifactId>restclient-ext</artifactId>
         <groupId>io.esastack</groupId>
         <version>1.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>restclient-ext</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>traffic-split-interceptor</module>
-        <module>traffic-split-file-config</module>
-    </modules>
+    <artifactId>traffic-split-file-config</artifactId>
 
     <properties>
-        <restclient.version>1.0.2-SNAPSHOT</restclient.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <snakeyaml.version>1.30</snakeyaml.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.esastack</groupId>
-            <artifactId>restclient</artifactId>
+            <artifactId>traffic-split-interceptor</artifactId>
             <version>${restclient.version}</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
         </dependency>
     </dependencies>
-
 </project>

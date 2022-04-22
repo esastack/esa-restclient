@@ -680,7 +680,7 @@
     &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${esa-restclient.version}&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
 &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;step-2-配置&#34;&gt;Step 2: 配置&lt;/h2&gt;
-&lt;p&gt;如下图所示，在项目根路径的conf目录下新建名为&lt;code&gt;request-redefine.yaml&lt;/code&gt;的配置文件:&lt;/p&gt;
+&lt;p&gt;如下图所示，在项目根路径的conf目录下新建名为&lt;code&gt;traffic-split.yaml&lt;/code&gt;的配置文件:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;../../img/conf.png&#34; alt=&#34;conf&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;配置demo&#34;&gt;配置Demo&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;color:#8f5902;font-style:italic&#34;&gt;# 可以不配置，默认为false，为true时，自动关闭分流功能&lt;/span&gt;&lt;span style=&#34;color:#f8f8f8;text-decoration:underline&#34;&gt;

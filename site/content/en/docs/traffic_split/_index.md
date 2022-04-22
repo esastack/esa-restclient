@@ -17,7 +17,7 @@ description: >
 ```
 
 ## Step 2: 配置
-如下图所示，在项目根路径的conf目录下新建名为`request-redefine.yaml`的配置文件:
+如下图所示，在项目根路径的conf目录下新建名为`traffic-split.yaml`的配置文件:
 
 ![conf](../../img/conf.png)
 ### 配置Demo

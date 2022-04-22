@@ -44,7 +44,7 @@ public class FileRuleSourceFactory implements RuleSourceFactory {
         private static final String DEFAULT_CONFIG_DIR = "./conf";
         public static final String REQUEST_REDEFINE_CONFIG_DIR = "traffic.split.config.dir";
         private static final String ABSOLUTE_PATH_PREFIX = "/";
-        private static final String DEFAULT_CONFIG_NAME = "request-redefine.yaml";
+        private static final String DEFAULT_CONFIG_NAME = "traffic-split.yaml";
         public static final String REQUEST_REDEFINE_CONFIG_NAME = "traffic.split.config.name";
 
         private volatile long lastModified = 0L;

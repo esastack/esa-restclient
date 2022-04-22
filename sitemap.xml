@@ -11,14 +11,23 @@
     <loc>/blog/2022/02/16/release-v1.0.0/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/codec/encoder/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/codec/encoder/</loc>
     <lastmod>2022-03-07T16:05:09+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/docs-v0.1.0/getting_started/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/getting_started/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/getting_started/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
@@ -29,14 +38,23 @@
     <loc>/docs-v0.1.0/interceptor/embedded_interceptors/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/other_config/read_timeout/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/other_config/read_timeout/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
   </url><url>
     <loc>/blog/2021/02/02/release-v0.1.0/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/codec/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/codec/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/codec/decoder/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/codec/decoder/</loc>
     <lastmod>2022-03-07T16:05:09+08:00</lastmod>
@@ -50,6 +68,9 @@
     <loc>/docs-v0.1.0/interceptor/useages/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/other_config/retry/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/other_config/retry/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
   </url><url>
@@ -59,11 +80,20 @@
     <loc>/docs-v0.1.0/filter/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/interceptor/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/interceptor/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/other_config/redirect/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/other_config/redirect/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/other_config/expect_continue/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/other_config/expect_continue/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
@@ -71,8 +101,14 @@
     <loc>/docs-v0.1.0/dns_ext/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/dns_ext/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/dns_ext/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/file_upload_download/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/file_upload_download/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
@@ -83,14 +119,23 @@
     <loc>/docs-v0.1.0/segemented_read_write/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/connection_pool_config/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/connection_pool_config/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/other_config/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/other_config/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
   </url><url>
     <loc>/docs-v0.1.0/file_upload_download/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+  </url><url>
+    <loc>/docs-v1.0.1/metrics/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/docs/metrics/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
@@ -101,39 +146,45 @@
     <loc>/docs-v0.1.0/metrics/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
+    <loc>/docs-v1.0.1/process_of_restclient/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/docs/process_of_restclient/</loc>
     <lastmod>2022-02-22T10:53:13+08:00</lastmod>
   </url><url>
     <loc>/blog/releases/</loc>
     <lastmod>2022-03-08T16:06:51+08:00</lastmod>
   </url><url>
+    <loc>/docs/traffic_split/</loc>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
+  </url><url>
     <loc>/blog/architecture/</loc>
     <lastmod>2022-03-08T16:06:51+08:00</lastmod>
   </url><url>
     <loc>/tags/architecture/</loc>
-    <lastmod>2022-03-08T16:32:46+08:00</lastmod>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/tags/</loc>
-    <lastmod>2022-03-08T16:32:46+08:00</lastmod>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/categories/</loc>
   </url><url>
     <loc>/tags/config/</loc>
-    <lastmod>2022-02-22T10:53:13+08:00</lastmod>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/</loc>
     <lastmod>2022-02-18T18:21:11+08:00</lastmod>
   </url><url>
     <loc>/tags/example/</loc>
-    <lastmod>2022-02-18T18:21:11+08:00</lastmod>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/tags/extension/</loc>
-    <lastmod>2022-03-07T16:05:09+08:00</lastmod>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url><url>
     <loc>/search/</loc>
     <lastmod>2022-02-16T16:28:05+08:00</lastmod>
   </url><url>
     <loc>/tags/usage/</loc>
-    <lastmod>2022-02-22T10:53:13+08:00</lastmod>
+    <lastmod>2022-04-22T16:17:39+08:00</lastmod>
   </url>
 </urlset>

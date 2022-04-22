@@ -132,6 +132,66 @@ if (!doNotTrack) {
     <div>
       
         
+        <article class="article-teaser article-type-docs-v1.0.1">
+          <h3><a href="/docs-v1.0.1/codec/encoder/">Encoder</a></h3>
+          <p><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 等选择合适的<code>Encoder</code>进行<code>Encode</code>。其内置了下面这些<code>Encoder</code>：</p>
+<ul>
+<li>
+<p>Json</p>
+<ul>
+<li>
+<p>jackson ：默认，自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>fastjson ：需要引入<code>fastjson</code>依赖,并将<code>FastJsonCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>gson ：需要引入<code>gson</code>依赖,并将<code>GsonCodec</code>添加到RestClient中</p>
+</li>
+</ul>
+</li>
+<li>
+<p>ProtoBuf ：需要引入<code>ProtoBuf</code>依赖,并将<code>ProtoBufCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>File ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>String ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>byte[] ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+</ul>
+<p>除此之外<code>RestClient</code>也支持用户自定义<code>Encoder</code>。</p>
+</p>
+          <header class="article-meta">
+            
+            
+              
+                
+
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/extension/" data-taxonomy-term="extension"><span class="taxonomy-label">extension</span></a></li>
+    
+  </ul>
+</div>
+
+              
+                
+
+
+              
+            
+            
+          </header>
+        </article>
+      
+        
         <article class="article-teaser article-type-docs">
           <h3><a href="/docs/codec/encoder/">Encoder</a></h3>
           <p><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 等选择合适的<code>Encoder</code>进行<code>Encode</code>。其内置了下面这些<code>Encoder</code>：</p>
@@ -252,9 +312,96 @@ if (!doNotTrack) {
         </article>
       
         
+        <article class="article-teaser article-type-docs-v1.0.1">
+          <h3><a href="/docs-v1.0.1/codec/">Codec</a></h3>
+          <p>用户请求时<code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 自动选择合适的<code>Decoder</code>或<code>Encoder</code>进行<code>Decode</code>或<code>Encode</code>。同时<code>RestClient</code>也支持用户在<code>codec</code>前后进行插入业务逻辑。</p>
+          <header class="article-meta">
+            
+            
+              
+                
+
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/extension/" data-taxonomy-term="extension"><span class="taxonomy-label">extension</span></a></li>
+    
+  </ul>
+</div>
+
+              
+                
+
+
+              
+            
+            
+          </header>
+        </article>
+      
+        
         <article class="article-teaser article-type-docs">
           <h3><a href="/docs/codec/">Codec</a></h3>
           <p>用户请求时<code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 自动选择合适的<code>Decoder</code>或<code>Encoder</code>进行<code>Decode</code>或<code>Encode</code>。同时<code>RestClient</code>也支持用户在<code>codec</code>前后进行插入业务逻辑。</p>
+          <header class="article-meta">
+            
+            
+              
+                
+
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/extension/" data-taxonomy-term="extension"><span class="taxonomy-label">extension</span></a></li>
+    
+  </ul>
+</div>
+
+              
+                
+
+
+              
+            
+            
+          </header>
+        </article>
+      
+        
+        <article class="article-teaser article-type-docs-v1.0.1">
+          <h3><a href="/docs-v1.0.1/codec/decoder/">Decoder</a></h3>
+          <p><p><code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 期望<code>Entity</code>类型 等选择合适的<code>Decoder</code>进行解码。<code>RestClient</code>内置了下面这些<code>Decoder</code>：</p>
+<ul>
+<li>
+<p>Json</p>
+<ul>
+<li>
+<p>jackson ：默认，自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>fastjson ：需要引入<code>fastjson</code>依赖,并将<code>FastJsonCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>gson ：需要引入<code>gson</code>依赖,并将<code>GsonCodec</code>添加到RestClient中</p>
+</li>
+</ul>
+</li>
+<li>
+<p>ProtoBuf ：需要引入<code>ProtoBuf</code>依赖,并将<code>ProtoBufCodec</code>添加到RestClient中</p>
+</li>
+<li>
+<p>String ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+<li>
+<p>byte[]  ：自动通过SPI的方式注入到RestClient中</p>
+</li>
+</ul>
+<p>除此之外<code>RestClient</code>也支持用户自定义解码器。</p>
+</p>
           <header class="article-meta">
             
             
@@ -429,6 +576,36 @@ if (!doNotTrack) {
         </article>
       
         
+        <article class="article-teaser article-type-docs-v1.0.1">
+          <h3><a href="/docs-v1.0.1/interceptor/">Interceptor</a></h3>
+          <p><code>RestClient</code>支持通过builder配置和SPI加载两种方式配置<code>RestInterceptor</code>。</p>
+          <header class="article-meta">
+            
+            
+              
+                
+
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/extension/" data-taxonomy-term="extension"><span class="taxonomy-label">extension</span></a></li>
+    
+  </ul>
+</div>
+
+              
+                
+
+
+              
+            
+            
+          </header>
+        </article>
+      
+        
         <article class="article-teaser article-type-docs">
           <h3><a href="/docs/interceptor/">Interceptor</a></h3>
           <p><code>RestClient</code>支持通过builder配置和SPI加载两种方式配置<code>RestInterceptor</code>。</p>
@@ -462,6 +639,36 @@ if (!doNotTrack) {
         <article class="article-teaser article-type-docs-v0.1.0">
           <h3><a href="/docs-v0.1.0/dns_ext/">DNS扩展</a></h3>
           <p>在每次建立连接前，client可能需要将域名解析成IP地址，<code>HttpClient</code>通过适配<code>netty</code>原生的<code>AddressResolverGroup</code>提供了一种更加简单、 灵活的<code>NameResolver</code>扩展，用于将url地址中的域名解析成IP地址。</p>
+          <header class="article-meta">
+            
+            
+              
+                
+
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/extension/" data-taxonomy-term="extension"><span class="taxonomy-label">extension</span></a></li>
+    
+  </ul>
+</div>
+
+              
+                
+
+
+              
+            
+            
+          </header>
+        </article>
+      
+        
+        <article class="article-teaser article-type-docs-v1.0.1">
+          <h3><a href="/docs-v1.0.1/dns_ext/">DNS扩展</a></h3>
+          <p>在每次建立连接前，client可能需要将域名解析成IP地址，<code>RestClient</code>通过适配<code>netty</code>原生的<code>AddressResolverGroup</code>提供了一种更加简单、 灵活的<code>NameResolver</code>扩展，用于将url地址中的域名解析成IP地址。</p>
           <header class="article-meta">
             
             

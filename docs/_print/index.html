@@ -379,6 +379,25 @@ This is the multi-page printable view of this section.
     </ul>
     
   
+    
+    
+	
+<li>10: <a href="#pg-46ba4fff589e65518e21a9509a301ace">请求分流</a></li>
+
+
+    
+    <ul>
+        
+  
+  
+  
+  
+
+  
+
+    </ul>
+    
+  
 
     </ul>
 
@@ -1447,6 +1466,273 @@ This is the multi-page printable view of this section.
     <div class="lead"><code>RestClient</code>中的每个请求都拥有相同的生命周期，了解请求的生命周期便于用户更好地使用<code>RestClient</code>。</div>
 	<h2 id="生命周期">生命周期</h2>
 <p><img src="../../../img/process_of_restclient.svg" alt="process_of_restclient"></p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-46ba4fff589e65518e21a9509a301ace">10 - 请求分流</h1>
+    <div class="lead"><code>RestClient</code>支持用户通过配置文件的方式对请求再次进行分流。</div>
+	<h2 id="step-1-添加依赖">Step 1: 添加依赖</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#204a87;font-weight:bold">&lt;dependency&gt;</span>
+    <span style="color:#204a87;font-weight:bold">&lt;groupId&gt;</span>io.esastack<span style="color:#204a87;font-weight:bold">&lt;/groupId&gt;</span>
+    <span style="color:#204a87;font-weight:bold">&lt;artifactId&gt;</span>traffic-split-file-config<span style="color:#204a87;font-weight:bold">&lt;/artifactId&gt;</span>
+    <span style="color:#204a87;font-weight:bold">&lt;version&gt;</span>${esa-restclient.version}<span style="color:#204a87;font-weight:bold">&lt;/version&gt;</span>
+<span style="color:#204a87;font-weight:bold">&lt;/dependency&gt;</span>
+</code></pre></div><h2 id="step-2-配置">Step 2: 配置</h2>
+<p>如下图所示，在项目根路径的conf目录下新建名为<code>request-redefine.yaml</code>的配置文件:</p>
+<p><img src="../../img/conf.png" alt="conf"></p>
+<h3 id="配置demo">配置Demo</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#8f5902;font-style:italic"># 可以不配置，默认为false，为true时，自动关闭分流功能</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline"></span><span style="color:#204a87;font-weight:bold">close</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;false&#39;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline"></span><span style="color:#8f5902;font-style:italic"># 规则，数据结构为数组，用户可同时配置多条，当请求命中一条时，后续的规则将不再匹配</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline"></span><span style="color:#204a87;font-weight:bold">rules</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">  </span><span style="color:#8f5902;font-style:italic"># 规则名称</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">  </span>- <span style="color:#204a87;font-weight:bold">name</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#34;aaa&#34;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#8f5902;font-style:italic"># 多条conditions的match模式，all指所有condition匹配时才算匹配</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#204a87;font-weight:bold">match</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;all&#39;</span><span style="color:#f8f8f8;text-decoration:underline">   
+</span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#8f5902;font-style:italic"># 规则的匹配条件，数据结构为数组，用户可设置多个condition</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#204a87;font-weight:bold">conditions</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#8f5902;font-style:italic"># 第一条 condition</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">      </span>- <span style="color:#204a87;font-weight:bold">method</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;post&#39;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">        </span><span style="color:#204a87;font-weight:bold">uriAuthority</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">          </span><span style="color:#204a87;font-weight:bold">exact</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#34;localhost:8080&#34;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">        </span><span style="color:#204a87;font-weight:bold">header</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">          </span>- <span style="color:#204a87;font-weight:bold">name</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;name1&#39;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">            </span><span style="color:#204a87;font-weight:bold">value</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> 
+</span><span style="color:#f8f8f8;text-decoration:underline">              </span><span style="color:#204a87;font-weight:bold">exact</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;value1&#39;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#8f5902;font-style:italic"># 第二条 condition</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">      </span>- <span style="color:#204a87;font-weight:bold">params</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">          </span>- <span style="color:#204a87;font-weight:bold">name</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;name3&#39;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">            </span><span style="color:#204a87;font-weight:bold">value</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">              </span><span style="color:#204a87;font-weight:bold">exact</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#39;value3&#39;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#8f5902;font-style:italic"># 当 conditions 匹配上时，要执行的动作</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">    </span><span style="color:#204a87;font-weight:bold">action</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#204a87;font-weight:bold">rewrite</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">        </span><span style="color:#204a87;font-weight:bold">uriAuthority</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#34;localhost:8080&#34;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">        </span><span style="color:#204a87;font-weight:bold">path</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#34;/request/redefineSuccess&#34;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">      </span><span style="color:#204a87;font-weight:bold">headers</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">        </span><span style="color:#204a87;font-weight:bold">add</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">          </span><span style="color:#204a87;font-weight:bold">a</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#34;xxx&#34;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span><span style="color:#f8f8f8;text-decoration:underline">          </span><span style="color:#204a87;font-weight:bold">b</span><span style="color:#000;font-weight:bold">:</span><span style="color:#f8f8f8;text-decoration:underline"> </span><span style="color:#4e9a06">&#34;aaa&#34;</span><span style="color:#f8f8f8;text-decoration:underline">
+</span></code></pre></div><h3 id="配置说明">配置说明</h3>
+<h4 id="主要配置项">主要配置项</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">数据结构</th>
+<th style="text-align:center">配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">name</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">规则名称</td>
+</tr>
+<tr>
+<td style="text-align:center">match</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">all : 所有condition匹配时才算匹配<br>any : 任意一个condition匹配时就算匹配<br>not : 所有condition都要不匹配时才算匹配</td>
+</tr>
+<tr>
+<td style="text-align:center">conditions</td>
+<td style="text-align:center">List&lt;Condition&gt;</td>
+<td style="text-align:center">规则的匹配条件，用户可设置多个condition</td>
+</tr>
+<tr>
+<td style="text-align:center">action</td>
+<td style="text-align:center">List&lt;Action&gt;</td>
+<td style="text-align:center">当 conditions 匹配时，要执行的动作</td>
+</tr>
+</tbody>
+</table>
+<h3 id="condition">Condition</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">数据结构</th>
+<th style="text-align:center">配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">method</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">要匹配的方法: Get、Post 等等，不区分大小写</td>
+</tr>
+<tr>
+<td style="text-align:center">uriAuthority</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">要匹配的 uriAuthority</td>
+</tr>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">要匹配的 path</td>
+</tr>
+<tr>
+<td style="text-align:center">headers</td>
+<td style="text-align:center">Map&lt;String , StringMatcher&gt;</td>
+<td style="text-align:center">要匹配的 header，key为header的name，value为StringMatcher(见下文介绍)，StringMatcher为空时，则代表匹配任意value</td>
+</tr>
+<tr>
+<td style="text-align:center">params</td>
+<td style="text-align:center">Map&lt;String , StringMatcher&gt;</td>
+<td style="text-align:center">要匹配的 param，key为header的name，value为StringMatcher(见下文介绍)，StringMatcher为空时，则代表匹配任意value</td>
+</tr>
+</tbody>
+</table>
+<h4 id="stringmatcher"><code>StringMatcher</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">数据结构</th>
+<th style="text-align:center">配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exact</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">精确匹配的内容</td>
+</tr>
+<tr>
+<td style="text-align:center">prefix</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">前缀匹配的内容</td>
+</tr>
+<tr>
+<td style="text-align:center">regex</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">正则匹配的内容</td>
+</tr>
+</tbody>
+</table>
+<h3 id="action">Action</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">配置说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">rewrite</td>
+<td style="text-align:center">重写请求的 uriAuthority 或者 path (具体配置见下文)</td>
+</tr>
+<tr>
+<td style="text-align:center">headers</td>
+<td style="text-align:center">操作请求的 headers(具体配置见下文)</td>
+</tr>
+<tr>
+<td style="text-align:center">params</td>
+<td style="text-align:center">操作请求的 params(具体配置见下文)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="rewrite"><code>rewrite</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">数据结构</th>
+<th style="text-align:center">配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">uriAuthority</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">重写后的uriAuthority</td>
+</tr>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">String</td>
+<td style="text-align:center">重写后的path</td>
+</tr>
+</tbody>
+</table>
+<h4 id="headers"><code>headers</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">数据结构</th>
+<th style="text-align:center">配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">set</td>
+<td style="text-align:center">Map&lt;String , String&gt;</td>
+<td style="text-align:center">要设置 headers</td>
+</tr>
+<tr>
+<td style="text-align:center">add</td>
+<td style="text-align:center">Map&lt;String , String&gt;</td>
+<td style="text-align:center">要新增 headers</td>
+</tr>
+<tr>
+<td style="text-align:center">remove</td>
+<td style="text-align:center">List&lt;String &gt;</td>
+<td style="text-align:center">要删除的 headers</td>
+</tr>
+</tbody>
+</table>
+<h4 id="params"><code>params</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">配置项</th>
+<th style="text-align:center">数据结构</th>
+<th style="text-align:center">配置内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">set</td>
+<td style="text-align:center">Map&lt;String , String&gt;</td>
+<td style="text-align:center">要设置 params</td>
+</tr>
+<tr>
+<td style="text-align:center">add</td>
+<td style="text-align:center">Map&lt;String , String&gt;</td>
+<td style="text-align:center">要新增 params</td>
+</tr>
+<tr>
+<td style="text-align:center">remove</td>
+<td style="text-align:center">List&lt;String &gt;</td>
+<td style="text-align:center">要删除的 params</td>
+</tr>
+</tbody>
+</table>
 
 </div>
 

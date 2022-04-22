@@ -934,6 +934,21 @@
     </item>
     
     <item>
+      <title>Docs-V1.0.1: 生命周期</title>
+      <link>/docs-v1.0.1/process_of_restclient/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v1.0.1/process_of_restclient/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;生命周期&#34;&gt;生命周期&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;../../../img/process_of_restclient.svg&#34; alt=&#34;process_of_restclient&#34;&gt;&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
       <title>Docs: 生命周期</title>
       <link>/docs/process_of_restclient/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

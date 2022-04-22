@@ -306,11 +306,117 @@ if (!doNotTrack) {
   </ol>
 </nav>
             
+<div class="td-content">
+	<h1>生命周期</h1>
+  <div class="lead"><code>RestClient</code>中的每个请求都拥有相同的生命周期，了解请求的生命周期便于用户更好地使用<code>RestClient</code>。</div>
+	<header class="article-meta">
+		
+		
+			
+				
 
-<h2 id="生命周期">生命周期</h2>
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/architecture/" data-taxonomy-term="architecture"><span class="taxonomy-label">architecture</span></a></li>
+    
+  </ul>
+</div>
+
+			
+				
+
+
+			
+		
+		
+	</header>
+	<h2 id="生命周期">生命周期</h2>
 <p><img src="../../../img/process_of_restclient.svg" alt="process_of_restclient"></p>
 
+        <div class="section-index">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
 
+	
+		<style>
+  .feedback--answer {
+    display: inline-block;
+  }
+  .feedback--answer-no {
+    margin-left: 1em;
+  }
+  .feedback--response {
+    display: none;
+    margin-top: 1em;
+  }
+  .feedback--response__visible {
+    display: block;
+  }
+</style>
+<div class="d-print-none">
+<h2 class="feedback--title">Feedback</h2>
+<p class="feedback--question">Was this page helpful?</p>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-yes">Yes</button>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-no">No</button>
+<p class="feedback--response feedback--response-yes">
+  Glad to hear it! Please <a href="https://github.com/esastack/esa-restclient/issues/new">tell us how we can improve</a>.
+</p>
+<p class="feedback--response feedback--response-no">
+  Sorry to hear that. Please <a href="https://github.com/esastack/esa-restclient/issues/new">tell us how we can improve</a>.
+</p>
+</div>
+<script>
+  const yesButton = document.querySelector('.feedback--answer-yes');
+  const noButton = document.querySelector('.feedback--answer-no');
+  const yesResponse = document.querySelector('.feedback--response-yes');
+  const noResponse = document.querySelector('.feedback--response-no');
+  const disableButtons = () => {
+    yesButton.disabled = true;
+    noButton.disabled = true;
+  };
+  const sendFeedback = (value) => {
+    if (typeof ga !== 'function') return;
+    const args = {
+      command: 'send',
+      hitType: 'event',
+      category: 'Helpful',
+      action: 'click',
+      label: window.location.pathname,
+      value: value
+    };
+    ga(args.command, args.hitType, args.category, args.action, args.label, args.value);
+  };
+  yesButton.addEventListener('click', () => {
+    yesResponse.classList.add('feedback--response__visible');
+    disableButtons();
+    sendFeedback(1);
+  });
+  noButton.addEventListener('click', () => {
+    noResponse.classList.add('feedback--response__visible');
+    disableButtons();
+    sendFeedback(0);
+  });
+</script>
+
+		<br />
+	
+	
+	<div class="text-muted mt-5 pt-3 border-top">
+  Last modified April 22, 2022: <a href="https://github.com/esastack/esa-restclient/commit/34b84ce4ba65d8d6b1bc33dd75d9f08fc59dc405">add docs about traffic-split (34b84ce)</a>
+</div>
+
+</div>
 
           </main>
         </div>

@@ -303,8 +303,25 @@ if (!doNotTrack) {
   </ol>
 </nav>
             
+<div class="td-content">
+	<h1>ESA RestClient</h1>
+  <div class="lead">ESA RestClient is an asynchronous event-driven http client based on netty.</div>
+	<header class="article-meta">
+		
+		
+			
+				
 
-<h2 id="features">Features</h2>
+
+			
+				
+
+
+			
+		
+		
+	</header>
+	<h2 id="features">Features</h2>
 <ul>
 <li>Http1/H2/H2cUpgrade</li>
 <li>Https</li>
@@ -319,7 +336,161 @@ if (!doNotTrack) {
 <li>more features&hellip;</li>
 </ul>
 
+        <div class="section-index">
+    
+    
+    
+    
+    
+    
+    
+    
+    <hr class="panel-line">
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/getting_started/">Getting Started</a>
+                </h5>
+                <p>It&rsquo;s very easy to get started with <code>RestClient</code>!</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/codec/">Codec</a>
+                </h5>
+                <p>用户请求时<code>RestClient</code>会自动根据用户的 <code>Headers</code> 与 <code>Entity</code> 自动选择合适的<code>Decoder</code>或<code>Encoder</code>进行<code>Decode</code>或<code>Encode</code>。同时<code>RestClient</code>也支持用户在<code>codec</code>前后进行插入业务逻辑。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/interceptor/">Interceptor</a>
+                </h5>
+                <p><code>RestClient</code>支持通过builder配置和SPI加载两种方式配置<code>RestInterceptor</code>。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/dns_ext/">DNS扩展</a>
+                </h5>
+                <p>在每次建立连接前，client可能需要将域名解析成IP地址，<code>RestClient</code>通过适配<code>netty</code>原生的<code>AddressResolverGroup</code>提供了一种更加简单、 灵活的<code>NameResolver</code>扩展，用于将url地址中的域名解析成IP地址。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/file_upload_download/">大文件上传</a>
+                </h5>
+                <p><code>RestClient</code>支持大文件上传功能。<strong>需要说明地是，对于内容较小的文件，可通过直接将文件内容写入请求body。</strong> 本文只讨论当文件内容过大，直接写入有OOM风险时的大文件上传功能。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/connection_pool_config/">连接池配置</a>
+                </h5>
+                <p>连接的创建和销毁通常比较消耗资源，为了提升高并发下场景下的通信效率，<code>RestClient</code>会自动使用连接池来管理与服务端的<strong>长连接</strong>。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/other_config/">其他功能</a>
+                </h5>
+                <p><code>RestClient</code>支持用户配置请求级别读超时、请求重试、请求重定向、100-expect-continue 等功能。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/metrics/">指标统计</a>
+                </h5>
+                <p><code>RestClient</code>提供了IO线程池及连接池的Metric指标统计，使用时通过<code>RestClient</code>实例便可直接获取。</p>
+            </div>
+        
+            
+            <div class="entry">
+                <h5>
+                    <a href="/docs-v1.0.1/process_of_restclient/">生命周期</a>
+                </h5>
+                <p><code>RestClient</code>中的每个请求都拥有相同的生命周期，了解请求的生命周期便于用户更好地使用<code>RestClient</code>。</p>
+            </div>
+        
+    
+</div>
 
+	
+		<style>
+  .feedback--answer {
+    display: inline-block;
+  }
+  .feedback--answer-no {
+    margin-left: 1em;
+  }
+  .feedback--response {
+    display: none;
+    margin-top: 1em;
+  }
+  .feedback--response__visible {
+    display: block;
+  }
+</style>
+<div class="d-print-none">
+<h2 class="feedback--title">Feedback</h2>
+<p class="feedback--question">Was this page helpful?</p>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-yes">Yes</button>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-no">No</button>
+<p class="feedback--response feedback--response-yes">
+  Glad to hear it! Please <a href="https://github.com/esastack/esa-restclient/issues/new">tell us how we can improve</a>.
+</p>
+<p class="feedback--response feedback--response-no">
+  Sorry to hear that. Please <a href="https://github.com/esastack/esa-restclient/issues/new">tell us how we can improve</a>.
+</p>
+</div>
+<script>
+  const yesButton = document.querySelector('.feedback--answer-yes');
+  const noButton = document.querySelector('.feedback--answer-no');
+  const yesResponse = document.querySelector('.feedback--response-yes');
+  const noResponse = document.querySelector('.feedback--response-no');
+  const disableButtons = () => {
+    yesButton.disabled = true;
+    noButton.disabled = true;
+  };
+  const sendFeedback = (value) => {
+    if (typeof ga !== 'function') return;
+    const args = {
+      command: 'send',
+      hitType: 'event',
+      category: 'Helpful',
+      action: 'click',
+      label: window.location.pathname,
+      value: value
+    };
+    ga(args.command, args.hitType, args.category, args.action, args.label, args.value);
+  };
+  yesButton.addEventListener('click', () => {
+    yesResponse.classList.add('feedback--response__visible');
+    disableButtons();
+    sendFeedback(1);
+  });
+  noButton.addEventListener('click', () => {
+    noResponse.classList.add('feedback--response__visible');
+    disableButtons();
+    sendFeedback(0);
+  });
+</script>
+
+		<br />
+	
+	
+	<div class="text-muted mt-5 pt-3 border-top">
+  Last modified April 22, 2022: <a href="https://github.com/esastack/esa-restclient/commit/34b84ce4ba65d8d6b1bc33dd75d9f08fc59dc405">add docs about traffic-split (34b84ce)</a>
+</div>
+
+</div>
 
           </main>
         </div>

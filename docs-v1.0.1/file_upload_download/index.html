@@ -317,8 +317,34 @@ if (!doNotTrack) {
   </ol>
 </nav>
             
+<div class="td-content">
+	<h1>大文件上传</h1>
+  <div class="lead"><code>RestClient</code>支持大文件上传功能。<strong>需要说明地是，对于内容较小的文件，可通过直接将文件内容写入请求body。</strong> 本文只讨论当文件内容过大，直接写入有OOM风险时的大文件上传功能。</div>
+	<header class="article-meta">
+		
+		
+			
+				
 
-<h2 id="使用方式">使用方式</h2>
+
+<div class="taxonomy taxonomy-terms-article taxo-tags">
+  <h5 class="taxonomy-title">Tags:</h5>
+  <ul class="taxonomy-terms">
+    
+      <li><a class="taxonomy-term" href="/tags/usage/" data-taxonomy-term="usage"><span class="taxonomy-label">usage</span></a></li>
+    
+  </ul>
+</div>
+
+			
+				
+
+
+			
+		
+		
+	</header>
+	<h2 id="使用方式">使用方式</h2>
 <h3 id="不使用multipart编码">不使用Multipart编码</h3>
 <div class="highlight"><pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">RestClient</span> <span style="color:#000">client</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">RestClient</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">ofDefault</span><span style="color:#ce5c00;font-weight:bold">();</span>
 <span style="color:#204a87;font-weight:bold">final</span> <span style="color:#000">String</span> <span style="color:#000">entity</span> <span style="color:#ce5c00;font-weight:bold">=</span> <span style="color:#000">client</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">post</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#4e9a06">&#34;http://127.0.0.1:8081/&#34;</span><span style="color:#ce5c00;font-weight:bold">)</span>
@@ -346,7 +372,87 @@ if (!doNotTrack) {
 <span style="color:#000">System</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">out</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">println</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">response</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">bodyToEntity</span><span style="color:#ce5c00;font-weight:bold">(</span><span style="color:#000">String</span><span style="color:#ce5c00;font-weight:bold">.</span><span style="color:#c4a000">class</span><span style="color:#ce5c00;font-weight:bold">));</span>
 </code></pre></div><p>如上所示，<code>RestClient</code>将添加的文件和表单参数进行Multipart Encode的结果作为请求的body内容，对应的Content-Type为<strong>multipart/form-data。</strong> 该情形适用于需要进行multipart encode或者存在表单参数的情形。<strong>特别地，如果只上传表单参数，不存在文件时，则可以直接将Content-Type设置为application/x-www-form-urlencoded。</strong></p>
 
+        <div class="section-index">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
 
+	
+		<style>
+  .feedback--answer {
+    display: inline-block;
+  }
+  .feedback--answer-no {
+    margin-left: 1em;
+  }
+  .feedback--response {
+    display: none;
+    margin-top: 1em;
+  }
+  .feedback--response__visible {
+    display: block;
+  }
+</style>
+<div class="d-print-none">
+<h2 class="feedback--title">Feedback</h2>
+<p class="feedback--question">Was this page helpful?</p>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-yes">Yes</button>
+<button class="btn btn-primary mb-4 feedback--answer feedback--answer-no">No</button>
+<p class="feedback--response feedback--response-yes">
+  Glad to hear it! Please <a href="https://github.com/esastack/esa-restclient/issues/new">tell us how we can improve</a>.
+</p>
+<p class="feedback--response feedback--response-no">
+  Sorry to hear that. Please <a href="https://github.com/esastack/esa-restclient/issues/new">tell us how we can improve</a>.
+</p>
+</div>
+<script>
+  const yesButton = document.querySelector('.feedback--answer-yes');
+  const noButton = document.querySelector('.feedback--answer-no');
+  const yesResponse = document.querySelector('.feedback--response-yes');
+  const noResponse = document.querySelector('.feedback--response-no');
+  const disableButtons = () => {
+    yesButton.disabled = true;
+    noButton.disabled = true;
+  };
+  const sendFeedback = (value) => {
+    if (typeof ga !== 'function') return;
+    const args = {
+      command: 'send',
+      hitType: 'event',
+      category: 'Helpful',
+      action: 'click',
+      label: window.location.pathname,
+      value: value
+    };
+    ga(args.command, args.hitType, args.category, args.action, args.label, args.value);
+  };
+  yesButton.addEventListener('click', () => {
+    yesResponse.classList.add('feedback--response__visible');
+    disableButtons();
+    sendFeedback(1);
+  });
+  noButton.addEventListener('click', () => {
+    noResponse.classList.add('feedback--response__visible');
+    disableButtons();
+    sendFeedback(0);
+  });
+</script>
+
+		<br />
+	
+	
+	<div class="text-muted mt-5 pt-3 border-top">
+  Last modified April 22, 2022: <a href="https://github.com/esastack/esa-restclient/commit/34b84ce4ba65d8d6b1bc33dd75d9f08fc59dc405">add docs about traffic-split (34b84ce)</a>
+</div>
+
+</div>
 
           </main>
         </div>

@@ -26,15 +26,11 @@
     <version>1.0.2-SNAPSHOT</version>
     <name>RestClient</name>
 
-    <properties>
-        <httpclient.version>1.0.2-SNAPSHOT</httpclient.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.esastack</groupId>
             <artifactId>httpclient-core</artifactId>
-            <version>${httpclient.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.esastack</groupId>

@@ -31,15 +31,11 @@
         <module>traffic-split-file-config</module>
     </modules>
 
-    <properties>
-        <restclient.version>1.0.2-SNAPSHOT</restclient.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.esastack</groupId>
             <artifactId>restclient</artifactId>
-            <version>${restclient.version}</version>
+            <version>${parent.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -36,7 +36,7 @@
         <dependency>
             <groupId>io.esastack</groupId>
             <artifactId>traffic-split-interceptor</artifactId>
-            <version>${restclient.version}</version>
+            <version>${parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

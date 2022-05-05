@@ -20,7 +20,7 @@
     <groupId>io.esastack</groupId>
     <artifactId>restclient-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
 
     <name>RestClient-Parent</name>
     <description>
@@ -39,7 +39,7 @@
         <url>https://github.com/esastack/esa-httpclient</url>
         <connection>scm:git:git://github.com/esastack/esa-httpclient.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/esastack/esa-httpclient.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.0.2</tag>
     </scm>
 
     <developers>

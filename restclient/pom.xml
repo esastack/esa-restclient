@@ -19,11 +19,11 @@
     <parent>
         <groupId>io.esastack</groupId>
         <artifactId>restclient-parent</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
     </parent>
 
     <artifactId>restclient</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>RestClient</name>
 
     <dependencies>

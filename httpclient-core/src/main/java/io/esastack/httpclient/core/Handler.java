@@ -20,7 +20,7 @@ import io.esastack.commons.net.http.HttpHeaders;
 import io.esastack.httpclient.core.netty.NettyResponse;
 
 /**
- * This is an another format of {@link Handle}, which can help user handle
+ * This is another format of {@link Handle}, which can help user handle
  * inbound messages in a whole component. You can choose {@code this} or {@link Handle}
  * which one you prefer. The class is designed as thread-safe and all methods will execute
  * in a fixed IO-Thread.
